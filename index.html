@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Origami Simulator</title>
+
+    <link href="dependencies/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="dependencies/flat-ui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="dependencies/jquery-ui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="main.css"/>
+
+    <script type="text/javascript" src="dependencies/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="dependencies/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="dependencies/flat-ui.min.js"></script>
+    <script type="text/javascript" src="dependencies/three.min.js"></script>
+    <script type="text/javascript" src="dependencies/binary_stl_writer.js"></script>
+    <script type="text/javascript" src="dependencies/OrbitControls.js"></script>
+    <script type="text/javascript" src="dependencies/underscore-min.js"></script>
+    <script type="text/javascript" src="dependencies/FileSaver.min.js"></script>
+
+    <script type="text/javascript" src="js/GLBoilerplate.js"></script>
+    <script type="text/javascript" src="js/GPUMath.js"></script>
+    <script type="text/javascript" src="js/controls.js"></script>
+    <script type="text/javascript" src="js/threeView.js"></script>
+    <script type="text/javascript" src="js/globals.js"></script>
+
+    <script type="text/javascript" src="js/main.js"></script>
+</head>
+<body>
+<div  id="threeContainer"></div>
+<div id="controlsLeft" class="flipped">
+    <div>
+        <a id="logo" target="_blank" href="http://cba.mit.edu/">
+            <img id="inactiveLogo" src="logo.png"/>
+            <img id="activeLogo" src="logo-active.png"/>
+        </a><br/>
+        3D View:
+        <div class="indent">
+            <label class="checkbox" for="dynamic">
+                <input id="dynamic" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                Dynamic Simulation
+            </label>
+            <label class="checkbox" for="static">
+                <input id="static" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                Static Simulation
+            </label>
+            <label class="checkbox" for="schematic">
+                <input id="schematic" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                Crease Pattern
+            </label>
+        </div>
+    </div>
+    <br/><br/>
+    <div class="dynamicSim">
+        Dynamic Sim Settings:<br/>
+        <div class="indent">
+            <div class="sliderContainer">
+                <span class="label-slider">Damping : </span><div id="damping"  class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div><br/>
+            </div>
+            <a href="#" id="resetDynamicSim" class="btn btn-lg btn-default">Replay Dynamic Simulation</a>
+        </div>
+    </div>
+    <div id="extraSpace"></div>
+</div>
+<div id="controls">
+    <a href="#" id="about" class="btn btn-lg btn-default">About</a><br/><br/>
+    <!--<div class="sliderInput" id="density">-->
+        <!--<span class="label-slider">Density : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>-->
+        <!--<input value="" placeholder="" class="form-control int" type="text">-->
+    <!--</div>-->
+    <!--<div class="sliderInput" id="width">-->
+        <!--<span class="label-slider">Width (m) : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>-->
+        <!--<input value="" placeholder="" class="form-control int" type="text">-->
+    <!--</div>-->
+    <!--<div class="sliderInput" id="length">-->
+        <!--<span class="label-slider">Length (m) : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>-->
+        <!--<input value="" placeholder="" class="form-control int" type="text">-->
+    <!--</div>-->
+    <!--<a href="#" id="addRemoveFixed" class="btn btn-lg btn-default">Add/Remove Fixed Constraint</a>-->
+    <!--<span class="titleSpan">Available Materials:</span>-->
+    <!--<div id="materialTypes" class="indent">-->
+        <!--<label class="radio"><input name="materialTypes" value="none" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span><span id="noMaterial">No Material Selected</span></label>-->
+    <!--</div>-->
+    <!--<a href="#" id="addMaterial" class="btn btn-lg btn-default">+ New Material</a>-->
+    <!--<div id="extraSpace"></div>-->
+</div>
+<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p><b>Origami Simulator</b><br/><br/>
+                    lakfjsdlkfjladskj
+                <br/>
+                Built by <a href="http://www.amandaghassaei.com/" target="_blank">Amanda Ghassaei</a> as a homework assignment for <a href="http://courses.csail.mit.edu/6.849/spring17/" target="_blank">Geometric Folding Algorithms</a>.
+                Code available on <a href="https://github.com/amandaghassaei/OrigamiSimulator" target="_blank">Github</a>.
+                </p>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+</body>
+</html>
