@@ -18,7 +18,8 @@ function initGlobals(){
         panelStiffness: 1,
 
         //dynamic sim settings
-        percentDamping: 1
+        percentDamping: 1,
+        density: 1
     };
 
     var isMobile = {
@@ -44,7 +45,7 @@ function initGlobals(){
     if(isMobile.any()) _globals.dynamicSimVisible = false;
 
     _globals.threeView = initThreeView(_globals);
-    // _globals.gpuMath = initGPUMath();
+    _globals.gpuMath = initGPUMath();
     _globals.controls = initControls(_globals);
 
     return _globals;

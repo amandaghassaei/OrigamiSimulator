@@ -16,6 +16,7 @@ $(function() {
     var isDragging = false;
     var mouseDown = false;
 
+
     $(document).dblclick(function() {
     });
 
@@ -34,13 +35,13 @@ $(function() {
         }
 
         e.preventDefault();
-        // globals.controls.hideMoreInfo();
         mouse.x = (e.clientX/window.innerWidth)*2-1;
         mouse.y = - (e.clientY/window.innerHeight)*2+1;
         raycaster.setFromCamera(mouse, globals.threeView.camera);
     }
 
     globals = initGlobals();
+    globals.model = initModel(globals);
+    globals.dynamicModel = initDynamicModel(globals);
     globals.threeView.render();
-
 });

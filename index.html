@@ -9,6 +9,145 @@
     <link rel="stylesheet" type="text/css" href="dependencies/jquery-ui.min.css"/>
     <link rel="stylesheet" type="text/css" href="main.css"/>
 
+    <script id="vertexShader" type="x-shader/x-vertex">
+        attribute vec2 a_position;
+        void main() {
+           gl_Position = vec4(a_position, 0, 1);
+        }
+    </script>
+
+    <script id="packToBytesShader" type="x-shader/x-fragment">
+        precision mediump float;
+        uniform vec2 u_floatTextureDim;
+        uniform sampler2D u_floatTexture;
+        uniform float u_vectorLength;
+        float shift_right (float v, float amt) {
+            v = floor(v) + 0.5;
+            return floor(v / exp2(amt));
+        }
+        float shift_left (float v, float amt) {
+            return floor(v * exp2(amt) + 0.5);
+        }
+        float mask_last (float v, float bits) {
+            return mod(v, shift_left(1.0, bits));
+        }
+        float extract_bits (float num, float from, float to) {
+            from = floor(from + 0.5); to = floor(to + 0.5);
+            return mask_last(shift_right(num, from), to - from);
+        }
+        vec4 encode_float (float val) {
+            if (val == 0.0) return vec4(0, 0, 0, 0);
+            float sign = val > 0.0 ? 0.0 : 1.0;
+            val = abs(val);
+            float exponent = floor(log2(val));
+            float biased_exponent = exponent + 127.0;
+            float fraction = ((val / exp2(exponent)) - 1.0) * 8388608.0;
+            float t = biased_exponent / 2.0;
+            float last_bit_of_biased_exponent = fract(t) * 2.0;
+            float remaining_bits_of_biased_exponent = floor(t);
+            float byte4 = extract_bits(fraction, 0.0, 8.0) / 255.0;
+            float byte3 = extract_bits(fraction, 8.0, 16.0) / 255.0;
+            float byte2 = (last_bit_of_biased_exponent * 128.0 + extract_bits(fraction, 16.0, 23.0)) / 255.0;
+            float byte1 = (sign * 128.0 + remaining_bits_of_biased_exponent) / 255.0;
+            return vec4(byte4, byte3, byte2, byte1);
+        }
+        void main(){
+            vec2 fragCoord = gl_FragCoord.xy;
+            float textureXcoord = floor((fragCoord.x - 0.5)/u_vectorLength+0.0001) + 0.5;
+            vec4 data = texture2D(u_floatTexture, vec2(textureXcoord, fragCoord.y)/u_floatTextureDim);
+            int textureIndex = int(floor(mod(fragCoord.x-0.5+0.0001, u_vectorLength)));
+            if (textureIndex == 0) gl_FragColor = encode_float(data[0]);
+            else if (textureIndex == 1) gl_FragColor = encode_float(data[1]);
+            else if (textureIndex == 2) gl_FragColor = encode_float(data[2]);
+            else if (textureIndex == 3) gl_FragColor = encode_float(data[3]);
+        }
+    </script>
+
+    <script id="zeroTexture" type="x-shader/x-fragment">
+        void main(){
+            gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+        }
+    </script>
+
+    <script id="positionCalcShader" type="x-shader/x-fragment">
+        precision mediump float;
+        uniform vec2 u_textureDim;
+        uniform float u_dt;
+        uniform sampler2D u_lastPosition;
+        uniform sampler2D u_velocity;
+        uniform sampler2D u_mass;
+
+        void main(){
+            vec2 fragCoord = gl_FragCoord.xy;
+            vec2 scaledFragCoord = fragCoord/u_textureDim;
+
+            float isFixed = texture2D(u_mass, scaledFragCoord).y;
+            if (isFixed == 1.0){
+                gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+                return;
+            }
+
+            vec3 lastPosition = texture2D(u_lastPosition, scaledFragCoord).xyz;
+            vec3 velocity = texture2D(u_velocity, scaledFragCoord).xyz;
+            vec3 position = velocity*u_dt + lastPosition;
+            gl_FragColor = vec4(position,0.0);
+        }
+    </script>
+
+    <script id="velocityCalcShader" type="x-shader/x-fragment">
+        precision mediump float;
+        uniform vec2 u_textureDim;
+        uniform float u_dt;
+        uniform sampler2D u_lastPosition;
+        uniform sampler2D u_lastVelocity;
+        uniform sampler2D u_originalPosition;
+        uniform sampler2D u_externalForces;
+        uniform sampler2D u_mass;
+        uniform sampler2D u_meta;
+        uniform sampler2D u_beamK;
+        uniform sampler2D u_beamD;
+
+        void main(){
+            vec2 fragCoord = gl_FragCoord.xy;
+            vec2 scaledFragCoord = fragCoord/u_textureDim;
+
+            vec2 mass = texture2D(u_mass, scaledFragCoord).xy;
+            if (mass.y == 1.0){
+                gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+                return;
+            }
+            vec3 force = texture2D(u_externalForces, scaledFragCoord).xyz;
+            force.y = 1.0;
+            vec3 lastPosition = texture2D(u_lastPosition, scaledFragCoord).xyz;
+            vec3 lastVelocity = texture2D(u_lastVelocity, scaledFragCoord).xyz;
+            vec3 originalPosition = texture2D(u_originalPosition, scaledFragCoord).xyz;
+
+            vec4 neighborIndices = texture2D(u_meta, scaledFragCoord);
+            vec4 beamKs = texture2D(u_beamK, scaledFragCoord);
+            vec4 beamDs = texture2D(u_beamD, scaledFragCoord);
+            for (int j=0;j<4;j++){
+                float neighborIndex1D = neighborIndices[j];
+                if (neighborIndex1D<0.0) continue;//no beam
+
+                vec2 neighborIndex = vec2(mod(neighborIndex1D, u_textureDim.x)+0.5, floor(neighborIndex1D/u_textureDim.x)+0.5);
+                vec2 scaledNeighborIndex = neighborIndex/u_textureDim;
+                vec3 neighborLastPosition = texture2D(u_lastPosition, scaledNeighborIndex).xyz;
+                vec3 neighborLastVelocity = texture2D(u_lastVelocity, scaledNeighborIndex).xyz;
+                vec3 neighborOriginalPosition = texture2D(u_originalPosition, scaledNeighborIndex).xyz;
+
+                vec3 nominalDist = neighborOriginalPosition-originalPosition;
+                vec3 deltaP = neighborLastPosition-lastPosition+nominalDist;
+//                deltaP -= normalize(deltaP)*length(nominalDist);
+                vec3 deltaV = neighborLastVelocity-lastVelocity;
+
+                vec3 _force = deltaP*beamKs[j] + deltaV*beamDs[j];
+                force += _force;
+            }
+            vec3 velocity = force*u_dt/mass.x + lastVelocity;
+            gl_FragColor = vec4(velocity,0.0);
+        }
+    </script>
+
     <script type="text/javascript" src="dependencies/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="dependencies/jquery-ui.min.js"></script>
     <script type="text/javascript" src="dependencies/flat-ui.min.js"></script>
@@ -23,11 +162,16 @@
     <script type="text/javascript" src="js/controls.js"></script>
     <script type="text/javascript" src="js/threeView.js"></script>
     <script type="text/javascript" src="js/globals.js"></script>
+    <script type="text/javascript" src="js/node.js"></script>
+    <script type="text/javascript" src="js/beam.js"></script>
+    <script type="text/javascript" src="js/model.js"></script>
+    <script type="text/javascript" src="js/dynamicModel.js"></script>
 
     <script type="text/javascript" src="js/main.js"></script>
 </head>
 <body>
 <div  id="threeContainer"></div>
+<canvas id="gpuMathCanvas"></canvas>
 <div id="controlsLeft" class="flipped">
     <div>
         <a id="logo" target="_blank" href="http://cba.mit.edu/">

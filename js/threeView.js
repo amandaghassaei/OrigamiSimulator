@@ -50,20 +50,21 @@ function initThreeView(globals) {
     }
 
     function render() {
-        renderer.render(scene, camera);
+        // renderer.render(scene, camera);
     }
 
     function startAnimation(callback){
         console.log("starting animation");
-        // _loop(function(){
-        //     if (!globals.stlEditing) callback();//only run dynamic sim if not editing stl
-        //     _render();
-        // });
+        _loop(function(){
+            // if (!globals.stlEditing) //only run dynamic sim if not editing stl
+                callback();
+            _render();
+        });
 
     }
 
     function _render(){
-        // renderer.render(scene, camera);
+        renderer.render(scene, camera);
     }
 
     function _loop(callback){
@@ -83,6 +84,18 @@ function initThreeView(globals) {
 
     function sceneClearPattern() {
         patternWrapper.children = [];
+    }
+
+    function sceneAddModel(object){
+        modelWrapper.add(object);
+    }
+
+    function sceneRemoveModel(object){
+        modelWrapper.remove(object);
+    }
+
+    function sceneClearModel(object){
+        modelWrapper.children =[];
     }
 
     function sceneMakeModelFromPattern(){
@@ -110,9 +123,12 @@ function initThreeView(globals) {
 
 
     return {
-        sceneRemoveCrease: sceneRemoveCrease,
         sceneAddCrease: sceneAddCrease,
+        sceneRemoveCrease: sceneRemoveCrease,
         sceneClearPattern: sceneClearPattern,
+        sceneAddModel: sceneAddModel,
+        sceneRemoveModel: sceneRemoveModel,
+        sceneClearModel: sceneClearModel,
         render: render,
         onWindowResize: onWindowResize,
         startAnimation: startAnimation,
