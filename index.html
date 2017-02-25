@@ -237,6 +237,7 @@
     <script type="text/javascript" src="dependencies/OrbitControls.js"></script>
     <script type="text/javascript" src="dependencies/underscore-min.js"></script>
     <script type="text/javascript" src="dependencies/FileSaver.min.js"></script>
+    <script type="text/javascript" src="dependencies/SVGLoader.js"></script>
 
     <script type="text/javascript" src="js/GLBoilerplate.js"></script>
     <script type="text/javascript" src="js/GPUMath.js"></script>
@@ -248,6 +249,7 @@
     <script type="text/javascript" src="js/crease.js"></script>
     <script type="text/javascript" src="js/model.js"></script>
     <script type="text/javascript" src="js/dynamicModel.js"></script>
+    <script type="text/javascript" src="js/pattern.js"></script>
 
     <script type="text/javascript" src="js/main.js"></script>
 </head>
@@ -287,7 +289,7 @@
             <div>&Delta; t = <span id="deltaT"></span> seconds</div>
         </div>
     </div>
-    <div id="extraSpace"></div>
+    <div class="extraSpace"></div>
 </div>
 <div id="controls">
     <a href="#" id="about" class="btn btn-lg btn-default">About</a><br/><br/>
@@ -309,13 +311,8 @@
         <span class="label-slider">Panel Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
         <input value="" placeholder="" class="form-control int" type="text">
     </div>
-    <!--<a href="#" id="addRemoveFixed" class="btn btn-lg btn-default">Add/Remove Fixed Constraint</a>-->
-    <!--<span class="titleSpan">Available Materials:</span>-->
-    <!--<div id="materialTypes" class="indent">-->
-        <!--<label class="radio"><input name="materialTypes" value="none" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span><span id="noMaterial">No Material Selected</span></label>-->
-    <!--</div>-->
-    <!--<a href="#" id="addMaterial" class="btn btn-lg btn-default">+ New Material</a>-->
-    <!--<div id="extraSpace"></div>-->
+    <div id="svgViewer"></div>
+    <div class="extraSpace"></div>
 </div>
 <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg">
