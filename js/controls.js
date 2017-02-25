@@ -46,22 +46,22 @@ function initControls(globals){
         globals.schematicVisible = val;
     });
 
-    setSliderInput("#axialStiffness", globals.axialStiffness, 1, 1000, 1, function(val){
+    setSliderInput("#axialStiffness", globals.axialStiffness, 100, 1000, 1, function(val){
         globals.axialStiffness = val;
         globals.dynamicModel.updateMaterials();
     });
 
-    setSliderInput("#creaseStiffness", globals.creaseStiffness, 0, 1000, 1, function(val){
+    setSliderInput("#creaseStiffness", globals.creaseStiffness, 0, 100, 1, function(val){
         globals.creaseStiffness = val;
         globals.dynamicModel.updateCreasesMeta();
     });
 
-    setSliderInput("#panelStiffness", globals.panelStiffness, 0, 1000, 1, function(val){
+    setSliderInput("#panelStiffness", globals.panelStiffness, 0, 100, 1, function(val){
         globals.panelStiffness = val;
         globals.dynamicModel.updateCreasesMeta();
     });
 
-    setSlider("#damping", globals.percentDamping, 0, 1, 0.01, function(val){
+    setSlider("#damping", globals.percentDamping, 0.05, 1, 0.01, function(val){
         globals.percentDamping = val;
     }, function(){
         globals.dynamicModel.updateMaterials();
