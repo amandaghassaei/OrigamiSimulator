@@ -11,7 +11,9 @@ function initGlobals(){
         fixedHasChanged: false,
         forceHasChanged: false,
         materialHasChanged: false,
+        creaseMaterialHasChanged: false,
         shouldResetDynamicSim: false,
+        shouldChangeCreasePercent: false,
 
         //3d vis
         dynamicSimVisible: true,

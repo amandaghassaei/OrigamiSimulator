@@ -68,7 +68,6 @@ function initDynamicModel(globals){
         globals.gpuMath.step("zeroTexture", [], "u_lastPosition");
         globals.gpuMath.step("zeroTexture", [], "u_velocity");
         globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
-
         // for (var i=0;i<creases.length;i++){
         //     lastTheta[i*4] = 0;
         //     lastTheta[i*4+1] = 0;
@@ -109,9 +108,17 @@ function initDynamicModel(globals){
             updateMaterials();
             globals.materialHasChanged = false;
         }
+        if (globals.creaseMaterialHasChanged){
+            updateCreasesMeta();
+            globals.creaseMaterialHasChanged = false;
+        }
         if (globals.shouldResetDynamicSim){
             reset();
             globals.shouldResetDynamicSim = false;
+        }
+        if (globals.shouldChangeCreasePercent){
+            setCreasePercent(globals.creasePercent);
+            globals.shouldChangeCreasePercent = false;
         }
 
         var gpuMath = globals.gpuMath;
@@ -131,25 +138,23 @@ function initDynamicModel(globals){
 
     function render(){
 
-        var vectorLength = 1;
-        globals.gpuMath.setProgram("packToBytes");
-        globals.gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
-        globals.gpuMath.setSize(textureDim*vectorLength, textureDim);
-        globals.gpuMath.step("packToBytes", ["u_theta"], "outputBytes");
-
-
-        if (globals.gpuMath.readyToRead()) {
-            var numPixels = creases.length*vectorLength;
-            var height = Math.ceil(numPixels/(textureDimCreases*vectorLength));
-            var pixels = new Uint8Array(height*textureDimCreases*4*vectorLength);
-            globals.gpuMath.readPixels(0, 0, textureDimCreases * vectorLength, height, pixels);
-            var parsedPixels = new Float32Array(pixels.buffer);
-            for (var i = 0; i < creases.length; i++) {
-                // console.log(parsedPixels[i])
-            }
-        } else {
-            console.log("here");
-        }
+        // var vectorLength = 1;
+        // globals.gpuMath.setProgram("packToBytes");
+        // globals.gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
+        // globals.gpuMath.setSize(textureDim*vectorLength, textureDim);
+        // globals.gpuMath.step("packToBytes", ["u_theta"], "outputBytes");
+        // if (globals.gpuMath.readyToRead()) {
+        //     var numPixels = creases.length*vectorLength;
+        //     var height = Math.ceil(numPixels/(textureDimCreases*vectorLength));
+        //     var pixels = new Uint8Array(height*textureDimCreases*4*vectorLength);
+        //     globals.gpuMath.readPixels(0, 0, textureDimCreases * vectorLength, height, pixels);
+        //     var parsedPixels = new Float32Array(pixels.buffer);
+        //     for (var i = 0; i < creases.length; i++) {
+        //         // console.log(parsedPixels[i])
+        //     }
+        // } else {
+        //     console.log("here");
+        // }
 
         var vectorLength = 3;
         globals.gpuMath.setProgram("packToBytes");
@@ -243,6 +248,7 @@ function initDynamicModel(globals){
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimFaces", [textureDimFaces, textureDimFaces], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimCreases", [textureDimCreases, textureDimCreases], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimNodeCreases", [textureDimNodeCreases, textureDimNodeCreases], "2f");
+        gpuMath.setUniformForProgram("velocityCalc", "u_creasePercent", globals.creasePercent, "1f");
 
         gpuMath.createProgram("thetaCalc", vertexShader, document.getElementById("thetaCalcShader").text);
         gpuMath.setUniformForProgram("thetaCalc", "u_normals", 0, "1i");
@@ -275,6 +281,7 @@ function initDynamicModel(globals){
     }
 
     function updateMaterials(initing){
+
         var index = 0;
         for (var i=0;i<nodes.length;i++){
             if (initing) {
@@ -355,6 +362,11 @@ function initDynamicModel(globals){
         }
         globals.gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true);
 
+    }
+
+    function setCreasePercent(percent){
+        globals.gpuMath.setProgram("velocityCalc");
+        globals.gpuMath.setUniformForProgram("velocityCalc", "u_creasePercent", percent, "1f");
     }
 
     function initTypedArrays(){
@@ -446,10 +458,6 @@ function initDynamicModel(globals){
 
     return {
         syncNodesAndEdges: syncNodesAndEdges,
-        updateOriginalPosition: updateOriginalPosition,
-        updateMaterials:updateMaterials,
-        updateCreasesMeta: updateCreasesMeta,
-        reset: reset,
         pause: pause,
         resume: resume,
         setVisibility: setVisibility

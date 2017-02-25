@@ -101,6 +101,7 @@
         uniform vec2 u_textureDimFaces;
         uniform vec2 u_textureDimCreases;
         uniform vec2 u_textureDimNodeCreases;
+        uniform float u_creasePercent;
         uniform float u_dt;
         uniform sampler2D u_lastPosition;
         uniform sampler2D u_lastVelocity;
@@ -124,7 +125,6 @@
                 return;
             }
             vec3 force = texture2D(u_externalForces, scaledFragCoord).xyz;
-            force.y = 1.0;
             vec3 lastPosition = texture2D(u_lastPosition, scaledFragCoord).xyz;
             vec3 lastVelocity = texture2D(u_lastVelocity, scaledFragCoord).xyz;
             vec3 originalPosition = texture2D(u_originalPosition, scaledFragCoord).xyz;
@@ -173,12 +173,15 @@
 
                 float nodeNum = creaseMeta2[2];
                 float normalIndex1D = thetas[2];
-                if (nodeNum > 1.1) normalIndex1D = thetas[3];
+                float targetTheta = creaseMeta[2] *= u_creasePercent;
+                if (nodeNum > 1.1) {
+                    normalIndex1D = thetas[3];
+                }
                 vec2 normalsIndex = vec2(mod(normalIndex1D, u_textureDimFaces.x)+0.5, floor(normalIndex1D/u_textureDimFaces.x)+0.5);
                 vec2 scaledNormalsIndex = normalsIndex/u_textureDimFaces;
                 vec3 normal = texture2D(u_normals, scaledNormalsIndex).xyz;
 
-                float angForce = creaseMeta[0]*(creaseMeta[2]-thetas[0]) + creaseMeta[1]*thetas[1];;
+                float angForce = creaseMeta[0]*(targetTheta-thetas[0]) + creaseMeta[1]*thetas[1];;
                 float momentArm = creaseMeta2[1];
 
                 vec3 _force = angForce/momentArm*normal;

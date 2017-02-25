@@ -48,28 +48,29 @@ function initControls(globals){
 
     setSliderInput("#axialStiffness", globals.axialStiffness, 100, 1000, 1, function(val){
         globals.axialStiffness = val;
-        globals.dynamicModel.updateMaterials();
+        globals.materialHasChanged = true;
     });
 
     setSliderInput("#creaseStiffness", globals.creaseStiffness, 0, 100, 1, function(val){
         globals.creaseStiffness = val;
-        globals.dynamicModel.updateCreasesMeta();
+        globals.creaseMaterialHasChanged = true;
     });
 
     setSliderInput("#panelStiffness", globals.panelStiffness, 0, 100, 1, function(val){
         globals.panelStiffness = val;
-        globals.dynamicModel.updateCreasesMeta();
+        globals.creaseMaterialHasChanged = true;
     });
 
     setSlider("#damping", globals.percentDamping, 0.05, 1, 0.01, function(val){
         globals.percentDamping = val;
     }, function(){
-        globals.dynamicModel.updateMaterials();
-        globals.dynamicModel.reset();
+        globals.materialHasChanged = true;
+        globals.shouldResetDynamicSim = true;
     });
 
     setSliderInput("#creasePercent", globals.creasePercent, 0, 1, 0.01, function(val){
         globals.creasePercent = val;
+        globals.shouldChangeCreasePercent = true;
     });
 
     function setDeltaT(val){
