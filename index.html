@@ -97,15 +97,15 @@
     <script id="velocityCalcShader" type="x-shader/x-fragment">
         precision mediump float;
         uniform vec2 u_textureDim;
+        uniform vec2 u_textureDimEdges;
         uniform float u_dt;
         uniform sampler2D u_lastPosition;
         uniform sampler2D u_lastVelocity;
         uniform sampler2D u_originalPosition;
         uniform sampler2D u_externalForces;
         uniform sampler2D u_mass;
-        uniform sampler2D u_meta;
-        uniform sampler2D u_beamK;
-        uniform sampler2D u_beamD;
+        uniform sampler2D u_meta;//[beamsIndex, numBeams]
+        uniform sampler2D u_beamMeta;//[k, d, length, otherNodeIndex]
 
         void main(){
             vec2 fragCoord = gl_FragCoord.xy;
@@ -123,12 +123,17 @@
             vec3 originalPosition = texture2D(u_originalPosition, scaledFragCoord).xyz;
 
             vec4 neighborIndices = texture2D(u_meta, scaledFragCoord);
-            vec4 beamKs = texture2D(u_beamK, scaledFragCoord);
-            vec4 beamDs = texture2D(u_beamD, scaledFragCoord);
-            for (int j=0;j<4;j++){
-                float neighborIndex1D = neighborIndices[j];
-                if (neighborIndex1D<0.0) continue;//no beam
+            vec2 meta = texture2D(u_meta, scaledFragCoord).xy;
 
+            for (int j=0;j<100;j++){//for all beams
+                if (j >= int(meta[1])) break;
+
+                float beamIndex1D = meta[0]+float(j);
+                vec2 beamIndex = vec2(mod(beamIndex1D, u_textureDimEdges.x)+0.5, floor(beamIndex1D/u_textureDimEdges.x)+0.5);
+                vec2 scaledBeamIndex = beamIndex/u_textureDimEdges;
+                vec4 beamMeta = texture2D(u_beamMeta, scaledBeamIndex);
+
+                float neighborIndex1D = beamMeta[3];
                 vec2 neighborIndex = vec2(mod(neighborIndex1D, u_textureDim.x)+0.5, floor(neighborIndex1D/u_textureDim.x)+0.5);
                 vec2 scaledNeighborIndex = neighborIndex/u_textureDim;
                 vec3 neighborLastPosition = texture2D(u_lastPosition, scaledNeighborIndex).xyz;
@@ -137,10 +142,10 @@
 
                 vec3 nominalDist = neighborOriginalPosition-originalPosition;
                 vec3 deltaP = neighborLastPosition-lastPosition+nominalDist;
-//                deltaP -= normalize(deltaP)*length(nominalDist);
+                deltaP -= normalize(deltaP)*length(nominalDist);
                 vec3 deltaV = neighborLastVelocity-lastVelocity;
 
-                vec3 _force = deltaP*beamKs[j] + deltaV*beamDs[j];
+                vec3 _force = deltaP*beamMeta[0] + deltaV*beamMeta[1];
                 force += _force;
             }
             vec3 velocity = force*u_dt/mass.x + lastVelocity;

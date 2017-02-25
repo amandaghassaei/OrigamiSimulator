@@ -93,6 +93,10 @@ Node.prototype.getBeams = function(){
     return this.beams;
 };
 
+Node.prototype.numBeams = function(){
+    return this.beams.length;
+};
+
 Node.prototype.getIndex = function(){//in nodes array
     return this.index;
 };

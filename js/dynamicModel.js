@@ -18,9 +18,8 @@ function initDynamicModel(globals){
     var lastVelocity;
     var externalForces;
     var mass;
-    var meta;
-    var beamK;
-    var beamD;
+    var meta;//[beamsIndex, numBeams]
+    var beamMeta;//[K, D, length, otherNodeIndex]
 
     function syncNodesAndEdges(){
         nodes = globals.model.getNodes();
@@ -34,17 +33,11 @@ function initDynamicModel(globals){
     var programsInited = false;//flag for initial setup
 
     var textureDim = 0;
+    var textureDimEdges = 0;
     syncNodesAndEdges();
     initTexturesAndPrograms(globals.gpuMath);
     steps = parseInt(setSolveParams());
     runSolver();
-
-    function averageSubdivide(){
-        globals.gpuMath.step("averageSubdivide", ["u_lastPosition", "u_originalPosition", "u_meta", "u_mass"], "u_position");
-        globals.gpuMath.swapTextures("u_position", "u_lastPosition");
-        globals.gpuMath.step("averageSubdivide", ["u_lastPosition", "u_originalPosition", "u_meta", "u_mass"], "u_position");
-        globals.gpuMath.swapTextures("u_position", "u_lastPosition");
-    }
 
     function reset(){
         globals.gpuMath.step("zeroTexture", [], "u_position");
@@ -104,7 +97,7 @@ function initDynamicModel(globals){
         var gpuMath = globals.gpuMath;
 
         gpuMath.step("velocityCalc", ["u_lastPosition", "u_lastVelocity", "u_originalPosition", "u_externalForces",
-            "u_mass", "u_meta", "u_beamK", "u_beamD"], "u_velocity");
+            "u_mass", "u_meta", "u_beamMeta"], "u_velocity");
         gpuMath.step("positionCalc", ["u_velocity", "u_lastPosition", "u_mass"], "u_position");
 
         gpuMath.swapTextures("u_velocity", "u_lastVelocity");
@@ -175,8 +168,6 @@ function initDynamicModel(globals){
 
     function initTexturesAndPrograms(gpuMath){
 
-        textureDim = calcTextureSize(nodes.length);
-
         var vertexShader = document.getElementById("vertexShader").text;
 
         gpuMath.initTextureFromData("u_position", textureDim, textureDim, "FLOAT", position);
@@ -204,9 +195,9 @@ function initDynamicModel(globals){
         gpuMath.setUniformForProgram("velocityCalc", "u_externalForces", 3, "1i");
         gpuMath.setUniformForProgram("velocityCalc", "u_mass", 4, "1i");
         gpuMath.setUniformForProgram("velocityCalc", "u_meta", 5, "1i");
-        gpuMath.setUniformForProgram("velocityCalc", "u_beamK", 6, "1i");
-        gpuMath.setUniformForProgram("velocityCalc", "u_beamD", 7, "1i");
+        gpuMath.setUniformForProgram("velocityCalc", "u_beamMeta", 6, "1i");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDim", [textureDim, textureDim], "2f");
+        gpuMath.setUniformForProgram("velocityCalc", "u_textureDimEdges", [textureDimEdges, textureDimEdges], "2f");
 
         gpuMath.createProgram("packToBytes", vertexShader, document.getElementById("packToBytesShader").text);
         gpuMath.initTextureFromData("outputBytes", textureDim*4, textureDim, "UNSIGNED_BYTE", null);
@@ -232,15 +223,20 @@ function initDynamicModel(globals){
     }
 
     function updateMaterials(){
+        var index = 0;
         for (var i=0;i<nodes.length;i++){
+            meta[4*i] = index;
+            meta[4*i+1] = nodes[i].numBeams();
             for (var j=0;j<nodes[i].beams.length;j++){
                 var beam = nodes[i].beams[j];
-                beamK[4*i+j] = beam.getK();
-                beamD[4*i+j] = beam.getD();
+                beamMeta[4*index] = beam.getK();
+                beamMeta[4*index+1] = beam.getD();
+                beamMeta[4*index+2] = beam.getLength();
+                beamMeta[4*index+3] = beam.getOtherNode(nodes[i]).getIndex();
+                index+=1;
             }
         }
-        globals.gpuMath.initTextureFromData("u_beamK", textureDim, textureDim, "FLOAT", beamK, true);
-        globals.gpuMath.initTextureFromData("u_beamD", textureDim, textureDim, "FLOAT", beamD, true);
+        globals.gpuMath.initTextureFromData("u_beamMeta", textureDimEdges, textureDimEdges, "FLOAT", beamMeta, true);
         //recalc dt
         if (programsInited) setSolveParams();
     }
@@ -276,6 +272,12 @@ function initDynamicModel(globals){
 
         textureDim = calcTextureSize(nodes.length);
 
+        var numEdges = 0;
+        for (var i=0;i<nodes.length;i++){
+            numEdges += nodes[i].numBeams();
+        }
+        textureDimEdges = calcTextureSize(numEdges);
+
         originalPosition = new Float32Array(textureDim*textureDim*4);
         position = new Float32Array(textureDim*textureDim*4);
         lastPosition = new Float32Array(textureDim*textureDim*4);
@@ -283,10 +285,8 @@ function initDynamicModel(globals){
         lastVelocity = new Float32Array(textureDim*textureDim*4);
         externalForces = new Float32Array(textureDim*textureDim*4);
         mass = new Float32Array(textureDim*textureDim*4);
-        meta = new Float32Array(textureDim*textureDim*4);
-        beamK = new Float32Array(textureDim*textureDim*4);
-        beamD = new Float32Array(textureDim*textureDim*4);
-
+        meta = new Float32Array(textureDim*textureDim*4);//todo uint16
+        beamMeta = new Float32Array(textureDimEdges*textureDimEdges*4);
 
         for (var i=0;i<textureDim*textureDim;i++){
             mass[4*i+1] = 1;//set all fixed by default
@@ -294,14 +294,6 @@ function initDynamicModel(globals){
 
         _.each(nodes, function(node, index){
             mass[4*index] = node.getSimMass();
-
-            meta[4*index] = -1;
-            meta[4*index+1] = -1;
-            meta[4*index+2] = -1;
-            meta[4*index+3] = -1;
-            _.each(node.beams, function(beam, i){
-                meta[4*index+i] = beam.getOtherNode(node).getIndex();
-            });
         });
 
         updateOriginalPosition();
