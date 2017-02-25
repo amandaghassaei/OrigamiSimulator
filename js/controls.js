@@ -21,11 +21,17 @@ function initControls(globals){
     var dynamicSimVisCallback = function(val){
         if (val) {
             $(".dynamicSim").show();
-            if (globals.dynamicModel) globals.dynamicModel.resume();
+            if (globals.dynamicModel) {
+                globals.dynamicModel.resume();
+                globals.dynamicModel.setVisibility(true);
+            }
         }
         else  {
             $(".dynamicSim").hide();
-            if (globals.dynamicModel) globals.dynamicModel.pause();
+            if (globals.dynamicModel) {
+                globals.dynamicModel.pause();
+                globals.dynamicModel.setVisibility(false);
+            }
         }
     };
     dynamicSimVisCallback(globals.dynamicSimVisible);

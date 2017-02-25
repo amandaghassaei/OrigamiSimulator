@@ -90,6 +90,7 @@ function initDynamicModel(globals){
 
     function setVisibility(state){
         object3D.visible = state;
+        globals.threeView.render();
     }
 
     function solveStep(){
@@ -420,6 +421,7 @@ function initDynamicModel(globals){
         updateMaterials:updateMaterials,
         reset: reset,
         pause: pause,
-        resume: resume
+        resume: resume,
+        setVisibility: setVisibility
     }
 }

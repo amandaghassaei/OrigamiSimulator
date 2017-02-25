@@ -88,6 +88,7 @@ function initThreeView(globals) {
                 pauseFlag = false;
                 animationRunning = false;
                 console.log("pausing animation");
+                render();//for good measure
                 return;
             }
             _loop(callback);
