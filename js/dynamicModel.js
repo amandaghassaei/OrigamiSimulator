@@ -148,7 +148,7 @@ function initDynamicModel(globals){
         _.each(edges, function(beam){
             if (beam.getNaturalFrequency()>maxFreqNat) maxFreqNat = beam.getNaturalFrequency();
         });
-        return (1/(2*Math.PI*maxFreqNat))*0.5;//half of max delta t for good measure
+        return (1/(2*Math.PI*maxFreqNat))*0.9;//0.9 of max delta t for good measure
     }
 
     function initTexturesAndPrograms(gpuMath){
