@@ -178,7 +178,7 @@
                 vec2 scaledNormalsIndex = normalsIndex/u_textureDimFaces;
                 vec3 normal = texture2D(u_normals, scaledNormalsIndex).xyz;
 
-                float angForce = creaseMeta[0]*(creaseMeta[2]-thetas[0]);
+                float angForce = creaseMeta[0]*(creaseMeta[2]-thetas[0]) + creaseMeta[1]*thetas[1];;
                 float momentArm = creaseMeta2[1];
 
                 vec3 _force = angForce/momentArm*normal;

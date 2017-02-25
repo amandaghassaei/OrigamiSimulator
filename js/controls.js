@@ -51,12 +51,12 @@ function initControls(globals){
         globals.dynamicModel.updateMaterials();
     });
 
-    setSliderInput("#creaseStiffness", globals.creaseStiffness, 1, 1000, 1, function(val){
+    setSliderInput("#creaseStiffness", globals.creaseStiffness, 0, 1000, 1, function(val){
         globals.creaseStiffness = val;
         globals.dynamicModel.updateCreasesMeta();
     });
 
-    setSliderInput("#panelStiffness", globals.panelStiffness, 1, 1000, 1, function(val){
+    setSliderInput("#panelStiffness", globals.panelStiffness, 0, 1000, 1, function(val){
         globals.panelStiffness = val;
         globals.dynamicModel.updateCreasesMeta();
     });
