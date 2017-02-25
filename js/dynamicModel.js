@@ -215,7 +215,6 @@ function initDynamicModel(globals){
         gpuMath.initTextureFromData("u_lastTheta", textureDimCreases, textureDimCreases, "FLOAT", lastTheta);
         gpuMath.initFrameBufferForTexture("u_lastTheta");
 
-        gpuMath.initTextureFromData("u_originalPosition", textureDim, textureDim, "FLOAT", originalPosition);
         gpuMath.initTextureFromData("u_meta", textureDim, textureDim, "FLOAT", meta);
 
         gpuMath.createProgram("positionCalc", vertexShader, document.getElementById("positionCalcShader").text);

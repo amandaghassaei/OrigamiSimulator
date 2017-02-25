@@ -66,8 +66,8 @@ function initControls(globals){
         globals.dynamicModel.reset();
     });
 
-    setSliderInput("#creaseAngle", globals.creaseAngle, 0, Math.PI, 0.1, function(val){
-        globals.creaseAngle = val;
+    setSliderInput("#creasePercent", globals.creasePercent, 0, 1, 0.01, function(val){
+        globals.creasePercent = val;
     });
 
     function setDeltaT(val){

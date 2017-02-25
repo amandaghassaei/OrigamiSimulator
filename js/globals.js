@@ -19,7 +19,7 @@ function initGlobals(){
         schematicVisible: true,
 
         //sim settings
-        creaseAngle: 0,
+        creasePercent: 0,
         axialStiffness: 100,
         creaseStiffness: 1,
         panelStiffness: 1,
