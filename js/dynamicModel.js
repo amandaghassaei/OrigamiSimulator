@@ -142,7 +142,7 @@ function initDynamicModel(globals){
             globals.gpuMath.readPixels(0, 0, textureDimCreases * vectorLength, height, pixels);
             var parsedPixels = new Float32Array(pixels.buffer);
             for (var i = 0; i < creases.length; i++) {
-                console.log(parsedPixels[i])
+                // console.log(parsedPixels[i])
             }
         } else {
             console.log("here");
@@ -175,16 +175,7 @@ function initDynamicModel(globals){
             console.log("here");
         }
 
-        globals.threeView.render();
         globals.gpuMath.setSize(textureDim, textureDim);
-    }
-
-    function setViewMode(mode){
-        if (mode == "material"){
-            _.each(edges, function(edge){
-                edge.setMaterialColor();
-            })
-        }
     }
 
     function setSolveParams(){
@@ -345,6 +336,17 @@ function initDynamicModel(globals){
         globals.gpuMath.initTextureFromData("u_creaseVectors", textureDimCreases, textureDimCreases, "FLOAT", creaseVectors, true);
     }
 
+    function updateCreasesMeta(initing){
+        for (var i=0;i<creases.length;i++){
+            var crease = creases[i];
+            creaseMeta[i*4] = crease.getK();
+            creaseMeta[i*4+1] = crease.getD();
+            if (initing) creaseMeta[i*4+2] = crease.getTargetTheta();
+        }
+        globals.gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true);
+
+    }
+
     function initTypedArrays(){
 
         textureDim = calcTextureSize(nodes.length);
@@ -395,20 +397,29 @@ function initDynamicModel(globals){
             lastTheta[i*4+3] = creases[i].getNormal2Index();
         }
 
-        updateCreaseVectors();
-        updateNormals();
         updateOriginalPosition();
         updateMaterials(true);
         updateFixed();
         updateExternalForces();
+        updateCreasesMeta(true);
+        updateCreaseVectors();
+        updateNormals();
+    }
+
+    function pause(){
+        globals.threeView.pauseAnimation();
+    }
+
+    function resume(){
+        runSolver();
     }
 
     return {
-        setVisibility: setVisibility,
-        setViewMode: setViewMode,
         syncNodesAndEdges: syncNodesAndEdges,
         updateOriginalPosition: updateOriginalPosition,
         updateMaterials:updateMaterials,
-        reset: reset
+        reset: reset,
+        pause: pause,
+        resume: resume
     }
 }

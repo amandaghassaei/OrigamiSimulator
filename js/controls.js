@@ -19,9 +19,13 @@ function initControls(globals){
     });
 
     var dynamicSimVisCallback = function(val){
-        if (val) $(".dynamicSim").show();
+        if (val) {
+            $(".dynamicSim").show();
+            if (globals.dynamicModel) globals.dynamicModel.resume();
+        }
         else  {
             $(".dynamicSim").hide();
+            if (globals.dynamicModel) globals.dynamicModel.pause();
         }
     };
     dynamicSimVisCallback(globals.dynamicSimVisible);
