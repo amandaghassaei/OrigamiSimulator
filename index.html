@@ -125,7 +125,7 @@
             vec4 neighborIndices = texture2D(u_meta, scaledFragCoord);
             vec2 meta = texture2D(u_meta, scaledFragCoord).xy;
 
-            for (int j=0;j<100;j++){//for all beams
+            for (int j=0;j<100;j++){//for all beams (up to 100, had to put a const int in here)
                 if (j >= int(meta[1])) break;
 
                 float beamIndex1D = meta[0]+float(j);
@@ -201,30 +201,31 @@
     </div>
     <br/><br/>
     <div class="dynamicSim">
-        Dynamic Sim Settings:<br/>
+        <div class="paddingBottom">Dynamic Sim Settings:</div>
         <div class="indent">
             <div class="sliderContainer">
                 <span class="label-slider">Damping : </span><div id="damping"  class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div><br/>
             </div>
-            <a href="#" id="resetDynamicSim" class="btn btn-lg btn-default">Replay Dynamic Simulation</a>
+            <a href="#" id="resetDynamicSim" class="paddingBottom btn btn-lg btn-default">Replay Dynamic Simulation</a>
+            <div>&Delta; t = <span id="deltaT"></span> seconds</div>
         </div>
     </div>
     <div id="extraSpace"></div>
 </div>
 <div id="controls">
     <a href="#" id="about" class="btn btn-lg btn-default">About</a><br/><br/>
-    <!--<div class="sliderInput" id="density">-->
-        <!--<span class="label-slider">Density : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>-->
-        <!--<input value="" placeholder="" class="form-control int" type="text">-->
-    <!--</div>-->
-    <!--<div class="sliderInput" id="width">-->
-        <!--<span class="label-slider">Width (m) : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>-->
-        <!--<input value="" placeholder="" class="form-control int" type="text">-->
-    <!--</div>-->
-    <!--<div class="sliderInput" id="length">-->
-        <!--<span class="label-slider">Length (m) : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>-->
-        <!--<input value="" placeholder="" class="form-control int" type="text">-->
-    <!--</div>-->
+    <div class="sliderInput" id="axialStiffness">
+        <span class="label-slider">Axial Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+        <input value="" placeholder="" class="form-control int" type="text">
+    </div>
+    <div class="sliderInput" id="creaseStiffness">
+        <span class="label-slider">Crease Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+        <input value="" placeholder="" class="form-control int" type="text">
+    </div>
+    <div class="sliderInput" id="panelStiffness">
+        <span class="label-slider">Panel Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+        <input value="" placeholder="" class="form-control int" type="text">
+    </div>
     <!--<a href="#" id="addRemoveFixed" class="btn btn-lg btn-default">Add/Remove Fixed Constraint</a>-->
     <!--<span class="titleSpan">Available Materials:</span>-->
     <!--<div id="materialTypes" class="indent">-->

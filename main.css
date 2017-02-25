@@ -249,7 +249,7 @@ span.modal-close{
 }
 
 .sliderInput>.flat-slider{
-   width: 162px;
+   width: 132px;
 }
 
 .label-slider{
@@ -281,6 +281,6 @@ span.modal-close{
     text-align: left;
 }
 
-#paddingBottom{
-    margin-bottom: 50px;
+.paddingBottom{
+    margin-bottom: 20px;
 }

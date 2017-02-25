@@ -7,6 +7,12 @@ function initGlobals(){
 
     var _globals = {
 
+        //flags
+        fixedHasChanged: false,
+        forceHasChanged: false,
+        materialHasChanged: false,
+        shouldResetDynamicSim: false,
+
         //3d vis
         dynamicSimVisible: true,
         staticSimVisible: false,

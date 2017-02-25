@@ -65,16 +65,6 @@ function initDynamicModel(globals){
         object3D.visible = state;
     }
 
-    function setSelfWeight(){
-        // console.log(nodes[0].getSelfWeight().length());
-        for (var i=0;i<nodes.length;i++){
-            var node = nodes[i];
-            if (globals.applySelfWeight) globals.schematic.forces[i].setSelfWeight(node.getSelfWeight());
-            else globals.schematic.forces[i].setSelfWeight(new THREE.Vector3(0,0,0));
-        }
-        globals.forceArrayUpdated();
-    }
-
     function solveStep(){
 
         if (globals.forceHasChanged){
@@ -85,9 +75,9 @@ function initDynamicModel(globals){
             updateFixed();
             globals.fixedHasChanged = false;
         }
-        if (globals.dynamicSimMaterialsChanged){
+        if (globals.materialHasChanged){
             updateMaterials();
-            globals.dynamicSimMaterialsChanged = false;
+            globals.materialHasChanged = false;
         }
         if (globals.shouldResetDynamicSim){
             reset();
@@ -149,6 +139,7 @@ function initDynamicModel(globals){
         globals.gpuMath.setUniformForProgram("velocityCalc", "u_dt", dt, "1f");
         globals.gpuMath.setProgram("positionCalc");
         globals.gpuMath.setUniformForProgram("positionCalc", "u_dt", dt, "1f");
+        globals.controls.setDeltaT(dt);
         return numSteps;
     }
 
@@ -158,12 +149,6 @@ function initDynamicModel(globals){
             if (beam.getNaturalFrequency()>maxFreqNat) maxFreqNat = beam.getNaturalFrequency();
         });
         return (1/(2*Math.PI*maxFreqNat))*0.5;//half of max delta t for good measure
-    }
-
-    function updateTextures(gpuMath){
-        gpuMath.initTextureFromData("u_originalPosition", textureDim, textureDim, "FLOAT", originalPosition, true);
-        gpuMath.initTextureFromData("u_meta", textureDim, textureDim, "FLOAT", meta, true);
-        reset();
     }
 
     function initTexturesAndPrograms(gpuMath){
@@ -222,7 +207,7 @@ function initDynamicModel(globals){
         return 0;
     }
 
-    function updateMaterials(){
+    function updateMaterials(shouldUpdateLength){
         var index = 0;
         for (var i=0;i<nodes.length;i++){
             meta[4*i] = index;
@@ -231,7 +216,7 @@ function initDynamicModel(globals){
                 var beam = nodes[i].beams[j];
                 beamMeta[4*index] = beam.getK();
                 beamMeta[4*index+1] = beam.getD();
-                beamMeta[4*index+2] = beam.getLength();
+                if (shouldUpdateLength) beamMeta[4*index+2] = beam.getLength();
                 beamMeta[4*index+3] = beam.getOtherNode(nodes[i]).getIndex();
                 index+=1;
             }
@@ -297,7 +282,7 @@ function initDynamicModel(globals){
         });
 
         updateOriginalPosition();
-        updateMaterials();
+        updateMaterials(true);
         updateFixed();
         updateExternalForces();
     }
@@ -311,6 +296,8 @@ function initDynamicModel(globals){
         getChildren: getChildren,
         setViewMode: setViewMode,
         syncNodesAndEdges: syncNodesAndEdges,
-        updateOriginalPosition: updateOriginalPosition
+        updateOriginalPosition: updateOriginalPosition,
+        updateMaterials:updateMaterials,
+        reset: reset
     }
 }

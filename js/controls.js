@@ -36,10 +36,32 @@ function initControls(globals){
         globals.schematicVisible = val;
     });
 
-    setSlider("#damping", globals.percentDamping, 0.01, 1, 0.01, function(val){
+    setSliderInput("#axialStiffness", globals.axialStiffness, 1, 1000, 1, function(val){
+        globals.axialStiffness = val;
+        globals.dynamicModel.updateMaterials();
+    });
+
+    setSliderInput("#creaseStiffness", globals.creaseStiffness, 1, 1000, 1, function(val){
+        globals.creaseStiffness = val;
+    });
+
+    setSliderInput("#panelStiffness", globals.panelStiffness, 1, 1000, 1, function(val){
+        globals.panelStiffness = val;
+    });
+
+    setSlider("#damping", globals.percentDamping, 0, 1, 0.01, function(val){
         globals.percentDamping = val;
     }, function(){
-        // globals.resetSimFromInitialState();
+        globals.dynamicModel.updateMaterials();
+        globals.dynamicModel.reset();
+    });
+
+    function setDeltaT(val){
+        $("#deltaT").html(val.toFixed(4));
+    }
+
+    setLink("#resetDynamicSim", function(){
+        globals.dynamicModel.reset();
     });
 
     function setButtonGroup(id, callback){
@@ -200,7 +222,8 @@ function initControls(globals){
     }
 
     return {
-        update:update
+        update:update,
+        setDeltaT: setDeltaT
     }
 }
 
