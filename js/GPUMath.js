@@ -9,7 +9,10 @@ function initGPUMath(){
 
     var canvas = document.getElementById("gpuMathCanvas");
     var gl = canvas.getContext("webgl", {antialias:false}) || canvas.getContext("experimental-webgl", {antialias:false});
-    gl.getExtension('OES_texture_float');
+    var floatTextures = gl.getExtension('OES_texture_float');
+    if (!floatTextures) {
+        console.warn('no floating point texture support');
+    }
     gl.disable(gl.DEPTH_TEST);
 
     var maxTexturesInFragmentShader = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);

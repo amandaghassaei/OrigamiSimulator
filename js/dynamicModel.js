@@ -285,7 +285,7 @@ function initDynamicModel(globals){
         lastVelocity = new Float32Array(textureDim*textureDim*4);
         externalForces = new Float32Array(textureDim*textureDim*4);
         mass = new Float32Array(textureDim*textureDim*4);
-        meta = new Float32Array(textureDim*textureDim*4);//todo uint16
+        meta = new Float32Array(textureDim*textureDim*4);
         beamMeta = new Float32Array(textureDimEdges*textureDimEdges*4);
 
         for (var i=0;i<textureDim*textureDim;i++){
