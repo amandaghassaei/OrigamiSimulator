@@ -22,6 +22,7 @@ function Node(position, index){
     this.object3D._myNode = this;
 
     this.beams = [];
+    this.creases = [];
     this.externalForce = null;
     this.fixed = false;
 
@@ -77,6 +78,16 @@ Node.prototype.getMass = function(){
 };
 
 
+
+Node.prototype.addCrease = function(crease){
+    this.creases.push(crease);
+};
+
+Node.prototype.removeCrease = function(crease){
+    if (this.creases === null) return;
+    var index = this.creases.indexOf(crease);
+    if (index>=0) this.creases.splice(index, 1);
+};
 
 
 Node.prototype.addBeam = function(beam){
@@ -163,5 +174,6 @@ Node.prototype.destroy = function(){
     this.object3D._myNode = null;
     this.object3D = null;
     this.beams = null;
+    this.creases = null;
     this.externalForce = null;
 };

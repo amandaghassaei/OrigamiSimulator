@@ -21,6 +21,9 @@ function initModel(globals){
     edges.push(new Beam([nodes[3], nodes[0]]));
     edges.push(new Beam([nodes[3], nodes[2]]));
 
+    var creases = [];
+    creases.push(new Crease(edges[1], 1, 0, 0, nodes[1], nodes[0]));
+
     _.each(nodes, function(node){
         globals.threeView.sceneAddModel(node.getObject3D());
     });
@@ -36,8 +39,13 @@ function initModel(globals){
         return edges;
     }
 
+    function getCreases(){
+        return creases;
+    }
+
     return {
         getNodes: getNodes,
-        getEdges: getEdges
+        getEdges: getEdges,
+        getCreases: getCreases
     }
 }

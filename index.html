@@ -65,7 +65,7 @@
 
     <script id="zeroTexture" type="x-shader/x-fragment">
         void main(){
-            gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+            gl_FragColor = vec4(0.0);
         }
     </script>
 
@@ -83,7 +83,7 @@
 
             float isFixed = texture2D(u_mass, scaledFragCoord).y;
             if (isFixed == 1.0){
-                gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+                gl_FragColor = vec4(0.0);
                 return;
             }
 
@@ -113,7 +113,7 @@
 
             vec2 mass = texture2D(u_mass, scaledFragCoord).xy;
             if (mass.y == 1.0){
-                gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+                gl_FragColor = vec4(0.0);
                 return;
             }
             vec3 force = texture2D(u_externalForces, scaledFragCoord).xyz;
@@ -153,6 +153,42 @@
         }
     </script>
 
+    <script id="thetaCalcShader" type="x-shader/x-fragment">
+        precision mediump float;
+        uniform vec2 u_textureDimFaces;
+        uniform vec2 u_textureDimCreases;
+        uniform sampler2D u_normals;
+        uniform sampler2D u_lastTheta;
+        uniform sampler2D u_creaseVectors;
+
+        void main(){
+
+            vec2 fragCoord = gl_FragCoord.xy;
+            vec2 scaledFragCoord = fragCoord/u_textureDimCreases;
+
+            vec4 lastTheta = texture2D(u_lastTheta, scaledFragCoord);
+
+            if (lastTheta[2]<0.0){
+                gl_FragColor = vec4(0.0, 0.0, -1.0, -1.0);
+                return;
+            }
+
+            vec2 normal1Index = vec2(mod(lastTheta[2], u_textureDimFaces.x)+0.5, floor(lastTheta[2]/u_textureDimFaces.x)+0.5);
+            normal1Index /= u_textureDimFaces;
+            vec2 normal2Index = vec2(mod(lastTheta[3], u_textureDimFaces.x)+0.5, floor(lastTheta[3]/u_textureDimFaces.x)+0.5);
+            normal2Index /= u_textureDimFaces;
+
+            vec3 normal1 = texture2D(u_normals, normal1Index).xyz;
+            vec3 normal2 = texture2D(u_normals, normal2Index).xyz;
+
+            float theta = acos(dot(normal1, normal2));//normals are already normalized, no need to divide by length
+            vec3 creaseVector = texture2D(u_creaseVectors, scaledFragCoord).xyz;
+            float sign = dot(cross(normal1, normal2), creaseVector);
+            if (sign < 0.0) theta *= -1.0;
+            gl_FragColor = vec4(theta, theta-lastTheta[0], lastTheta[2], lastTheta[3]);//[theta, w, normal1Index, normal2Index]
+        }
+    </script>
+
     <script type="text/javascript" src="dependencies/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="dependencies/jquery-ui.min.js"></script>
     <script type="text/javascript" src="dependencies/flat-ui.min.js"></script>
@@ -169,6 +205,7 @@
     <script type="text/javascript" src="js/globals.js"></script>
     <script type="text/javascript" src="js/node.js"></script>
     <script type="text/javascript" src="js/beam.js"></script>
+    <script type="text/javascript" src="js/crease.js"></script>
     <script type="text/javascript" src="js/model.js"></script>
     <script type="text/javascript" src="js/dynamicModel.js"></script>
 
@@ -214,6 +251,12 @@
 </div>
 <div id="controls">
     <a href="#" id="about" class="btn btn-lg btn-default">About</a><br/><br/>
+
+    <div class="sliderInput" id="creaseAngle">
+        <span class="label-slider">Crease Angle : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+        <input value="" placeholder="" class="form-control int" type="text">
+    </div>
+    <br/><br/><br/>
     <div class="sliderInput" id="axialStiffness">
         <span class="label-slider">Axial Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
         <input value="" placeholder="" class="form-control int" type="text">

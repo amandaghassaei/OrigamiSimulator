@@ -56,6 +56,10 @@ function initControls(globals){
         globals.dynamicModel.reset();
     });
 
+    setSliderInput("#creaseAngle", globals.creaseAngle, 0, Math.PI, 0.1, function(val){
+        globals.creaseAngle = val;
+    });
+
     function setDeltaT(val){
         $("#deltaT").html(val.toFixed(4));
     }
