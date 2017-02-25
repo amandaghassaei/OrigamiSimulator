@@ -108,6 +108,10 @@ Node.prototype.numBeams = function(){
     return this.beams.length;
 };
 
+Node.prototype.numCreases = function(){
+    return this.creases.length;
+};
+
 Node.prototype.getIndex = function(){//in nodes array
     return this.index;
 };

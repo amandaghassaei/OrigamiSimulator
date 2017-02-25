@@ -98,14 +98,21 @@
         precision mediump float;
         uniform vec2 u_textureDim;
         uniform vec2 u_textureDimEdges;
+        uniform vec2 u_textureDimFaces;
+        uniform vec2 u_textureDimCreases;
+        uniform vec2 u_textureDimNodeCreases;
         uniform float u_dt;
         uniform sampler2D u_lastPosition;
         uniform sampler2D u_lastVelocity;
         uniform sampler2D u_originalPosition;
         uniform sampler2D u_externalForces;
         uniform sampler2D u_mass;
-        uniform sampler2D u_meta;//[beamsIndex, numBeams]
+        uniform sampler2D u_meta;//[beamsIndex, numBeam, creaseMeta2Index, numCreases]
         uniform sampler2D u_beamMeta;//[k, d, length, otherNodeIndex]
+        uniform sampler2D u_creaseMeta;//[k, d, targetTheta]
+        uniform sampler2D u_creaseMeta2;//[creaseIndex, momentArmLength, nodeIndex]
+        uniform sampler2D u_normals;
+        uniform sampler2D u_theta;//[theta, z, normal1Index, normal2Index]
 
         void main(){
             vec2 fragCoord = gl_FragCoord.xy;
@@ -123,7 +130,7 @@
             vec3 originalPosition = texture2D(u_originalPosition, scaledFragCoord).xyz;
 
             vec4 neighborIndices = texture2D(u_meta, scaledFragCoord);
-            vec2 meta = texture2D(u_meta, scaledFragCoord).xy;
+            vec4 meta = texture2D(u_meta, scaledFragCoord);
 
             for (int j=0;j<100;j++){//for all beams (up to 100, had to put a const int in here)
                 if (j >= int(meta[1])) break;
@@ -148,6 +155,36 @@
                 vec3 _force = deltaP*beamMeta[0] + deltaV*beamMeta[1];
                 force += _force;
             }
+
+            for (int j=0;j<100;j++){//for all creases (up to 100, had to put a const int in here)
+                if (j >= int(meta[3])) break;
+
+                float nodeCreaseIndex1D = meta[2]+float(j);
+                vec2 nodeCreaseIndex = vec2(mod(nodeCreaseIndex1D, u_textureDimNodeCreases.x)+0.5, floor(nodeCreaseIndex1D/u_textureDimNodeCreases.x)+0.5);
+                vec2 scaledNodeCreaseIndex = nodeCreaseIndex/u_textureDimNodeCreases;
+                vec4 creaseMeta2 = texture2D(u_creaseMeta2, scaledNodeCreaseIndex);
+
+                float creaseIndex1D = creaseMeta2[0];
+                vec2 creaseIndex = vec2(mod(creaseIndex1D, u_textureDimCreases.x)+0.5, floor(creaseIndex1D/u_textureDimCreases.x)+0.5);
+                vec2 scaledCreaseIndex = creaseIndex/u_textureDimCreases;
+
+                vec4 thetas = texture2D(u_theta, scaledCreaseIndex);
+                vec3 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex).xyz;//[k, d, targetTheta]
+
+                float nodeNum = creaseMeta2[2];
+                float normalIndex1D = thetas[2];
+                if (nodeNum > 1.1) normalIndex1D = thetas[3];
+                vec2 normalsIndex = vec2(mod(normalIndex1D, u_textureDimFaces.x)+0.5, floor(normalIndex1D/u_textureDimFaces.x)+0.5);
+                vec2 scaledNormalsIndex = normalsIndex/u_textureDimFaces;
+                vec3 normal = texture2D(u_normals, scaledNormalsIndex).xyz;
+
+                float angForce = creaseMeta[0]*(creaseMeta[2]-thetas[0]);
+                float momentArm = creaseMeta2[1];
+
+                vec3 _force = angForce/momentArm*normal;
+                force += _force;
+            }
+
             vec3 velocity = force*u_dt/mass.x + lastVelocity;
             gl_FragColor = vec4(velocity,0.0);
         }
