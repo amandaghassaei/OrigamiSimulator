@@ -77,11 +77,15 @@ function initPattern(globals){
             var segments = $paths[i].getPathData();
             for (var j=0;j<segments.length;j++){
                 var segment = segments[j];
-                var type = segment.type.toLowerCase();
+                var type = segment.type;
+
                 switch(type){
 
-                    case "m":
-                        _verticesRaw.push(new THREE.Vector3(segment.values[0], 0, segment.values[1]));
+                    case "m"://dx, dy
+                        var vertex = _verticesRaw[_verticesRaw.length-1].clone();
+                        vertex.x += segment.values[0];
+                        vertex.z += segment.values[1];
+                        _verticesRaw.push(vertex);
                         break;
 
                     case "l"://dx, dy
@@ -104,6 +108,10 @@ function initPattern(globals){
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.x += segment.values[0];
                         _verticesRaw.push(vertex);
+                        break;
+
+                    case "M"://x, y
+                        _verticesRaw.push(new THREE.Vector3(segment.values[0], 0, segment.values[1]));
                         break;
 
                     case "L"://x, y
@@ -189,7 +197,8 @@ function initPattern(globals){
         }
 
         if (_weededVertices.length > 0){
-            console.warn("not all vertices merged");
+            alert("Some vertices are not fully connected, try increasing vertex merge tolerance");
+            return;
         }
 
         outlines = outlinesRaw.slice();
@@ -205,11 +214,120 @@ function initPattern(globals){
 
         vertices = mergedVertices;
 
-        //find cycles
+        findPolygons();
         //triangulate
         drawPattern();
         //make mesh
     }
+
+    function findPolygons(){
+
+        var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts);
+
+        //collect all edges connected to vertices
+        var vertEdges = [];
+        for (var i=0;i<vertices.length;i++){
+            vertEdges.push([]);
+            for (var j=0;j<allEdges.length;j++){
+                if (allEdges[j][0] == i) vertEdges[i].push(j);
+                if (allEdges[j][1] == i) vertEdges[i].push(j);
+            }
+            if (vertEdges[i].length < 2){//check that all vertices have at least two edges
+                alert("Some vertices are not fully connected, try increasing vertex merge tolerance");
+                return;
+            }
+        }
+
+        //order edges ccw
+        for (var i=0;i<vertEdges.length;i++){
+            var vertex = vertices[i];
+            var thetas = [];
+            for (var j=0;j<vertEdges[i].length;j++){
+                var edgeIndex = vertEdges[i][j];
+                var edge;
+                if (allEdges[edgeIndex][0] != i) edge = vertices[allEdges[edgeIndex][0]].clone();
+                else edge = vertices[allEdges[edgeIndex][1]].clone();
+                edge.sub(vertex);
+
+                //find angle of each edge
+                thetas.push({theta: Math.atan2(edge.z, edge.x), edgeIndex:edgeIndex});//-PI to PI
+            }
+            thetas = _.sortBy(thetas, "theta");
+            var sortedEdges = [];
+            for (var j=0;j<vertEdges[i].length;j++) {
+                sortedEdges.push(thetas[j].edgeIndex);
+            }
+            vertEdges[i] = sortedEdges;
+        }
+
+        var edgesDir1 = [];//vert lower index to vert higher index
+        var edgesDir2 = [];//vert higher index to vert lower index
+        for (var i=0;i<allEdges.length;i++){
+            edgesDir1.push(false);
+            edgesDir2.push(false);
+        }
+        var polygons = [];
+        for (var i=0;i<vertices.length;i++){
+            var edges = vertEdges[i];
+            for (var j=0;j>edges.length;j++){
+
+                var _poly = [i];
+
+                var edgeIndex = edges[j];
+                var edgeVertices = allEdges[edgeIndex];
+                var otherVertex = edgeVertices[0];
+                if (otherVertex == i) otherVertex = edgeVertices[1];
+
+                if (otherVertex>i) {
+                    if (!edgesDir1[edgeIndex]){
+                        _poly.push(otherVertex);
+                        edgesDir1[edgeIndex] = true;
+                        _poly = findNextPolyVert(_poly, edgeIndex, otherVertex, vertEdges, allEdges, edgesDir1, edgesDir2);
+                        if (_poly) console.log(_poly);
+                    }
+                } else {
+                    if (!edgesDir2[edgeIndex]){
+                        _poly.push(otherVertex);
+                        edgesDir2[edgeIndex] = true;
+                        _poly = findNextPolyVert(_poly, edgeIndex, otherVertex, vertEdges, allEdges, edgesDir1, edgesDir2);
+                        if (_poly) console.log(_poly);
+                    }
+                }
+
+            }
+        }
+    }
+
+    function findNextPolyVert(_poly, fromEdge, vertIndex, vertEdges, allEdges, edgesDir1, edgesDir2){
+        var edges = vertEdges[vertIndex];
+        var index = edges.indexOf(fromEdge);
+        if (index<0) console.warn("bad from index");
+        index++;
+        if (index>=edges.length) index = 0;
+
+        var edgeIndex = edges[index];
+        var edgeVertices = allEdges[edgeIndex];
+        var otherVertex = edgeVertices[0];
+        if (otherVertex == vertIndex) otherVertex = edgeVertices[1];
+
+        if (otherVertex>i) {
+            if (!edgesDir1[edgeIndex]) {
+                _poly.push(otherVertex);
+                edgesDir1[edgeIndex] = true;
+                if (otherVertex == _poly[0]) return _poly;
+                else return findNextPolyVert(_poly, edgeIndex, otherVertex, vertEdges, allEdges, edgesDir1, edgesDir2);
+            } else return null;
+        }
+
+        if (!edgesDir2[edgeIndex]){
+            _poly.push(otherVertex);
+            edgesDir2[edgeIndex] = true;
+            if (otherVertex == _poly[0]) return _poly;
+            else findNextPolyVert(_poly, edgeIndex, otherVertex, vertEdges, allEdges, edgesDir1, edgesDir2);
+        }
+        return null;
+    }
+
 
     function removeCombinedFromSet(combined, set){
         for (var j=0;j<set.length;j++){
