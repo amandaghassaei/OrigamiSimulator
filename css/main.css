@@ -26,7 +26,8 @@ body{
     top:0;
     right:0;
     width:420px;
-    padding:70px 20px 20px 20px;
+    margin-top:53px;
+    padding:20px 20px;
     overflow: auto;
     height: 100%;
     /*background: rgba(255,255,255,0.5);*/
@@ -39,7 +40,8 @@ body{
     top:0;
     left:0;
     /*width: 420px;*/
-    padding:70px 20px 20px 20px;
+    margin-top:53px;
+    padding:20px 20px;
     max-height: 100%;
     overflow: auto;
 }

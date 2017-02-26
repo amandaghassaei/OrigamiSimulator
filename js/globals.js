@@ -28,7 +28,11 @@ function initGlobals(){
 
         //dynamic sim settings
         percentDamping: 1,
-        density: 1
+        density: 1,
+
+        //import pattern settings
+        vertTol: 0.01,//vertex merge tolerange
+
     };
 
     var isMobile = {

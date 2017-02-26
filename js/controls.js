@@ -81,8 +81,9 @@ function initControls(globals){
         globals.shouldResetDynamicSim = true;
     });
 
-    setLink(".loadFile", function(){
+    setLink(".loadFile", function(e){
         $("#fileSelector").click();
+        $(e.target).blur();
     });
 
     function setButtonGroup(id, callback){
