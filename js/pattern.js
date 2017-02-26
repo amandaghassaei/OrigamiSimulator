@@ -159,30 +159,38 @@ function initPattern(globals){
         var tolSq = globals.vertTol*globals.vertTol;
         var combined = [];
         var mergedVertices = [];
-        var weededVertices = vertices.slice();
-        var diff = 0;
+        var _weededVertices = vertices.slice();
+        var js = [];
+        for (var i=0;i<vertices.length;i++){
+            js.push(i);
+        }
         for (var i=vertices.length-1;i>=0;i--){
             var _combined = [];
-            for (var j=i-1+diff;j>=0;j--){
-                if ((weededVertices[i].clone().sub(vertices[j])).lengthSq()<tolSq){
-                    _combined.push(j);
+            var indicesToRemove = [];
+            for (var j=i-1;j>=0;j--){
+                if ((_weededVertices[i].clone().sub(_weededVertices[j])).lengthSq()<tolSq){
+                    _combined.push(js[j]);
+                    indicesToRemove.push(j);
                 }
             }
             var numCombined = _combined.length;
             if (numCombined>0){
-                _combined.push(i+diff);
-                mergedVertices.push(weededVertices[i]);
+                _combined.push(js[i]);
+                mergedVertices.push(_weededVertices[i]);
                 combined.push(_combined);
-                console.log(_combined);
-                weededVertices.splice(i, 1);
+                _weededVertices.splice(i, 1);
+                js.splice(i, 1);
                 for (var k=0;k<numCombined;k++){
-                    weededVertices.splice(_combined[k], 1);
+                    _weededVertices.splice(indicesToRemove[k], 1);
+                    js.splice(indicesToRemove[k], 1);
                 }
-                diff += numCombined;
                 i -= numCombined;
             }
         }
-        console.log(combined.length);
+
+        if (_weededVertices.length > 0){
+            console.warn("not all vertices merged");
+        }
 
         outlines = outlinesRaw.slice();
         mountains = mountainsRaw.slice();
@@ -194,20 +202,28 @@ function initPattern(globals){
         removeCombinedFromSet(combined, valleys);
         removeCombinedFromSet(combined, cuts);
 
-        console.log(outlines);
 
         vertices = mergedVertices;
 
         //find cycles
         //triangulate
         drawPattern();
+        //make mesh
     }
 
     function removeCombinedFromSet(combined, set){
-        for (var i=0;i<combined.length;i++){
-            for (var j=0;j<set.length;j++){
-                if (combined[i].indexOf(set[j][0]) >= 0) set[j][0] = i;
-                if (combined[i].indexOf(set[j][1]) >= 0) set[j][1] = i;
+        for (var j=0;j<set.length;j++){
+            for (var i=0;i<combined.length;i++){
+                if (combined[i].indexOf(set[j][0]) >= 0) {
+                    set[j][0] = i;
+                    break;
+                }
+            }
+            for (var i=0;i<combined.length;i++) {
+                if (combined[i].indexOf(set[j][1]) >= 0) {
+                    set[j][1] = i;
+                    break;
+                }
             }
         }
     }
