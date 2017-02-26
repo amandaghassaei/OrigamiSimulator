@@ -32,7 +32,7 @@ function initPattern(globals){
         });
     }
 
-    loadSVG("/assets/Tessellations/miura-ori-dashed.svg", function(svg){
+    loadSVG("/assets/Tessellations/miura-ori.svg", function(svg){
         var _$svg = $(svg);
 
         //format all lines
@@ -150,7 +150,6 @@ function initPattern(globals){
         cutsRaw = _cutsRaw;
 
         mergeVertices();
-        drawPattern();
     }
 
     function mergeVertices(){
@@ -160,23 +159,27 @@ function initPattern(globals){
         var tolSq = globals.vertTol*globals.vertTol;
         var combined = [];
         var mergedVertices = [];
-        var diff = 1;
+        var weededVertices = vertices.slice();
+        var diff = 0;
         for (var i=vertices.length-1;i>=0;i--){
             var _combined = [];
-            for (var j=i-diff;j>=0;j--){
-                if ((vertices[i].clone().sub(vertices[j])).lengthSq()<tolSq){
+            for (var j=i-1+diff;j>=0;j--){
+                if ((weededVertices[i].clone().sub(vertices[j])).lengthSq()<tolSq){
                     _combined.push(j);
                 }
             }
             var numCombined = _combined.length;
             if (numCombined>0){
-                _combined.push(i);
-                mergedVertices.push(vertices[i]);
+                _combined.push(i+diff);
+                mergedVertices.push(weededVertices[i]);
                 combined.push(_combined);
-                for (var k=0;k<numCombined-1;k++){
-                    vertices.splice(_combined[k], 1);
+                console.log(_combined);
+                weededVertices.splice(i, 1);
+                for (var k=0;k<numCombined;k++){
+                    weededVertices.splice(_combined[k], 1);
                 }
-                diff -= numCombined
+                diff += numCombined;
+                i -= numCombined;
             }
         }
         console.log(combined.length);
@@ -191,7 +194,13 @@ function initPattern(globals){
         removeCombinedFromSet(combined, valleys);
         removeCombinedFromSet(combined, cuts);
 
+        console.log(outlines);
+
         vertices = mergedVertices;
+
+        //find cycles
+        //triangulate
+        drawPattern();
     }
 
     function removeCombinedFromSet(combined, set){
