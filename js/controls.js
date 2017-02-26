@@ -78,7 +78,11 @@ function initControls(globals){
     }
 
     setLink("#resetDynamicSim", function(){
-        globals.dynamicModel.reset();
+        globals.shouldResetDynamicSim = true;
+    });
+
+    setLink(".loadFile", function(){
+        $("#fileSelector").click();
     });
 
     function setButtonGroup(id, callback){

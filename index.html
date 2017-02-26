@@ -7,7 +7,9 @@
     <link href="dependencies/bootstrap.min.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" type="text/css" href="dependencies/flat-ui.min.css"/>
     <link rel="stylesheet" type="text/css" href="dependencies/jquery-ui.min.css"/>
-    <link rel="stylesheet" type="text/css" href="main.css"/>
+    <link rel="stylesheet" type="text/css" href="css/nav.css"/>
+    <link rel="stylesheet" type="text/css" href="css/main.css"/>
+
 
     <script id="vertexShader" type="x-shader/x-vertex">
         attribute vec2 a_position;
@@ -254,14 +256,47 @@
     <script type="text/javascript" src="js/main.js"></script>
 </head>
 <body>
+<nav id="globalNav" class="navbar navbar-inverse navbar-embossed" role="navigation">
+    <div class="navbar-header">
+        <a id="logo" class="navbar-brand" target="_blank" href="http://cba.mit.edu/">
+            <img id="inactiveLogo" src="logo.png"/>
+            <img id="activeLogo" src="logo-active.png"/>
+        </a>
+    </div>
+    <div class="collapse navbar-collapse" id="navbar-collapse-01">
+        <ul class="nav navbar-nav navbar-left">
+            <li class="dropdown navDropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">File <b class="caret"></b></a>
+                <span class="dropdown-arrow"></span>
+                <ul class="dropdown-menu">
+                    <li><a class="loadFile" href="#">Import SVG...</a></li>
+                    <li class="divider"></li>
+                    <li><a id="saveSVG" href="#">Save Pattern as SVG</a></li>
+                    <li><a id="exportSTL" href="#">Save Simulation as STL...</a></li>
+                </ul>
+            </li>
+            <li><a data-menu-id="navDesign" class="menuHoverControls" href="#">Pattern</a></li>
+            <li><a data-menu-id="navSim" class="menuHoverControls" href="#">Simulation</a></li>
+            <!--<li class="dropdown navDropdown">-->
+                <!--<a href="#" class="dropdown-toggle" id="viewMenuDropdown" data-toggle="dropdown">View <b class="caret"></b></a>-->
+                <!--<span class="dropdown-arrow"></span>-->
+                <!--<ul id="navViewMenu" class="dropdown-menu">-->
+                    <!--<li><a href="#">thing1</a></li>-->
+                    <!--<li><a href="#">things2</a></li>-->
+                <!--</ul>-->
+            <!--</li>-->
+            <li><a id="about" class="menuHoverControls" target="_blank" href="#">About</a></li>
+        </ul>
+
+    </div><!-- /.navbar-collapse -->
+    <input id="fileSelector" type="file">
+
+</nav>
+
 <div  id="threeContainer"></div>
 <canvas id="gpuMathCanvas"></canvas>
 <div id="controlsLeft" class="flipped">
     <div>
-        <a id="logo" target="_blank" href="http://cba.mit.edu/">
-            <img id="inactiveLogo" src="logo.png"/>
-            <img id="activeLogo" src="logo-active.png"/>
-        </a><br/>
         3D View:
         <div class="indent">
             <label class="checkbox" for="dynamic">
@@ -292,8 +327,6 @@
     <div class="extraSpace"></div>
 </div>
 <div id="controls">
-    <a href="#" id="about" class="btn btn-lg btn-default">About</a><br/><br/>
-
     <div class="sliderInput" id="creasePercent">
         <span class="label-slider">Crease Angle : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
         <input value="" placeholder="" class="form-control int" type="text">

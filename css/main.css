@@ -20,12 +20,13 @@ body{
                                   not supported by any browser */
 }
 
+
 #controls{
     position: absolute;
     top:0;
     right:0;
     width:420px;
-    padding:20px 20px;
+    padding:70px 20px 20px 20px;
     overflow: auto;
     height: 100%;
     /*background: rgba(255,255,255,0.5);*/
@@ -38,7 +39,7 @@ body{
     top:0;
     left:0;
     /*width: 420px;*/
-    padding: 20px 20px 20px 20px;
+    padding:70px 20px 20px 20px;
     max-height: 100%;
     overflow: auto;
 }
@@ -61,11 +62,12 @@ body{
     display: none;
 }
 
-a{
+a, a:hover, a:visited, a:focus{
     color:#8cbaed;
 }
-a:hover{
-    color:#8cbaed;
+
+a.btn:visited, a.btn:focus{
+    color: white;
 }
 
 .editable{
@@ -117,25 +119,13 @@ input.form-control {
     margin-bottom:10px;
 }
 
-img{
-    width:60px;
-    /*position: absolute;*/
-    top:0;
-    left:0;
-    z-index: 5;
-    /*margin:20px;*/
-    margin-bottom:20px;
-}
-
-#activeLogo{
-    display: none;
-}
-
 #threeContainer {
     width:100%;
     height:100%;
     padding:0;
     position: absolute;
+    top: 0px;
+    left: 0px;
 }
 
 
@@ -269,16 +259,6 @@ span.modal-close{
 .flipped>div
 {
     direction: ltr;
-}
-
-.dropdown-toggle{
-    width: 220px;
-    text-align: right;
-}
-.dropdown-toggle>span.dropdownLabel{
-    width: 165px;
-    display: inline-block;
-    text-align: left;
 }
 
 .paddingBottom{
