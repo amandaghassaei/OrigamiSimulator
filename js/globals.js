@@ -31,7 +31,7 @@ function initGlobals(){
         density: 1,
 
         //import pattern settings
-        vertTol: 0.01,//vertex merge tolerange
+        vertTol: 0.01//vertex merge tolerange
 
     };
 
