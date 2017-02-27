@@ -283,6 +283,7 @@ function initPattern(globals){
             edgesDir2.push(false);
         }
         var polygons = [];
+        var polygonEdges = [];
         for (var i=0;i<vertices.length;i++){
             var edges = vertEdges[i];
             for (var j=0;j<edges.length;j++){
@@ -311,6 +312,7 @@ function initPattern(globals){
                                 }
                             }
                             polygons.push(_poly);
+                            polygonEdges.push(_polyEdges);
                         }
                     }
                 } else {
@@ -329,19 +331,26 @@ function initPattern(globals){
                                 }
                             }
                             polygons.push(_poly);
+                            polygonEdges.push(_polyEdges);
                         }
                     }
                 }
             }
         }
-        // for (var index=0;index<polygons.length;index++) {
-        //     for (var i = 0; i < polygons[index].length; i++) {
-        //         var vertex = vertices[polygons[index][i]];
-        //         var sphere = new THREE.Mesh(new THREE.SphereGeometry(10));
-        //         sphere.position.set(vertex.x, vertex.y, vertex.z);
-        //         intersections.add(sphere);
-        //     }
-        // }
+
+        //remove boundary
+        for (var i=polygonEdges.length-1;i>=0;i--){
+            var containsInnerCrease = false;
+            for (var j=0;j<polygonEdges[i].length;j++){
+                if (polygonEdges[i][j]>=outlines.length){
+                    containsInnerCrease = true;
+                    break;
+                }
+            }
+            if (!containsInnerCrease) {
+                polygons.splice(i,1);
+            }
+        }
 
         return polygons;
     }
@@ -372,7 +381,7 @@ function initPattern(globals){
             _poly.push(otherVertex);
             _polyEdges.push(-edgeIndex-1);
             if (otherVertex == _poly[0]) return _poly;
-            else findNextPolyVert(_poly, _polyEdges, edgeIndex, otherVertex, vertEdges, allEdges, edgesDir1, edgesDir2);
+            else return findNextPolyVert(_poly, _polyEdges, edgeIndex, otherVertex, vertEdges, allEdges, edgesDir1, edgesDir2);
         }
         return null;
     }
