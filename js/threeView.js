@@ -5,6 +5,7 @@
 function initThreeView(globals) {
 
     var scene = new THREE.Scene();
+    var wrapper = new THREE.Object3D();
     var patternWrapper = new THREE.Object3D();
     var modelWrapper = new THREE.Object3D();
     var camera = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, -1000, 1000);//-40, 40);
@@ -23,6 +24,7 @@ function initThreeView(globals) {
         container.append(renderer.domElement);
 
         scene.background = new THREE.Color(0xe6e6e6);
+        scene.add(wrapper);
         scene.add(patternWrapper);
         scene.add(modelWrapper);
         var directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
@@ -95,11 +97,11 @@ function initThreeView(globals) {
         });
     }
 
-    function sceneAddCrease(object) {
+    function sceneAddPattern(object) {
         patternWrapper.add(object);
     }
 
-    function sceneRemoveCrease(object) {
+    function sceneRemovePattern(object) {
         patternWrapper.remove(object);
     }
 
@@ -107,21 +109,20 @@ function initThreeView(globals) {
         patternWrapper.children = [];
     }
 
-    function sceneAddModel(object){
+    function sceneAddModel(object){//beams and nodes
         modelWrapper.add(object);
-    }
-
-    function sceneRemoveModel(object){
-        modelWrapper.remove(object);
     }
 
     function sceneClearModel(object){
         modelWrapper.children =[];
     }
 
-    function sceneMakeModelFromPattern(){
-        modelWrapper.children = [];
-        //todo copy pattern to model
+    function sceneAdd(object){
+        wrapper.add(object);
+    }
+
+    function sceneRemove(object){
+        wrapper.remote(object);
     }
 
     function onWindowResize() {
@@ -144,12 +145,13 @@ function initThreeView(globals) {
 
 
     return {
-        sceneAddCrease: sceneAddCrease,
-        sceneRemoveCrease: sceneRemoveCrease,
+        sceneAddPattern: sceneAddPattern,
+        sceneRemovePattern: sceneRemovePattern,
         sceneClearPattern: sceneClearPattern,
         sceneAddModel: sceneAddModel,
-        sceneRemoveModel: sceneRemoveModel,
         sceneClearModel: sceneClearModel,
+        sceneAdd: sceneAdd,
+        sceneRemove: sceneRemove,
         render: render,
         onWindowResize: onWindowResize,
         startAnimation: startAnimation,

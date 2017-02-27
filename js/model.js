@@ -21,15 +21,73 @@ function initModel(globals){
     edges.push(new Beam([nodes[3], nodes[0]]));
     edges.push(new Beam([nodes[3], nodes[2]]));
 
-    var creases = [];
-    creases.push(new Crease(edges[2], 1, 0, Math.PI/2, 1, nodes[3], nodes[1], 0));
+    var faces = [];
+    faces.push(new THREE.Face3(0,1,2));
+    faces.push(new THREE.Face3(0,2,3));
 
-    _.each(nodes, function(node){
-        globals.threeView.sceneAddModel(node.getObject3D());
-    });
-    _.each(edges, function(edge){
-        globals.threeView.sceneAddModel(edge.getObject3D());
-    });
+    var creases = [];
+    // creases.push(new Crease(edges[2], 1, 0, Math.PI/2, 1, nodes[3], nodes[1], 0));
+
+    function buildModel(_faces, _vertices, _allEdges, numOutline, numMountians, numValleys, numCuts){
+
+        var _nodes = [];
+        for (var i=0;i<_vertices.length;i++){
+            _nodes.push(new Node(_vertices[i].clone(), _nodes.length));
+        }
+        // _nodes[0].setFixed(true);
+        // _nodes[1].setFixed(true);
+        // _nodes[2].setFixed(true);
+
+        var _edges = [];
+        var _creases = [];
+        for (var i=0;i<_allEdges.length;i++){
+            _edges.push(new Beam([_nodes[_allEdges[i][0]], _nodes[_allEdges[i][1]]]));
+            if (i<numOutline){
+                //no crease
+            } else if (i<numMountians){
+                // _creases.push(new Crease(_edges[i], 1, 0, Math.PI, 1, nodes[3], nodes[1], 0));
+            } else if (i<numValleys){
+
+            } else if (i<numCuts){
+
+            } else {
+                console.warn("unknown edge type");
+            }
+        }
+
+        globals.threeView.sceneClearModel();
+        _.each(_nodes, function(node){
+            globals.threeView.sceneAddModel(node.getObject3D());
+        });
+        _.each(_edges, function(edge){
+            globals.threeView.sceneAddModel(edge.getObject3D());
+        });
+
+        var oldNodes = nodes;
+        var oldEdges = edges;
+        var oldCreases = creases;
+
+        nodes = _nodes;
+        faces = _faces;
+        creases = _creases;
+
+        globals.dynamicModel.syncNodesAndEdges();
+
+        for (var i=0;i<oldNodes.length;i++){
+            oldNodes[i].destroy();
+        }
+        oldNodes = null;
+
+        for (var i=0;i<oldEdges.length;i++){
+            oldEdges[i].destroy();
+        }
+        oldEdges = null;
+
+        for (var i=0;i<oldCreases.length;i++){
+            oldCreases[i].destroy();
+        }
+        oldCreases = null;
+    }
 
     function getNodes(){
         return nodes;
@@ -39,6 +97,10 @@ function initModel(globals){
         return edges;
     }
 
+    function getFaces(){
+        return faces;
+    }
+
     function getCreases(){
         return creases;
     }
@@ -46,6 +108,8 @@ function initModel(globals){
     return {
         getNodes: getNodes,
         getEdges: getEdges,
-        getCreases: getCreases
+        getFaces: getFaces,
+        getCreases: getCreases,
+        buildModel: buildModel
     }
 }

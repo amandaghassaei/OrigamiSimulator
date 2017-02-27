@@ -5,7 +5,7 @@
 function initPattern(globals){
 
     var object3D = new THREE.Object3D();
-    globals.threeView.sceneAddModel(object3D);
+    globals.threeView.sceneAddPattern(object3D);
     // var intersections = new THREE.Object3D();
     // object3D.add(intersections);
 
@@ -159,6 +159,14 @@ function initPattern(globals){
         cutsRaw = _cutsRaw;
 
         mergeVertices();
+
+        var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts);
+        var faces = triangulatePolys(findPolygons(allEdges));
+        drawPattern(faces);
+        globals.threeView.render();
+
+        globals.model.buildModel(faces, vertices, allEdges, outlines.length, outlines.length+mountains.length,
+            outlines.length+mountains.length+valleys.length, outlines.length+mountains.length+valleys.length+cuts.length);
     }
 
     function mergeVertices(){
@@ -211,11 +219,7 @@ function initPattern(globals){
         removeCombinedFromSet(combined, mountains);
         removeCombinedFromSet(combined, valleys);
         removeCombinedFromSet(combined, cuts);
-
-
         vertices = mergedVertices;
-
-        drawPattern(triangulatePolys(findPolygons()));
     }
 
     function triangulatePolys(polygons){
@@ -229,16 +233,14 @@ function initPattern(globals){
             }
             var triangles = earcut(polyVerts);
             for (var j=0;j<triangles.length;j+=3){
-                var face = new THREE.Face3(polygons[i][triangles[j]], polygons[i][triangles[j+1]], polygons[i][triangles[j+2]]);
+                var face = new THREE.Face3(polygons[i][triangles[j+2]], polygons[i][triangles[j+1]], polygons[i][triangles[j]]);
                 faces.push(face);
             }
         }
         return faces;
     }
 
-    function findPolygons(){
-
-        var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts);
+    function findPolygons(allEdges){
 
         //collect all edges connected to vertices
         var vertEdges = [];
@@ -491,14 +493,16 @@ function initPattern(globals){
         geo.faces = faces;
         geo.computeVertexNormals();
         var mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({side:THREE.DoubleSide, color:0xffffff}));
+        // object3D.add(mesh);
+        var mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({color:0x000000, wireframe:true}));
         object3D.add(mesh);
 
-        object3D.add(new THREE.LineSegments(makeGeoFromSVGSegments(outlines),
-            new THREE.LineBasicMaterial({color: 0x000000, linewidth: 4})));
-        object3D.add(new THREE.LineSegments(makeGeoFromSVGSegments(mountains),
-            new THREE.LineBasicMaterial({color: 0xff0000, linewidth: 4})));
-        object3D.add(new THREE.LineSegments(makeGeoFromSVGSegments(valleys),
-            new THREE.LineBasicMaterial({color: 0x0000ff, linewidth: 4})));
+        // object3D.add(new THREE.LineSegments(makeGeoFromSVGSegments(outlines),
+        //     new THREE.LineBasicMaterial({color: 0x000000, linewidth: 4})));
+        // object3D.add(new THREE.LineSegments(makeGeoFromSVGSegments(mountains),
+        //     new THREE.LineBasicMaterial({color: 0xff0000, linewidth: 4})));
+        // object3D.add(new THREE.LineSegments(makeGeoFromSVGSegments(valleys),
+        //     new THREE.LineBasicMaterial({color: 0x0000ff, linewidth: 4})));
         var bounds = new THREE.Box3().setFromObject(object3D);
         var avg = (bounds.min.add(bounds.max)).multiplyScalar(0.5);
         object3D.position.set(-avg.x, 0, -avg.z);

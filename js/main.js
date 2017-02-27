@@ -42,7 +42,7 @@ $(function() {
 
     globals = initGlobals();
     globals.model = initModel(globals);
-    globals.pattern = initPattern(globals);
     globals.dynamicModel = initDynamicModel(globals);
+    globals.pattern = initPattern(globals);
     globals.threeView.render();
 });
