@@ -26,7 +26,7 @@ function initModel(globals){
     faces.push(new THREE.Face3(0,2,3));
 
     var creases = [];
-    // creases.push(new Crease(edges[2], 1, 0, Math.PI/2, 1, nodes[3], nodes[1], 0));
+    creases.push(new Crease(edges[2], 1, 0, Math.PI/2, 1, nodes[3], nodes[1], 0));
 
     function buildModel(_faces, _vertices, _allEdges, numOutline, numMountians, numValleys, numCuts){
 
@@ -68,10 +68,11 @@ function initModel(globals){
         var oldCreases = creases;
 
         nodes = _nodes;
+        edges = _edges;
         faces = _faces;
         creases = _creases;
 
-        globals.dynamicModel.syncNodesAndEdges();
+        globals.shouldSyncWithModel = true;
 
         for (var i=0;i<oldNodes.length;i++){
             oldNodes[i].destroy();
