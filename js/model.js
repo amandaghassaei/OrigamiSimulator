@@ -28,31 +28,25 @@ function initModel(globals){
     var creases = [];
     creases.push(new Crease(edges[2], 1, 0, Math.PI/2, 1, nodes[3], nodes[1], 0));
 
-    function buildModel(_faces, _vertices, _allEdges, numOutline, numMountians, numValleys, numCuts){
+    function buildModel(_faces, _vertices, _allEdges, allCreaseParams, numOutline, numMountians, numValleys, numCuts){
 
         var _nodes = [];
         for (var i=0;i<_vertices.length;i++){
             _nodes.push(new Node(_vertices[i].clone(), _nodes.length));
         }
-        // _nodes[0].setFixed(true);
-        // _nodes[1].setFixed(true);
-        // _nodes[2].setFixed(true);
+        _nodes[0].setFixed(true);
+        _nodes[1].setFixed(true);
+        _nodes[2].setFixed(true);
 
         var _edges = [];
-        var _creases = [];
-        for (var i=0;i<_allEdges.length;i++){
+        for (var i=0;i<_allEdges.length;i++) {
             _edges.push(new Beam([_nodes[_allEdges[i][0]], _nodes[_allEdges[i][1]]]));
-            if (i<numOutline){
-                //no crease
-            } else if (i<numMountians){
-                // _creases.push(new Crease(_edges[i], 1, 0, Math.PI, 1, nodes[3], nodes[1], 0));
-            } else if (i<numValleys){
+        }
 
-            } else if (i<numCuts){
-
-            } else {
-                console.warn("unknown edge type");
-            }
+        var _creases = [];
+        for (var i=0;i<allCreaseParams.length;i++) {
+            var creaseParams = allCreaseParams[i];//face1Ind, vertInd, face2Ind, ver2Ind, edgeInd, angle
+            _creases.push(new Crease(_edges[creaseParams[4]], creaseParams[0], creaseParams[2], creaseParams[5], 1, _nodes[creaseParams[1]], _nodes[creaseParams[3]], _creases.length));
         }
 
         globals.threeView.sceneClearModel();

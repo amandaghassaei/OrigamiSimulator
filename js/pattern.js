@@ -165,8 +165,53 @@ function initPattern(globals){
         drawPattern(faces);
         globals.threeView.render();
 
-        globals.model.buildModel(faces, vertices, allEdges, outlines.length, outlines.length+mountains.length,
+        var allCreaseParams = getFacesAndVerticesForEdges(faces, allEdges);
+
+        globals.model.buildModel(faces, vertices, allEdges, allCreaseParams, outlines.length, outlines.length+mountains.length,
             outlines.length+mountains.length+valleys.length, outlines.length+mountains.length+valleys.length+cuts.length);
+    }
+
+    function getFacesAndVerticesForEdges(faces, allEdges){
+        var allCreaseParams = [];//face1Ind, vertInd, face2Ind, ver2Ind, edgeInd, angle
+        for (var i=outlines.length;i<outlines.length+mountains.length+valleys.length;i++){
+            var v1 = allEdges[i][0];
+            var v2 = allEdges[i][1];
+            var creaseParams = [];
+            for (var j=0;j<faces.length;j++){
+                var face = faces[j];
+                var faceVerts = [face.a, face.b, face.c];
+                var v1Index = faceVerts.indexOf(v1);
+                if (v1Index>=0){
+                    var v2Index = faceVerts.indexOf(v2);
+                    if (v2Index>=0){
+                        creaseParams.push(j);
+                        if (v2Index>v1Index) {
+                            faceVerts.splice(v2Index, 1);
+                            faceVerts.splice(v1Index, 1);
+                        } else {
+                            faceVerts.splice(v1Index, 1);
+                            faceVerts.splice(v2Index, 1);
+                        }
+                        creaseParams.push(faceVerts[0]);
+                        if (creaseParams.length == 4) {
+                            creaseParams.push(i);
+                            if (i<(outlines.length+mountains.length+valleys.length)){
+                                var angle = Math.PI;
+                                if (i<(outlines.length+mountains.length)){
+                                    angle *= -1;
+                                }
+                                creaseParams.push(angle);
+                            } else {
+                                creaseParams.push(0);
+                            }
+                            allCreaseParams.push(creaseParams);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return allCreaseParams;
     }
 
     function mergeVertices(){
