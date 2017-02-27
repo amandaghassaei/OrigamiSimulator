@@ -520,8 +520,8 @@ function middleInside(a, b) {
 // link two polygon vertices with a bridge; if the vertices belong to the same ring, it splits polygon into two;
 // if one belongs to the outer ring and another to a hole, it merges it into a single ring
 function splitPolygon(a, b) {
-    var a2 = new Node(a.i, a.x, a.y),
-        b2 = new Node(b.i, b.x, b.y),
+    var a2 = new EarNode(a.i, a.x, a.y),
+        b2 = new EarNode(b.i, b.x, b.y),
         an = a.next,
         bp = b.prev;
 
@@ -542,7 +542,7 @@ function splitPolygon(a, b) {
 
 // create a node and optionally link it with previous one (in a circular doubly linked list)
 function insertNode(i, x, y, last) {
-    var p = new Node(i, x, y);
+    var p = new EarNode(i, x, y);
 
     if (!last) {
         p.prev = p;
@@ -565,7 +565,7 @@ function removeNode(p) {
     if (p.nextZ) p.nextZ.prevZ = p.prevZ;
 }
 
-function Node(i, x, y) {
+function EarNode(i, x, y) {
     // vertice index in coordinates array
     this.i = i;
 

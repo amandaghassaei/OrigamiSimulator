@@ -43,6 +43,7 @@ function initPattern(globals){
             var stroke = $(this).attr("stroke").toLowerCase();
             return stroke == "#000000" || stroke == "#000";
         });
+        // $outlines.css({fill:'#ffffff'});
 
         var $mountains = $paths.filter(function(){
             var stroke = $(this).attr("stroke").toLowerCase();
@@ -214,10 +215,25 @@ function initPattern(globals){
 
         vertices = mergedVertices;
 
-        findPolygons();
-        //triangulate
-        drawPattern();
-        //make mesh
+        drawPattern(triangulatePolys(findPolygons()));
+    }
+
+    function triangulatePolys(polygons){
+        var faces = [];
+        for (var i=0;i<polygons.length;i++){
+            var polyVerts = [];
+            for (var j=1;j<polygons[i].length;j++){
+                var vertex = vertices[polygons[i][j]];
+                polyVerts.push(vertex.x);
+                polyVerts.push(vertex.z);
+            }
+            var triangles = earcut(polyVerts);
+            for (var j=0;j<triangles.length;j+=3){
+                var face = new THREE.Face3(polygons[i][triangles[j]], polygons[i][triangles[j+1]], polygons[i][triangles[j+2]]);
+                faces.push(face);
+            }
+        }
+        return faces;
     }
 
     function findPolygons(){
@@ -269,9 +285,10 @@ function initPattern(globals){
         var polygons = [];
         for (var i=0;i<vertices.length;i++){
             var edges = vertEdges[i];
-            for (var j=0;j>edges.length;j++){
+            for (var j=0;j<edges.length;j++){
 
                 var _poly = [i];
+                var _polyEdges = [];
 
                 var edgeIndex = edges[j];
                 var edgeVertices = allEdges[edgeIndex];
@@ -281,24 +298,55 @@ function initPattern(globals){
                 if (otherVertex>i) {
                     if (!edgesDir1[edgeIndex]){
                         _poly.push(otherVertex);
-                        edgesDir1[edgeIndex] = true;
-                        _poly = findNextPolyVert(_poly, edgeIndex, otherVertex, vertEdges, allEdges, edgesDir1, edgesDir2);
-                        if (_poly) console.log(_poly);
+                        _polyEdges.push(edgeIndex);
+                        _poly = findNextPolyVert(_poly, _polyEdges, edgeIndex, otherVertex, vertEdges, allEdges, edgesDir1, edgesDir2);
+                        if (_poly) {
+                            for (var k=0;k<_polyEdges.length;k++){
+                                var index = _polyEdges[k];
+                                if (index<0) {
+                                    index = -index-1;
+                                    edgesDir2[index] = true;
+                                } else {
+                                    edgesDir1[index] = true;
+                                }
+                            }
+                            polygons.push(_poly);
+                        }
                     }
                 } else {
                     if (!edgesDir2[edgeIndex]){
                         _poly.push(otherVertex);
-                        edgesDir2[edgeIndex] = true;
-                        _poly = findNextPolyVert(_poly, edgeIndex, otherVertex, vertEdges, allEdges, edgesDir1, edgesDir2);
-                        if (_poly) console.log(_poly);
+                        _polyEdges.push(-edgeIndex-1);
+                        _poly = findNextPolyVert(_poly, _polyEdges, edgeIndex, otherVertex, vertEdges, allEdges, edgesDir1, edgesDir2);
+                        if (_poly) {
+                            for (var k=0;k<_polyEdges.length;k++){
+                                var index = _polyEdges[k];
+                                if (index<0) {
+                                    index = -index-1;
+                                    edgesDir2[index] = true;
+                                } else {
+                                    edgesDir1[index] = true;
+                                }
+                            }
+                            polygons.push(_poly);
+                        }
                     }
                 }
-
             }
         }
+        // for (var index=0;index<polygons.length;index++) {
+        //     for (var i = 0; i < polygons[index].length; i++) {
+        //         var vertex = vertices[polygons[index][i]];
+        //         var sphere = new THREE.Mesh(new THREE.SphereGeometry(10));
+        //         sphere.position.set(vertex.x, vertex.y, vertex.z);
+        //         intersections.add(sphere);
+        //     }
+        // }
+
+        return polygons;
     }
 
-    function findNextPolyVert(_poly, fromEdge, vertIndex, vertEdges, allEdges, edgesDir1, edgesDir2){
+    function findNextPolyVert(_poly, _polyEdges, fromEdge, vertIndex, vertEdges, allEdges, edgesDir1, edgesDir2){
         var edges = vertEdges[vertIndex];
         var index = edges.indexOf(fromEdge);
         if (index<0) console.warn("bad from index");
@@ -306,24 +354,25 @@ function initPattern(globals){
         if (index>=edges.length) index = 0;
 
         var edgeIndex = edges[index];
+        if (_polyEdges.indexOf(edgeIndex)>=0) return null;//cant traverse same edge twice in one poly
         var edgeVertices = allEdges[edgeIndex];
         var otherVertex = edgeVertices[0];
         if (otherVertex == vertIndex) otherVertex = edgeVertices[1];
 
-        if (otherVertex>i) {
+        if (otherVertex>vertIndex) {
             if (!edgesDir1[edgeIndex]) {
                 _poly.push(otherVertex);
-                edgesDir1[edgeIndex] = true;
+                _polyEdges.push(edgeIndex);
                 if (otherVertex == _poly[0]) return _poly;
-                else return findNextPolyVert(_poly, edgeIndex, otherVertex, vertEdges, allEdges, edgesDir1, edgesDir2);
+                else return findNextPolyVert(_poly, _polyEdges, edgeIndex, otherVertex, vertEdges, allEdges, edgesDir1, edgesDir2);
             } else return null;
         }
 
         if (!edgesDir2[edgeIndex]){
             _poly.push(otherVertex);
-            edgesDir2[edgeIndex] = true;
+            _polyEdges.push(-edgeIndex-1);
             if (otherVertex == _poly[0]) return _poly;
-            else findNextPolyVert(_poly, edgeIndex, otherVertex, vertEdges, allEdges, edgesDir1, edgesDir2);
+            else findNextPolyVert(_poly, _polyEdges, edgeIndex, otherVertex, vertEdges, allEdges, edgesDir1, edgesDir2);
         }
         return null;
     }
@@ -425,8 +474,16 @@ function initPattern(globals){
         };
     }
 
-    function drawPattern(){
+    function drawPattern(faces){
         object3D.children = [];
+
+        var geo = new THREE.Geometry();
+        geo.vertices = vertices;
+        geo.faces = faces;
+        geo.computeVertexNormals();
+        var mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({side:THREE.DoubleSide, color:0xffffff}));
+        object3D.add(mesh);
+
         object3D.add(new THREE.LineSegments(makeGeoFromSVGSegments(outlines),
             new THREE.LineBasicMaterial({color: 0x000000, linewidth: 4})));
         object3D.add(new THREE.LineSegments(makeGeoFromSVGSegments(mountains),
