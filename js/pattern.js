@@ -167,8 +167,7 @@ function initPattern(globals){
 
         var allCreaseParams = getFacesAndVerticesForEdges(faces, allEdges);
 
-        globals.model.buildModel(faces, vertices, allEdges, allCreaseParams, outlines.length, outlines.length+mountains.length,
-            outlines.length+mountains.length+valleys.length, outlines.length+mountains.length+valleys.length+cuts.length);
+        globals.model.buildModel(faces, vertices, allEdges, allCreaseParams);
     }
 
     function getFacesAndVerticesForEdges(faces, allEdges){

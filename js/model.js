@@ -28,15 +28,16 @@ function initModel(globals){
     var creases = [];
     creases.push(new Crease(edges[2], 1, 0, Math.PI/2, 1, nodes[3], nodes[1], 0));
 
-    function buildModel(_faces, _vertices, _allEdges, allCreaseParams, numOutline, numMountians, numValleys, numCuts){
+    function buildModel(_faces, _vertices, _allEdges, allCreaseParams){
 
         var _nodes = [];
         for (var i=0;i<_vertices.length;i++){
             _nodes.push(new Node(_vertices[i].clone(), _nodes.length));
         }
-        _nodes[0].setFixed(true);
-        _nodes[1].setFixed(true);
-        _nodes[2].setFixed(true);
+        console.log(_faces[0]);
+        _nodes[_faces[0].a].setFixed(true);
+        _nodes[_faces[0].b].setFixed(true);
+        _nodes[_faces[0].c].setFixed(true);
 
         var _edges = [];
         for (var i=0;i<_allEdges.length;i++) {
