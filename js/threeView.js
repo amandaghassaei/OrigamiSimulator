@@ -123,7 +123,7 @@ function initThreeView(globals) {
     }
 
     function sceneRemove(object){
-        wrapper.remote(object);
+        wrapper.remove(object);
     }
 
     function onWindowResize() {
@@ -145,7 +145,11 @@ function initThreeView(globals) {
     }
 
     function centerModel(position){
-        modelWrapper.position.set(position.x, 0, position.z);
+        // modelWrapper.position.set(position.x, 0, position.z);
+    }
+
+    function getModelOffset(){
+        return modelWrapper.position.clone();
     }
 
 
@@ -163,6 +167,7 @@ function initThreeView(globals) {
         startAnimation: startAnimation,
         pauseAnimation: pauseAnimation,
         enableControls: enableControls,
+        getModelOffset: getModelOffset,
         scene: scene,
         camera: camera
     }

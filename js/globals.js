@@ -15,6 +15,7 @@ function initGlobals(){
         shouldResetDynamicSim: false,
         shouldChangeCreasePercent: false,
         shouldSyncWithModel: false,
+        nodePositionHasChanged: false,
 
         //3d vis
         dynamicSimVisible: true,

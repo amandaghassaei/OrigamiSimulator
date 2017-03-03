@@ -119,9 +119,9 @@ function initDynamicModel(globals){
                 updateFixed();
                 globals.fixedHasChanged = false;
             }
-            if (globals.materialHasChanged) {
-                updateMaterials();
-                globals.materialHasChanged = false;
+            if (globals.nodePositionHasChanged) {
+                updateLastPosition();
+                globals.nodePositionHasChanged = false;
             }
             if (globals.creaseMaterialHasChanged) {
                 updateCreasesMeta();
@@ -187,7 +187,6 @@ function initDynamicModel(globals){
             for (var i = 0; i < nodes.length; i++) {
                 var rgbaIndex = i * vectorLength;
                 var nodePosition = new THREE.Vector3(parsedPixels[rgbaIndex], parsedPixels[rgbaIndex + 1], parsedPixels[rgbaIndex + 2]);
-                // console.log(nodePosition);
                 nodes[i].render(nodePosition);
             }
             for (var i=0;i<edges.length;i++){
@@ -204,7 +203,7 @@ function initDynamicModel(globals){
     }
 
     function setSolveParams(){
-        var dt = calcDt();
+        var dt = calcDt()/10;//todo this is weird
         var numSteps = 0.5/dt;
         globals.gpuMath.setProgram("velocityCalc");
         globals.gpuMath.setUniformForProgram("velocityCalc", "u_dt", dt, "1f");
@@ -379,7 +378,16 @@ function initDynamicModel(globals){
             if (initing) creaseMeta[i*4+2] = crease.getTargetTheta();
         }
         globals.gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true);
+    }
 
+    function updateLastPosition(){
+        for (var i=0;i<nodes.length;i++){
+            var _position = nodes[i].getRelativePositon();
+            lastPosition[4*i] = _position.x;
+            lastPosition[4*i+1] = _position.y;
+            lastPosition[4*i+2] = _position.z;
+        }
+        globals.gpuMath.initTextureFromData("u_lastPosition", textureDim, textureDim, "FLOAT", lastPosition, true);
     }
 
     function setCreasePercent(percent){
@@ -478,6 +486,7 @@ function initDynamicModel(globals){
         syncNodesAndEdges: syncNodesAndEdges,
         pause: pause,
         resume: resume,
-        setVisibility: setVisibility
+        setVisibility: setVisibility,
+        updateFixed: updateFixed
     }
 }

@@ -154,7 +154,7 @@
                 deltaP -= normalize(deltaP)*beamMeta[2];
                 vec3 deltaV = neighborLastVelocity-lastVelocity;
 
-                vec3 _force = deltaP*beamMeta[0];// + deltaV*beamMeta[1];
+                vec3 _force = deltaP*beamMeta[0] + deltaV*beamMeta[1];
                 force += _force;
             }
 
@@ -187,7 +187,7 @@
                 float momentArm = creaseMeta2[1];
 
                 vec3 _force = angForce/momentArm*normal;
-                force += _force;
+                //force += _force;
             }
 
             vec3 velocity = force*u_dt/mass.x + lastVelocity;
@@ -234,7 +234,7 @@
     <script type="text/javascript" src="dependencies/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="dependencies/jquery-ui.min.js"></script>
     <script type="text/javascript" src="dependencies/flat-ui.min.js"></script>
-    <script type="text/javascript" src="dependencies/three.min.js"></script>
+    <script type="text/javascript" src="dependencies/three.js"></script>
     <script type="text/javascript" src="dependencies/binary_stl_writer.js"></script>
     <script type="text/javascript" src="dependencies/OrbitControls.js"></script>
     <script type="text/javascript" src="dependencies/underscore-min.js"></script>

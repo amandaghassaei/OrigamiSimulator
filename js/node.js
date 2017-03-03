@@ -4,11 +4,10 @@
 
 var nodeMaterial = new THREE.MeshBasicMaterial({color: 0x000000, side:THREE.DoubleSide});
 var nodeMaterialFixed = new THREE.MeshBasicMaterial({color: 0x000000, side:THREE.DoubleSide});
-var nodeMaterialDelete = new THREE.MeshBasicMaterial({color: 0xff0000, side:THREE.DoubleSide});
-var nodeMaterialHighlight = new THREE.MeshBasicMaterial({color: 0xff00ff, side:THREE.DoubleSide});
-var nodeGeo = new THREE.CircleGeometry(0.2,20);
+var nodeMaterialHighlight = new THREE.MeshBasicMaterial({color: 0xffffff, side:THREE.DoubleSide});
+var nodeGeo = new THREE.SphereGeometry(10,20);
 nodeGeo.rotateX(Math.PI/2);
-var nodeFixedGeo = new THREE.CubeGeometry(1, 0.5, 1);
+var nodeFixedGeo = new THREE.CubeGeometry(10, 10, 10);
 nodeFixedGeo.applyMatrix( new THREE.Matrix4().makeTranslation(0, 0.25, 0) );
 
 
@@ -45,6 +44,10 @@ Node.prototype.setFixed = function(fixed){
 
 Node.prototype.isFixed = function(){
     return this.fixed;
+};
+
+Node.prototype.moveManually = function(position){
+    this.object3D.position.set(position.x, position.y, position.z);
 };
 
 
@@ -142,6 +145,7 @@ Node.prototype.hide = function(){
 };
 
 Node.prototype.render = function(position){
+    if (this.fixed) return;
     position.add(this.getOriginalPosition());
     this.object3D.position.set(position.x, position.y, position.z);
 };
@@ -161,6 +165,10 @@ Node.prototype.getOriginalPosition = function(){
 
 Node.prototype.getPosition = function(){
     return this.object3D.position;
+};
+
+Node.prototype.getRelativePositon = function(){
+    return this.object3D.position.clone().sub(this._originalPosition);
 };
 
 Node.prototype.getSimMass = function(){

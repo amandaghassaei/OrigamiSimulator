@@ -5,6 +5,8 @@
 //wireframe model and folding structure
 function initModel(globals){
 
+    var allNodeObject3Ds = [];
+
     var nodes = [];
     nodes.push(new Node(new THREE.Vector3(0,0,0), nodes.length));
     nodes.push(new Node(new THREE.Vector3(0,0,10), nodes.length));
@@ -50,8 +52,11 @@ function initModel(globals){
         }
 
         globals.threeView.sceneClearModel();
+        var _allNodeObject3Ds  = [];
         _.each(_nodes, function(node){
-            globals.threeView.sceneAddModel(node.getObject3D());
+            var obj3D = node.getObject3D();
+            _allNodeObject3Ds.push(obj3D);
+            globals.threeView.sceneAddModel(obj3D);
         });
         _.each(_edges, function(edge){
             globals.threeView.sceneAddModel(edge.getObject3D());
@@ -62,6 +67,7 @@ function initModel(globals){
         var oldCreases = creases;
 
         nodes = _nodes;
+        allNodeObject3Ds = _allNodeObject3Ds;
         edges = _edges;
         faces = _faces;
         creases = _creases;
@@ -100,11 +106,16 @@ function initModel(globals){
         return creases;
     }
 
+    function getObjectsToIntersect(){
+        return allNodeObject3Ds;
+    }
+
     return {
         getNodes: getNodes,
         getEdges: getEdges,
         getFaces: getFaces,
         getCreases: getCreases,
-        buildModel: buildModel
+        buildModel: buildModel,
+        getObjectsToIntersect: getObjectsToIntersect
     }
 }
