@@ -26,6 +26,7 @@ function initThreeView(globals) {
         scene.background = new THREE.Color(0xe6e6e6);
         scene.add(wrapper);
         scene.add(patternWrapper);
+        patternWrapper.visible = false;
         scene.add(modelWrapper);
         var directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
         directionalLight1.position.set(0, 100, 0);
@@ -42,7 +43,7 @@ function initThreeView(globals) {
         //scene.fog = new THREE.FogExp2(0xf4f4f4, 1.7);
         //renderer.setClearColor(scene.fog.color);
 
-        camera.zoom = 15;
+        camera.zoom = 1;
         camera.updateProjectionMatrix();
         camera.position.x = 40;
         camera.position.y = 40;
@@ -143,6 +144,10 @@ function initThreeView(globals) {
         controls.enableRotate = state;
     }
 
+    function centerModel(position){
+        modelWrapper.position.set(position.x, 0, position.z);
+    }
+
 
     return {
         sceneAddPattern: sceneAddPattern,
@@ -150,6 +155,7 @@ function initThreeView(globals) {
         sceneClearPattern: sceneClearPattern,
         sceneAddModel: sceneAddModel,
         sceneClearModel: sceneClearModel,
+        centerModel: centerModel,
         sceneAdd: sceneAdd,
         sceneRemove: sceneRemove,
         render: render,

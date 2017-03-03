@@ -53,8 +53,10 @@ function initDynamicModel(globals){
         geometry.computeBoundingSphere();
 
         var bounds = geometry.boundingBox;
-        var avg = (bounds.min.add(bounds.max)).multiplyScalar(0.5);
-        object3D.position.set(-avg.x, 0, -avg.z);
+        var avg = (bounds.min.add(bounds.max)).multiplyScalar(-0.5);
+        object3D.position.set(avg.x, 0, avg.z);
+        globals.threeView.centerModel(avg);
+
 
         initTypedArrays();
         if (firstTime === undefined) firstTime = false;
