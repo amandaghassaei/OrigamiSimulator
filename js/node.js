@@ -145,7 +145,7 @@ Node.prototype.hide = function(){
 };
 
 Node.prototype.render = function(position){
-    if (this.fixed) return;
+    // if (this.fixed) return;
     position.add(this.getOriginalPosition());
     this.object3D.position.set(position.x, position.y, position.z);
 };
@@ -167,7 +167,7 @@ Node.prototype.getPosition = function(){
     return this.object3D.position;
 };
 
-Node.prototype.getRelativePositon = function(){
+Node.prototype.getRelativePosition = function(){
     return this.object3D.position.clone().sub(this._originalPosition);
 };
 

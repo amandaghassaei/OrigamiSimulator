@@ -115,16 +115,6 @@ $(function() {
         return _highlightedObj;
     }
 
-    function dragNode(e){
-        globals.threeView.enableControls(false);
-        highlightedObj.highlight();
-        raycasterPlane.set(raycasterPlane.normal, -highlightedObj.getPosition().z);
-        var intersection = new THREE.Vector3();
-        raycaster.ray.intersectPlane(raycasterPlane, intersection);
-        // globals.dynamicModel.updateFixedHeights();
-        // globals.dynamicModel.updateOriginalPosition();
-    }
-
     globals = initGlobals();
     globals.model = initModel(globals);
     globals.dynamicModel = initDynamicModel(globals);

@@ -382,12 +382,13 @@ function initDynamicModel(globals){
 
     function updateLastPosition(){
         for (var i=0;i<nodes.length;i++){
-            var _position = nodes[i].getRelativePositon();
+            var _position = nodes[i].getRelativePosition();
             lastPosition[4*i] = _position.x;
             lastPosition[4*i+1] = _position.y;
             lastPosition[4*i+2] = _position.z;
         }
         globals.gpuMath.initTextureFromData("u_lastPosition", textureDim, textureDim, "FLOAT", lastPosition, true);
+        globals.gpuMath.initFrameBufferForTexture("u_lastPosition", true);
     }
 
     function setCreasePercent(percent){

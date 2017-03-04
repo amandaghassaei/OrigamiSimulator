@@ -8,7 +8,7 @@ function initThreeView(globals) {
     var wrapper = new THREE.Object3D();
     var patternWrapper = new THREE.Object3D();
     var modelWrapper = new THREE.Object3D();
-    var camera = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, -1000, 1000);//-40, 40);
+    var camera = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, -10000, 10000);//-40, 40);
     var renderer = new THREE.WebGLRenderer({antialias: true});
     var controls;
 
@@ -45,9 +45,9 @@ function initThreeView(globals) {
 
         camera.zoom = 1;
         camera.updateProjectionMatrix();
-        camera.position.x = 40;
-        camera.position.y = 40;
-        camera.position.z = 40;
+        camera.position.x = 4000;
+        camera.position.y = 4000;
+        camera.position.z = 4000;
 
         controls = new THREE.OrbitControls(camera, container.get(0));
         controls.addEventListener('change', render);
