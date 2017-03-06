@@ -253,11 +253,8 @@
             vec3 creaseVector = texture2D(u_creaseVectors, scaledFragCoord).xyz;
             float sign = dot(cross(normal1, normal2), creaseVector);
             if (sign < 0.0) theta *= -1.0;
-            if (lastTheta[1] < 0.0){//decreasing
-                if (theta > 1.0 && lastTheta[0] < -1.0) theta -= 2.0*M_PI*(1.0+mod(lastTheta[0], 2.0*M_PI));
-            } else {//increasing
-                if (theta < -1.0 && lastTheta[0] > 1.0) theta += 2.0*M_PI*(1.0+mod(lastTheta[0], 2.0*M_PI));
-            }
+            if (theta > 3.0 && lastTheta[0] < -3.0) theta -= 2.0*M_PI*(1.0+floor(lastTheta[0]/2.0*M_PI));
+            if (theta < -3.0 && lastTheta[0] > 3.0) theta += 2.0*M_PI*(1.0+floor(lastTheta[0]/2.0*M_PI));
             gl_FragColor = vec4(theta, theta-lastTheta[0], lastTheta[2], lastTheta[3]);//[theta, w, normal1Index, normal2Index]
         }
     </script>
@@ -362,20 +359,20 @@
 <div id="controls">
     <div class="sliderInput" id="creasePercent">
         <span class="label-slider">Crease Percent : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-        <input value="" placeholder="" class="form-control int" type="text">
+        <input value="" placeholder="" class="form-control" type="text">
     </div>
     <br/><br/><br/>
     <div class="sliderInput" id="axialStiffness">
         <span class="label-slider">Axial Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-        <input value="" placeholder="" class="form-control int" type="text">
+        <input value="" placeholder="" class="form-control" type="text">
     </div>
     <div class="sliderInput" id="creaseStiffness">
         <span class="label-slider">Crease Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-        <input value="" placeholder="" class="form-control int" type="text">
+        <input value="" placeholder="" class="form-control" type="text">
     </div>
     <div class="sliderInput" id="panelStiffness">
         <span class="label-slider">Panel Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-        <input value="" placeholder="" class="form-control int" type="text">
+        <input value="" placeholder="" class="form-control" type="text">
     </div>
     <div id="svgViewer"></div>
     <div class="extraSpace"></div>
