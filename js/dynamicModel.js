@@ -202,7 +202,7 @@ function initDynamicModel(globals){
             console.log("here");
         }
 
-        globals.gpuMath.setSize(textureDim, textureDim);
+        //globals.gpuMath.setSize(textureDim, textureDim);
     }
 
     function setSolveParams(){

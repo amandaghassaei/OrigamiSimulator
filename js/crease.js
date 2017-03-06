@@ -68,7 +68,12 @@ Crease.prototype.getLengthTo = function(node){
     var nodePosition = node.getOriginalPosition();
     var vector2 = nodePosition.sub(this.edge.nodes[1].getOriginalPosition());
     var projLength = vector1.dot(vector2);
-    return Math.sqrt(vector2.lengthSq()-projLength*projLength);
+    var length = Math.sqrt(vector2.lengthSq()-projLength*projLength);
+    if (length <= 0.0) {
+        console.warn("bad moment arm");
+        length = 0.001;
+    }
+    return length;
 };
 
 Crease.prototype.getNodeIndex = function(node){

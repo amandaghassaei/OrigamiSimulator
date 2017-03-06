@@ -174,6 +174,9 @@
                 vec4 thetas = texture2D(u_theta, scaledCreaseIndex);
                 vec3 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex).xyz;//[k, d, targetTheta]
 
+                float targetTheta = creaseMeta[2] * u_creasePercent;
+                float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
+
                 if (creaseMeta2[3] < 0.0){//crease reaction
                     float nodeNum = creaseMeta2[2];
 
@@ -189,16 +192,14 @@
                     scaledNormalsIndex = normalsIndex/u_textureDimFaces;
                     vec3 normal2 = texture2D(u_normals, scaledNormalsIndex).xyz;
 
-                    float targetTheta = creaseMeta[2] * u_creasePercent;
+                    float momentArm1 = creaseMeta2[1];
+                    float momentArm2 = creaseMeta2[2];
 
-                    float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
-
-                    vec3 _force = -0.5*(angForce/creaseMeta2[1]*normal1 + angForce/creaseMeta2[2]*normal2);
+                    vec3 _force = -0.5*(angForce/momentArm1*normal1 + angForce/momentArm2*normal2);
                     force += _force;
                 } else {
                     float nodeNum = creaseMeta2[2];
                     float normalIndex1D = thetas[2];//node #1
-                    float targetTheta = creaseMeta[2] * u_creasePercent;
                     if (nodeNum > 1.1) {
                         normalIndex1D = thetas[3];//node #2
                     }
@@ -206,7 +207,6 @@
                     vec2 scaledNormalsIndex = normalsIndex/u_textureDimFaces;
                     vec3 normal = texture2D(u_normals, scaledNormalsIndex).xyz;
 
-                    float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
                     float momentArm = creaseMeta2[1];
 
                     vec3 _force = angForce/momentArm*normal;
@@ -221,7 +221,7 @@
     </script>
 
     <script id="thetaCalcShader" type="x-shader/x-fragment">
-        #define M_PI 3.1415926535897932384626433832795
+        #define TWO_PI 6.283185307179586476925286766559
         precision mediump float;
         uniform vec2 u_textureDimFaces;
         uniform vec2 u_textureDimCreases;
@@ -249,12 +249,15 @@
             vec3 normal1 = texture2D(u_normals, normal1Index).xyz;
             vec3 normal2 = texture2D(u_normals, normal2Index).xyz;
 
-            float theta = acos(dot(normal1, normal2));//normals are already normalized, no need to divide by length
+            float dotNormals = dot(normal1, normal2);//normals are already normalized, no need to divide by length
+            //if (dotNormals < -0.999) dotNormals = -0.999;
+            //else if (dotNormals > 0.999) dotNormals = 0.999;
+            float theta = acos(dotNormals);
             vec3 creaseVector = texture2D(u_creaseVectors, scaledFragCoord).xyz;
             float sign = dot(cross(normal1, normal2), creaseVector);
             if (sign < 0.0) theta *= -1.0;
-            if (theta > 3.0 && lastTheta[0] < -3.0) theta -= 2.0*M_PI*(1.0+floor(lastTheta[0]/2.0*M_PI));
-            if (theta < -3.0 && lastTheta[0] > 3.0) theta += 2.0*M_PI*(1.0+floor(lastTheta[0]/2.0*M_PI));
+            if (theta > 2.0 && lastTheta[0] < -2.0) theta -= TWO_PI*(1.0+floor(-lastTheta[0]/TWO_PI));
+            if (theta < -2.0 && lastTheta[0] > 2.0) theta += TWO_PI*(1.0+floor(lastTheta[0]/TWO_PI));
             gl_FragColor = vec4(theta, theta-lastTheta[0], lastTheta[2], lastTheta[3]);//[theta, w, normal1Index, normal2Index]
         }
     </script>
