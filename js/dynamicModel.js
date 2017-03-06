@@ -28,7 +28,8 @@ function initDynamicModel(globals){
 
     var normals;
     var creaseMeta;//[k, d, targetTheta]
-    var creaseMeta2;//[creaseIndex, length to node, nodeIndex (1/2)]
+    var creaseMeta2;//[creaseIndex (thetaIndex), length to node, nodeIndex (1/2), ]
+                    //[creaseIndex (thetaIndex), length to node1, length to node2, -1]
     var creaseVectors;//vectors of oriented edges in crease
     var theta;//[theta, w, normalIndex1, normalIndex2]
     var lastTheta;//[theta, w, normalIndex1, normalIndex2]
@@ -408,17 +409,18 @@ function initDynamicModel(globals){
         }
         textureDimEdges = calcTextureSize(numEdges);
 
+        var numCreases = creases.length;
+        textureDimCreases = calcTextureSize(numCreases);
+
         var numNodeCreases = 0;
         for (var i=0;i<nodes.length;i++){
             numNodeCreases += nodes[i].numCreases();
         }
+        numNodeCreases += numCreases*2;
         textureDimNodeCreases = calcTextureSize(numNodeCreases);
 
         var numFaces = geometry.faces.length;
         textureDimFaces = calcTextureSize(numFaces);
-
-        var numCreases = creases.length;
-        textureDimCreases = calcTextureSize(numCreases);
 
         originalPosition = new Float32Array(textureDim*textureDim*4);
         position = new Float32Array(textureDim*textureDim*4);
@@ -459,11 +461,20 @@ function initDynamicModel(globals){
         for (var i=0;i<nodes.length;i++){
             meta[i*4+2] = index;
             var nodeCreases = nodes[i].creases;
-            meta[i*4+3] = nodeCreases.length;
+            var nodeInvCreases = nodes[i].invCreases;
+            // console.log(nodeInvCreases);
+            meta[i*4+3] = nodeCreases.length + nodeInvCreases.length;
             for (var j=0;j<nodeCreases.length;j++){
                 creaseMeta2[index*4] = nodeCreases[j].getIndex();
                 creaseMeta2[index*4+1] = nodeCreases[j].getLengthTo(nodes[i]);
-                creaseMeta2[index*4+2] = nodeCreases[j].getNodeIndex(nodes[i]);
+                creaseMeta2[index*4+2] = nodeCreases[j].getNodeIndex(nodes[i]);//type 1 or 2
+                index++;
+            }
+            for (var j=0;j<nodeInvCreases.length;j++){
+                creaseMeta2[index*4] = nodeInvCreases[j].getIndex();
+                creaseMeta2[index*4+1] = nodeInvCreases[j].getLengthToNode1();
+                creaseMeta2[index*4+2] = nodeInvCreases[j].getLengthToNode2();
+                creaseMeta2[index*4+3] = -1;
                 index++;
             }
         }

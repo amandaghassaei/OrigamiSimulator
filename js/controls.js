@@ -68,7 +68,7 @@ function initControls(globals){
         globals.shouldResetDynamicSim = true;
     });
 
-    setSliderInput("#creasePercent", globals.creasePercent, 0, 1, 0.01, function(val){
+    setSliderInput("#creasePercent", globals.creasePercent, -1, 1, 0.01, function(val){
         globals.creasePercent = val;
         globals.shouldChangeCreasePercent = true;
     });

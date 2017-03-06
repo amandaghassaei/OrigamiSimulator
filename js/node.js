@@ -22,6 +22,7 @@ function Node(position, index){
 
     this.beams = [];
     this.creases = [];
+    this.invCreases = [];
     this.externalForce = null;
     this.fixed = false;
 
@@ -90,6 +91,16 @@ Node.prototype.removeCrease = function(crease){
     if (this.creases === null) return;
     var index = this.creases.indexOf(crease);
     if (index>=0) this.creases.splice(index, 1);
+};
+
+Node.prototype.addInvCrease = function(crease){
+    this.invCreases.push(crease);
+};
+
+Node.prototype.removeInvCrease = function(crease){
+    if (this.invCreases === null) return;
+    var index = this.invCreases.indexOf(crease);
+    if (index>=0) this.invCreases.splice(index, 1);
 };
 
 
@@ -187,5 +198,6 @@ Node.prototype.destroy = function(){
     this.object3D = null;
     this.beams = null;
     this.creases = null;
+    this.invCreases = null;
     this.externalForce = null;
 };

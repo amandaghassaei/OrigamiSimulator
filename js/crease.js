@@ -2,10 +2,14 @@
  * Created by amandaghassaei on 2/25/17.
  */
 
-function Crease(edge, face1Index, face2Index, targetTheta, type, node1, node2, index){//type = 0 panel, 1 crease
+function Crease(edge, face1Index, face2Index, targetTheta, type, node1, node2, index){
+    //type = 0 panel, 1 crease
 
     //face1 corresponds to node1, face2 to node2
     this.edge = edge;
+    for (var i=0;i<edge.nodes.length;i++){
+        edge.nodes[i].addInvCrease(this);
+    }
     this.face1Index = face1Index;
     this.face2Index = face2Index;
     this.targetTheta = targetTheta;
@@ -51,6 +55,14 @@ Crease.prototype.getIndex = function(){
     return this.index;
 };
 
+Crease.prototype.getLengthToNode1 = function(){
+    return this.getLengthTo(this.node1);
+};
+
+Crease.prototype.getLengthToNode2 = function(){
+    return this.getLengthTo(this.node2);
+};
+
 Crease.prototype.getLengthTo = function(node){
     var vector1 = this.getVector().normalize();
     var nodePosition = node.getOriginalPosition();
@@ -69,6 +81,11 @@ Crease.prototype.getNodeIndex = function(node){
 Crease.prototype.destroy = function(){
     this.node1.removeCrease(this);
     this.node2.removeCrease(this);
+    if (this.edge && this.edge.nodes){
+        for (var i=0;i<this.edge.nodes.length;i++){
+            this.edge.nodes[i].removeInvCrease(this);
+        }
+    }
     this.edge = null;
     this.face1Index = null;
     this.face2Index = null;

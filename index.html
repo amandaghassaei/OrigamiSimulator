@@ -165,7 +165,7 @@
                 float nodeCreaseIndex1D = meta[2]+float(j);
                 vec2 nodeCreaseIndex = vec2(mod(nodeCreaseIndex1D, u_textureDimNodeCreases.x)+0.5, floor(nodeCreaseIndex1D/u_textureDimNodeCreases.x)+0.5);
                 vec2 scaledNodeCreaseIndex = nodeCreaseIndex/u_textureDimNodeCreases;
-                vec4 creaseMeta2 = texture2D(u_creaseMeta2, scaledNodeCreaseIndex);//[creaseIndex, length to node, nodeIndex (1/2)]
+                vec4 creaseMeta2 = texture2D(u_creaseMeta2, scaledNodeCreaseIndex);//[creaseIndex, length to node, nodeType (1 or 2), isReaction]
 
                 float creaseIndex1D = creaseMeta2[0];
                 vec2 creaseIndex = vec2(mod(creaseIndex1D, u_textureDimCreases.x)+0.5, floor(creaseIndex1D/u_textureDimCreases.x)+0.5);
@@ -174,21 +174,45 @@
                 vec4 thetas = texture2D(u_theta, scaledCreaseIndex);
                 vec3 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex).xyz;//[k, d, targetTheta]
 
-                float nodeNum = creaseMeta2[2];
-                float normalIndex1D = thetas[2];//node #1
-                float targetTheta = creaseMeta[2] * u_creasePercent;
-                if (nodeNum > 1.1) {
-                    normalIndex1D = thetas[3];//node #2
+                if (creaseMeta2[3] < 0.0){//crease reaction
+                    float nodeNum = creaseMeta2[2];
+
+                    //node #1
+                    float normalIndex1D = thetas[2];
+                    vec2 normalsIndex = vec2(mod(normalIndex1D, u_textureDimFaces.x)+0.5, floor(normalIndex1D/u_textureDimFaces.x)+0.5);
+                    vec2 scaledNormalsIndex = normalsIndex/u_textureDimFaces;
+                    vec3 normal1 = texture2D(u_normals, scaledNormalsIndex).xyz;
+
+                    //node #2
+                    normalIndex1D = thetas[3];
+                    normalsIndex = vec2(mod(normalIndex1D, u_textureDimFaces.x)+0.5, floor(normalIndex1D/u_textureDimFaces.x)+0.5);
+                    scaledNormalsIndex = normalsIndex/u_textureDimFaces;
+                    vec3 normal2 = texture2D(u_normals, scaledNormalsIndex).xyz;
+
+                    float targetTheta = creaseMeta[2] * u_creasePercent;
+
+                    float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
+
+                    vec3 _force = -0.5*(angForce/creaseMeta2[1]*normal1 + angForce/creaseMeta2[2]*normal2);
+                    force += _force;
+                } else {
+                    float nodeNum = creaseMeta2[2];
+                    float normalIndex1D = thetas[2];//node #1
+                    float targetTheta = creaseMeta[2] * u_creasePercent;
+                    if (nodeNum > 1.1) {
+                        normalIndex1D = thetas[3];//node #2
+                    }
+                    vec2 normalsIndex = vec2(mod(normalIndex1D, u_textureDimFaces.x)+0.5, floor(normalIndex1D/u_textureDimFaces.x)+0.5);
+                    vec2 scaledNormalsIndex = normalsIndex/u_textureDimFaces;
+                    vec3 normal = texture2D(u_normals, scaledNormalsIndex).xyz;
+
+                    float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
+                    float momentArm = creaseMeta2[1];
+
+                    vec3 _force = angForce/momentArm*normal;
+                    force += _force;
                 }
-                vec2 normalsIndex = vec2(mod(normalIndex1D, u_textureDimFaces.x)+0.5, floor(normalIndex1D/u_textureDimFaces.x)+0.5);
-                vec2 scaledNormalsIndex = normalsIndex/u_textureDimFaces;
-                vec3 normal = texture2D(u_normals, scaledNormalsIndex).xyz;
 
-                float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
-                float momentArm = creaseMeta2[1];
-
-                vec3 _force = angForce/momentArm*normal;
-                force += _force;
             }
 
             vec3 velocity = force*u_dt/mass[0] + lastVelocity;
