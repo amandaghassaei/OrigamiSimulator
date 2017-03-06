@@ -54,8 +54,8 @@ function initDynamicModel(globals){
 
         var bounds = geometry.boundingBox;
         var avg = (bounds.min.add(bounds.max)).multiplyScalar(-0.5);
-        object3D.position.set(avg.x, 0, avg.z);
-        globals.threeView.centerModel(avg);
+        // object3D.position.set(avg.x, 0, avg.z);
+        // globals.threeView.centerModel(avg);
 
 
         initTypedArrays();
@@ -143,6 +143,8 @@ function initDynamicModel(globals){
         gpuMath.setSize(textureDimCreases, textureDimCreases);
         gpuMath.step("thetaCalc", ["u_normals", "u_lastTheta", "u_creaseVectors"], "u_theta");
 
+        gpuMath.setProgram("velocityCalc");
+        gpuMath.setSize(textureDim, textureDim);
         gpuMath.step("velocityCalc", ["u_lastPosition", "u_lastVelocity", "u_originalPosition", "u_externalForces",
             "u_mass", "u_meta", "u_beamMeta", "u_creaseMeta", "u_creaseMeta2", "u_normals", "u_theta"], "u_velocity");
         gpuMath.step("positionCalc", ["u_velocity", "u_lastPosition", "u_mass"], "u_position");
@@ -165,8 +167,8 @@ function initDynamicModel(globals){
         //     var pixels = new Uint8Array(height*textureDimCreases*4*vectorLength);
         //     globals.gpuMath.readPixels(0, 0, textureDimCreases * vectorLength, height, pixels);
         //     var parsedPixels = new Float32Array(pixels.buffer);
-        //     for (var i = 0; i < creases.length; i++) {
-        //         // console.log(parsedPixels[i])
+        //     for (var i = 0; i < 1; i++) {
+        //         console.log(parsedPixels[i])
         //     }
         // } else {
         //     console.log("here");

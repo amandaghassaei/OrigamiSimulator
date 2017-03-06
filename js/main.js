@@ -33,6 +33,7 @@ $(function() {
             draggingNode = null;
             globals.fixedHasChanged = true;
             globals.threeView.enableControls(true);
+            setHighlightedObj(null);
         }
         mouseDown = false;
     }, false);

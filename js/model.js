@@ -19,7 +19,7 @@ function initModel(globals){
     var edges = [];
     edges.push(new Beam([nodes[0], nodes[1]]));
     edges.push(new Beam([nodes[1], nodes[2]]));
-    edges.push(new Beam([nodes[0], nodes[2]]));
+    edges.push(new Beam([nodes[2], nodes[0]]));
     edges.push(new Beam([nodes[3], nodes[0]]));
     edges.push(new Beam([nodes[3], nodes[2]]));
 
@@ -28,7 +28,7 @@ function initModel(globals){
     faces.push(new THREE.Face3(0,2,3));
 
     var creases = [];
-    creases.push(new Crease(edges[2], 1, 0, Math.PI/2, 1, nodes[3], nodes[1], 0));
+    creases.push(new Crease(edges[2], 0, 1, Math.PI/2, 1, nodes[1], nodes[3], 0));
 
     function buildModel(_faces, _vertices, _allEdges, allCreaseParams){
 
@@ -46,8 +46,9 @@ function initModel(globals){
         }
 
         var _creases = [];
-        for (var i=0;i<allCreaseParams.length;i++) {
+        for (var i=0;i<1;i++) {
             var creaseParams = allCreaseParams[i];//face1Ind, vertInd, face2Ind, ver2Ind, edgeInd, angle
+            _edges[creaseParams[4]].highlight();
             _creases.push(new Crease(_edges[creaseParams[4]], creaseParams[0], creaseParams[2], creaseParams[5], 1, _nodes[creaseParams[1]], _nodes[creaseParams[3]], _creases.length));
         }
 

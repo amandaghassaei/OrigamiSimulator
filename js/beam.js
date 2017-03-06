@@ -2,7 +2,7 @@
  * Created by ghassaei on 9/16/16.
  */
 
-var beamMaterialHighlight = new THREE.LineBasicMaterial({color: 0xffffff, linewidth: 4});
+var beamMaterialHighlight = new THREE.LineBasicMaterial({color: 0xff0000, linewidth: 4});
 var beamMaterial = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 4});
 
 function Beam(nodes){
