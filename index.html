@@ -250,8 +250,8 @@
             vec3 normal2 = texture2D(u_normals, normal2Index).xyz;
 
             float dotNormals = dot(normal1, normal2);//normals are already normalized, no need to divide by length
-            //if (dotNormals < -0.999) dotNormals = -0.999;
-            //else if (dotNormals > 0.999) dotNormals = 0.999;
+            if (dotNormals < -0.999) dotNormals = -0.999;
+            else if (dotNormals > 0.999) dotNormals = 0.999;
             float theta = acos(dotNormals);
             vec3 creaseVector = texture2D(u_creaseVectors, scaledFragCoord).xyz;
             float sign = dot(cross(normal1, normal2), creaseVector);
