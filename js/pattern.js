@@ -161,7 +161,7 @@ function initPattern(globals){
         mergeVertices();
 
         var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts);
-        var faces = triangulatePolys(findPolygons(allEdges));
+        var faces = triangulatePolys(findPolygons(allEdges), allEdges);
         drawPattern(faces);
         globals.threeView.render();
 
@@ -266,7 +266,9 @@ function initPattern(globals){
         vertices = mergedVertices;
     }
 
-    function triangulatePolys(polygons){
+    function triangulatePolys(polygonData, allEdges){
+        var polygons = polygonData[0];
+        var polygonEdges = polygonData[1];
         var faces = [];
         for (var i=0;i<polygons.length;i++){
             var polyVerts = [];
@@ -278,6 +280,49 @@ function initPattern(globals){
             var triangles = earcut(polyVerts);
             for (var j=0;j<triangles.length;j+=3){
                 var face = new THREE.Face3(polygons[i][triangles[j+2]], polygons[i][triangles[j+1]], polygons[i][triangles[j]]);
+                var foundEdges = [false, false, false];//ab, bc, ca
+
+                for (var k=0;k<polygonEdges[i].length;k++){
+                    var edgeIndex = polygonEdges[i][k];
+                    if (edgeIndex<0) edgeIndex = -edgeIndex-1;
+                    var _edgeVertices = allEdges[edgeIndex];
+
+                    var aIndex = _edgeVertices.indexOf(face.a);
+                    var bIndex = _edgeVertices.indexOf(face.b);
+                    var cIndex = _edgeVertices.indexOf(face.c);
+
+                    if (aIndex >= 0){
+                        if (bIndex >= 0) {
+                            foundEdges[0] = true;
+                            continue;
+                        }
+                        if (cIndex >= 0) {
+                            foundEdges[2] = true;
+                            continue;
+                        }
+                    }
+                    if (bIndex >= 0){
+                        if (cIndex >= 0) {
+                            foundEdges[1] = true;
+                            continue;
+                        }
+                    }
+                }
+
+                for (var k=0;k<3;k++){
+                    if (foundEdges[k]) continue;
+                    if (k==0){
+                        polygonEdges[i].push(allEdges.length);
+                        allEdges.push([face.a, face.b]);
+                    } else if (k==1){
+                        polygonEdges[i].push(allEdges.length);
+                        allEdges.push([face.c, face.b]);
+                    } else if (k==2){
+                        polygonEdges[i].push(allEdges.length);
+                        allEdges.push([face.c, face.a]);
+                    }
+                }
+
                 faces.push(face);
             }
         }
@@ -395,10 +440,11 @@ function initPattern(globals){
             }
             if (!containsInnerCrease) {
                 polygons.splice(i,1);
+                polygonEdges.splice(i,1);
             }
         }
 
-        return polygons;
+        return [polygons, polygonEdges];
     }
 
     function findNextPolyVert(_poly, _polyEdges, fromEdge, vertIndex, vertEdges, allEdges, edgesDir1, edgesDir2){

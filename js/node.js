@@ -122,6 +122,13 @@ Node.prototype.numBeams = function(){
     return this.beams.length;
 };
 
+Node.prototype.isConnectedTo = function(node){
+    for (var i=0;i<this.beams.length;i++){
+        if (this.beams[i].getOtherNode(this) == node) return true;
+    }
+    return false;
+};
+
 Node.prototype.numCreases = function(){
     return this.creases.length;
 };
