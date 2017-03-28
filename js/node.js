@@ -49,6 +49,9 @@ Node.prototype.isFixed = function(){
 
 Node.prototype.moveManually = function(position){
     this.object3D.position.set(position.x, position.y, position.z);
+    _.each(this.beams, function(beam){
+        beam.render();
+    });
 };
 
 

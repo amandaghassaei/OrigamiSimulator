@@ -67,6 +67,7 @@ $(function() {
             intersection.sub(globals.threeView.getModelOffset());
             highlightedObj.moveManually(intersection);
             globals.nodePositionHasChanged = true;
+            globals.threeView.render();
         }
     }
 
@@ -118,7 +119,7 @@ $(function() {
 
     globals = initGlobals();
     globals.model = initModel(globals);
-    globals.dynamicModel = initDynamicModel(globals);
+    // globals.dynamicModel = initDynamicModel(globals);
     globals.pattern = initPattern(globals);
     globals.threeView.render();
     // globals.threeView.sceneAdd(raycasterPlane);
