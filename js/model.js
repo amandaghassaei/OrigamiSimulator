@@ -89,6 +89,8 @@ function initModel(globals){
             oldCreases[i].destroy();
         }
         oldCreases = null;
+
+        globals.staticSolver.syncNodesAndEdges();
     }
 
     function getNodes(){

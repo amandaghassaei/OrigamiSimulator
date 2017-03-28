@@ -38,8 +38,9 @@ Beam.prototype.isFixed = function(){
     return this.nodes[0].fixed && this.nodes[1].fixed;
 };
 
-Beam.prototype.getVector = function(){
-    return this.vertices[0].clone().sub(this.vertices[1]);
+Beam.prototype.getVector = function(fromNode){
+    if (fromNode == this.nodes[1]) return this.vertices[0].clone().sub(this.vertices[1]);
+    return this.vertices[1].clone().sub(this.vertices[0]);
 };
 
 
