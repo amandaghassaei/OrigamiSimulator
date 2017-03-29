@@ -60,12 +60,15 @@ function initStaticSolver(){
 
         var nullEntries = [];
         var infiniteEntry = false;
+        var X = initEmptyArray(F.length);
         for (var i=Ctrans_Q_C.length;i>=0;i--){
             if (numeric.dot(Ctrans_Q_C[i], Ctrans_Q_C[i]) == 0) {
                 if (F[i] < 0) {
+                    X[i] = -1;
                     nullEntries.push([i, -1]);
                     infiniteEntry = true;
                 } else if (F[i]>0) {
+                    X[i] = 1;
                     nullEntries.push([i, 1]);
                     infiniteEntry = true;
                 } else nullEntries.push([i, 0]);
@@ -75,13 +78,22 @@ function initStaticSolver(){
         }
 
         if (infiniteEntry){
-            //make X from infinities, check for nodes with infinite motion on more than one axis
-            var X = [];
-            // render(X)
+            //make X from infinities
+            // check for nodes with infinite motion on more than one axis
+            for (var i=0;i<numVerticesFree.length;i++){
+                var sqLength = X[3*i]*X[3*i] + X[3*i+1]*X[3*i+1] + X[3*i+2]*X[3*i+2];
+                if (sqLength>0){
+                    var length = Math.sqrt(sqLength);
+                    X[3*i] /= length;
+                    X[3*i+1] /= length;
+                    X[3*i+2] /= length;
+                }
+            }
+            render(X);
             return;
         }
 
-        if (nullEntries.length>0){//zero entries
+        if (nullEntries.length>0){//remove zero columns
             for (var i=0;i<Ctrans_Q_C.length;i++){
                 for (var j=0;j<nullEntries.length;j++){
                     Ctrans_Q_C[i].splice(nullEntries[j][0],1);
@@ -89,16 +101,19 @@ function initStaticSolver(){
             }
         }
 
-        var X = numeric.solve(Ctrans_Q_C, F);//numeric.dot(inv_Ctrans_Q_C, numeric.sub(F, Ctrans_Q_Cf_Xf));
+        X = numeric.solve(Ctrans_Q_C, F);//numeric.dot(inv_Ctrans_Q_C, numeric.sub(F, Ctrans_Q_Cf_Xf));
 
         if (nullEntries.length>0){
             //add zeros back to X array
-
+            for (var i=0;i<nullEntries.length;i++){
+                X.splice(nullEntries[i][0], 0, 0);
+            }
         }
-        // render(X);
+        render(X);
     }
 
     function render(X){
+        console.log(X);
         for (var i=0;i<numVerticesFree;i++){
             var nodePosition = new THREE.Vector3(X[3*i],X[3*i+1],X[3*i+2]);
             var node = nodes[indicesMapping[i]];
@@ -165,7 +180,7 @@ function initStaticSolver(){
 
         for (var i=0;i<numVerticesFree;i++){
             F[3*i] = 0;
-            F[3*i+1] = 0;
+            F[3*i+1] = 1;
             F[3*i+2] = 0;
         }
 
