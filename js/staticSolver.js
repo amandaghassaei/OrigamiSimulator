@@ -19,8 +19,8 @@ function initStaticSolver(){
 
     var Q, C, Ctrans, Cfixed, CfixedTrans, Xfixed, F;
     var Ctrans_Q, Ctrans_Q_C, inv_Ctrans_Q_C, Ctrans_Q_Cf, Ctrans_Q_Cf_Xf;
-    var numEdges, numVerticesFree, numVerticesFixed;
-    var indicesMapping, fixedIndicesMapping;
+    var numFreeEdges, numVerticesFree, numVerticesFixed;
+    var indicesMapping, fixedIndicesMapping, freeEdgesMapping;
 
     function syncNodesAndEdges(){
         nodes = globals.model.getNodes();
@@ -57,18 +57,42 @@ function initStaticSolver(){
             console.warn("no boundary conditions");
             return;
         }
-        var X = numeric.dot(inv_Ctrans_Q_C, numeric.sub(F, Ctrans_Q_Cf_Xf));
+
+        var nullEntries = [];
+        for (var i=Ctrans_Q_C.length;i>=0;i--){
+            if (numeric.dot(Ctrans_Q_C[i], Ctrans_Q_C[i]) == 0) {
+                if (F[i] < 0) nullEntries.push([i, -1]);
+                else if (F[i]>0) nullEntries.push([i, 1]);
+                else nullEntries.push([i, 0]);
+                Ctrans_Q_C.splice(i, 1);
+                F.splice(i,1);
+            }
+        }
+
+        if (nullEntries.length>0){
+            for (var i=0;i<Ctrans_Q_C.length;i++){
+                for (var j=0;j<nullEntries.length;j++){
+                    Ctrans_Q_C[i].splice(nullEntries[j][0],1);
+                }
+            }
+        }
+
+        console.log(JSON.stringify(Ctrans_Q_C));
+
+        var X = numeric.solve(Ctrans_Q_C, F);//numeric.dot(inv_Ctrans_Q_C, numeric.sub(F, Ctrans_Q_Cf_Xf));
+        // console.log(JSON.stringify(Ctrans_Q_C));
+        console.log(JSON.stringify(nullEntries));
         console.log(X);
-        render(X);
+        // render(X);
     }
 
     function render(X){
-        for (var i=0;i<X.length;i++){
-            var nodePosition = new THREE.Vector3(X[i][0],X[i][1],X[i][2]);
+        for (var i=0;i<numVerticesFree;i++){
+            var nodePosition = new THREE.Vector3(X[3*i],X[3*i+1],X[3*i+2]);
             var node = nodes[indicesMapping[i]];
             node.render(nodePosition.sub(node.getOriginalPosition()));
         }
-        for (var i=0;i<fixedIndicesMapping.length;i++){
+        for (var i=0;i<numVerticesFixed;i++){
             nodes[fixedIndicesMapping[i]].render(new THREE.Vector3(0,0,0));
         }
         for (var i=0;i<edges.length;i++){
@@ -98,92 +122,90 @@ function initStaticSolver(){
 
         indicesMapping = [];
         fixedIndicesMapping = [];
+        freeEdgesMapping = [];
 
         for (var i=0;i<nodes.length;i++){
             if (nodes[i].fixed) fixedIndicesMapping.push(nodes[i].getIndex());
-            else indicesMapping.push(nodes[i].getIndex());
+            else indicesMapping.push(nodes[i].getIndex());//todo push(i)
+        }
+        for (var i=0;i<edges.length;i++){
+            if (edges[i].isFixed()) continue;
+            freeEdgesMapping.push(i);
         }
 
         numVerticesFree = indicesMapping.length;
         numVerticesFixed = fixedIndicesMapping.length;
-        numEdges = edges.length;
+        numFreeEdges = freeEdgesMapping.length;
 
         //C = edges x 3nodes
         //Q = edges x edges
         //Ctrans = 3nodes x edges
         //disp = 1x3nodes
 
-        Q = initEmptyArray(numEdges, numEdges);
-        C = initEmptyArray(numEdges, numVerticesFree);
-        Cfixed = initEmptyArray(numEdges, numVerticesFixed);
+        Q = initEmptyArray(numFreeEdges, numFreeEdges);
+        C = initEmptyArray(numFreeEdges, 3*numVerticesFree);
+        Cfixed = initEmptyArray(numFreeEdges, 3*numVerticesFixed);
         calcQ();
         calcCs();
 
         Ctrans = numeric.transpose(C);
         CfixedTrans = numeric.transpose(Cfixed);
 
-        F = initEmptyArray(numVerticesFree);
-        Xfixed = initEmptyArray(numVerticesFixed);
+        F = initEmptyArray(numVerticesFree*3);
+        Xfixed = initEmptyArray(numVerticesFixed*3);
 
         for (var i=0;i<numVerticesFree;i++){
-            F[i] = [0,1000,0];
+            F[3*i] = 0;
+            F[3*i+1] = 0;
+            F[3*i+2] = 0;
         }
         for (var i=0;i<numVerticesFixed;i++){
             var position = nodes[fixedIndicesMapping[i]].getOriginalPosition();
-            Xfixed[i] = [position.x, position.y, position.z];
+            Xfixed[3*i] = position.x;
+            Xfixed[3*i+1] = position.y;
+            Xfixed[3*i+2] = position.z;
         }
 
         Ctrans_Q = numeric.dot(Ctrans, Q);
         Ctrans_Q_C = numeric.dot(Ctrans_Q, C);
-        // console.log(JSON.stringify(Ctrans_Q_C));
-        if (numeric.det(Ctrans_Q_C) == 0){
-            console.warn("zero determinant");
-            return;
-        }
-        inv_Ctrans_Q_C = numeric.inv(Ctrans_Q_C);
-        Ctrans_Q_Cf = numeric.dot(Ctrans_Q, Cfixed);
-        Ctrans_Q_Cf_Xf = numeric.dot(Ctrans_Q_Cf, Xfixed);
 
         solve();
     }
 
     function calcCs(){
-        for (var j=0;j<numEdges;j++){
-            var edge = edges[j];
+        for (var j=0;j<numFreeEdges;j++){
+            var edge = edges[freeEdgesMapping[j]];
             var _nodes = edge.nodes;
             var edgeVector0 = edge.getVector(_nodes[0]);
+            edgeVector0.normalize();
             if (_nodes[0].fixed) {
                 var i = fixedIndicesMapping.indexOf(_nodes[0].getIndex());
-                Cfixed[j][i] = 1;
-                // Cfixed[j][3*i] = edgeVector0.x;
-                // Cfixed[j][3*i+1] = edgeVector0.y;
-                // Cfixed[j][3*i+2] = edgeVector0.z;
+                Cfixed[j][3*i] = edgeVector0.x;
+                Cfixed[j][3*i+1] = edgeVector0.y;
+                Cfixed[j][3*i+2] = edgeVector0.z;
             } else {
                 var i = indicesMapping.indexOf(_nodes[0].getIndex());
-                C[j][i] = 1;
-                // C[j][3*i] = edgeVector0.x;
-                // C[j][3*i+1] = edgeVector0.y;
-                // C[j][3*i+2] = edgeVector0.z;
+                C[j][3*i] = edgeVector0.x;
+                C[j][3*i+1] = edgeVector0.y;
+                C[j][3*i+2] = edgeVector0.z;
             }
             if (_nodes[1].fixed) {
                 var i = fixedIndicesMapping.indexOf(_nodes[1].getIndex());
-                Cfixed[j][i] = -1;
-                // Cfixed[j][3*i] = -edgeVector0.x;
-                // Cfixed[j][3*i+1] = -edgeVector0.y;
-                // Cfixed[j][3*i+2] = -edgeVector0.z;
+                Cfixed[j][3*i] = -edgeVector0.x;
+                Cfixed[j][3*i+1] = -edgeVector0.y;
+                Cfixed[j][3*i+2] = -edgeVector0.z;
             } else {
                 var i = indicesMapping.indexOf(_nodes[1].getIndex());
-                C[j][i] = -1;
-                // C[j][3*i] = -edgeVector0.x;
-                // C[j][3*i+1] = -edgeVector0.y;
-                // C[j][3*i+2] = -edgeVector0.z;
+                C[j][3*i] = -edgeVector0.x;
+                C[j][3*i+1] = -edgeVector0.y;
+                C[j][3*i+2] = -edgeVector0.z;
             }
         }
     }
 
     function calcQ() {
         var axialStiffness = globals.axialStiffness;
-        for (var i = 0; i < numEdges; i++) {
+        for (var i = 0; i < numFreeEdges; i++) {
             Q[i][i] = axialStiffness;
         }
     }

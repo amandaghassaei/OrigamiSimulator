@@ -168,6 +168,7 @@ Node.prototype.hide = function(){
 Node.prototype.render = function(position){
     // if (this.fixed) return;
     position.add(this.getOriginalPosition());
+    // console.log(position);
     this.object3D.position.set(position.x, position.y, position.z);
 };
 
