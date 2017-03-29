@@ -5,9 +5,9 @@
 var nodeMaterial = new THREE.MeshBasicMaterial({color: 0x000000, side:THREE.DoubleSide});
 var nodeMaterialFixed = new THREE.MeshBasicMaterial({color: 0x000000, side:THREE.DoubleSide});
 var nodeMaterialHighlight = new THREE.MeshBasicMaterial({color: 0xffffff, side:THREE.DoubleSide});
-var nodeGeo = new THREE.SphereGeometry(10,20);
+var nodeGeo = new THREE.SphereGeometry(1,20);
 nodeGeo.rotateX(Math.PI/2);
-var nodeFixedGeo = new THREE.CubeGeometry(10, 10, 10);
+var nodeFixedGeo = new THREE.CubeGeometry(1, 1, 1);
 nodeFixedGeo.applyMatrix( new THREE.Matrix4().makeTranslation(0, 0.25, 0) );
 
 

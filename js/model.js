@@ -30,6 +30,16 @@ function initModel(globals){
     var creases = [];
     creases.push(new Crease(edges[2], 0, 1, Math.PI/2, 1, nodes[1], nodes[3], 0));
 
+    var _allNodeObject3Ds  = [];
+    _.each(nodes, function(node){
+        var obj3D = node.getObject3D();
+        _allNodeObject3Ds.push(obj3D);
+        globals.threeView.sceneAddModel(obj3D);
+    });
+    _.each(edges, function(edge){
+        globals.threeView.sceneAddModel(edge.getObject3D());
+    });
+
     function buildModel(_faces, _vertices, _allEdges, allCreaseParams){
 
         var _nodes = [];

@@ -120,6 +120,7 @@ $(function() {
     globals = initGlobals();
     globals.model = initModel(globals);
     globals.staticSolver = initStaticSolver(globals);
+    globals.staticSolver.syncNodesAndEdges();
     globals.pattern = initPattern(globals);
     globals.threeView.render();
     // globals.threeView.sceneAdd(raycasterPlane);
