@@ -172,6 +172,10 @@ Node.prototype.render = function(position){
     this.object3D.position.set(position.x, position.y, position.z);
 };
 
+Node.prototype.renderChange = function(change){
+    this.object3D.position.add(change);
+};
+
 
 
 
