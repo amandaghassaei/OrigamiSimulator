@@ -17,8 +17,8 @@ function initStaticSolver(){
     var faces;
     var creases;
 
-    var Q, C, Ctrans, Cfixed, CfixedTrans, Xfixed, F;
-    var Ctrans_Q, Ctrans_Q_C, inv_Ctrans_Q_C, Ctrans_Q_Cf, Ctrans_Q_Cf_Xf;
+    var Q, C, Ctrans, F;
+    var Ctrans_Q, Ctrans_Q_C;
     var numFreeEdges, numVerticesFree, numVerticesFixed;
     var indicesMapping, fixedIndicesMapping, freeEdgesMapping;
 
@@ -59,17 +59,29 @@ function initStaticSolver(){
         }
 
         var nullEntries = [];
+        var infiniteEntry = false;
         for (var i=Ctrans_Q_C.length;i>=0;i--){
             if (numeric.dot(Ctrans_Q_C[i], Ctrans_Q_C[i]) == 0) {
-                if (F[i] < 0) nullEntries.push([i, -1]);
-                else if (F[i]>0) nullEntries.push([i, 1]);
-                else nullEntries.push([i, 0]);
+                if (F[i] < 0) {
+                    nullEntries.push([i, -1]);
+                    infiniteEntry = true;
+                } else if (F[i]>0) {
+                    nullEntries.push([i, 1]);
+                    infiniteEntry = true;
+                } else nullEntries.push([i, 0]);
                 Ctrans_Q_C.splice(i, 1);
                 F.splice(i,1);
             }
         }
 
-        if (nullEntries.length>0){
+        if (infiniteEntry){
+            //make X from infinities, check for nodes with infinite motion on more than one axis
+            var X = [];
+            // render(X)
+            return;
+        }
+
+        if (nullEntries.length>0){//zero entries
             for (var i=0;i<Ctrans_Q_C.length;i++){
                 for (var j=0;j<nullEntries.length;j++){
                     Ctrans_Q_C[i].splice(nullEntries[j][0],1);
@@ -77,12 +89,12 @@ function initStaticSolver(){
             }
         }
 
-        console.log(JSON.stringify(Ctrans_Q_C));
-
         var X = numeric.solve(Ctrans_Q_C, F);//numeric.dot(inv_Ctrans_Q_C, numeric.sub(F, Ctrans_Q_Cf_Xf));
-        // console.log(JSON.stringify(Ctrans_Q_C));
-        console.log(JSON.stringify(nullEntries));
-        console.log(X);
+
+        if (nullEntries.length>0){
+            //add zeros back to X array
+
+        }
         // render(X);
     }
 
@@ -90,7 +102,7 @@ function initStaticSolver(){
         for (var i=0;i<numVerticesFree;i++){
             var nodePosition = new THREE.Vector3(X[3*i],X[3*i+1],X[3*i+2]);
             var node = nodes[indicesMapping[i]];
-            node.render(nodePosition.sub(node.getOriginalPosition()));
+            node.render(nodePosition);
         }
         for (var i=0;i<numVerticesFixed;i++){
             nodes[fixedIndicesMapping[i]].render(new THREE.Vector3(0,0,0));
@@ -144,26 +156,17 @@ function initStaticSolver(){
 
         Q = initEmptyArray(numFreeEdges, numFreeEdges);
         C = initEmptyArray(numFreeEdges, 3*numVerticesFree);
-        Cfixed = initEmptyArray(numFreeEdges, 3*numVerticesFixed);
         calcQ();
         calcCs();
 
         Ctrans = numeric.transpose(C);
-        CfixedTrans = numeric.transpose(Cfixed);
 
         F = initEmptyArray(numVerticesFree*3);
-        Xfixed = initEmptyArray(numVerticesFixed*3);
 
         for (var i=0;i<numVerticesFree;i++){
             F[3*i] = 0;
             F[3*i+1] = 0;
             F[3*i+2] = 0;
-        }
-        for (var i=0;i<numVerticesFixed;i++){
-            var position = nodes[fixedIndicesMapping[i]].getOriginalPosition();
-            Xfixed[3*i] = position.x;
-            Xfixed[3*i+1] = position.y;
-            Xfixed[3*i+2] = position.z;
         }
 
         Ctrans_Q = numeric.dot(Ctrans, Q);
@@ -178,23 +181,13 @@ function initStaticSolver(){
             var _nodes = edge.nodes;
             var edgeVector0 = edge.getVector(_nodes[0]);
             edgeVector0.normalize();
-            if (_nodes[0].fixed) {
-                var i = fixedIndicesMapping.indexOf(_nodes[0].getIndex());
-                Cfixed[j][3*i] = edgeVector0.x;
-                Cfixed[j][3*i+1] = edgeVector0.y;
-                Cfixed[j][3*i+2] = edgeVector0.z;
-            } else {
+            if (!_nodes[0].fixed) {
                 var i = indicesMapping.indexOf(_nodes[0].getIndex());
                 C[j][3*i] = edgeVector0.x;
                 C[j][3*i+1] = edgeVector0.y;
                 C[j][3*i+2] = edgeVector0.z;
             }
-            if (_nodes[1].fixed) {
-                var i = fixedIndicesMapping.indexOf(_nodes[1].getIndex());
-                Cfixed[j][3*i] = -edgeVector0.x;
-                Cfixed[j][3*i+1] = -edgeVector0.y;
-                Cfixed[j][3*i+2] = -edgeVector0.z;
-            } else {
+            if (!_nodes[1].fixed) {
                 var i = indicesMapping.indexOf(_nodes[1].getIndex());
                 C[j][3*i] = -edgeVector0.x;
                 C[j][3*i+1] = -edgeVector0.y;
