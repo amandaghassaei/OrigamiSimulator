@@ -101,11 +101,12 @@ function initStaticSolver(){
             }
         }
 
+        // console.log(Ctrans_Q_C);
         X = numeric.dot(numeric.inv(Ctrans_Q_C), _F);
-        // X = numeric.solve(Ctrans_Q_C, _F);//numeric.dot(inv_Ctrans_Q_C, numeric.sub(F, Ctrans_Q_Cf_Xf));
 
         if (nullEntries.length>0){
             //add zeros back to X array
+            console.log("here");
             for (var i=0;i<nullEntries.length;i++){
                 X.splice(nullEntries[i][0], 0, 0);
             }
@@ -115,6 +116,7 @@ function initStaticSolver(){
     }
 
     function render(X){
+        console.log(X);
 
         for (var i=0;i<numVerticesFree;i++){
 
@@ -128,7 +130,6 @@ function initStaticSolver(){
             }
 
             var nodePosition = new THREE.Vector3(X[3*i],X[3*i+1],X[3*i+2]);
-            console.log(nodePosition);
             var node = nodes[indicesMapping[i]];
             node.renderChange(nodePosition);
         }
@@ -190,7 +191,7 @@ function initStaticSolver(){
         //C = edges x 3nodes
         //Q = edges x edges
         //Ctrans = 3nodes x edges
-        //disp = 1x3nodes
+        //disp = 1 x 3nodes
 
         Q = initEmptyArray(numFreeEdges, numFreeEdges);
         C = initEmptyArray(numFreeEdges, 3*numVerticesFree);
@@ -214,7 +215,9 @@ function initStaticSolver(){
         for (var j=0;j<numFreeEdges;j++){
             var edge = edges[freeEdgesMapping[j]];
             var _nodes = edge.nodes;
-            var edgeVector0 = edge.getVector(_nodes[0]).normalize();
+            var edgeVector0 = edge.getVector(_nodes[0]);
+            // edgeVector0.divideScalar(edge.getOriginalLength());
+            edgeVector0.normalize();
             if (!_nodes[0].fixed) {
                 var i = indicesMapping.indexOf(_nodes[0].getIndex());
                 C[j][3*i] = edgeVector0.x;
@@ -228,6 +231,7 @@ function initStaticSolver(){
                 C[j][3*i+2] = -edgeVector0.z;
             }
         }
+        // console.log(C);
     }
 
     function calcQ() {

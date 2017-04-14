@@ -20,6 +20,8 @@ function Beam(nodes){
 
     this.object3D = new THREE.Line(lineGeometry, beamMaterial);
     this.object3D._myBeam = this;
+
+    this.originalLength = this.getLength();
 }
 
 Beam.prototype.highlight = function(){
@@ -32,6 +34,9 @@ Beam.prototype.unhighlight = function(){
 
 Beam.prototype.getLength = function(){
     return this.getVector().length();
+};
+Beam.prototype.getOriginalLength = function(){
+    return this.originalLength;
 };
 
 Beam.prototype.isFixed = function(){
