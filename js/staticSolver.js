@@ -17,10 +17,10 @@ function initStaticSolver(){
     var faces;
     var creases;
 
-    var Q, C, Ctrans, F;
+    var Q, C, Ctrans, F, F_rxn;
     var Ctrans_Q, Ctrans_Q_C;
-    var numFreeEdges, numVerticesFree, numVerticesFixed;
-    var indicesMapping, fixedIndicesMapping, freeEdgesMapping;
+    var numFreeEdges, numVerticesFree, numVerticesFixed, numFreeCreases;
+    var indicesMapping, fixedIndicesMapping, freeEdgesMapping, freeCreasesMapping;
 
     function syncNodesAndEdges(){
         nodes = globals.model.getNodes();
@@ -69,54 +69,56 @@ function initStaticSolver(){
         // console.log(JSON.stringify(Ctrans_Q_C));
 
         var _F = F.slice();
-        var nullEntries = [];
-        var infiniteEntry = false;
-        var X = initEmptyArray(numVerticesFree*3);
-        for (var i=Ctrans_Q_C.length;i>=0;i--){
-            if (numeric.dot(Ctrans_Q_C[i], Ctrans_Q_C[i]) == 0) {
-                if (_F[i] < 0) {
-                    X[i] = -1;
-                    nullEntries.push([i, -1]);
-                    infiniteEntry = true;
-                } else if (_F[i]>0) {
-                    X[i] = 1;
-                    nullEntries.push([i, 1]);
-                    infiniteEntry = true;
-                } else nullEntries.push([i, 0]);
-                Ctrans_Q_C.splice(i, 1);
-                _F.splice(i,1);
-            }
+        for (var i=0;i<_F.length;i++) {
+            _F[i] += F_rxn[i];
         }
+        // var nullEntries = [];
+        // var infiniteEntry = false;
+        // var X = initEmptyArray(numVerticesFree*3);
+        // for (var i=Ctrans_Q_C.length;i>=0;i--){
+        //     if (numeric.dot(Ctrans_Q_C[i], Ctrans_Q_C[i]) == 0) {
+        //         if (_F[i] < 0) {
+        //             X[i] = -1;
+        //             nullEntries.push([i, -1]);
+        //             infiniteEntry = true;
+        //         } else if (_F[i]>0) {
+        //             X[i] = 1;
+        //             nullEntries.push([i, 1]);
+        //             infiniteEntry = true;
+        //         } else nullEntries.push([i, 0]);
+        //         Ctrans_Q_C.splice(i, 1);
+        //         _F.splice(i,1);
+        //     }
+        // }
+        //
+        // if (infiniteEntry){
+        //     render(X);
+        //     return;
+        // }
+        //
+        // console.log(nullEntries);
+        // if (nullEntries.length>0){//remove zero columns
+        //     for (var i=0;i<Ctrans_Q_C.length;i++){
+        //         for (var j=0;j<nullEntries.length;j++){
+        //             Ctrans_Q_C[i].splice(nullEntries[j][0],1);
+        //         }
+        //     }
+        // }
 
-        if (infiniteEntry){
-            render(X);
-            return;
-        }
-
-        if (nullEntries.length>0){//remove zero columns
-            for (var i=0;i<Ctrans_Q_C.length;i++){
-                for (var j=0;j<nullEntries.length;j++){
-                    Ctrans_Q_C[i].splice(nullEntries[j][0],1);
-                }
-            }
-        }
-
-        // console.log(Ctrans_Q_C);
         X = numeric.dot(numeric.inv(Ctrans_Q_C), _F);
 
-        if (nullEntries.length>0){
-            //add zeros back to X array
-            console.log("here");
-            for (var i=0;i<nullEntries.length;i++){
-                X.splice(nullEntries[i][0], 0, 0);
-            }
-        }
+        // if (nullEntries.length>0){
+        //     //add zeros back to X array
+        //     console.log("here");
+        //     for (var i=0;i<nullEntries.length;i++){
+        //         X.splice(nullEntries[i][0], 0, 0);
+        //     }
+        // }
 
         render(X);
     }
 
     function render(X){
-        console.log(X);
 
         for (var i=0;i<numVerticesFree;i++){
 
@@ -140,6 +142,8 @@ function initStaticSolver(){
             edges[i].render(true);
         }
 
+        geometry.verticesNeedUpdate = true;
+        geometry.computeFaceNormals();
         updateMatrices();
     }
 
@@ -162,11 +166,10 @@ function initStaticSolver(){
     }
 
     function updateMatrices(){
-        calcCs();
+        calcCsAndRxns();
         Ctrans = numeric.transpose(C);
         Ctrans_Q = numeric.dot(Ctrans, Q);
         Ctrans_Q_C = numeric.dot(Ctrans_Q, C);
-        // console.log(JSON.stringify(Ctrans_Q_C));
     }
 
     function setUpParams(){
@@ -174,35 +177,40 @@ function initStaticSolver(){
         indicesMapping = [];
         fixedIndicesMapping = [];
         freeEdgesMapping = [];
+        freeCreasesMapping = [];
 
         for (var i=0;i<nodes.length;i++){
-            if (nodes[i].fixed) fixedIndicesMapping.push(nodes[i].getIndex());
+            if (nodes[i].fixed) fixedIndicesMapping.push(nodes[i].getIndex());//todo need this?
             else indicesMapping.push(nodes[i].getIndex());//todo push(i)
         }
         for (var i=0;i<edges.length;i++){
             if (edges[i].isFixed()) continue;
             freeEdgesMapping.push(i);
         }
+        for (var i=0;i<creases.length;i++){
+            freeCreasesMapping.push(i);//todo check for locked creases
+        }
 
         numVerticesFree = indicesMapping.length;
         numVerticesFixed = fixedIndicesMapping.length;
         numFreeEdges = freeEdgesMapping.length;
+        numFreeCreases = freeCreasesMapping.length;
 
-        //C = edges x 3nodes
-        //Q = edges x edges
-        //Ctrans = 3nodes x edges
+
+        //C = (edges + creases) x 3nodes
+        //Q = (edges + creases) x (edges + creases)
+        //Ctrans = 3nodes x (edges + creases)
         //disp = 1 x 3nodes
 
-        Q = initEmptyArray(numFreeEdges, numFreeEdges);
-        C = initEmptyArray(numFreeEdges, 3*numVerticesFree);
+        Q = initEmptyArray(numFreeEdges+numFreeCreases, numFreeEdges+numFreeCreases);
+        C = initEmptyArray(numFreeEdges+numFreeCreases, 3*numVerticesFree);
         calcQ();
-
 
         F = initEmptyArray(numVerticesFree*3);
 
         for (var i=0;i<numVerticesFree;i++){
             F[3*i] = 0;
-            F[3*i+1] = 10;
+            F[3*i+1] = 1;
             F[3*i+2] = 0;
         }
 
@@ -211,33 +219,92 @@ function initStaticSolver(){
         startSolver();
     }
 
-    function calcCs(){
+    function calcCsAndRxns(){
+        F_rxn = initEmptyArray(numVerticesFree*3);
         for (var j=0;j<numFreeEdges;j++){
             var edge = edges[freeEdgesMapping[j]];
             var _nodes = edge.nodes;
             var edgeVector0 = edge.getVector(_nodes[0]);
-            // edgeVector0.divideScalar(edge.getOriginalLength());
+
+            var length = edge.getOriginalLength();
+            var diff = edgeVector0.length() - length;
+            var rxnForceScale = globals.axialStiffness*diff/length;
+
             edgeVector0.normalize();
             if (!_nodes[0].fixed) {
                 var i = indicesMapping.indexOf(_nodes[0].getIndex());
                 C[j][3*i] = edgeVector0.x;
                 C[j][3*i+1] = edgeVector0.y;
                 C[j][3*i+2] = edgeVector0.z;
+                F_rxn[3*i] += edgeVector0.x*rxnForceScale;
+                F_rxn[3*i+1] += edgeVector0.y*rxnForceScale;
+                F_rxn[3*i+2] += edgeVector0.z*rxnForceScale;
             }
             if (!_nodes[1].fixed) {
                 var i = indicesMapping.indexOf(_nodes[1].getIndex());
                 C[j][3*i] = -edgeVector0.x;
                 C[j][3*i+1] = -edgeVector0.y;
                 C[j][3*i+2] = -edgeVector0.z;
+                F_rxn[3*i] -= edgeVector0.x*rxnForceScale;
+                F_rxn[3*i+1] -= edgeVector0.y*rxnForceScale;
+                F_rxn[3*i+2] -= edgeVector0.z*rxnForceScale;
             }
         }
-        // console.log(C);
+        // console.log(F_rxn);
+
+        for (var j=0;j<numFreeCreases;j++){
+            var crease = creases[freeCreasesMapping[j]];
+
+            var normal1 = geometry.faces[crease.face1Index].normal;
+            var normal2 = geometry.faces[crease.face2Index].normal;
+            var dotNormals = normal1.dot(normal2);
+            if (dotNormals < -0.999) dotNormals = -0.999;
+            else if (dotNormals > 0.999) dotNormals = 0.999;
+            var theta = Math.acos(dotNormals);
+
+            var creaseVector = crease.getVector();
+            var sign = (normal1.clone().cross(normal2)).dot(creaseVector);
+            if (sign < 0.0) theta *= -1.0;
+            // if (theta > 2.0 && lastTheta[0] < -2.0) theta -= TWO_PI*(1.0+floor(-lastTheta[0]/TWO_PI));
+            // if (theta < -2.0 && lastTheta[0] > 2.0) theta += TWO_PI*(1.0+floor(lastTheta[0]/TWO_PI));
+
+            var diff = theta - globals.creasePercent*crease.targetTheta;
+
+            if (!crease.node1.fixed){
+                var i = indicesMapping.indexOf(crease.node1.getIndex());
+                var dist = crease.getLengthToNode1();
+                C[j+numFreeEdges][3*i] = -normal1.x/dist;//todo not sure about sign
+                C[j+numFreeEdges][3*i+1] = -normal1.y/dist;
+                C[j+numFreeEdges][3*i+2] = -normal1.z/dist;
+                rxnForceScale = crease.getK()*diff/dist;
+                F_rxn[3*i] += normal1.x*rxnForceScale;
+                F_rxn[3*i+1] += normal1.y*rxnForceScale;
+                F_rxn[3*i+2] += normal1.z*rxnForceScale;
+            }
+            if (!crease.node2.fixed){
+                var i = indicesMapping.indexOf(crease.node2.getIndex());
+                // console.log(normal);
+                var dist = crease.getLengthToNode2();
+                C[j+numFreeEdges][3*i] = -normal2.x/dist;
+                C[j+numFreeEdges][3*i+1] = -normal2.y/dist;
+                C[j+numFreeEdges][3*i+2] = -normal2.z/dist;
+                rxnForceScale = crease.getK()*diff/dist;
+                F_rxn[3*i] += normal2.x*rxnForceScale;
+                F_rxn[3*i+1] += normal2.y*rxnForceScale;
+                F_rxn[3*i+2] += normal2.z*rxnForceScale;
+            }
+        }
     }
 
     function calcQ() {
         var axialStiffness = globals.axialStiffness;
         for (var i = 0; i < numFreeEdges; i++) {
-            Q[i][i] = axialStiffness;
+            var edge = edges[freeEdgesMapping[i]];
+            Q[i][i] = axialStiffness/edge.getOriginalLength();
+        }
+        for (var i = 0; i < numFreeCreases; i++) {
+            var crease = creases[freeCreasesMapping[i]];
+            Q[numFreeEdges+i][numFreeEdges+i] = crease.getK();
         }
     }
 
