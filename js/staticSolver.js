@@ -66,54 +66,12 @@ function initStaticSolver(){
             return;
         }
 
-        // console.log(JSON.stringify(Ctrans_Q_C));
-
         var _F = F.slice();
         for (var i=0;i<_F.length;i++) {
             _F[i] += F_rxn[i];
         }
-        // var nullEntries = [];
-        // var infiniteEntry = false;
-        // var X = initEmptyArray(numVerticesFree*3);
-        // for (var i=Ctrans_Q_C.length;i>=0;i--){
-        //     if (numeric.dot(Ctrans_Q_C[i], Ctrans_Q_C[i]) == 0) {
-        //         if (_F[i] < 0) {
-        //             X[i] = -1;
-        //             nullEntries.push([i, -1]);
-        //             infiniteEntry = true;
-        //         } else if (_F[i]>0) {
-        //             X[i] = 1;
-        //             nullEntries.push([i, 1]);
-        //             infiniteEntry = true;
-        //         } else nullEntries.push([i, 0]);
-        //         Ctrans_Q_C.splice(i, 1);
-        //         _F.splice(i,1);
-        //     }
-        // }
-        //
-        // if (infiniteEntry){
-        //     render(X);
-        //     return;
-        // }
-        //
-        // console.log(nullEntries);
-        // if (nullEntries.length>0){//remove zero columns
-        //     for (var i=0;i<Ctrans_Q_C.length;i++){
-        //         for (var j=0;j<nullEntries.length;j++){
-        //             Ctrans_Q_C[i].splice(nullEntries[j][0],1);
-        //         }
-        //     }
-        // }
 
         X = numeric.dot(numeric.inv(Ctrans_Q_C), _F);
-
-        // if (nullEntries.length>0){
-        //     //add zeros back to X array
-        //     console.log("here");
-        //     for (var i=0;i<nullEntries.length;i++){
-        //         X.splice(nullEntries[i][0], 0, 0);
-        //     }
-        // }
 
         render(X);
     }
@@ -121,15 +79,6 @@ function initStaticSolver(){
     function render(X){
 
         for (var i=0;i<numVerticesFree;i++){
-
-            //normalize
-            var sqLength = X[3*i]*X[3*i] + X[3*i+1]*X[3*i+1] + X[3*i+2]*X[3*i+2];
-            if (sqLength>0){
-                var length = Math.sqrt(sqLength);
-                X[3*i] /= length;
-                X[3*i+1] /= length;
-                X[3*i+2] /= length;
-            }
 
             var nodePosition = new THREE.Vector3(X[3*i],X[3*i+1],X[3*i+2]);
             var node = nodes[indicesMapping[i]];
@@ -210,7 +159,7 @@ function initStaticSolver(){
 
         for (var i=0;i<numVerticesFree;i++){
             F[3*i] = 0;
-            F[3*i+1] = 1;
+            F[3*i+1] = 0;
             F[3*i+2] = 0;
         }
 
