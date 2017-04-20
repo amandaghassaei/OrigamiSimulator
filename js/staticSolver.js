@@ -177,7 +177,7 @@ function initStaticSolver(){
 
             var length = edge.getOriginalLength();
             var diff = edgeVector0.length() - length;
-            var rxnForceScale = globals.axialStiffness*diff/length;
+            var rxnForceScale = globals.axialStiffness*diff;
 
             edgeVector0.normalize();
             if (!_nodes[0].fixed) {
@@ -222,10 +222,10 @@ function initStaticSolver(){
             if (!crease.node1.fixed){
                 var i = indicesMapping.indexOf(crease.node1.getIndex());
                 var dist = crease.getLengthToNode1();
-                C[j+numFreeEdges][3*i] = -normal1.x/dist;//todo not sure about sign
-                C[j+numFreeEdges][3*i+1] = -normal1.y/dist;
-                C[j+numFreeEdges][3*i+2] = -normal1.z/dist;
-                rxnForceScale = crease.getK()*diff/dist;
+                C[j+numFreeEdges][3*i] = -normal1.x;//todo not sure about sign
+                C[j+numFreeEdges][3*i+1] = -normal1.y;
+                C[j+numFreeEdges][3*i+2] = -normal1.z;
+                rxnForceScale = crease.getK()*diff;
                 F_rxn[3*i] += normal1.x*rxnForceScale;
                 F_rxn[3*i+1] += normal1.y*rxnForceScale;
                 F_rxn[3*i+2] += normal1.z*rxnForceScale;
@@ -234,10 +234,10 @@ function initStaticSolver(){
                 var i = indicesMapping.indexOf(crease.node2.getIndex());
                 // console.log(normal);
                 var dist = crease.getLengthToNode2();
-                C[j+numFreeEdges][3*i] = -normal2.x/dist;
-                C[j+numFreeEdges][3*i+1] = -normal2.y/dist;
-                C[j+numFreeEdges][3*i+2] = -normal2.z/dist;
-                rxnForceScale = crease.getK()*diff/dist;
+                C[j+numFreeEdges][3*i] = -normal2.x;///dist;
+                C[j+numFreeEdges][3*i+1] = -normal2.y;///dist;
+                C[j+numFreeEdges][3*i+2] = -normal2.z;///dist;
+                rxnForceScale = crease.getK()*diff;///dist;
                 F_rxn[3*i] += normal2.x*rxnForceScale;
                 F_rxn[3*i+1] += normal2.y*rxnForceScale;
                 F_rxn[3*i+2] += normal2.z*rxnForceScale;
@@ -248,8 +248,7 @@ function initStaticSolver(){
     function calcQ() {
         var axialStiffness = globals.axialStiffness;
         for (var i = 0; i < numFreeEdges; i++) {
-            var edge = edges[freeEdgesMapping[i]];
-            Q[i][i] = axialStiffness/edge.getOriginalLength();
+            Q[i][i] = axialStiffness;
         }
         for (var i = 0; i < numFreeCreases; i++) {
             var crease = creases[freeCreasesMapping[i]];
