@@ -42,7 +42,7 @@ Crease.prototype.getTargetTheta = function(){
 };
 
 Crease.prototype.getK = function(){
-    var length = this.getLength();  //todo *length?
+    var length = this.getLength();
     if (this.type == 0) return globals.panelStiffness*length;
     return globals.creaseStiffness*length;
 };

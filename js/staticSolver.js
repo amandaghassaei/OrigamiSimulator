@@ -207,8 +207,8 @@ function initStaticSolver(){
             var normal1 = geometry.faces[crease.face1Index].normal;
             var normal2 = geometry.faces[crease.face2Index].normal;
             var dotNormals = normal1.dot(normal2);
-            if (dotNormals < -0.999) dotNormals = -0.999;
-            else if (dotNormals > 0.999) dotNormals = 0.999;
+            if (dotNormals < -1.0) dotNormals = -1.0;
+            else if (dotNormals > 1.0) dotNormals = 1.0;
             var theta = Math.acos(dotNormals);
 
             var creaseVector = crease.getVector();
@@ -222,6 +222,7 @@ function initStaticSolver(){
             if (!crease.node1.fixed){
                 var i = indicesMapping.indexOf(crease.node1.getIndex());
                 var dist = crease.getLengthToNode1();
+                // dist = 1.0;
                 C[j+numFreeEdges][3*i] = -normal1.x/dist;//todo not sure about sign
                 C[j+numFreeEdges][3*i+1] = -normal1.y/dist;
                 C[j+numFreeEdges][3*i+2] = -normal1.z/dist;
@@ -234,6 +235,7 @@ function initStaticSolver(){
                 var i = indicesMapping.indexOf(crease.node2.getIndex());
                 // console.log(normal);
                 var dist = crease.getLengthToNode2();
+                // dist = 1.0;
                 C[j+numFreeEdges][3*i] = -normal2.x/dist;
                 C[j+numFreeEdges][3*i+1] = -normal2.y/dist;
                 C[j+numFreeEdges][3*i+2] = -normal2.z/dist;
@@ -242,6 +244,9 @@ function initStaticSolver(){
                 F_rxn[3*i+1] += normal2.y*rxnForceScale;
                 F_rxn[3*i+2] += normal2.z*rxnForceScale;
             }
+            // var invCreaseDirection = normal1.clone().add(normal2).normalize();
+            // if (!crease.edge.nodes[0].fixed){
+            // }
         }
     }
 
