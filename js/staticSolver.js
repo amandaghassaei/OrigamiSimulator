@@ -223,7 +223,7 @@ function initStaticSolver(){
                 var i = indicesMapping.indexOf(crease.node1.getIndex());
                 var dist = crease.getLengthToNode1();
                 // dist = 1.0;
-                C[j+numFreeEdges][3*i] = -normal1.x/dist;//todo not sure about sign
+                C[j+numFreeEdges][3*i] = -normal1.x/dist;
                 C[j+numFreeEdges][3*i+1] = -normal1.y/dist;
                 C[j+numFreeEdges][3*i+2] = -normal1.z/dist;
                 rxnForceScale = crease.getK()*diff/dist;
