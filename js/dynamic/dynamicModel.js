@@ -4,6 +4,8 @@
 
 function initDynamicModel(globals){
 
+    globals.gpuMath =initGPUMath();
+
     var material = new THREE.MeshNormalMaterial({shading: THREE.FlatShading, side: THREE.DoubleSide});
     var geometry = new THREE.Geometry();
     geometry.dynamic = true;
@@ -201,8 +203,6 @@ function initDynamicModel(globals){
         } else {
             console.log("here");
         }
-
-        //globals.gpuMath.setSize(textureDim, textureDim);
     }
 
     function setSolveParams(){
