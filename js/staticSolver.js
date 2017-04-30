@@ -59,6 +59,7 @@ function initStaticSolver(){
     }
 
     function solveStep(){
+        console.log("static solve");
         if (fixedIndicesMapping.length == 0){//no boundary conditions
             var X = initEmptyArray(numVerticesFree*3);
             render(X);
