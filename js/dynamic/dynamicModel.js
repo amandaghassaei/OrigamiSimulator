@@ -4,14 +4,14 @@
 
 function initDynamicModel(globals){
 
-    globals.gpuMath =initGPUMath();
-
     var material = new THREE.MeshNormalMaterial({shading: THREE.FlatShading, side: THREE.DoubleSide});
     var geometry = new THREE.Geometry();
     geometry.dynamic = true;
     var object3D = new THREE.Mesh(geometry, material);
     object3D.visible = globals.dynamicSimVisible;
     globals.threeView.sceneAdd(object3D);
+
+    globals.gpuMath = initGPUMath();
 
     var nodes;
     var edges;
@@ -159,7 +159,7 @@ function initDynamicModel(globals){
 
     function render(){
 
-        // var vectorLength = 1;
+        // var vectorLength = 2;
         // globals.gpuMath.setProgram("packToBytes");
         // globals.gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
         // globals.gpuMath.setSize(textureDim*vectorLength, textureDim);
@@ -170,7 +170,7 @@ function initDynamicModel(globals){
         //     var pixels = new Uint8Array(height*textureDimCreases*4*vectorLength);
         //     globals.gpuMath.readPixels(0, 0, textureDimCreases * vectorLength, height, pixels);
         //     var parsedPixels = new Float32Array(pixels.buffer);
-        //     for (var i = 0; i < 1; i++) {
+        //     for (var i = 0; i < parsedPixels.length; i+=2) {
         //         console.log(parsedPixels[i])
         //     }
         // } else {
@@ -203,11 +203,15 @@ function initDynamicModel(globals){
         } else {
             console.log("here");
         }
+
+        //globals.gpuMath.setSize(textureDim, textureDim);
     }
 
     function setSolveParams(){
         var dt = calcDt()/10;//todo this is weird
         var numSteps = 0.5/dt;
+        globals.gpuMath.setProgram("thetaCalc");
+        globals.gpuMath.setUniformForProgram("thetaCalc", "u_dt", dt, "1f");
         globals.gpuMath.setProgram("velocityCalc");
         globals.gpuMath.setUniformForProgram("velocityCalc", "u_dt", dt, "1f");
         globals.gpuMath.setProgram("positionCalc");
