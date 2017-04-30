@@ -228,6 +228,7 @@
         uniform sampler2D u_normals;
         uniform sampler2D u_lastTheta;
         uniform sampler2D u_creaseVectors;
+        uniform float u_dt;
 
         void main(){
 
@@ -250,15 +251,22 @@
             vec3 normal2 = texture2D(u_normals, normal2Index).xyz;
 
             float dotNormals = dot(normal1, normal2);//normals are already normalized, no need to divide by length
-            if (dotNormals < -0.999) dotNormals = -0.999;
-            else if (dotNormals > 0.999) dotNormals = 0.999;
+            if (dotNormals < -1.0) dotNormals = -1.0;
+            else if (dotNormals > 1.0) dotNormals = 1.0;
             float theta = acos(dotNormals);
             vec3 creaseVector = texture2D(u_creaseVectors, scaledFragCoord).xyz;
             float sign = dot(cross(normal1, normal2), creaseVector);
             if (sign < 0.0) theta *= -1.0;
-            if (theta > 2.0 && lastTheta[0] < -2.0) theta -= TWO_PI*(1.0+floor(-lastTheta[0]/TWO_PI));
-            if (theta < -2.0 && lastTheta[0] > 2.0) theta += TWO_PI*(1.0+floor(lastTheta[0]/TWO_PI));
-            gl_FragColor = vec4(theta, theta-lastTheta[0], lastTheta[2], lastTheta[3]);//[theta, w, normal1Index, normal2Index]
+            float diff = theta-lastTheta[0];
+            float projectedTheta = lastTheta[0] + lastTheta[1]*u_dt;
+            if (diff < -5.5 || (diff < -3.0 && projectedTheta > 6.0)) {
+                diff += TWO_PI;
+                theta = lastTheta[0] + diff;
+            } else if (diff > 5.5 || (diff > 3.0 && projectedTheta < -6.0)) {
+                diff -= TWO_PI;
+                theta = lastTheta[0] + diff;
+            }
+            gl_FragColor = vec4(theta, diff, lastTheta[2], lastTheta[3]);//[theta, w, normal1Index, normal2Index]
         }
     </script>
 
