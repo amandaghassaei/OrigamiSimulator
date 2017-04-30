@@ -120,7 +120,7 @@ $(function() {
     globals = initGlobals();
     globals.model = initModel(globals);
     globals.staticSolver = initStaticSolver(globals);
-    globals.dynamicSolver = initDynamicModel(globals);
+    globals.dynamicModel = initDynamicModel(globals);
     // globals.staticSolver.syncNodesAndEdges();
     globals.pattern = initPattern(globals);
     globals.threeView.render();

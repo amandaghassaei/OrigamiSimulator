@@ -180,7 +180,7 @@
                 if (creaseMeta2[3] < 0.0){//crease reaction
                     float nodeNum = creaseMeta2[2];
 
-                    //node #1 
+                    //node #1
                     float normalIndex1D = thetas[2];
                     vec2 normalsIndex = vec2(mod(normalIndex1D, u_textureDimFaces.x)+0.5, floor(normalIndex1D/u_textureDimFaces.x)+0.5);
                     vec2 scaledNormalsIndex = normalsIndex/u_textureDimFaces;

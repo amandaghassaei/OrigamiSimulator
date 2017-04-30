@@ -370,9 +370,9 @@ function initDynamicModel(globals){
         for (var i=0;i<creases.length;i++){
             var rgbaIndex = i*4;
             var vector = creases[i].getVector();
-            creaseVectors[rgbaIndex] = vector.x;
-            creaseVectors[rgbaIndex+1] = vector.y;
-            creaseVectors[rgbaIndex+2] = vector.z;
+            creaseVectors[rgbaIndex] = -vector.x;
+            creaseVectors[rgbaIndex+1] = -vector.y;
+            creaseVectors[rgbaIndex+2] = -vector.z;
         }
         globals.gpuMath.initTextureFromData("u_creaseVectors", textureDimCreases, textureDimCreases, "FLOAT", creaseVectors, true);
     }
