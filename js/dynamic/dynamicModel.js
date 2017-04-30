@@ -159,7 +159,7 @@ function initDynamicModel(globals){
 
     function render(){
 
-        // var vectorLength = 2;
+        // var vectorLength = 1;
         // globals.gpuMath.setProgram("packToBytes");
         // globals.gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
         // globals.gpuMath.setSize(textureDim*vectorLength, textureDim);
@@ -170,7 +170,7 @@ function initDynamicModel(globals){
         //     var pixels = new Uint8Array(height*textureDimCreases*4*vectorLength);
         //     globals.gpuMath.readPixels(0, 0, textureDimCreases * vectorLength, height, pixels);
         //     var parsedPixels = new Float32Array(pixels.buffer);
-        //     for (var i = 0; i < parsedPixels.length; i+=2) {
+        //     for (var i = 0; i < 1; i++) {
         //         console.log(parsedPixels[i])
         //     }
         // } else {
