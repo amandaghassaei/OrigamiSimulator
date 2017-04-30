@@ -121,6 +121,7 @@ $(function() {
     globals.model = initModel(globals);
     globals.staticSolver = initStaticSolver(globals);
     globals.dynamicModel = initDynamicModel(globals);
+    // global.dynamicModel.syncNodesAndEdges(true);
     // globals.staticSolver.syncNodesAndEdges();
     globals.pattern = initPattern(globals);
     globals.threeView.render();

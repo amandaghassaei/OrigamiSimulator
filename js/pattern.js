@@ -32,46 +32,46 @@ function initPattern(globals){
         });
     }
 
-    // loadSVG("assets/Tessellations/SimpleVertex.svg", function(svg){
-    //     var _$svg = $(svg);
-    //
-    //     //format all lines
-    //     var $paths = _$svg.children("path");
-    //     $paths.css({fill:"none", 'stroke-width':3, 'stroke-dasharray':"none"});
-    //
-    //     var $outlines = $paths.filter(function(){
-    //         var stroke = $(this).attr("stroke").toLowerCase();
-    //         return stroke == "#000000" || stroke == "#000";
-    //     });
-    //     // $outlines.css({fill:'#ffffff'});
-    //
-    //     var $mountains = $paths.filter(function(){
-    //         var stroke = $(this).attr("stroke").toLowerCase();
-    //         return stroke == "#ff0000" || stroke == "#f00";
-    //     });
-    //     $mountains.css({'stroke-dasharray':'12, 6, 3, 6'});
-    //
-    //     var $valleys = $paths.filter(function(){
-    //         var stroke = $(this).attr("stroke").toLowerCase();
-    //         return stroke == "#0000ff" || stroke == "#00f";
-    //     });
-    //     $valleys.css({'stroke-dasharray':'7, 6, 7, 6'});
-    //
-    //     var $cuts = $paths.filter(function(){
-    //         var stroke = $(this).attr("stroke").toLowerCase();
-    //         return stroke == "#00ff00" || stroke == "#0f0";
-    //     });
-    //
-    //     var $svg = $('<svg version="1.1" viewBox="'+_$svg.attr("viewBox")+'" id="mySVG" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> </svg>');
-    //     $svg.append($outlines);
-    //     $svg.append($mountains);
-    //     $svg.append($valleys);
-    //     $svg.append($cuts);
-    //
-    //     $("#svgViewer").html($svg);
-    //
-    //     parseSVG($outlines, $mountains, $valleys, $cuts);
-    // });
+    loadSVG("assets/Tessellations/SimpleVertex.svg", function(svg){
+        var _$svg = $(svg);
+
+        //format all lines
+        var $paths = _$svg.children("path");
+        $paths.css({fill:"none", 'stroke-width':3, 'stroke-dasharray':"none"});
+
+        var $outlines = $paths.filter(function(){
+            var stroke = $(this).attr("stroke").toLowerCase();
+            return stroke == "#000000" || stroke == "#000";
+        });
+        // $outlines.css({fill:'#ffffff'});
+
+        var $mountains = $paths.filter(function(){
+            var stroke = $(this).attr("stroke").toLowerCase();
+            return stroke == "#ff0000" || stroke == "#f00";
+        });
+        $mountains.css({'stroke-dasharray':'12, 6, 3, 6'});
+
+        var $valleys = $paths.filter(function(){
+            var stroke = $(this).attr("stroke").toLowerCase();
+            return stroke == "#0000ff" || stroke == "#00f";
+        });
+        $valleys.css({'stroke-dasharray':'7, 6, 7, 6'});
+
+        var $cuts = $paths.filter(function(){
+            var stroke = $(this).attr("stroke").toLowerCase();
+            return stroke == "#00ff00" || stroke == "#0f0";
+        });
+
+        var $svg = $('<svg version="1.1" viewBox="'+_$svg.attr("viewBox")+'" id="mySVG" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> </svg>');
+        $svg.append($outlines);
+        $svg.append($mountains);
+        $svg.append($valleys);
+        $svg.append($cuts);
+
+        $("#svgViewer").html($svg);
+
+        parseSVG($outlines, $mountains, $valleys, $cuts);
+    });
 
     function parsePath(_verticesRaw, _segmentsRaw, $paths){
         for (var i=0;i<$paths.length;i++){
@@ -360,7 +360,6 @@ function initPattern(globals){
     }
 
     function findPolygons(allEdges){
-
         //collect all edges connected to vertices
         var vertEdges = [];
         for (var i=0;i<vertices.length;i++){
@@ -396,6 +395,7 @@ function initPattern(globals){
             }
             vertEdges[i] = sortedEdges;
         }
+
 
         var edgesDir1 = [];//vert lower index to vert higher index
         var edgesDir2 = [];//vert higher index to vert lower index
@@ -458,12 +458,13 @@ function initPattern(globals){
                 }
             }
         }
-
         //remove boundary
         for (var i=polygonEdges.length-1;i>=0;i--){
             var containsInnerCrease = false;
             for (var j=0;j<polygonEdges[i].length;j++){
-                if (polygonEdges[i][j]>=outlines.length){
+                var edgeIndex = polygonEdges[i][j];
+                if (edgeIndex < 0) edgeIndex = -edgeIndex-1;
+                if (edgeIndex>=outlines.length){
                     containsInnerCrease = true;
                     break;
                 }

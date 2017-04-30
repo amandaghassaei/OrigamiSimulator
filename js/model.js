@@ -104,7 +104,8 @@ function initModel(globals){
         }
         oldCreases = null;
 
-        globals.staticSolver.syncNodesAndEdges();
+        globals.dynamicModel.syncNodesAndEdges(true);
+        // globals.staticSolver.syncNodesAndEdges();
     }
 
     function getNodes(){

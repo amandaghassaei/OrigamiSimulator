@@ -65,6 +65,8 @@ function initDynamicModel(globals){
         if (firstTime === undefined) firstTime = false;
         initTexturesAndPrograms(globals.gpuMath, firstTime);
         steps = parseInt(setSolveParams());
+
+        if(firstTime) runSolver();
     }
 
     var steps;
@@ -75,8 +77,6 @@ function initDynamicModel(globals){
     var textureDimFaces = 0;
     var textureDimCreases = 0;
     var textureDimNodeCreases = 0;
-    syncNodesAndEdges(true);
-    runSolver();
 
     function reset(){
         globals.gpuMath.step("zeroTexture", [], "u_position");
