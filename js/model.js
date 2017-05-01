@@ -79,7 +79,7 @@ function initModel(globals){
         var _creases = [];
         for (var i=0;i<allCreaseParams.length;i++) {//allCreaseParams.length
             var creaseParams = allCreaseParams[i];//face1Ind, vertInd, face2Ind, ver2Ind, edgeInd, angle
-            _creases.push(new Crease(_edges[creaseParams[4]], creaseParams[0], creaseParams[2], creaseParams[5], 1, _nodes[creaseParams[1]], _nodes[creaseParams[3]], _creases.length));
+            _creases.push(new Crease(_edges[creaseParams[4]], creaseParams[0], creaseParams[2], creaseParams[5], creaseParams[5]!=0, _nodes[creaseParams[1]], _nodes[creaseParams[3]], _creases.length));
         }
 
         globals.threeView.sceneClearModel();
