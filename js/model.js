@@ -16,9 +16,9 @@ function initModel(globals){
 
     // nodes.push(new Node(new THREE.Vector3(-10,0,0), nodes.length));
 
-    nodes[0].setFixed(true);
-    nodes[1].setFixed(true);
-    nodes[2].setFixed(true);
+    // nodes[0].setFixed(true);
+    // nodes[1].setFixed(true);
+    // nodes[2].setFixed(true);
 
     var edges = [];
     edges.push(new Beam([nodes[1], nodes[0]]));
@@ -43,9 +43,9 @@ function initModel(globals){
 
     var creases = [];
     creases.push(new Crease(edges[2], 0, 1, Math.PI, 1, nodes[1], nodes[3], 0));
-    creases.push(new Crease(edges[4], 2, 1, Math.PI, 1, nodes[4], nodes[0], 1));
+    creases.push(new Crease(edges[4], 2, 1, -Math.PI, 1, nodes[4], nodes[0], 1));
 
-    // creases.push(new Crease(edges[5], 3, 2, Math.PI, 1, nodes[3], nodes[1], 1));
+    // creases.push(new Crease(edges[5], 3, 2, -Math.PI, 1, nodes[3], nodes[1], 1));
     // creases.push(new Crease(edges[0], 3, 0, Math.PI, 1, nodes[4], nodes[2], 2));
 
 

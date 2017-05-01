@@ -4,7 +4,7 @@
 
 function initDynamicModel(globals){
 
-    var material = new THREE.MeshNormalMaterial({shading: THREE.FlatShading, side: THREE.FrontSide});
+    var material = new THREE.MeshNormalMaterial({shading: THREE.FlatShading, side: THREE.DoubleSide});
     var geometry = new THREE.Geometry();
     geometry.dynamic = true;
     var object3D = new THREE.Mesh(geometry, material);
