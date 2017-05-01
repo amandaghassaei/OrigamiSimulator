@@ -397,7 +397,6 @@ function initDynamicModel(globals){
     function updateCreasesMeta(initing){
         for (var i=0;i<creases.length;i++){
             var crease = creases[i];
-            console.log(crease.getK());
             creaseMeta[i*4] = crease.getK();
             creaseMeta[i*4+1] = crease.getD();
             if (initing) creaseMeta[i*4+2] = crease.getTargetTheta();

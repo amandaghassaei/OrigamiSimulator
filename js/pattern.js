@@ -32,7 +32,7 @@ function initPattern(globals){
         });
     }
 
-    loadSVG("assets/Tessellations/SimpleVertex.svg", function(svg){
+    loadSVG("assets/Tessellations/miura-ori.svg", function(svg){
         var _$svg = $(svg);
 
         //format all lines
