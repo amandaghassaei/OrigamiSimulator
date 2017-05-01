@@ -42,11 +42,11 @@ function initModel(globals){
     // faces.push(new THREE.Face3(3,4,0));
 
     var creases = [];
-    creases.push(new Crease(edges[2], 0, 1, Math.PI-0.001, 1, nodes[1], nodes[3], 0));
-    creases.push(new Crease(edges[4], 2, 1, -(Math.PI-0.001), 1, nodes[4], nodes[0], 1));
+    creases.push(new Crease(edges[2], 0, 1, Math.PI, 1, nodes[1], nodes[3], 0));
+    creases.push(new Crease(edges[4], 2, 1, Math.PI, 1, nodes[4], nodes[0], 1));
 
-    // creases.push(new Crease(edges[5], 3, 2, -(Math.PI-0.001), 1, nodes[3], nodes[1], 1));
-    // creases.push(new Crease(edges[0], 3, 0, (Math.PI-0.001), 1, nodes[4], nodes[2], 2));
+    // creases.push(new Crease(edges[5], 3, 2, Math.PI, 1, nodes[3], nodes[1], 1));
+    // creases.push(new Crease(edges[0], 3, 0, Math.PI, 1, nodes[4], nodes[2], 2));
 
 
     var _allNodeObject3Ds  = [];

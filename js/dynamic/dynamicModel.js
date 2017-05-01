@@ -33,7 +33,7 @@ function initDynamicModel(globals){
     var creaseMeta;//[k, d, targetTheta]
     var creaseMeta2;//[creaseIndex (thetaIndex), length to node, nodeIndex (1/2), ]
                     //[creaseIndex (thetaIndex), length to node1, length to node2, -1]
-    var creaseVectors;//vectors of oriented edges in crease
+    var creaseVectors;//indices of crease nodes
     var theta;//[theta, w, normalIndex1, normalIndex2]
     var lastTheta;//[theta, w, normalIndex1, normalIndex2]
 
@@ -150,7 +150,7 @@ function initDynamicModel(globals){
 
         gpuMath.setProgram("thetaCalc");
         gpuMath.setSize(textureDimCreases, textureDimCreases);
-        gpuMath.step("thetaCalc", ["u_normals", "u_lastTheta", "u_creaseVectors"], "u_theta");
+        gpuMath.step("thetaCalc", ["u_normals", "u_lastTheta", "u_creaseVectors", "u_lastPosition", "u_originalPosition"], "u_theta");
 
         gpuMath.setProgram("velocityCalc");
         gpuMath.setSize(textureDim, textureDim);
@@ -165,23 +165,23 @@ function initDynamicModel(globals){
 
     function render(){
 
-        var vectorLength = 1;
-        globals.gpuMath.setProgram("packToBytes");
-        globals.gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
-        globals.gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDimCreases, textureDimCreases], "2f");
-        globals.gpuMath.setSize(textureDimCreases*vectorLength, textureDimCreases);
-        globals.gpuMath.step("packToBytes", ["u_lastTheta"], "outputBytes");
-
-        if (globals.gpuMath.readyToRead()) {
-            var numPixels = nodes.length*vectorLength;
-            var height = Math.ceil(numPixels/(textureDimCreases*vectorLength));
-            var pixels = new Uint8Array(height*textureDimCreases*4*vectorLength);
-            globals.gpuMath.readPixels(0, 0, textureDimCreases * vectorLength, height, pixels);
-            var parsedPixels = new Float32Array(pixels.buffer);
-            console.log(parsedPixels);
-        } else {
-            console.log("here");
-        }
+        // var vectorLength = 2;
+        // globals.gpuMath.setProgram("packToBytes");
+        // globals.gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
+        // globals.gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDimCreases, textureDimCreases], "2f");
+        // globals.gpuMath.setSize(textureDimCreases*vectorLength, textureDimCreases);
+        // globals.gpuMath.step("packToBytes", ["u_lastTheta"], "outputBytes");
+        //
+        // if (globals.gpuMath.readyToRead()) {
+        //     var numPixels = nodes.length*vectorLength;
+        //     var height = Math.ceil(numPixels/(textureDimCreases*vectorLength));
+        //     var pixels = new Uint8Array(height*textureDimCreases*4*vectorLength);
+        //     globals.gpuMath.readPixels(0, 0, textureDimCreases * vectorLength, height, pixels);
+        //     var parsedPixels = new Float32Array(pixels.buffer);
+        //     console.log(parsedPixels);
+        // } else {
+        //     console.log("here");
+        // }
 
         var vectorLength = 3;
         globals.gpuMath.setProgram("packToBytes");
@@ -287,6 +287,9 @@ function initDynamicModel(globals){
         gpuMath.setUniformForProgram("thetaCalc", "u_normals", 0, "1i");
         gpuMath.setUniformForProgram("thetaCalc", "u_lastTheta", 1, "1i");
         gpuMath.setUniformForProgram("thetaCalc", "u_creaseVectors", 2, "1i");
+        gpuMath.setUniformForProgram("thetaCalc", "u_lastPosition", 3, "1i");
+        gpuMath.setUniformForProgram("thetaCalc", "u_originalPosition", 4, "1i");
+        gpuMath.setUniformForProgram("thetaCalc", "u_textureDim", [textureDim, textureDim], "2f");
         gpuMath.setUniformForProgram("thetaCalc", "u_textureDimFaces", [textureDimFaces, textureDimFaces], "2f");
         gpuMath.setUniformForProgram("thetaCalc", "u_textureDimCreases", [textureDimCreases, textureDimCreases], "2f");
 
@@ -375,10 +378,13 @@ function initDynamicModel(globals){
     function updateCreaseVectors(){
         for (var i=0;i<creases.length;i++){
             var rgbaIndex = i*4;
-            var vector = creases[i].getVector();
-            creaseVectors[rgbaIndex] = -vector.x;
-            creaseVectors[rgbaIndex+1] = -vector.y;
-            creaseVectors[rgbaIndex+2] = -vector.z;
+            var nodes = creases[i].edge.nodes;
+            // this.vertices[1].clone().sub(this.vertices[0]);
+            creaseVectors[rgbaIndex] =nodes[0];
+            creaseVectors[rgbaIndex+1] = nodes[1];
+            // creaseVectors[rgbaIndex] = -vector.x;
+            // creaseVectors[rgbaIndex+1] = -vector.y;
+            // creaseVectors[rgbaIndex+2] = -vector.z;
         }
         globals.gpuMath.initTextureFromData("u_creaseVectors", textureDimCreases, textureDimCreases, "FLOAT", creaseVectors, true);
     }
