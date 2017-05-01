@@ -168,42 +168,25 @@ function initDynamicModel(globals){
         var vectorLength = 1;
         globals.gpuMath.setProgram("packToBytes");
         globals.gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
+        globals.gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDimCreases, textureDimCreases], "2f");
         globals.gpuMath.setSize(textureDimCreases*vectorLength, textureDimCreases);
         globals.gpuMath.step("packToBytes", ["u_lastTheta"], "outputBytes");
+
         if (globals.gpuMath.readyToRead()) {
-            var numPixels = creases.length*vectorLength;
+            var numPixels = nodes.length*vectorLength;
             var height = Math.ceil(numPixels/(textureDimCreases*vectorLength));
             var pixels = new Uint8Array(height*textureDimCreases*4*vectorLength);
             globals.gpuMath.readPixels(0, 0, textureDimCreases * vectorLength, height, pixels);
             var parsedPixels = new Float32Array(pixels.buffer);
-            for (var i = 0; i < 1; i++) {
-                console.log(parsedPixels);
-            }
+            console.log(parsedPixels);
         } else {
             console.log("here");
         }
 
-        // var vectorLength = 3;
-        // globals.gpuMath.setProgram("packToBytes");
-        // globals.gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
-        // globals.gpuMath.setSize(textureDim*vectorLength, textureDim);
-        // globals.gpuMath.step("packToBytes", ["u_normals"], "outputBytes");
-        // if (globals.gpuMath.readyToRead()) {
-        //     var numPixels = creases.length*vectorLength;
-        //     var height = Math.ceil(numPixels/(textureDimCreases*vectorLength));
-        //     var pixels = new Uint8Array(height*textureDimCreases*4*vectorLength);
-        //     globals.gpuMath.readPixels(0, 0, textureDimCreases * vectorLength, height, pixels);
-        //     var parsedPixels = new Float32Array(pixels.buffer);
-        //     for (var i = 0; i < 1; i++) {
-        //         console.log(parsedPixels[i] + "  " + parsedPixels[i+1] + "  " + parsedPixels[i+2] + "  ");
-        //     }
-        // } else {
-        //     console.log("here");
-        // }
-
         var vectorLength = 3;
         globals.gpuMath.setProgram("packToBytes");
         globals.gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
+        globals.gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDim, textureDim], "2f");
         globals.gpuMath.setSize(textureDim*vectorLength, textureDim);
         globals.gpuMath.step("packToBytes", ["u_lastPosition"], "outputBytes");
 
@@ -318,6 +301,7 @@ function initDynamicModel(globals){
         gpuMath.initTextureFromData("outputBytes", textureDim*4, textureDim, "UNSIGNED_BYTE", null, !firstTime);
         gpuMath.initFrameBufferForTexture("outputBytes", !firstTime);
         gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDim, textureDim], "2f");
+        gpuMath.setUniformForProgram("packToBytes", "u_floatTexture", 0, "1i");
 
         gpuMath.createProgram("zeroTexture", vertexShader, document.getElementById("zeroTexture").text);
 
