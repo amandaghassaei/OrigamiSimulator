@@ -256,7 +256,7 @@
             float dotNormals = dot(normal1, normal2);//normals are already normalized, no need to divide by length
             if (dotNormals < -1.0) dotNormals = -1.0;
             else if (dotNormals > 1.0) dotNormals = 1.0;
-            float theta = acos(dotNormals);
+            //float theta = acos(dotNormals);
 
             vec2 creaseVectorIndices = texture2D(u_creaseVectors, scaledFragCoord).xy;
             vec2 creaseNodeIndex = vec2(mod(creaseVectorIndices[0], u_textureDim.x)+0.5, floor(creaseVectorIndices[0]/u_textureDim.x)+0.5);
@@ -266,10 +266,15 @@
             scaledNodeIndex = creaseNodeIndex/u_textureDim;
             vec3 node1 = texture2D(u_lastPosition, scaledNodeIndex).xyz + texture2D(u_originalPosition, scaledNodeIndex).xyz;
 
-            vec3 creaseVector = node0-node1;
+            //https://math.stackexchange.com/questions/47059/how-do-i-calculate-a-dihedral-angle-given-cartesian-coordinates
+            vec3 creaseVector = normalize(node1-node0);
+            float x = dotNormals;
+            float y = dot(cross(normal1, creaseVector), normal2);
 
-            float sign = dot(cross(normal1, normal2), creaseVector);
-            if (sign < 0.0) theta *= -1.0;
+            float theta = atan(y, x);
+
+            //float sign = dot(cross(normal1, normal2), creaseVector);
+            //if (sign < 0.0) theta *= -1.0;
             float diff = theta-lastTheta[0];
             float projectedTheta = lastTheta[0] + lastTheta[1]*u_dt;
             if (diff < -5.0) {
@@ -279,7 +284,7 @@
                 diff  -= TWO_PI;
                 theta = lastTheta[0] + diff;
             }
-            gl_FragColor = vec4(theta, diff, lastTheta[2], lastTheta[3]);//[theta, w, normal1Index, normal2Index]
+            gl_FragColor = vec4(theta, creaseVectorIndices[1], lastTheta[2], lastTheta[3]);//[theta, w, normal1Index, normal2Index]
         }
     </script>
 

@@ -150,7 +150,8 @@ function initDynamicModel(globals){
 
         gpuMath.setProgram("thetaCalc");
         gpuMath.setSize(textureDimCreases, textureDimCreases);
-        gpuMath.step("thetaCalc", ["u_normals", "u_lastTheta", "u_creaseVectors", "u_lastPosition", "u_originalPosition"], "u_theta");
+        gpuMath.step("thetaCalc", ["u_normals", "u_lastTheta", "u_creaseVectors", "u_lastPosition",
+            "u_originalPosition"], "u_theta");
 
         gpuMath.setProgram("velocityCalc");
         gpuMath.setSize(textureDim, textureDim);
@@ -380,8 +381,8 @@ function initDynamicModel(globals){
             var rgbaIndex = i*4;
             var nodes = creases[i].edge.nodes;
             // this.vertices[1].clone().sub(this.vertices[0]);
-            creaseVectors[rgbaIndex] =nodes[0];
-            creaseVectors[rgbaIndex+1] = nodes[1];
+            creaseVectors[rgbaIndex] = nodes[0].getIndex();
+            creaseVectors[rgbaIndex+1] = nodes[1].getIndex();
             // creaseVectors[rgbaIndex] = -vector.x;
             // creaseVectors[rgbaIndex+1] = -vector.y;
             // creaseVectors[rgbaIndex+2] = -vector.z;
