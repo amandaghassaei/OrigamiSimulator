@@ -13,12 +13,15 @@ function initModel(globals){
     nodes.push(new Node(new THREE.Vector3(10,0,0), nodes.length));
     nodes.push(new Node(new THREE.Vector3(0,0,-10), nodes.length));
     nodes.push(new Node(new THREE.Vector3(10,0,-10), nodes.length));
-    // nodes[0].setFixed(true);
-    // nodes[1].setFixed(true);
-    // nodes[2].setFixed(true);
+
+    // nodes.push(new Node(new THREE.Vector3(-10,0,0), nodes.length));
+
+    nodes[0].setFixed(true);
+    nodes[1].setFixed(true);
+    nodes[2].setFixed(true);
 
     var edges = [];
-    edges.push(new Beam([nodes[0], nodes[1]]));
+    edges.push(new Beam([nodes[1], nodes[0]]));
     edges.push(new Beam([nodes[1], nodes[2]]));
     edges.push(new Beam([nodes[2], nodes[0]]));
     edges.push(new Beam([nodes[3], nodes[0]]));
@@ -26,14 +29,25 @@ function initModel(globals){
     edges.push(new Beam([nodes[3], nodes[4]]));
     edges.push(new Beam([nodes[2], nodes[4]]));
 
+    // edges.push(new Beam([nodes[4], nodes[0]]));
+    // edges.push(new Beam([nodes[4], nodes[1]]));
+    // edges.push(new Beam([nodes[3], nodes[4]]));
+
     var faces = [];
     faces.push(new THREE.Face3(0,1,2));
     faces.push(new THREE.Face3(0,2,3));
     faces.push(new THREE.Face3(4,3,2));
 
+    // faces.push(new THREE.Face3(4,1,0));
+    // faces.push(new THREE.Face3(3,4,0));
+
     var creases = [];
     creases.push(new Crease(edges[2], 0, 1, Math.PI-0.001, 1, nodes[1], nodes[3], 0));
     creases.push(new Crease(edges[4], 2, 1, -(Math.PI-0.001), 1, nodes[4], nodes[0], 1));
+
+    // creases.push(new Crease(edges[5], 3, 2, -(Math.PI-0.001), 1, nodes[3], nodes[1], 1));
+    // creases.push(new Crease(edges[0], 3, 0, (Math.PI-0.001), 1, nodes[4], nodes[2], 2));
+
 
     var _allNodeObject3Ds  = [];
     _.each(nodes, function(node){
@@ -41,19 +55,21 @@ function initModel(globals){
         _allNodeObject3Ds.push(obj3D);
         globals.threeView.sceneAddModel(obj3D);
     });
+    allNodeObject3Ds = _allNodeObject3Ds;
     _.each(edges, function(edge){
         globals.threeView.sceneAddModel(edge.getObject3D());
     });
 
     function buildModel(_faces, _vertices, _allEdges, allCreaseParams){
 
+        // console.log(_allEdges);
         var _nodes = [];
         for (var i=0;i<_vertices.length;i++){
             _nodes.push(new Node(_vertices[i].clone(), _nodes.length));
         }
-        _nodes[_faces[0].a].setFixed(true);
-        _nodes[_faces[0].b].setFixed(true);
-        _nodes[_faces[0].c].setFixed(true);
+        // _nodes[_faces[0].a].setFixed(true);
+        // _nodes[_faces[0].b].setFixed(true);
+        // _nodes[_faces[0].c].setFixed(true);
 
         var _edges = [];
         for (var i=0;i<_allEdges.length;i++) {

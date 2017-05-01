@@ -259,14 +259,47 @@
             if (sign < 0.0) theta *= -1.0;
             float diff = theta-lastTheta[0];
             float projectedTheta = lastTheta[0] + lastTheta[1]*u_dt;
-            if (diff < -5.5 || (diff < -3.0 && projectedTheta > 6.0)) {
+            if (diff < -5.0) {
                 diff += TWO_PI;
                 theta = lastTheta[0] + diff;
-            } else if (diff > 5.5 || (diff > 3.0 && projectedTheta < -6.0)) {
-                diff -= TWO_PI;
+            } else if (diff > 5.0) {
+                diff  -= TWO_PI;
                 theta = lastTheta[0] + diff;
             }
             gl_FragColor = vec4(theta, diff, lastTheta[2], lastTheta[3]);//[theta, w, normal1Index, normal2Index]
+        }
+    </script>
+
+    <script id="normalCalc" type="x-shader/x-fragment">
+        precision mediump float;
+        uniform vec2 u_textureDim;
+        uniform vec2 u_textureDimFaces;
+        uniform sampler2D u_faceVertexIndices;
+        uniform sampler2D u_lastPosition;
+        uniform sampler2D u_originalPosition;
+
+        void main(){
+            vec2 fragCoord = gl_FragCoord.xy;
+            vec2 scaledFragCoord = fragCoord/u_textureDimFaces;
+
+            vec3 indices = texture2D(u_faceVertexIndices, scaledFragCoord).xyz;
+
+            float nodeIndex1D = indices[0];
+            vec2 nodeIndex = vec2(mod(nodeIndex1D, u_textureDim.x)+0.5, floor(nodeIndex1D/u_textureDim.x)+0.5);
+            vec2 scaledNodeIndex = nodeIndex/u_textureDim;
+            vec3 a = texture2D(u_lastPosition, scaledNodeIndex).xyz + texture2D(u_originalPosition, scaledNodeIndex).xyz;
+
+            nodeIndex1D = indices[1];
+            nodeIndex = vec2(mod(nodeIndex1D, u_textureDim.x)+0.5, floor(nodeIndex1D/u_textureDim.x)+0.5);
+            scaledNodeIndex = nodeIndex/u_textureDim;
+            vec3 b = texture2D(u_lastPosition, scaledNodeIndex).xyz + texture2D(u_originalPosition, scaledNodeIndex).xyz;
+
+            nodeIndex1D = indices[2];
+            nodeIndex = vec2(mod(nodeIndex1D, u_textureDim.x)+0.5, floor(nodeIndex1D/u_textureDim.x)+0.5);
+            scaledNodeIndex = nodeIndex/u_textureDim;
+            vec3 c = texture2D(u_lastPosition, scaledNodeIndex).xyz + texture2D(u_originalPosition, scaledNodeIndex).xyz;
+
+            gl_FragColor = vec4(normalize(cross(b-a, c-a)), 0.0);
         }
     </script>
 

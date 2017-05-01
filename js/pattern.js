@@ -32,46 +32,46 @@ function initPattern(globals){
         });
     }
 
-    loadSVG("assets/Tessellations/SimpleVertex.svg", function(svg){
-        var _$svg = $(svg);
-
-        //format all lines
-        var $paths = _$svg.children("path");
-        $paths.css({fill:"none", 'stroke-width':3, 'stroke-dasharray':"none"});
-
-        var $outlines = $paths.filter(function(){
-            var stroke = $(this).attr("stroke").toLowerCase();
-            return stroke == "#000000" || stroke == "#000";
-        });
-        // $outlines.css({fill:'#ffffff'});
-
-        var $mountains = $paths.filter(function(){
-            var stroke = $(this).attr("stroke").toLowerCase();
-            return stroke == "#ff0000" || stroke == "#f00";
-        });
-        $mountains.css({'stroke-dasharray':'12, 6, 3, 6'});
-
-        var $valleys = $paths.filter(function(){
-            var stroke = $(this).attr("stroke").toLowerCase();
-            return stroke == "#0000ff" || stroke == "#00f";
-        });
-        $valleys.css({'stroke-dasharray':'7, 6, 7, 6'});
-
-        var $cuts = $paths.filter(function(){
-            var stroke = $(this).attr("stroke").toLowerCase();
-            return stroke == "#00ff00" || stroke == "#0f0";
-        });
-
-        var $svg = $('<svg version="1.1" viewBox="'+_$svg.attr("viewBox")+'" id="mySVG" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> </svg>');
-        $svg.append($outlines);
-        $svg.append($mountains);
-        $svg.append($valleys);
-        $svg.append($cuts);
-
-        $("#svgViewer").html($svg);
-
-        parseSVG($outlines, $mountains, $valleys, $cuts);
-    });
+    // loadSVG("assets/Tessellations/SimpleVertex2.svg", function(svg){
+    //     var _$svg = $(svg);
+    //
+    //     //format all lines
+    //     var $paths = _$svg.children("path");
+    //     $paths.css({fill:"none", 'stroke-width':3, 'stroke-dasharray':"none"});
+    //
+    //     var $outlines = $paths.filter(function(){
+    //         var stroke = $(this).attr("stroke").toLowerCase();
+    //         return stroke == "#000000" || stroke == "#000";
+    //     });
+    //     // $outlines.css({fill:'#ffffff'});
+    //
+    //     var $mountains = $paths.filter(function(){
+    //         var stroke = $(this).attr("stroke").toLowerCase();
+    //         return stroke == "#ff0000" || stroke == "#f00";
+    //     });
+    //     $mountains.css({'stroke-dasharray':'12, 6, 3, 6'});
+    //
+    //     var $valleys = $paths.filter(function(){
+    //         var stroke = $(this).attr("stroke").toLowerCase();
+    //         return stroke == "#0000ff" || stroke == "#00f";
+    //     });
+    //     $valleys.css({'stroke-dasharray':'7, 6, 7, 6'});
+    //
+    //     var $cuts = $paths.filter(function(){
+    //         var stroke = $(this).attr("stroke").toLowerCase();
+    //         return stroke == "#00ff00" || stroke == "#0f0";
+    //     });
+    //
+    //     var $svg = $('<svg version="1.1" viewBox="'+_$svg.attr("viewBox")+'" id="mySVG" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> </svg>');
+    //     $svg.append($outlines);
+    //     $svg.append($mountains);
+    //     $svg.append($valleys);
+    //     $svg.append($cuts);
+    //
+    //     $("#svgViewer").html($svg);
+    //
+    //     parseSVG($outlines, $mountains, $valleys, $cuts);
+    // });
 
     function parsePath(_verticesRaw, _segmentsRaw, $paths){
         for (var i=0;i<$paths.length;i++){
@@ -193,16 +193,23 @@ function initPattern(globals){
                         }
                         creaseParams.push(faceVerts[0]);
                         if (creaseParams.length == 4) {
+
+                            if (v2Index-v1Index == 1 || v2Index-v1Index == -2) {
+                                creaseParams = [creaseParams[2], creaseParams[3], creaseParams[0], creaseParams[1]];
+                            }
+
                             creaseParams.push(i);
                             if (i<(outlines.length+mountains.length+valleys.length)){
-                                var angle = Math.PI;
+                                var angle = Math.PI/2;
                                 if (i<(outlines.length+mountains.length)){
                                     angle *= -1;
                                 }
                                 creaseParams.push(angle);
                             } else {
+                                console.log("panel");
                                 creaseParams.push(0);
                             }
+                            console.log(creaseParams);
                             allCreaseParams.push(creaseParams);
                             break;
                         }
@@ -210,36 +217,37 @@ function initPattern(globals){
                 }
             }
         }
-        for (var i=outlines.length+mountains.length+valleys.length+cuts.length;i<allEdges.length;i++){
-            var v1 = allEdges[i][0];
-            var v2 = allEdges[i][1];
-            var creaseParams = [];
-            for (var j=0;j<faces.length;j++){
-                var face = faces[j];
-                var faceVerts = [face.a, face.b, face.c];
-                var v1Index = faceVerts.indexOf(v1);
-                if (v1Index>=0){
-                    var v2Index = faceVerts.indexOf(v2);
-                    if (v2Index>=0){
-                        creaseParams.push(j);
-                        if (v2Index>v1Index) {
-                            faceVerts.splice(v2Index, 1);
-                            faceVerts.splice(v1Index, 1);
-                        } else {
-                            faceVerts.splice(v1Index, 1);
-                            faceVerts.splice(v2Index, 1);
-                        }
-                        creaseParams.push(faceVerts[0]);
-                        if (creaseParams.length == 4) {
-                            creaseParams.push(i);
-                            creaseParams.push(0);//zero target angle
-                            allCreaseParams.push(creaseParams);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+        //panels
+        // for (var i=outlines.length+mountains.length+valleys.length+cuts.length;i<allEdges.length;i++){
+        //     var v1 = allEdges[i][0];
+        //     var v2 = allEdges[i][1];
+        //     var creaseParams = [];
+        //     for (var j=0;j<faces.length;j++){
+        //         var face = faces[j];
+        //         var faceVerts = [face.a, face.b, face.c];
+        //         var v1Index = faceVerts.indexOf(v1);
+        //         if (v1Index>=0){
+        //             var v2Index = faceVerts.indexOf(v2);
+        //             if (v2Index>=0){
+        //                 creaseParams.push(j);
+        //                 if (v2Index>v1Index) {
+        //                     faceVerts.splice(v2Index, 1);
+        //                     faceVerts.splice(v1Index, 1);
+        //                 } else {
+        //                     faceVerts.splice(v1Index, 1);
+        //                     faceVerts.splice(v2Index, 1);
+        //                 }
+        //                 creaseParams.push(faceVerts[0]);
+        //                 if (creaseParams.length == 4) {
+        //                     creaseParams.push(i);
+        //                     creaseParams.push(0);//zero target angle
+        //                     allCreaseParams.push(creaseParams);
+        //                     break;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
         return allCreaseParams;
     }
 
