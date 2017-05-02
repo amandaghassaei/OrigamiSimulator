@@ -8,7 +8,7 @@ function initGlobals(){
     var _globals = {
 
         //view
-        colorMode: "normal",
+        colorMode: "color",
         color1: "ec008b",
         color2: "ffffff",
 

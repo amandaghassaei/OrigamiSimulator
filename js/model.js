@@ -9,14 +9,14 @@ function initModel(globals){
     setMeshMaterial();
     function setMeshMaterial(){
         if (globals.colorMode == "normal"){
-            material = new THREE.MeshNormalMaterial({shading: THREE.FlatShading, side: THREE.DoubleSide});
+            material = new THREE.MeshNormalMaterial({side: THREE.DoubleSide});
         } else {
             material = THREE.MeshFaceMaterial([
                 new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide}),
                 new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0x0000ff, side:THREE.FrontSide})
             ]);
-            material.materials[0].color.setStyle( "#" + globals.color1);
-            material.materials[1].color.setStyle( "#" + globals.color2);
+            material.materials[0].color.setStyle( "#" + globals.color2);
+            material.materials[1].color.setStyle( "#" + globals.color1);
         }
         if (object3D) object3D.material = material;
     }
@@ -102,6 +102,7 @@ function initModel(globals){
             }
             geometry.verticesNeedUpdate = true;
             geometry.computeFaceNormals();
+            geometry.computeFlatVertexNormals();
         });
     }
 
@@ -180,6 +181,7 @@ function initModel(globals){
         geometry.computeFaceNormals();
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
+        geometry.center();
 
         globals.shouldSyncWithModel = true;
         inited = true;
