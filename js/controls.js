@@ -72,13 +72,9 @@ function initControls(globals){
     else $("#coloredMaterialOptions").hide();
     setRadio("colorMode", globals.colorMode, function(val){
         globals.colorMode = val;
-        if (val == "color") {
-            $("#coloredMaterialOptions").show();
-            globals.model.setMeshMaterial();
-        }
+        if (val == "color") $("#coloredMaterialOptions").show();
         else $("#coloredMaterialOptions").hide();
-
-
+        globals.model.setMeshMaterial();
     });
 
     function setButtonGroup(id, callback){

@@ -5,15 +5,19 @@
 //wireframe model and folding structure
 function initModel(globals){
 
-    var material = new THREE.MeshNormalMaterial({shading: THREE.FlatShading, side: THREE.DoubleSide});
+    var material;
+    setMeshMaterial();
     function setMeshMaterial(){
-        material = THREE.MeshFaceMaterial([
-            new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide}),
-            new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0x0000ff, side:THREE.FrontSide})
-        ]);
-        object3D.material = material;
+        if (globals.colorMode == "normal"){
+            material = new THREE.MeshNormalMaterial({shading: THREE.FlatShading, side: THREE.DoubleSide});
+        } else {
+            material = THREE.MeshFaceMaterial([
+                new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide}),
+                new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0x0000ff, side:THREE.FrontSide})
+            ]);
+        }
+        if (object3D) object3D.material = material;
     }
-
 
     var geometry = new THREE.Geometry();
     geometry.dynamic = true;
@@ -166,7 +170,6 @@ function initModel(globals){
             geofaces[i].materialIndex = 1;
             geofaces.push(new THREE.Face3(faces[i].a, faces[i].c, faces[i].b));
         }
-        console.log(geofaces);
 
         geometry.vertices = vertices;
         geometry.faces = geofaces;
