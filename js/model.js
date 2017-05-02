@@ -11,7 +11,7 @@ function initModel(globals){
         if (globals.colorMode == "normal"){
             material = new THREE.MeshNormalMaterial({side: THREE.DoubleSide});
         } else {
-            material = THREE.MeshFaceMaterial([
+            material = new THREE.MultiMaterial([
                 new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide}),
                 new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0x0000ff, side:THREE.FrontSide})
             ]);
