@@ -20,6 +20,7 @@ function Beam(nodes){
 
     this.object3D = new THREE.Line(lineGeometry, beamMaterial);
     this.object3D._myBeam = this;
+    this.object3D.frustumCulled = false;
 
     this.originalLength = this.getLength();
 }

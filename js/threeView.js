@@ -49,7 +49,12 @@ function initThreeView(globals) {
         camera.position.y = 4000;
         camera.position.z = 4000;
 
-        controls = new THREE.OrbitControls(camera, container.get(0));
+        controls = new THREE.OrthographicTrackballControls(camera, renderer.domElement);
+        controls.rotateSpeed = 1.5;
+        controls.zoomSpeed = 0.8;
+        controls.noPan = true;
+        controls.staticMoving = true;
+        controls.dynamicDampingFactor = 0.3;
         controls.addEventListener('change', render);
 
         render();
