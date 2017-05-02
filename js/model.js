@@ -8,11 +8,11 @@ function initModel(globals){
     var allNodeObject3Ds = [];
 
     var nodes = [];
-    nodes.push(new Node(new THREE.Vector3(0,0,0), nodes.length));
-    nodes.push(new Node(new THREE.Vector3(0,0,10), nodes.length));
-    nodes.push(new Node(new THREE.Vector3(10,0,0), nodes.length));
-    nodes.push(new Node(new THREE.Vector3(0,0,-10), nodes.length));
-    nodes.push(new Node(new THREE.Vector3(10,0,-10), nodes.length));
+    // nodes.push(new Node(new THREE.Vector3(0,0,0), nodes.length));
+    // nodes.push(new Node(new THREE.Vector3(0,0,10), nodes.length));
+    // nodes.push(new Node(new THREE.Vector3(10,0,0), nodes.length));
+    // nodes.push(new Node(new THREE.Vector3(0,0,-10), nodes.length));
+    // nodes.push(new Node(new THREE.Vector3(10,0,-10), nodes.length));
 
     // nodes.push(new Node(new THREE.Vector3(-10,0,0), nodes.length));
 
@@ -21,44 +21,66 @@ function initModel(globals){
     // nodes[2].setFixed(true);
 
     var edges = [];
-    edges.push(new Beam([nodes[1], nodes[0]]));
-    edges.push(new Beam([nodes[1], nodes[2]]));
-    edges.push(new Beam([nodes[2], nodes[0]]));
-    edges.push(new Beam([nodes[3], nodes[0]]));
-    edges.push(new Beam([nodes[3], nodes[2]]));
-    edges.push(new Beam([nodes[3], nodes[4]]));
-    edges.push(new Beam([nodes[2], nodes[4]]));
+    // edges.push(new Beam([nodes[1], nodes[0]]));
+    // edges.push(new Beam([nodes[1], nodes[2]]));
+    // edges.push(new Beam([nodes[2], nodes[0]]));
+    // edges.push(new Beam([nodes[3], nodes[0]]));
+    // edges.push(new Beam([nodes[3], nodes[2]]));
+    // edges.push(new Beam([nodes[3], nodes[4]]));
+    // edges.push(new Beam([nodes[2], nodes[4]]));
 
     // edges.push(new Beam([nodes[4], nodes[0]]));
     // edges.push(new Beam([nodes[4], nodes[1]]));
     // edges.push(new Beam([nodes[3], nodes[4]]));
 
     var faces = [];
-    faces.push(new THREE.Face3(0,1,2));
-    faces.push(new THREE.Face3(0,2,3));
-    faces.push(new THREE.Face3(4,3,2));
+    // faces.push(new THREE.Face3(0,1,2));
+    // faces.push(new THREE.Face3(0,2,3));
+    // faces.push(new THREE.Face3(4,3,2));
 
     // faces.push(new THREE.Face3(4,1,0));
     // faces.push(new THREE.Face3(3,4,0));
 
     var creases = [];
-    creases.push(new Crease(edges[2], 0, 1, Math.PI, 1, nodes[1], nodes[3], 0));
-    creases.push(new Crease(edges[4], 2, 1, -Math.PI, 1, nodes[4], nodes[0], 1));
+    // creases.push(new Crease(edges[2], 0, 1, Math.PI, 1, nodes[1], nodes[3], 0));
+    // creases.push(new Crease(edges[4], 2, 1, -Math.PI, 1, nodes[4], nodes[0], 1));
 
     // creases.push(new Crease(edges[5], 3, 2, -Math.PI, 1, nodes[3], nodes[1], 1));
     // creases.push(new Crease(edges[0], 3, 0, Math.PI, 1, nodes[4], nodes[2], 2));
 
 
-    var _allNodeObject3Ds  = [];
-    _.each(nodes, function(node){
-        var obj3D = node.getObject3D();
-        _allNodeObject3Ds.push(obj3D);
-        globals.threeView.sceneAddModel(obj3D);
-    });
-    allNodeObject3Ds = _allNodeObject3Ds;
-    _.each(edges, function(edge){
-        globals.threeView.sceneAddModel(edge.getObject3D());
-    });
+    // var _allNodeObject3Ds  = [];
+    // _.each(nodes, function(node){
+    //     var obj3D = node.getObject3D();
+    //     _allNodeObject3Ds.push(obj3D);
+    //     globals.threeView.sceneAddModel(obj3D);
+    // });
+    // allNodeObject3Ds = _allNodeObject3Ds;
+    // _.each(edges, function(edge){
+    //     globals.threeView.sceneAddModel(edge.getObject3D());
+    // });
+
+    function pause(){
+        globals.threeView.pauseAnimation();
+    }
+
+    function resume(){
+        startSolver();
+    }
+
+    var inited = false;
+    startSolver();
+
+    function startSolver(){
+        globals.threeView.startAnimation(function(){
+            if (!inited) return;
+            if (globals.simType == "dynamic"){
+                globals.dynamicModel.solve();
+            } else {
+                console.log("static");
+            }
+        });
+    }
 
     function buildModel(_faces, _vertices, _allEdges, allCreaseParams){
 
@@ -103,8 +125,6 @@ function initModel(globals){
         faces = _faces;
         creases = _creases;
 
-        globals.shouldSyncWithModel = true;
-
         for (var i=0;i<oldNodes.length;i++){
             oldNodes[i].destroy();
         }
@@ -120,7 +140,8 @@ function initModel(globals){
         }
         oldCreases = null;
 
-        globals.dynamicModel.syncNodesAndEdges(true);
+        globals.shouldSyncWithModel = true;
+        inited = true;
         // globals.staticSolver.syncNodesAndEdges();
     }
 
@@ -145,6 +166,8 @@ function initModel(globals){
     }
 
     return {
+        pause: pause,
+        resume: resume,
         getNodes: getNodes,
         getEdges: getEdges,
         getFaces: getFaces,

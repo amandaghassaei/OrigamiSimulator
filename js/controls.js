@@ -46,7 +46,7 @@ function initControls(globals){
         globals.schematicVisible = val;
     });
 
-    setSliderInput("#axialStiffness", globals.axialStiffness, 100, 1000, 1, function(val){
+    setSliderInput("#axialStiffness", globals.axialStiffness, 500, 4000, 1, function(val){
         globals.axialStiffness = val;
         globals.materialHasChanged = true;
     });
@@ -84,6 +84,19 @@ function initControls(globals){
     setLink(".loadFile", function(e){
         $("#fileSelector").click();
         $(e.target).blur();
+    });
+
+    if (globals.colorMode == "color") $("#coloredMaterialOptions").show();
+    else $("#coloredMaterialOptions").hide();
+    setRadio("colorMode", globals.colorMode, function(val){
+        globals.colorMode = val;
+        if (val == "color") {
+            $("#coloredMaterialOptions").show();
+            globals.dynamicModel.setMeshMaterial();
+        }
+        else $("#coloredMaterialOptions").hide();
+
+
     });
 
     function setButtonGroup(id, callback){

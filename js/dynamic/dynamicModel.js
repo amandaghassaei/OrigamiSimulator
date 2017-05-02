@@ -5,6 +5,15 @@
 function initDynamicModel(globals){
 
     var material = new THREE.MeshNormalMaterial({shading: THREE.FlatShading, side: THREE.DoubleSide});
+    function setMeshMaterial(){
+        material = THREE.MeshFaceMaterial([
+            new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide}),
+            new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0x0000ff, side:THREE.BackSide})
+        ]);
+        object3D.material = material;
+    }
+
+
     var geometry = new THREE.Geometry();
     geometry.dynamic = true;
     var object3D = new THREE.Mesh(geometry, material);
@@ -37,6 +46,8 @@ function initDynamicModel(globals){
     var theta;//[theta, w, normalIndex1, normalIndex2]
     var lastTheta;//[theta, w, normalIndex1, normalIndex2]
 
+    var inited = false;
+
     function syncNodesAndEdges(firstTime){
         nodes = globals.model.getNodes();
         edges = globals.model.getEdges();
@@ -56,6 +67,14 @@ function initDynamicModel(globals){
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
 
+        // for ( var face in geometry.faces ) {
+        //     if (face<geometry.faces.length/2) {
+        //         geometry.faces[ face ].materialIndex = 1;
+        //         console.log(face);
+        //     }
+        //     else geometry.faces[ face ].materialIndex = 0;
+        // }
+
         var bounds = geometry.boundingBox;
         var avg = (bounds.min.add(bounds.max)).multiplyScalar(-0.5);
         // object3D.position.set(avg.x, 0, avg.z);
@@ -67,7 +86,7 @@ function initDynamicModel(globals){
         initTexturesAndPrograms(globals.gpuMath, firstTime);
         steps = parseInt(setSolveParams());
 
-        if(firstTime) runSolver();
+        inited = true;
     }
 
     var steps;
@@ -91,28 +110,9 @@ function initDynamicModel(globals){
         // }
     }
 
-    function runSolver(){
-        globals.threeView.startAnimation(function(){
-            if (!globals.dynamicSimVisible) {
-                return;
-            }
-            // steps = 1;
-            for (var j=0;j<steps;j++){
-                solveStep();
-            }
-            render();
-        });
-    }
-
-    function setVisibility(state){
-        object3D.visible = state;
-        globals.threeView.render();
-    }
-
-    function solveStep(){
-
+    function solve(){
         if (globals.shouldSyncWithModel){
-            syncNodesAndEdges();
+            syncNodesAndEdges(true);
             // reset();
             globals.shouldSyncWithModel = false;
         } else {
@@ -145,6 +145,19 @@ function initDynamicModel(globals){
                 globals.shouldChangeCreasePercent = false;
             }
         }
+
+        for (var j=0;j<steps;j++){
+            solveStep();
+        }
+        render();
+    }
+
+    function setVisibility(state){
+        object3D.visible = state;
+        globals.threeView.render();
+    }
+
+    function solveStep(){
 
         var gpuMath = globals.gpuMath;
 
@@ -214,8 +227,6 @@ function initDynamicModel(globals){
         } else {
             console.log("here");
         }
-
-        //globals.gpuMath.setSize(textureDim, textureDim);
     }
 
     function setSolveParams(){
@@ -387,9 +398,6 @@ function initDynamicModel(globals){
             // this.vertices[1].clone().sub(this.vertices[0]);
             creaseVectors[rgbaIndex] = nodes[0].getIndex();
             creaseVectors[rgbaIndex+1] = nodes[1].getIndex();
-            // creaseVectors[rgbaIndex] = -vector.x;
-            // creaseVectors[rgbaIndex+1] = -vector.y;
-            // creaseVectors[rgbaIndex+2] = -vector.z;
         }
         globals.gpuMath.initTextureFromData("u_creaseVectors", textureDimCreases, textureDimCreases, "FLOAT", creaseVectors, true);
     }
@@ -440,7 +448,7 @@ function initDynamicModel(globals){
         numNodeCreases += numCreases*2;
         textureDimNodeCreases = calcTextureSize(numNodeCreases);
 
-        var numFaces = geometry.faces.length;
+        var numFaces = geometry.faces.length/2;
         textureDimFaces = calcTextureSize(numFaces);
 
         originalPosition = new Float32Array(textureDim*textureDim*4);
@@ -472,10 +480,6 @@ function initDynamicModel(globals){
             mass[4*i+1] = 1;//set all fixed by default
         }
 
-        _.each(nodes, function(node, index){
-            mass[4*index] = node.getSimMass();//todo move into bottom loop?
-        });
-
         for (var i=0;i<textureDimCreases*textureDimCreases;i++){
             if (i >= numCreases){
                 lastTheta[i*4+2] = -1;
@@ -488,6 +492,7 @@ function initDynamicModel(globals){
 
         var index = 0;
         for (var i=0;i<nodes.length;i++){
+            mass[4*i] = nodes[i].getSimMass();
             meta[i*4+2] = index;
             var nodeCreases = nodes[i].creases;
             var nodeInvCreases = nodes[i].invCreases;
@@ -516,19 +521,11 @@ function initDynamicModel(globals){
         updateCreaseVectors();
     }
 
-    function pause(){
-        globals.threeView.pauseAnimation();
-    }
-
-    function resume(){
-        runSolver();
-    }
-
     return {
         syncNodesAndEdges: syncNodesAndEdges,
-        pause: pause,
-        resume: resume,
         setVisibility: setVisibility,
-        updateFixed: updateFixed
+        updateFixed: updateFixed,
+        setMeshMaterial: setMeshMaterial,
+        solve: solve
     }
 }

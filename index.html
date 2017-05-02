@@ -410,6 +410,29 @@
     <div id="svgViewer"></div>
     <div class="extraSpace"></div>
 </div>
+
+<div id="controlsLeft" class="flipped">
+    <div>
+        <b>View Settings:</b><br/><br/>
+        <div class="indent">
+            Mesh Material:
+            <div class="indent">
+                <label class="radio">
+                    <input name="colorMode" value="color" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                    Colored Material
+                </label>
+                <div id="coloredMaterialOptions" class="indent">
+                    <label>Frontside Color (rgb hex): </label><input value="" placeholder="" class="form-control" type="text"><br/>
+                    <label>Backside Color (rgb hex): </label><input value="" placeholder="" class="form-control" type="text"><br/>
+                </div>
+                <label class="radio">
+                    <input name="colorMode" value="normal" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                    Face Normals Material
+                </label>
+            </div><br/>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">

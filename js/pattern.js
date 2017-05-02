@@ -614,6 +614,7 @@ function initPattern(globals){
     }
 
     function drawPattern(faces){
+        console.log("draw pattern");
         object3D.children = [];
 
         var geo = new THREE.Geometry();

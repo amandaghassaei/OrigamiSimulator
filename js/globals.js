@@ -7,6 +7,9 @@ function initGlobals(){
 
     var _globals = {
 
+        //view
+        colorMode: "normal",
+
         //flags
         fixedHasChanged: false,
         forceHasChanged: false,
@@ -14,13 +17,11 @@ function initGlobals(){
         creaseMaterialHasChanged: false,
         shouldResetDynamicSim: false,
         shouldChangeCreasePercent: false,
-        shouldSyncWithModel: false,
+        shouldSyncWithModel: true,
         nodePositionHasChanged: false,
 
         //3d vis
-        dynamicSimVisible: true,
-        staticSimVisible: false,
-        schematicVisible: true,
+        simType: "dynamic",
 
         //sim settings
         creasePercent: 0,
