@@ -104,11 +104,6 @@ function initDynamicModel(globals){
         render();
     }
 
-    function setVisibility(state){
-        object3D.visible = state;
-        globals.threeView.render();
-    }
-
     function solveStep(){
 
         var gpuMath = globals.gpuMath;
@@ -475,7 +470,6 @@ function initDynamicModel(globals){
 
     return {
         syncNodesAndEdges: syncNodesAndEdges,
-        setVisibility: setVisibility,
         updateFixed: updateFixed,
         solve: solve
     }

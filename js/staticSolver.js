@@ -200,7 +200,6 @@ function initStaticSolver(){
                 F_rxn[3*i+2] -= edgeVector0.z*rxnForceScale;
             }
         }
-        // console.log(F_rxn);
 
         for (var j=0;j<numFreeCreases;j++){
             var crease = creases[freeCreasesMapping[j]];
@@ -223,7 +222,6 @@ function initStaticSolver(){
             if (!crease.node1.fixed){
                 var i = indicesMapping.indexOf(crease.node1.getIndex());
                 var dist = crease.getLengthToNode1();
-                // dist = 1.0;
                 C[j+numFreeEdges][3*i] = -normal1.x/dist;
                 C[j+numFreeEdges][3*i+1] = -normal1.y/dist;
                 C[j+numFreeEdges][3*i+2] = -normal1.z/dist;
@@ -234,9 +232,7 @@ function initStaticSolver(){
             }
             if (!crease.node2.fixed){
                 var i = indicesMapping.indexOf(crease.node2.getIndex());
-                // console.log(normal);
                 var dist = crease.getLengthToNode2();
-                // dist = 1.0;
                 C[j+numFreeEdges][3*i] = -normal2.x/dist;
                 C[j+numFreeEdges][3*i+1] = -normal2.y/dist;
                 C[j+numFreeEdges][3*i+2] = -normal2.z/dist;
@@ -245,9 +241,6 @@ function initStaticSolver(){
                 F_rxn[3*i+1] += normal2.y*rxnForceScale;
                 F_rxn[3*i+2] += normal2.z*rxnForceScale;
             }
-            // var invCreaseDirection = normal1.clone().add(normal2).normalize();
-            // if (!crease.edge.nodes[0].fixed){
-            // }
         }
     }
 

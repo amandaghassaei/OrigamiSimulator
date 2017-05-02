@@ -17,23 +17,7 @@ function initControls(globals){
     setLink("#about", function(){
         $('#aboutModal').modal('show');
     });
-
-    var dynamicSimVisCallback = function(val){
-        if (val) {
-            $(".dynamicSim").show();
-            if (globals.dynamicModel) {
-                globals.dynamicModel.resume();
-                globals.dynamicModel.setVisibility(true);
-            }
-        }
-        else  {
-            $(".dynamicSim").hide();
-            if (globals.dynamicModel) {
-                globals.dynamicModel.pause();
-                globals.dynamicModel.setVisibility(false);
-            }
-        }
-    };
+    
     setCheckbox("#dynamic", globals.simType == "dynamic", function(val){
         globals.simType = val;
     });
