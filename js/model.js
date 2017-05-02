@@ -5,6 +5,21 @@
 //wireframe model and folding structure
 function initModel(globals){
 
+    var material = new THREE.MeshNormalMaterial({shading: THREE.FlatShading, side: THREE.DoubleSide});
+    function setMeshMaterial(){
+        material = THREE.MeshFaceMaterial([
+            new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide}),
+            new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0x0000ff, side:THREE.BackSide})
+        ]);
+        object3D.material = material;
+    }
+
+
+    var geometry = new THREE.Geometry();
+    geometry.dynamic = true;
+    var object3D = new THREE.Mesh(geometry, material);
+    globals.threeView.sceneAdd(object3D);
+
     var allNodeObject3Ds = [];
 
     var nodes = [];
@@ -79,12 +94,13 @@ function initModel(globals){
             } else {
                 console.log("static");
             }
+            geometry.verticesNeedUpdate = true;
+            geometry.computeFaceNormals();
         });
     }
 
     function buildModel(_faces, _vertices, _allEdges, allCreaseParams){
 
-        // console.log(_allEdges);
         var _nodes = [];
         for (var i=0;i<_vertices.length;i++){
             _nodes.push(new Node(_vertices[i].clone(), _nodes.length));
@@ -140,6 +156,27 @@ function initModel(globals){
         }
         oldCreases = null;
 
+        var vertices = [];
+        for (var i=0;i<nodes.length;i++){
+            vertices.push(nodes[i].getPosition());
+        }
+
+        geometry.vertices = vertices;
+        geometry.faces = faces;
+        geometry.verticesNeedUpdate = true;
+        geometry.elementsNeedUpdate = true;
+        geometry.computeFaceNormals();
+        geometry.computeBoundingBox();
+        geometry.computeBoundingSphere();
+
+        // for ( var face in geometry.faces ) {
+        //     if (face<geometry.faces.length/2) {
+        //         geometry.faces[ face ].materialIndex = 1;
+        //         console.log(face);
+        //     }
+        //     else geometry.faces[ face ].materialIndex = 0;
+        // }
+
         globals.shouldSyncWithModel = true;
         inited = true;
         // globals.staticSolver.syncNodesAndEdges();
@@ -173,6 +210,7 @@ function initModel(globals){
         getFaces: getFaces,
         getCreases: getCreases,
         buildModel: buildModel,
-        getObjectsToIntersect: getObjectsToIntersect
+        getObjectsToIntersect: getObjectsToIntersect,
+        setMeshMaterial: setMeshMaterial
     }
 }

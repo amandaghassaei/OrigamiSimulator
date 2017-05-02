@@ -4,22 +4,6 @@
 
 function initDynamicModel(globals){
 
-    var material = new THREE.MeshNormalMaterial({shading: THREE.FlatShading, side: THREE.DoubleSide});
-    function setMeshMaterial(){
-        material = THREE.MeshFaceMaterial([
-            new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide}),
-            new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0x0000ff, side:THREE.BackSide})
-        ]);
-        object3D.material = material;
-    }
-
-
-    var geometry = new THREE.Geometry();
-    geometry.dynamic = true;
-    var object3D = new THREE.Mesh(geometry, material);
-    object3D.visible = globals.dynamicSimVisible;
-    globals.threeView.sceneAdd(object3D);
-
     globals.gpuMath = initGPUMath();
 
     var nodes;
@@ -53,33 +37,6 @@ function initDynamicModel(globals){
         edges = globals.model.getEdges();
         faces = globals.model.getFaces();
         creases = globals.model.getCreases();
-
-        var vertices = [];
-        for (var i=0;i<nodes.length;i++){
-            vertices.push(nodes[i].getPosition());
-        }
-
-        geometry.vertices = vertices;
-        geometry.faces = faces;
-        geometry.verticesNeedUpdate = true;
-        geometry.elementsNeedUpdate = true;
-        geometry.computeFaceNormals();
-        geometry.computeBoundingBox();
-        geometry.computeBoundingSphere();
-
-        // for ( var face in geometry.faces ) {
-        //     if (face<geometry.faces.length/2) {
-        //         geometry.faces[ face ].materialIndex = 1;
-        //         console.log(face);
-        //     }
-        //     else geometry.faces[ face ].materialIndex = 0;
-        // }
-
-        var bounds = geometry.boundingBox;
-        var avg = (bounds.min.add(bounds.max)).multiplyScalar(-0.5);
-        // object3D.position.set(avg.x, 0, avg.z);
-        // globals.threeView.centerModel(avg);
-
 
         initTypedArrays();
         if (firstTime === undefined) firstTime = false;
@@ -222,8 +179,6 @@ function initDynamicModel(globals){
             for (var i=0;i<edges.length;i++){
                 edges[i].render();
             }
-            geometry.verticesNeedUpdate = true;
-            geometry.computeFaceNormals();
         } else {
             console.log("here");
         }
@@ -448,7 +403,7 @@ function initDynamicModel(globals){
         numNodeCreases += numCreases*2;
         textureDimNodeCreases = calcTextureSize(numNodeCreases);
 
-        var numFaces = geometry.faces.length/2;
+        var numFaces = faces.length;
         textureDimFaces = calcTextureSize(numFaces);
 
         originalPosition = new Float32Array(textureDim*textureDim*4);
@@ -525,7 +480,6 @@ function initDynamicModel(globals){
         syncNodesAndEdges: syncNodesAndEdges,
         setVisibility: setVisibility,
         updateFixed: updateFixed,
-        setMeshMaterial: setMeshMaterial,
         solve: solve
     }
 }
