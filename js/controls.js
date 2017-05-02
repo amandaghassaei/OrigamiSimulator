@@ -119,6 +119,13 @@ function initControls(globals){
         globals.model.updateEdgeVisibility();
     });
 
+    setCheckbox("#meshVisible", globals.meshVisible, function(val){
+        globals.meshVisible = val;
+        globals.model.updateMeshVisibility();
+        if (globals.meshVisible) $("#meshMaterialOptions").show();
+        else $("#meshMaterialOptions").hide();
+    });
+
     function setButtonGroup(id, callback){
         $(id+" a").click(function(e){
             e.preventDefault();

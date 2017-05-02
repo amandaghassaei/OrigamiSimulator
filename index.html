@@ -423,18 +423,24 @@
         <div class="indent">
             Mesh Material:
             <div class="indent">
-                <label class="radio">
-                    <input name="colorMode" value="color" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
-                    Colored Material
+                <label class="checkbox" for="meshVisible">
+                    <input id="meshVisible" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                    Mesh Visible
                 </label>
-                <div id="coloredMaterialOptions" class="indent">
-                    <label>Color 1 (rgb hex): &nbsp;&nbsp;</label><input id="color1" value="" placeholder="" class="hexVal form-control" type="text"><br/>
-                    <label>Color 2 (rgb hex): &nbsp;&nbsp;</label><input id="color2" value="" placeholder="" class="hexVal form-control" type="text"><br/>
+                <div id="meshMaterialOptions">
+                    <label class="radio">
+                        <input name="colorMode" value="color" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                        Colored Material
+                    </label>
+                    <div id="coloredMaterialOptions" class="indent">
+                        <label>Color 1 (rgb hex): &nbsp;&nbsp;</label><input id="color1" value="" placeholder="" class="hexVal form-control" type="text"><br/>
+                        <label>Color 2 (rgb hex): &nbsp;&nbsp;</label><input id="color2" value="" placeholder="" class="hexVal form-control" type="text"><br/>
+                    </div>
+                    <label class="radio">
+                        <input name="colorMode" value="normal" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                        Face Normals Material
+                    </label>
                 </div>
-                <label class="radio">
-                    <input name="colorMode" value="normal" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
-                    Face Normals Material
-                </label>
             </div><br/>
             Edges:
             <div class="indent">

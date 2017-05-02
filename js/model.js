@@ -27,6 +27,10 @@ function initModel(globals){
         }
     }
 
+    function updateMeshVisibility(){
+        object3D.visible = globals.meshVisible;
+    }
+
     var geometry = new THREE.Geometry();
     geometry.dynamic = true;
     var object3D = new THREE.Mesh(geometry, material);
@@ -231,6 +235,7 @@ function initModel(globals){
         getObjectsToIntersect: getObjectsToIntersect,
         setMeshMaterial: setMeshMaterial,
         updateEdgeVisibility: updateEdgeVisibility,
+        updateMeshVisibility: updateMeshVisibility,
         getGeometry: getGeometry
     }
 }
