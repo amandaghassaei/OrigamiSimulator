@@ -52,7 +52,7 @@ function initControls(globals){
         globals.schematicVisible = val;
     });
 
-    setSliderInput("#axialStiffness", globals.axialStiffness, 500, 4000, 1, function(val){
+    setSliderInput("#axialStiffness", globals.axialStiffness, 1000, 4000, 1, function(val){
         globals.axialStiffness = val;
         globals.materialHasChanged = true;
     });
