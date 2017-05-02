@@ -18,6 +18,14 @@ function initControls(globals){
         $('#aboutModal').modal('show');
     });
 
+    setLink("#exportSTL", function(){
+        $('#exportSTLModal').modal('show');
+    });
+
+    setLink("#doSTLsave", function(){
+        saveSTL();
+    });
+
     setCheckbox("#dynamic", globals.simType == "dynamic", function(val){
         globals.simType = val;
     });

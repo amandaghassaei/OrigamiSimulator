@@ -32,6 +32,10 @@ function initModel(globals){
     var object3D = new THREE.Mesh(geometry, material);
     globals.threeView.sceneAdd(object3D);
 
+    function getGeometry(){
+        return geometry;
+    }
+
     var allNodeObject3Ds = [];
 
     var nodes = [];
@@ -224,6 +228,7 @@ function initModel(globals){
         buildModel: buildModel,
         getObjectsToIntersect: getObjectsToIntersect,
         setMeshMaterial: setMeshMaterial,
-        updateEdgeVisibility: updateEdgeVisibility
+        updateEdgeVisibility: updateEdgeVisibility,
+        getGeometry: getGeometry
     }
 }

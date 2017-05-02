@@ -210,6 +210,8 @@ input.form-control {
 }
 .modal-body{
     padding: 20px 35px;
+}
+#aboutModal .modal-body{
     padding-top: 40px;
 }
 

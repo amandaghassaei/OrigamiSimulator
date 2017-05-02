@@ -28,9 +28,9 @@ function initGlobals(){
 
         //sim settings
         creasePercent: 0,
-        axialStiffness: 1000,
-        creaseStiffness: 30,
-        panelStiffness: 30,
+        axialStiffness: 2000,
+        creaseStiffness: 70,
+        panelStiffness: 70,
 
         //dynamic sim settings
         percentDamping: 1,

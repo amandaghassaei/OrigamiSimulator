@@ -614,17 +614,17 @@ function initPattern(globals){
     }
 
     function drawPattern(faces){
-        console.log("draw pattern");
-        object3D.children = [];
-
-        var geo = new THREE.Geometry();
-        geo.vertices = vertices;
-        geo.faces = faces;
-        geo.computeVertexNormals();
-        var mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({side:THREE.DoubleSide, color:0xffffff}));
+        // console.log("draw pattern");
+        // object3D.children = [];
+        //
+        // var geo = new THREE.Geometry();
+        // geo.vertices = vertices;
+        // geo.faces = faces;
+        // geo.computeVertexNormals();
+        // var mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({side:THREE.DoubleSide, color:0xffffff}));
+        // // object3D.add(mesh);
+        // var mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({color:0x000000, wireframe:true}));
         // object3D.add(mesh);
-        var mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({color:0x000000, wireframe:true}));
-        object3D.add(mesh);
 
         // object3D.add(new THREE.LineSegments(makeGeoFromSVGSegments(outlines),
         //     new THREE.LineBasicMaterial({color: 0x000000, linewidth: 4})));
@@ -632,9 +632,9 @@ function initPattern(globals){
         //     new THREE.LineBasicMaterial({color: 0xff0000, linewidth: 4})));
         // object3D.add(new THREE.LineSegments(makeGeoFromSVGSegments(valleys),
         //     new THREE.LineBasicMaterial({color: 0x0000ff, linewidth: 4})));
-        var bounds = new THREE.Box3().setFromObject(object3D);
-        var avg = (bounds.min.add(bounds.max)).multiplyScalar(0.5);
-        object3D.position.set(-avg.x, 0, -avg.z);
+        // var bounds = new THREE.Box3().setFromObject(object3D);
+        // var avg = (bounds.min.add(bounds.max)).multiplyScalar(0.5);
+        // object3D.position.set(-avg.x, 0, -avg.z);
     }
 
     function makeGeoFromSVGSegments(segments){
