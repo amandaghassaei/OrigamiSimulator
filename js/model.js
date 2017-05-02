@@ -9,7 +9,7 @@ function initModel(globals){
     function setMeshMaterial(){
         material = THREE.MeshFaceMaterial([
             new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide}),
-            new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0x0000ff, side:THREE.BackSide})
+            new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0x0000ff, side:THREE.FrontSide})
         ]);
         object3D.material = material;
     }
@@ -161,21 +161,20 @@ function initModel(globals){
             vertices.push(nodes[i].getPosition());
         }
 
+        var geofaces = faces.slice();
+        for (var i=0;i<faces.length;i++){
+            geofaces[i].materialIndex = 1;
+            geofaces.push(new THREE.Face3(faces[i].a, faces[i].c, faces[i].b));
+        }
+        console.log(geofaces);
+
         geometry.vertices = vertices;
-        geometry.faces = faces;
+        geometry.faces = geofaces;
         geometry.verticesNeedUpdate = true;
         geometry.elementsNeedUpdate = true;
         geometry.computeFaceNormals();
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
-
-        // for ( var face in geometry.faces ) {
-        //     if (face<geometry.faces.length/2) {
-        //         geometry.faces[ face ].materialIndex = 1;
-        //         console.log(face);
-        //     }
-        //     else geometry.faces[ face ].materialIndex = 0;
-        // }
 
         globals.shouldSyncWithModel = true;
         inited = true;

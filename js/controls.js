@@ -17,7 +17,7 @@ function initControls(globals){
     setLink("#about", function(){
         $('#aboutModal').modal('show');
     });
-    
+
     setCheckbox("#dynamic", globals.simType == "dynamic", function(val){
         globals.simType = val;
     });
