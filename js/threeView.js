@@ -40,6 +40,14 @@ function initThreeView(globals) {
         var directionalLight3 = new THREE.DirectionalLight(0xffffff, 0.8);
         directionalLight3.position.set(-100, -30, 0);
         scene.add(directionalLight3);
+        var directionalLight4 = new THREE.DirectionalLight(0xffffff, 0.3);
+        directionalLight4.position.set(0, 30, 100);
+        scene.add(directionalLight4);
+        var directionalLight5 = new THREE.DirectionalLight(0xffffff, 0.3);
+        directionalLight5.position.set(0, 30, -100);
+        scene.add(directionalLight5);
+        var ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+        scene.add(ambientLight);
         //scene.fog = new THREE.FogExp2(0xf4f4f4, 1.7);
         //renderer.setClearColor(scene.fog.color);
 
@@ -74,8 +82,7 @@ function initThreeView(globals) {
         }
         animationRunning = true;
         _loop(function(){
-            // if (!globals.stlEditing) //only run dynamic sim if not editing stl
-                callback();
+            callback();
             _render();
         });
 
