@@ -17,7 +17,7 @@
 .navbar-inverse .navbar-nav>li>a:hover{
     color:#ddd;
 }
-.navbar-inverse .navbar-nav>.open>a, .navbar-inverse .navbar-nav>.open>a:focus {
+.navbar-inverse .navbar-nav>.open>a, .navbar-inverse .navbar-nav>.open>a:focus, .navbar-inverse .navbar-nav>.open>a:hover {
     background-color: #bbb;
 }
 .navbar-inverse .navbar-nav>.open>.dropdown-menu{
