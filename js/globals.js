@@ -9,6 +9,8 @@ function initGlobals(){
 
         //view
         colorMode: "normal",
+        color1: "ec008b",
+        color2: "ffffff",
 
         //flags
         fixedHasChanged: false,

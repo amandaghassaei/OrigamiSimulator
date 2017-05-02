@@ -77,6 +77,13 @@ function initControls(globals){
         globals.model.setMeshMaterial();
     });
 
+    setHexInput("#color1", globals.color1, function(val){
+        globals.color1 = val;
+    });
+    setHexInput("#color2", globals.color2, function(val){
+        globals.color2 = val;
+    });
+
     function setButtonGroup(id, callback){
         $(id+" a").click(function(e){
             e.preventDefault();
@@ -117,6 +124,16 @@ function initControls(globals){
             }
             if (min !== undefined && val < min) val = min;
             if (max !== undefined && val > max) val = max;
+            $input.val(val);
+            callback(val);
+        });
+        $input.val(val);
+    }
+
+    function setHexInput(id, val, callback){
+        var $input = $(id);
+        $input.change(function(){
+            var val = $input.val();
             $input.val(val);
             callback(val);
         });

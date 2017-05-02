@@ -15,6 +15,8 @@ function initModel(globals){
                 new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide}),
                 new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0x0000ff, side:THREE.FrontSide})
             ]);
+            material.materials[0].color.setStyle( "#" + globals.color1);
+            material.materials[1].color.setStyle( "#" + globals.color2);
         }
         if (object3D) object3D.material = material;
     }
