@@ -79,9 +79,16 @@ function initControls(globals){
 
     setHexInput("#color1", globals.color1, function(val){
         globals.color1 = val;
+        globals.model.setMeshMaterial();
     });
     setHexInput("#color2", globals.color2, function(val){
         globals.color2 = val;
+        globals.model.setMeshMaterial();
+    });
+
+    setCheckbox("#edgesVisible", globals.edgesVisible, function(val){
+        globals.edgesVisible = val;
+        globals.model.updateEdgeVisibility();
     });
 
     function setButtonGroup(id, callback){
@@ -132,9 +139,13 @@ function initControls(globals){
 
     function setHexInput(id, val, callback){
         var $input = $(id);
+        $input.css({"border-color": "#" + val});
         $input.change(function(){
             var val = $input.val();
+            var validHex  = /(^[0-9A-F]{6}$)|(^[0-9A-F]{3}$)/i.test(val);
+            if (!validHex) return;
             $input.val(val);
+            $input.css({"border-color": "#" + val});
             callback(val);
         });
         $input.val(val);

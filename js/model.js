@@ -21,6 +21,12 @@ function initModel(globals){
         if (object3D) object3D.material = material;
     }
 
+    function updateEdgeVisibility(){
+        for (var i=0;i<edges.length;i++){
+            edges[i].setVisibility(globals.edgesVisible);
+        }
+    }
+
     var geometry = new THREE.Geometry();
     geometry.dynamic = true;
     var object3D = new THREE.Mesh(geometry, material);
@@ -101,7 +107,7 @@ function initModel(globals){
                 console.log("static");
             }
             geometry.verticesNeedUpdate = true;
-            geometry.computeFaceNormals();
+            // geometry.computeFaceNormals();
             geometry.computeFlatVertexNormals();
         });
     }
@@ -217,6 +223,7 @@ function initModel(globals){
         getCreases: getCreases,
         buildModel: buildModel,
         getObjectsToIntersect: getObjectsToIntersect,
-        setMeshMaterial: setMeshMaterial
+        setMeshMaterial: setMeshMaterial,
+        updateEdgeVisibility: updateEdgeVisibility
     }
 }

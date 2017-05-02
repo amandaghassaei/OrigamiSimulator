@@ -19,6 +19,7 @@ function Node(position, index){
 
     this.object3D = new THREE.Mesh(nodeGeo, nodeMaterial);
     this.object3D._myNode = this;
+    this.object3D.visible = false;
 
     this.beams = [];
     this.creases = [];

@@ -23,7 +23,7 @@ function initThreeView(globals) {
         renderer.setSize(window.innerWidth, window.innerHeight);
         container.append(renderer.domElement);
 
-        scene.background = new THREE.Color(0xe6e6e6);
+        scene.background = new THREE.Color(0xffffff);//new THREE.Color(0xe6e6e6);
         scene.add(wrapper);
         scene.add(patternWrapper);
         patternWrapper.visible = false;

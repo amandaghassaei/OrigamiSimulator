@@ -48,6 +48,10 @@ Beam.prototype.getVector = function(fromNode){
     return this.vertices[1].clone().sub(this.vertices[0]);
 };
 
+Beam.prototype.setVisibility = function(state){
+    this.object3D.visible = state;
+};
+
 
 
 //dynamic solve

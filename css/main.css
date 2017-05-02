@@ -25,12 +25,12 @@ body{
     position: absolute;
     top:0;
     right:0;
-    width:420px;
+    width:440px;
     margin-top:53px;
     padding:20px 20px;
     overflow: auto;
     height: 100%;
-    /*background: rgba(255,255,255,0.5);*/
+    background:rgba(10,10,10,0.1);
 }
 #controls>a{
     float:right;
@@ -65,7 +65,7 @@ body{
 }
 
 a, a:hover, a:visited, a:focus{
-    color:#8cbaed;
+    color:#ec008b;
 }
 
 a.btn:visited, a.btn:focus{
@@ -111,6 +111,10 @@ input.form-control {
 .radioSlider{
     display: inline-block;
     float:right;
+}
+
+.form-control, .select2-search input[type=text] {
+    height: 35px;
 }
 
 .floatRight{
@@ -275,4 +279,8 @@ span.modal-close{
 svg{
     width: 100%;
     height: 100%;
+}
+
+.hexVal{
+    border-width:4px;
 }

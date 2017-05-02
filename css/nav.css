@@ -2,7 +2,7 @@
     margin-bottom:0;
     z-index: 5;
     border-radius: 0;
-    background: rgba(68,68,68,0.8);
+    background: rgba(10,10,10,0.8);
 }
 
 .navbar-inverse .navbar-nav>li>a{
@@ -21,7 +21,7 @@
     background-color: #bbb;
 }
 .navbar-inverse .navbar-nav>.open>.dropdown-menu{
-    background-color: #646464;
+    background-color: #3b3b3b;
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     border-radius: 0;

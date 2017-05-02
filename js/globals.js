@@ -11,6 +11,7 @@ function initGlobals(){
         colorMode: "color",
         color1: "ec008b",
         color2: "ffffff",
+        edgesVisible: true,
 
         //flags
         fixedHasChanged: false,
