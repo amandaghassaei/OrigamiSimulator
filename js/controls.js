@@ -26,6 +26,22 @@ function initControls(globals){
         saveSTL();
     });
 
+
+    setLink("#navPattern", function(){
+        globals.navMode = "pattern";
+        $("#navPattern").parent().addClass("open");
+        $("#navSimulation").parent().removeClass("open");
+        $("#svgViewer").show();
+    });
+    $("#navSimulation").parent().addClass("open");
+    $("#navPattern").parent().removeClass("open");
+    setLink("#navSimulation", function(){
+        globals.navMode = "simulation";
+        $("#navSimulation").parent().addClass("open");
+        $("#navPattern").parent().removeClass("open");
+        $("#svgViewer").hide();
+    });
+
     setCheckbox("#dynamic", globals.simType == "dynamic", function(val){
         globals.simType = val;
     });

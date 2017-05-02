@@ -7,6 +7,8 @@ function initGlobals(){
 
     var _globals = {
 
+        navMode: "simulation",
+
         //view
         colorMode: "color",
         color1: "ec008b",
