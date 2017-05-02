@@ -113,6 +113,7 @@ function initModel(globals){
             geometry.verticesNeedUpdate = true;
             // geometry.computeFaceNormals();
             geometry.computeFlatVertexNormals();
+            geometry.center();
         });
     }
 
@@ -191,7 +192,6 @@ function initModel(globals){
         geometry.computeFaceNormals();
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
-        geometry.center();
 
         globals.shouldSyncWithModel = true;
         inited = true;
