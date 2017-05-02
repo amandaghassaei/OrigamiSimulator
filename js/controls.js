@@ -34,13 +34,11 @@ function initControls(globals){
             }
         }
     };
-    dynamicSimVisCallback(globals.dynamicSimVisible);
-    setCheckbox("#dynamic", globals.dynamicSimVisible, function(val){
-        globals.dynamicSimVisible = val;
-        dynamicSimVisCallback(val);
+    setCheckbox("#dynamic", globals.simType == "dynamic", function(val){
+        globals.simType = val;
     });
-    setCheckbox("#static", globals.staticSimVisible, function(val){
-        globals.staticSimVisible = val;
+    setCheckbox("#static", globals.simType == "static", function(val){
+        globals.simType = val;
     });
     setCheckbox("#schematic", globals.schematicVisible, function(val){
         globals.schematicVisible = val;
@@ -92,7 +90,7 @@ function initControls(globals){
         globals.colorMode = val;
         if (val == "color") {
             $("#coloredMaterialOptions").show();
-            globals.dynamicModel.setMeshMaterial();
+            globals.model.setMeshMaterial();
         }
         else $("#coloredMaterialOptions").hide();
 

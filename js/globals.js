@@ -17,7 +17,7 @@ function initGlobals(){
         creaseMaterialHasChanged: false,
         shouldResetDynamicSim: false,
         shouldChangeCreasePercent: false,
-        shouldSyncWithModel: true,
+        shouldSyncWithModel: false,
         nodePositionHasChanged: false,
 
         //3d vis

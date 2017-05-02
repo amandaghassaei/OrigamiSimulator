@@ -30,8 +30,6 @@ function initDynamicModel(globals){
     var theta;//[theta, w, normalIndex1, normalIndex2]
     var lastTheta;//[theta, w, normalIndex1, normalIndex2]
 
-    var inited = false;
-
     function syncNodesAndEdges(firstTime){
         nodes = globals.model.getNodes();
         edges = globals.model.getEdges();
@@ -42,8 +40,6 @@ function initDynamicModel(globals){
         if (firstTime === undefined) firstTime = false;
         initTexturesAndPrograms(globals.gpuMath, firstTime);
         steps = parseInt(setSolveParams());
-
-        inited = true;
     }
 
     var steps;
@@ -379,6 +375,7 @@ function initDynamicModel(globals){
     }
 
     function setCreasePercent(percent){
+        if (!programsInited) return;
         globals.gpuMath.setProgram("velocityCalc");
         globals.gpuMath.setUniformForProgram("velocityCalc", "u_creasePercent", percent, "1f");
     }
@@ -474,6 +471,7 @@ function initDynamicModel(globals){
         updateExternalForces();
         updateCreasesMeta(true);
         updateCreaseVectors();
+        setCreasePercent(globals.creasePercent);
     }
 
     return {
