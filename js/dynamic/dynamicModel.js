@@ -30,15 +30,14 @@ function initDynamicModel(globals){
     var theta;//[theta, w, normalIndex1, normalIndex2]
     var lastTheta;//[theta, w, normalIndex1, normalIndex2]
 
-    function syncNodesAndEdges(firstTime){
+    function syncNodesAndEdges(){
         nodes = globals.model.getNodes();
         edges = globals.model.getEdges();
         faces = globals.model.getFaces();
         creases = globals.model.getCreases();
 
         initTypedArrays();
-        if (firstTime === undefined) firstTime = false;
-        initTexturesAndPrograms(globals.gpuMath, firstTime);
+        initTexturesAndPrograms(globals.gpuMath);
         steps = parseInt(setSolveParams());
     }
 
@@ -65,7 +64,7 @@ function initDynamicModel(globals){
 
     function solve(){
         if (globals.shouldSyncWithModel){
-            syncNodesAndEdges(true);
+            syncNodesAndEdges();
             // reset();
             globals.shouldSyncWithModel = false;
         } else {
@@ -201,25 +200,25 @@ function initDynamicModel(globals){
         return (1/(2*Math.PI*maxFreqNat))*0.9;//0.9 of max delta t for good measure
     }
 
-    function initTexturesAndPrograms(gpuMath, firstTime){
+    function initTexturesAndPrograms(gpuMath){
 
         var vertexShader = document.getElementById("vertexShader").text;
 
-        gpuMath.initTextureFromData("u_position", textureDim, textureDim, "FLOAT", position, !firstTime);
-        gpuMath.initTextureFromData("u_lastPosition", textureDim, textureDim, "FLOAT", lastPosition, !firstTime);
-        gpuMath.initTextureFromData("u_velocity", textureDim, textureDim, "FLOAT", velocity, !firstTime);
-        gpuMath.initTextureFromData("u_lastVelocity", textureDim, textureDim, "FLOAT", lastVelocity, !firstTime);
-        gpuMath.initTextureFromData("u_theta", textureDimCreases, textureDimCreases, "FLOAT", theta, !firstTime);
-        gpuMath.initTextureFromData("u_lastTheta", textureDimCreases, textureDimCreases, "FLOAT", lastTheta, !firstTime);
-        gpuMath.initTextureFromData("u_normals", textureDimFaces, textureDimFaces, "FLOAT", normals, !firstTime);
+        gpuMath.initTextureFromData("u_position", textureDim, textureDim, "FLOAT", position, true);
+        gpuMath.initTextureFromData("u_lastPosition", textureDim, textureDim, "FLOAT", lastPosition, true);
+        gpuMath.initTextureFromData("u_velocity", textureDim, textureDim, "FLOAT", velocity, true);
+        gpuMath.initTextureFromData("u_lastVelocity", textureDim, textureDim, "FLOAT", lastVelocity, true);
+        gpuMath.initTextureFromData("u_theta", textureDimCreases, textureDimCreases, "FLOAT", theta, true);
+        gpuMath.initTextureFromData("u_lastTheta", textureDimCreases, textureDimCreases, "FLOAT", lastTheta, true);
+        gpuMath.initTextureFromData("u_normals", textureDimFaces, textureDimFaces, "FLOAT", normals, true);
 
-        gpuMath.initFrameBufferForTexture("u_position", !firstTime);
-        gpuMath.initFrameBufferForTexture("u_lastPosition", !firstTime);
-        gpuMath.initFrameBufferForTexture("u_velocity", !firstTime);
-        gpuMath.initFrameBufferForTexture("u_lastVelocity", !firstTime);
-        gpuMath.initFrameBufferForTexture("u_theta", !firstTime);
-        gpuMath.initFrameBufferForTexture("u_lastTheta", !firstTime);
-        gpuMath.initFrameBufferForTexture("u_normals", !firstTime);
+        gpuMath.initFrameBufferForTexture("u_position", true);
+        gpuMath.initFrameBufferForTexture("u_lastPosition", true);
+        gpuMath.initFrameBufferForTexture("u_velocity", true);
+        gpuMath.initFrameBufferForTexture("u_lastVelocity", true);
+        gpuMath.initFrameBufferForTexture("u_theta", true);
+        gpuMath.initFrameBufferForTexture("u_lastTheta", true);
+        gpuMath.initFrameBufferForTexture("u_normals", true);
 
         gpuMath.initTextureFromData("u_meta", textureDim, textureDim, "FLOAT", meta, true);
         gpuMath.initTextureFromData("u_creaseMeta2", textureDimNodeCreases, textureDimNodeCreases, "FLOAT", creaseMeta2, true);
@@ -268,8 +267,8 @@ function initDynamicModel(globals){
         gpuMath.setUniformForProgram("normalCalc", "u_textureDimFaces", [textureDimFaces, textureDimFaces], "2f");
 
         gpuMath.createProgram("packToBytes", vertexShader, document.getElementById("packToBytesShader").text);
-        gpuMath.initTextureFromData("outputBytes", textureDim*4, textureDim, "UNSIGNED_BYTE", null, !firstTime);
-        gpuMath.initFrameBufferForTexture("outputBytes", !firstTime);
+        gpuMath.initTextureFromData("outputBytes", textureDim*4, textureDim, "UNSIGNED_BYTE", null, true);
+        gpuMath.initFrameBufferForTexture("outputBytes", true);
         gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDim, textureDim], "2f");
         gpuMath.setUniformForProgram("packToBytes", "u_floatTexture", 0, "1i");
 
