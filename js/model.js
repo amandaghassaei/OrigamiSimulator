@@ -121,6 +121,10 @@ function initModel(globals){
     }
 
     function buildModel(_faces, _vertices, _allEdges, allCreaseParams){
+        if (_vertices.length == 0 || _faces.length == 0 || _allEdges.length == 0) {
+            console.warn("bad geometry");
+            return;
+        }
 
         var _nodes = [];
         for (var i=0;i<_vertices.length;i++){

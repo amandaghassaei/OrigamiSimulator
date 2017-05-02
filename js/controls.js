@@ -96,6 +96,24 @@ function initControls(globals){
         $(e.target).blur();
     });
 
+    $("#fileSelector").change(function(e){
+        var files = e.target.files; // FileList object
+        if (files.length < 1) {
+            console.warn("no files");
+            return;
+        }
+
+        var file = files[0];
+        var reader = new FileReader();
+        reader.onload = function(){
+            return function(e) {
+                globals.pattern.loadSVG(e.target.result);
+            }
+        }(file);
+        reader.readAsDataURL(file);
+
+    });
+
     if (globals.colorMode == "color") $("#coloredMaterialOptions").show();
     else $("#coloredMaterialOptions").hide();
     setRadio("colorMode", globals.colorMode, function(val){
