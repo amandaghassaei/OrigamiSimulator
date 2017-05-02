@@ -9,7 +9,7 @@ function initStaticSolver(){
     var geometry = new THREE.Geometry();
     geometry.dynamic = true;
     var object3D = new THREE.Mesh(geometry, material);
-    globals.threeView.sceneAdd(object3D);
+    // globals.threeView.sceneAdd(object3D);
 
 
     var nodes;

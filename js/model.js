@@ -30,7 +30,6 @@ function initModel(globals){
     var geometry = new THREE.Geometry();
     geometry.dynamic = true;
     var object3D = new THREE.Mesh(geometry, material);
-    globals.threeView.sceneAdd(object3D);
 
     function getGeometry(){
         return geometry;
@@ -139,6 +138,7 @@ function initModel(globals){
         }
 
         globals.threeView.sceneClearModel();
+
         var _allNodeObject3Ds  = [];
         _.each(_nodes, function(node){
             var obj3D = node.getObject3D();
@@ -192,6 +192,8 @@ function initModel(globals){
         geometry.computeFaceNormals();
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
+
+        globals.threeView.sceneAddModel(object3D);
 
         globals.shouldSyncWithModel = true;
         inited = true;

@@ -12,7 +12,7 @@ function initGlobals(){
         //view
         colorMode: "color",
         color1: "ec008b",
-        color2: "ffffff",
+        color2: "dddddd",
         edgesVisible: true,
 
         //flags

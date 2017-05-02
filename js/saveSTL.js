@@ -15,5 +15,5 @@ function saveSTL(){
     var stlBin = geometryToSTLBin(data);
     if (!stlBin) return;
     var blob = new Blob([stlBin], {type: 'application/octet-binary'});
-    saveAs(blob, "shell.stl");
+    saveAs(blob, "Origami : " + parseInt(globals.creasePercent*100) +  "PercentFolded.stl");
 }

@@ -4,11 +4,6 @@
 
 function initPattern(globals){
 
-    var object3D = new THREE.Object3D();
-    globals.threeView.sceneAddPattern(object3D);
-    // var intersections = new THREE.Object3D();
-    // object3D.add(intersections);
-
     var verticesRaw = [];//list of vertex3's
     //refs to vertex indices
     var mountainsRaw = [];
@@ -162,7 +157,6 @@ function initPattern(globals){
 
         var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts);
         var faces = triangulatePolys(findPolygons(allEdges), allEdges);
-        drawPattern(faces);
         globals.threeView.render();
 
         var allCreaseParams = getFacesAndVerticesForEdges(faces, allEdges);
@@ -611,39 +605,6 @@ function initPattern(globals){
             t1: ua,
             t2: ub
         };
-    }
-
-    function drawPattern(faces){
-        // console.log("draw pattern");
-        // object3D.children = [];
-        //
-        // var geo = new THREE.Geometry();
-        // geo.vertices = vertices;
-        // geo.faces = faces;
-        // geo.computeVertexNormals();
-        // var mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({side:THREE.DoubleSide, color:0xffffff}));
-        // // object3D.add(mesh);
-        // var mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({color:0x000000, wireframe:true}));
-        // object3D.add(mesh);
-
-        // object3D.add(new THREE.LineSegments(makeGeoFromSVGSegments(outlines),
-        //     new THREE.LineBasicMaterial({color: 0x000000, linewidth: 4})));
-        // object3D.add(new THREE.LineSegments(makeGeoFromSVGSegments(mountains),
-        //     new THREE.LineBasicMaterial({color: 0xff0000, linewidth: 4})));
-        // object3D.add(new THREE.LineSegments(makeGeoFromSVGSegments(valleys),
-        //     new THREE.LineBasicMaterial({color: 0x0000ff, linewidth: 4})));
-        // var bounds = new THREE.Box3().setFromObject(object3D);
-        // var avg = (bounds.min.add(bounds.max)).multiplyScalar(0.5);
-        // object3D.position.set(-avg.x, 0, -avg.z);
-    }
-
-    function makeGeoFromSVGSegments(segments){
-        var geometry = new THREE.Geometry;
-        for (var i=0;i<segments.length;i++){
-            geometry.vertices.push(vertices[segments[i][0]].clone());
-            geometry.vertices.push(vertices[segments[i][1]].clone());
-        }
-        return geometry;
     }
 
     return {

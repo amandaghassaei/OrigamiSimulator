@@ -52,6 +52,10 @@ function initControls(globals){
         globals.schematicVisible = val;
     });
 
+    setRadio("simType", globals.simType, function(val){
+        globals.simType = val;
+    });
+
     setSliderInput("#axialStiffness", globals.axialStiffness, 1000, 4000, 1, function(val){
         globals.axialStiffness = val;
         globals.materialHasChanged = true;

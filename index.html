@@ -383,9 +383,20 @@
 <div  id="threeContainer"></div>
 <canvas id="gpuMathCanvas"></canvas>
 <div id="controls">
+    <b>Simulation:</b><br/>
+    <div class="indent">
+        <label class="radio">
+            <input name="simType" value="dynamic" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+            Dynamic Simulation
+        </label>
+        <label class="radio">
+            <input name="simType" value="static" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+            Static Simulation (not finished yet)
+        </label>
+    </div><br/>
     <b>Fold Settings:</b><br/><br/>
     <div class="sliderInput" id="creasePercent">
-        <span class="label-slider">Crease Percent : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+        <span class="label-slider">Fold Percent : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
         <input value="" placeholder="" class="form-control" type="text">
     </div>
     <br/><br/><br/>
@@ -440,9 +451,9 @@
         <div class="modal-content">
             <div class="modal-body">
                 <p><b>Origami Simulator</b><br/><br/>
-                    <a href="http://www2.eng.cam.ac.uk/~sdg/preprint/5OSME.pdf">Origami Folding; A Structural Engineering Approach</a><br/>
-                    <a href="http://origami.c.u-tokyo.ac.jp/~tachi/cg/SimulationOfRigidOrigami_tachi_4OSME.pdf">Rigid Origami Simulator</a><br/>
-                    <a href="https://github.com/mapbox/earcut">Earcut Library</a><br/>
+                    <a target="_blank" href="http://www2.eng.cam.ac.uk/~sdg/preprint/5OSME.pdf">Origami Folding; A Structural Engineering Approach</a><br/>
+                    <a target="_blank" href="http://origami.c.u-tokyo.ac.jp/~tachi/cg/SimulationOfRigidOrigami_tachi_4OSME.pdf">Rigid Origami Simulator</a><br/>
+                    <a target="_blank" href="https://github.com/mapbox/earcut">Earcut Library</a><br/>
 
                 <br/><br/>
                 Built by <a href="http://www.amandaghassaei.com/" target="_blank">Amanda Ghassaei</a> as a final project for <a href="http://courses.csail.mit.edu/6.849/spring17/" target="_blank">Geometric Folding Algorithms</a>.

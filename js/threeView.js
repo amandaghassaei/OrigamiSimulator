@@ -5,8 +5,6 @@
 function initThreeView(globals) {
 
     var scene = new THREE.Scene();
-    var wrapper = new THREE.Object3D();
-    var patternWrapper = new THREE.Object3D();
     var modelWrapper = new THREE.Object3D();
     var camera = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, -10000, 10000);//-40, 40);
     var renderer = new THREE.WebGLRenderer({antialias: true});
@@ -24,9 +22,6 @@ function initThreeView(globals) {
         container.append(renderer.domElement);
 
         scene.background = new THREE.Color(0xffffff);//new THREE.Color(0xe6e6e6);
-        scene.add(wrapper);
-        scene.add(patternWrapper);
-        patternWrapper.visible = false;
         scene.add(modelWrapper);
         var directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
         directionalLight1.position.set(0, 100, 0);
@@ -126,16 +121,8 @@ function initThreeView(globals) {
         modelWrapper.add(object);
     }
 
-    function sceneClearModel(object){
-        modelWrapper.children =[];
-    }
-
-    function sceneAdd(object){
-        wrapper.add(object);
-    }
-
-    function sceneRemove(object){
-        wrapper.remove(object);
+    function sceneClearModel(){
+        modelWrapper.children = [];
     }
 
     function onWindowResize() {
@@ -156,30 +143,15 @@ function initThreeView(globals) {
         controls.enableRotate = state;
     }
 
-    function centerModel(position){
-        // modelWrapper.position.set(position.x, 0, position.z);
-    }
-
-    function getModelOffset(){
-        return modelWrapper.position.clone();
-    }
-
 
     return {
-        sceneAddPattern: sceneAddPattern,
-        sceneRemovePattern: sceneRemovePattern,
-        sceneClearPattern: sceneClearPattern,
         sceneAddModel: sceneAddModel,
         sceneClearModel: sceneClearModel,
-        centerModel: centerModel,
-        sceneAdd: sceneAdd,
-        sceneRemove: sceneRemove,
         render: render,
         onWindowResize: onWindowResize,
         startAnimation: startAnimation,
         pauseAnimation: pauseAnimation,
         enableControls: enableControls,
-        getModelOffset: getModelOffset,
         scene: scene,
         camera: camera
     }

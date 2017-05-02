@@ -97,11 +97,6 @@ a.btn:visited, a.btn:focus{
     outline: grey;
     border:none;
 }
-#controls .radio{
-    height: 42px;
-display: inline-block;
-    width: 100%;
-}
 
 input.form-control {
     width: 90px;
@@ -237,13 +232,6 @@ span.modal-close{
 
 .radio .icon-unchecked{
     transition-duration: 0s;
-}
-
-#controls .checkbox input.custom-radio[type="radio"]:checked + .icons, #controls .radio input.custom-radio[type="radio"]:checked + .icons {
-    margin-top:9px;
-}
-#controls .radio .icons {
-    margin-top:9px;
 }
 
 .sliderInput>.flat-slider{
