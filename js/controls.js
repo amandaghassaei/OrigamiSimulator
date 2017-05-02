@@ -96,6 +96,13 @@ function initControls(globals){
         $(e.target).blur();
     });
 
+    setLink(".demo", function(e){
+        var url = $(e.target).data("url");
+        if (url) {
+            globals.pattern.loadSVG("assets/" + url);
+        }
+    });
+
     $("#fileSelector").change(function(e){
         var files = e.target.files; // FileList object
         if (files.length < 1) {
