@@ -158,6 +158,9 @@ function initThreeView(globals) {
 
         renderer.setSize(window.innerWidth, window.innerHeight);
 
+        var width = window.innerWidth;
+        var height = window.innerHeight;
+
         ssaoPass.uniforms[ 'size' ].value.set( width, height );
         var pixelRatio = renderer.getPixelRatio();
         var newWidth  = Math.floor( width / pixelRatio ) || 1;
