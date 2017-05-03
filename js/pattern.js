@@ -10,6 +10,7 @@ function initPattern(globals){
     var valleysRaw = [];
     var outlinesRaw = [];
     var cutsRaw = [];
+    var triangulationsRaw = [];
 
     var vertices = [];//list of vertex3's (after merging)
     //refs to vertex indices
@@ -17,6 +18,7 @@ function initPattern(globals){
     var valleys = [];
     var outlines = [];
     var cuts = [];
+    var triangulations = [];
 
     var SVGloader = new THREE.SVGLoader();
 
@@ -51,6 +53,11 @@ function initPattern(globals){
                     return stroke == "#00ff00" || stroke == "#0f0";
                 });
 
+                var $triangulations = $paths.filter(function(){
+                    var stroke = $(this).attr("stroke").toLowerCase();
+                    return stroke == "#ffff00" || stroke == "#ff0";
+                });
+
                 var $svg = $('<svg version="1.1" viewBox="'+_$svg.attr("viewBox")+'" id="mySVG" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> </svg>');
                 $svg.append($outlines);
                 $svg.append($mountains);
@@ -59,7 +66,7 @@ function initPattern(globals){
 
                 $("#svgViewer").html($svg);
 
-                parseSVG($outlines, $mountains, $valleys, $cuts);
+                parseSVG($outlines, $mountains, $valleys, $cuts, $triangulations);
             },
             function(){},
             function(error){
@@ -135,29 +142,32 @@ function initPattern(globals){
         }
     }
 
-    function parseSVG($outlines, $mountains, $valleys, $cuts){
+    function parseSVG($outlines, $mountains, $valleys, $cuts, $triangulations){
 
         var _verticesRaw = [];
         var _mountainsRaw = [];
         var _valleysRaw = [];
         var _outlinesRaw = [];
         var _cutsRaw = [];
+        var _triangulationsRaw = [];
 
         parsePath(_verticesRaw, _outlinesRaw, $outlines);
         parsePath(_verticesRaw, _mountainsRaw, $mountains);
         parsePath(_verticesRaw, _valleysRaw, $valleys);
         parsePath(_verticesRaw, _cutsRaw, $cuts);
+        parsePath(_verticesRaw, _triangulationsRaw, $triangulations);
 
-        findIntersections(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw);
+        findIntersections(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw);
         verticesRaw = _verticesRaw;
         outlinesRaw = _outlinesRaw;
         mountainsRaw = _mountainsRaw;
         valleysRaw = _valleysRaw;
         cutsRaw = _cutsRaw;
+        triangulationsRaw = _triangulationsRaw;
 
         mergeVertices();
 
-        var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts);
+        var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulationsRaw);
         var faces = triangulatePolys(findPolygons(allEdges), allEdges);
 
         var allCreaseParams = getFacesAndVerticesForEdges(faces, allEdges);
@@ -294,11 +304,13 @@ function initPattern(globals){
         mountains = mountainsRaw.slice();
         valleys = valleysRaw.slice();
         cuts = cutsRaw.slice();
+        triangulations = triangulationsRaw.slice();
 
         removeCombinedFromSet(combined, outlines);
         removeCombinedFromSet(combined, mountains);
         removeCombinedFromSet(combined, valleys);
         removeCombinedFromSet(combined, cuts);
+        removeCombinedFromSet(combined, triangulations);
         vertices = mergedVertices;
     }
 
@@ -533,13 +545,17 @@ function initPattern(globals){
         }
     }
 
-    function findIntersections(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw){
+    function findIntersections(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw){
         findIntersectionsInSets(_verticesRaw, _outlinesRaw, _mountainsRaw);
         findIntersectionsInSets(_verticesRaw, _outlinesRaw, _valleysRaw);
         findIntersectionsInSets(_verticesRaw, _outlinesRaw, _cutsRaw);
+        findIntersectionsInSets(_verticesRaw, _outlinesRaw, _triangulationsRaw);
         findIntersectionsInSets(_verticesRaw, _mountainsRaw, _valleysRaw);
         findIntersectionsInSets(_verticesRaw, _mountainsRaw, _cutsRaw);
+        findIntersectionsInSets(_verticesRaw, _mountainsRaw, _triangulationsRaw);
         findIntersectionsInSets(_verticesRaw, _valleysRaw, _cutsRaw);
+        findIntersectionsInSets(_verticesRaw, _valleysRaw, _triangulationsRaw);
+        findIntersectionsInSets(_verticesRaw, _cutsRaw, _triangulationsRaw);
     }
 
     function findIntersectionsInSets(_verticesRaw, set1, set2){
