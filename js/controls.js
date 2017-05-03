@@ -97,7 +97,14 @@ function initControls(globals){
     setLink(".demo", function(e){
         var url = $(e.target).data("url");
         if (url) {
-            globals.pattern.loadSVG("assets/" + url);
+            var extension = url.split(".");
+            extension = extension[extension.length-1];
+            if (extension == "txt"){
+                $.getJSON( "assets/"+url, function( json ) {
+                    parseTXTjson(json);
+                });
+
+            } else globals.pattern.loadSVG("assets/" + url);
         }
     });
 
@@ -118,77 +125,7 @@ function initControls(globals){
             reader.onload = function(){
                 return function(e) {
                     if (!reader.result) return;
-                    var json = JSON.parse(reader.result);
-
-                    _.each(json.faceNodeIndices, function(face, i){
-                        json.faceNodeIndices[i] = new THREE.Face3(face[0], face[1], face[2]);
-                    });
-                    var faces = json.faceNodeIndices;
-                    var allCreaseParams = [];
-
-                    for (var i=0;i<json.edges.length;i++){
-                        var v1 = json.edges[i].vertices[0];
-                        var v2 = json.edges[i].vertices[1];
-                        var creaseParams = [];
-                        for (var j=0;j<faces.length;j++){
-                            var face = faces[j];
-                            var faceVerts = [face.a, face.b, face.c];
-                            var v1Index = faceVerts.indexOf(v1);
-                            if (v1Index>=0){
-                                var v2Index = faceVerts.indexOf(v2);
-                                if (v2Index>=0){
-                                    creaseParams.push(j);
-                                    if (v2Index>v1Index) {//remove larger index first
-                                        faceVerts.splice(v2Index, 1);
-                                        faceVerts.splice(v1Index, 1);
-                                    } else {
-                                        faceVerts.splice(v1Index, 1);
-                                        faceVerts.splice(v2Index, 1);
-                                    }
-                                    creaseParams.push(faceVerts[0]);
-                                    if (creaseParams.length == 4) {
-
-                                        if (v2Index-v1Index == 1 || v2Index-v1Index == -2) {
-                                            creaseParams = [creaseParams[2], creaseParams[3], creaseParams[0], creaseParams[1]];
-                                        }
-
-                                        creaseParams.push(i);
-                                        var shouldSkip = false;
-
-                                        switch (json.edges[i].type){
-                                            case 0:
-                                                //rule lines
-                                                shouldSkip = true;
-                                                break;
-                                            case 1:
-                                                //quad panels
-                                                creaseParams.push(0);
-                                                break;
-                                            case 3:
-                                                //outline
-                                                shouldSkip = true;
-                                                break;
-                                            case 2:
-                                                //crease
-                                                creaseParams.push(Math.PI);
-                                                break;
-                                        }
-                                        if (!shouldSkip) allCreaseParams.push(creaseParams);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    _.each(json.nodes, function(node, i){
-                        json.nodes[i] = new THREE.Vector3(node.x, node.y, node.z);
-                    });
-
-                    _.each(json.edges, function(edge, i){
-                        json.edges[i] = [edge.vertices[0], edge.vertices[1]];
-                    });
-                    globals.model.buildModel(faces, json.nodes, json.edges, allCreaseParams);
+                    parseTXTjson(JSON.parse(reader.result));
                 }
             }(file);
             reader.readAsText(file);
@@ -205,6 +142,79 @@ function initControls(globals){
         }
 
     });
+
+    function parseTXTjson(json){
+
+        _.each(json.faceNodeIndices, function(face, i){
+            json.faceNodeIndices[i] = new THREE.Face3(face[0], face[1], face[2]);
+        });
+        var faces = json.faceNodeIndices;
+        var allCreaseParams = [];
+
+        for (var i=0;i<json.edges.length;i++){
+            var v1 = json.edges[i].vertices[0];
+            var v2 = json.edges[i].vertices[1];
+            var creaseParams = [];
+            for (var j=0;j<faces.length;j++){
+                var face = faces[j];
+                var faceVerts = [face.a, face.b, face.c];
+                var v1Index = faceVerts.indexOf(v1);
+                if (v1Index>=0){
+                    var v2Index = faceVerts.indexOf(v2);
+                    if (v2Index>=0){
+                        creaseParams.push(j);
+                        if (v2Index>v1Index) {//remove larger index first
+                            faceVerts.splice(v2Index, 1);
+                            faceVerts.splice(v1Index, 1);
+                        } else {
+                            faceVerts.splice(v1Index, 1);
+                            faceVerts.splice(v2Index, 1);
+                        }
+                        creaseParams.push(faceVerts[0]);
+                        if (creaseParams.length == 4) {
+
+                            if (v2Index-v1Index == 1 || v2Index-v1Index == -2) {
+                                creaseParams = [creaseParams[2], creaseParams[3], creaseParams[0], creaseParams[1]];
+                            }
+
+                            creaseParams.push(i);
+                            var shouldSkip = false;
+
+                            switch (json.edges[i].type){
+                                case 0:
+                                    //rule lines
+                                    shouldSkip = true;
+                                    break;
+                                case 1:
+                                    //quad panels
+                                    creaseParams.push(0);
+                                    break;
+                                case 3:
+                                    //outline
+                                    shouldSkip = true;
+                                    break;
+                                case 2:
+                                    //crease
+                                    creaseParams.push(Math.PI);
+                                    break;
+                            }
+                            if (!shouldSkip) allCreaseParams.push(creaseParams);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        _.each(json.nodes, function(node, i){
+            json.nodes[i] = new THREE.Vector3(node.x, node.y, node.z);
+        });
+
+        _.each(json.edges, function(edge, i){
+            json.edges[i] = [edge.vertices[0], edge.vertices[1]];
+        });
+        globals.model.buildModel(faces, json.nodes, json.edges, allCreaseParams);
+    }
 
     setCheckbox("#ambientOcclusion", globals.ambientOcclusion, function(val){
         globals.ambientOcclusion = val;
