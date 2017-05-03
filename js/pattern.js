@@ -161,7 +161,6 @@ function initPattern(globals){
         var faces = triangulatePolys(findPolygons(allEdges), allEdges);
 
         var allCreaseParams = getFacesAndVerticesForEdges(faces, allEdges);
-
         globals.model.buildModel(faces, vertices, allEdges, allCreaseParams);
     }
 
@@ -233,6 +232,11 @@ function initPattern(globals){
                         }
                         creaseParams.push(faceVerts[0]);
                         if (creaseParams.length == 4) {
+
+                            if (v2Index-v1Index == 1 || v2Index-v1Index == -2) {
+                                creaseParams = [creaseParams[2], creaseParams[3], creaseParams[0], creaseParams[1]];
+                            }
+
                             creaseParams.push(i);
                             creaseParams.push(0);//zero target angle
                             allCreaseParams.push(creaseParams);
@@ -609,6 +613,7 @@ function initPattern(globals){
     }
 
     return {
-        loadSVG: loadSVG
+        loadSVG: loadSVG,
+        getFacesAndVerticesForEdges: getFacesAndVerticesForEdges
     }
 }
