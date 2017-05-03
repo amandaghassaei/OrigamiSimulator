@@ -15,6 +15,7 @@ function initGlobals(){
         color2: "dddddd",
         edgesVisible: true,
         meshVisible: true,
+        ambientOcclusion: false,
 
         //flags
         fixedHasChanged: false,

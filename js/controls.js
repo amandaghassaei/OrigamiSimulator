@@ -208,6 +208,10 @@ function initControls(globals){
 
     });
 
+    setCheckbox("#ambientOcclusion", globals.ambientOcclusion, function(val){
+        globals.ambientOcclusion = val;
+    });
+
     if (globals.colorMode == "color") $("#coloredMaterialOptions").show();
     else $("#coloredMaterialOptions").hide();
     setRadio("colorMode", globals.colorMode, function(val){
