@@ -214,6 +214,8 @@ function initModel(globals){
         globals.shouldSyncWithModel = true;
         inited = true;
         // globals.staticSolver.syncNodesAndEdges();
+        updateEdgeVisibility();
+        updateMeshVisibility();
     }
 
     function getNodes(){
