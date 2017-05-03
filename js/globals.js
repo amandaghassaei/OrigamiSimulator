@@ -16,7 +16,7 @@ function initGlobals(){
         edgesVisible: true,
         mtnsVisible: true,
         valleysVisible: true,
-        panelsVisible: true,
+        panelsVisible: false,
         passiveEdgesVisible: true,
         meshVisible: true,
         ambientOcclusion: false,

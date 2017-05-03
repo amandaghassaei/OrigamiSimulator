@@ -23,13 +23,12 @@ body{
 
 #controls{
     position: absolute;
-    top:0;
+    top:53px;
+    bottom: 0;
     right:0;
     width:440px;
-    margin-top:53px;
     padding:20px 20px;
     overflow: auto;
-    height: 100%;
     background:rgba(10,10,10,0.1);
 }
 #controls>a{
@@ -37,10 +36,10 @@ body{
 }
 #controlsLeft{
     position: absolute;
-    top:0;
+    bottom:0;
     left:0;
     /*width: 420px;*/
-    margin-top:53px;
+    top:53px;
     padding:20px 20px;
     max-height: 100%;
     overflow: auto;
