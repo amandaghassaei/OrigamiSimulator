@@ -286,7 +286,6 @@ function initDynamicModel(globals){
     }
 
     function updateMaterials(initing){
-        console.log("here");
         var index = 0;
         for (var i=0;i<nodes.length;i++){
             if (initing) {
