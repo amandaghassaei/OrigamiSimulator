@@ -71,11 +71,9 @@ function initControls(globals){
         globals.creaseMaterialHasChanged = true;
     });
 
-    setSlider("#damping", globals.percentDamping, 0.05, 1, 0.01, function(val){
+    setSliderInput("#percentDamping", globals.percentDamping, 0.1, 1, 0.01, function(val){
         globals.percentDamping = val;
-    }, function(){
         globals.materialHasChanged = true;
-        globals.shouldResetDynamicSim = true;
     });
 
     setSliderInput("#creasePercent", globals.creasePercent, -1, 1, 0.01, function(val){
