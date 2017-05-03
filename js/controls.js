@@ -140,7 +140,7 @@ function initControls(globals){
                                 var v2Index = faceVerts.indexOf(v2);
                                 if (v2Index>=0){
                                     creaseParams.push(j);
-                                    if (v2Index>v1Index) {
+                                    if (v2Index>v1Index) {//remove larger index first
                                         faceVerts.splice(v2Index, 1);
                                         faceVerts.splice(v1Index, 1);
                                     } else {
@@ -160,11 +160,11 @@ function initControls(globals){
                                         switch (json.edges[i].type){
                                             case 0:
                                                 //rule lines
-                                                creaseParams.push(0);
+                                                shouldSkip = true;
                                                 break;
                                             case 1:
                                                 //quad panels
-                                                creaseParams.push(null);//flag to set driven
+                                                creaseParams.push(0);
                                                 break;
                                             case 2:
                                                 //outline

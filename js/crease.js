@@ -3,7 +3,7 @@
  */
 
 function Crease(edge, face1Index, face2Index, targetTheta, type, node1, node2, index){
-    //type = 0 panel, 1 crease, -1 = driven
+    //type = 0 panel, 1 crease
 
     //face1 corresponds to node1, face2 to node2
     this.edge = edge;
@@ -13,6 +13,7 @@ function Crease(edge, face1Index, face2Index, targetTheta, type, node1, node2, i
     this.face1Index = face1Index;
     this.face2Index = face2Index;
     this.targetTheta = targetTheta;
+    if (this.targetTheta==Math.PI) console.log("here");
     this.type = type;
     this.node1 = node1;
     this.node2 = node2;
@@ -42,7 +43,6 @@ Crease.prototype.getTargetTheta = function(){
 };
 
 Crease.prototype.getK = function(){
-    if (this.type == -1) return 0;
     var length = this.getLength();
     if (this.type == 0) return globals.panelStiffness*length;
     return globals.creaseStiffness*length;
