@@ -7,7 +7,6 @@ function Crease(edge, face1Index, face2Index, targetTheta, type, node1, node2, i
 
     //face1 corresponds to node1, face2 to node2
     this.edge = edge;
-    if (targetTheta>0) this.edge.highlight();
     for (var i=0;i<edge.nodes.length;i++){
         edge.nodes[i].addInvCrease(this);
     }
@@ -82,6 +81,15 @@ Crease.prototype.getNodeIndex = function(node){
     else if (node == this.node2) return 2;
     console.warn("no node found");
     return 0;
+};
+
+Crease.prototype.setVisibility = function(){
+    var vis = false;
+    if (this.type==0) vis = globals.panelsVisible;
+    else {
+        vis = (this.targetTheta>0 && globals.mtnsVisible) || (this.targetTheta<0 && globals.valleysVisible);
+    }
+    this.edge.setVisibility(vis);
 };
 
 Crease.prototype.destroy = function(){

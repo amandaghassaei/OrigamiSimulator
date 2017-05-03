@@ -23,7 +23,14 @@ function initModel(globals){
 
     function updateEdgeVisibility(){
         for (var i=0;i<edges.length;i++){
-            edges[i].setVisibility(globals.edgesVisible);
+            edges[i].setVisibility(false);
+        }
+        if (!globals.edgesVisible) return;
+        for (var i=0;i<edges.length;i++){
+            edges[i].setVisibility(globals.passiveEdgesVisible);
+        }
+        for (var i=0;i<creases.length;i++){
+            creases[i].setVisibility();
         }
     }
 
@@ -227,6 +234,10 @@ function initModel(globals){
 
     function getObjectsToIntersect(){
         return allNodeObject3Ds;
+    }
+
+    function updateEdgeVis(){
+
     }
 
     return {

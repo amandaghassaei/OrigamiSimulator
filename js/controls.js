@@ -232,6 +232,24 @@ function initControls(globals){
 
     setCheckbox("#edgesVisible", globals.edgesVisible, function(val){
         globals.edgesVisible = val;
+        if (globals.edgesVisible) $("#edgeVisOptions").show();
+        else $("#edgeVisOptions").hide();
+        globals.model.updateEdgeVisibility();
+    });
+    setCheckbox("#mtnsVisible", globals.mtnsVisible, function(val){
+        globals.mtnsVisible = val;
+        globals.model.updateEdgeVisibility();
+    });
+    setCheckbox("#valleysVisible", globals.valleysVisible, function(val){
+        globals.valleysVisible = val;
+        globals.model.updateEdgeVisibility();
+    });
+    setCheckbox("#panelsVisible", globals.panelsVisible, function(val){
+        globals.panelsVisible = val;
+        globals.model.updateEdgeVisibility();
+    });
+    setCheckbox("#passiveEdgesVisible", globals.passiveEdgesVisible, function(val){
+        globals.passiveEdgesVisible = val;
         globals.model.updateEdgeVisibility();
     });
 

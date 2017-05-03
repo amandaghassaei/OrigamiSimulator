@@ -14,8 +14,12 @@ function initGlobals(){
         color1: "ec008b",
         color2: "dddddd",
         edgesVisible: true,
+        mtnsVisible: true,
+        valleysVisible: true,
+        panelsVisible: true,
+        passiveEdgesVisible: true,
         meshVisible: true,
-        ambientOcclusion: true,
+        ambientOcclusion: false,
 
         //flags
         fixedHasChanged: false,
