@@ -10,6 +10,9 @@ function initThreeView(globals) {
     var renderer = new THREE.WebGLRenderer({antialias: true});
     var controls;
 
+    var depthMaterial, effectComposer, depthRenderTarget;
+    var ssaoPass;
+
     var animationRunning = false;
     var pauseFlag = false;
 
@@ -58,6 +61,32 @@ function initThreeView(globals) {
         controls.noPan = true;
         controls.staticMoving = true;
         controls.dynamicDampingFactor = 0.3;
+
+           var renderPass = new THREE.RenderPass( scene, camera );
+
+        // Setup depth pass
+        depthMaterial = new THREE.MeshDepthMaterial();
+        depthMaterial.depthPacking = THREE.RGBADepthPacking;
+        depthMaterial.blending = THREE.NoBlending;
+
+        var pars = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter };
+        depthRenderTarget = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, pars );
+
+        // Setup SSAO pass
+        ssaoPass = new THREE.ShaderPass( THREE.SSAOShader );
+        ssaoPass.renderToScreen = true;
+        //ssaoPass.uniforms[ "tDiffuse" ].value will be set by ShaderPass
+        ssaoPass.uniforms[ "tDepth" ].value = depthRenderTarget.texture;
+        ssaoPass.uniforms[ 'size' ].value.set( window.innerWidth, window.innerHeight );
+        ssaoPass.uniforms[ 'cameraNear' ].value = camera.near;
+        ssaoPass.uniforms[ 'cameraFar' ].value = camera.far;
+        ssaoPass.uniforms[ 'onlyAO' ].value = 0;
+        ssaoPass.uniforms[ 'aoClamp' ].value = 0.7;
+        ssaoPass.uniforms[ 'lumInfluence' ].value = 0.8;
+        // Add pass to effect composer
+        effectComposer = new THREE.EffectComposer( renderer );
+        effectComposer.addPass( renderPass );
+        effectComposer.addPass( ssaoPass );
     }
 
     function render() {
@@ -85,7 +114,16 @@ function initThreeView(globals) {
     }
 
     function _render(){
-        renderer.render(scene, camera);
+        if (globals.ambientOcclusion) {
+            // Render depth into depthRenderTarget
+            scene.overrideMaterial = depthMaterial;
+            renderer.render(scene, camera, depthRenderTarget, true);
+            // Render renderPass and SSAO shaderPass
+            scene.overrideMaterial = null;
+            effectComposer.render();
+        } else {
+            renderer.render(scene, camera);
+        }
     }
 
     function _loop(callback){
@@ -100,18 +138,6 @@ function initThreeView(globals) {
             }
             _loop(callback);
         });
-    }
-
-    function sceneAddPattern(object) {
-        patternWrapper.add(object);
-    }
-
-    function sceneRemovePattern(object) {
-        patternWrapper.remove(object);
-    }
-
-    function sceneClearPattern() {
-        patternWrapper.children = [];
     }
 
     function sceneAddModel(object){//beams and nodes
@@ -131,6 +157,13 @@ function initThreeView(globals) {
         camera.updateProjectionMatrix();
 
         renderer.setSize(window.innerWidth, window.innerHeight);
+
+        ssaoPass.uniforms[ 'size' ].value.set( width, height );
+        var pixelRatio = renderer.getPixelRatio();
+        var newWidth  = Math.floor( width / pixelRatio ) || 1;
+        var newHeight = Math.floor( height / pixelRatio ) || 1;
+        depthRenderTarget.setSize( newWidth, newHeight );
+        effectComposer.setSize( newWidth, newHeight );
 
         render();
     }
