@@ -165,6 +165,7 @@ function initPattern(globals){
     }
 
     function getFacesAndVerticesForEdges(faces, allEdges){
+        //todo merge this
         var allCreaseParams = [];//face1Ind, vertInd, face2Ind, ver2Ind, edgeInd, angle
         for (var i=outlines.length;i<outlines.length+mountains.length+valleys.length;i++){
             var v1 = allEdges[i][0];
@@ -200,7 +201,6 @@ function initPattern(globals){
                                 }
                                 creaseParams.push(angle);
                             } else {
-                                console.log("panel");
                                 creaseParams.push(0);
                             }
                             allCreaseParams.push(creaseParams);
