@@ -189,6 +189,9 @@ Node.prototype.renderChange = function(change){
 Node.prototype.getOriginalPosition = function(){
     return this._originalPosition.clone();
 };
+Node.prototype.setOriginalPosition = function(position){
+    this._originalPosition = position.clone();
+};
 
 Node.prototype.getPosition = function(){
     return this.object3D.position;

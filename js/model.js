@@ -123,7 +123,7 @@ function initModel(globals){
             geometry.verticesNeedUpdate = true;
             // geometry.computeFaceNormals();
             geometry.computeFlatVertexNormals();
-            geometry.center();
+            // geometry.center();
         });
     }
 
@@ -208,6 +208,12 @@ function initModel(globals){
         geometry.computeFaceNormals();
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
+        geometry.center();
+
+        //update vertices
+        for (var i=0;i<vertices.length;i++){
+            nodes[i].setOriginalPosition(vertices[i]);
+        }
 
         globals.threeView.sceneAddModel(object3D);
 
