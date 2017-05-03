@@ -7,13 +7,13 @@ function Crease(edge, face1Index, face2Index, targetTheta, type, node1, node2, i
 
     //face1 corresponds to node1, face2 to node2
     this.edge = edge;
+    if (targetTheta>0) this.edge.highlight();
     for (var i=0;i<edge.nodes.length;i++){
         edge.nodes[i].addInvCrease(this);
     }
     this.face1Index = face1Index;
     this.face2Index = face2Index;
     this.targetTheta = targetTheta;
-    if (this.targetTheta==Math.PI) console.log("here");
     this.type = type;
     this.node1 = node1;
     this.node2 = node2;

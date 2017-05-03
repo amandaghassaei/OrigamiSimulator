@@ -166,11 +166,11 @@ function initControls(globals){
                                                 //quad panels
                                                 creaseParams.push(0);
                                                 break;
-                                            case 2:
+                                            case 3:
                                                 //outline
                                                 shouldSkip = true;
                                                 break;
-                                            case 3:
+                                            case 2:
                                                 //crease
                                                 creaseParams.push(Math.PI);
                                                 break;
