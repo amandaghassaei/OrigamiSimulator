@@ -63,6 +63,7 @@ function initPattern(globals){
                 $svg.append($mountains);
                 $svg.append($valleys);
                 $svg.append($cuts);
+                $svg.append($triangulations);
 
                 $("#svgViewer").html($svg);
 

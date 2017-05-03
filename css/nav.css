@@ -115,7 +115,7 @@ img{
     top: 0;
     left: 100%;
     margin-top: 0;
-    margin-left: 0;
+    margin-left: -1px;
     border-radius: 0;
     /*-webkit-border-radius: 0 6px 6px 6px;*/
     /*-moz-border-radius: 0 6px 6px;*/
