@@ -67,7 +67,6 @@ $(function() {
             intersection.sub(globals.threeView.getModelOffset());
             highlightedObj.moveManually(intersection);
             globals.nodePositionHasChanged = true;
-            globals.threeView.render();
         }
     }
 
@@ -96,7 +95,6 @@ $(function() {
         }
         highlightedObj = object;
         if (highlightedObj) highlightedObj.highlight();
-        globals.threeView.render();
     }
 
     function checkForIntersections(e, objects){
@@ -124,6 +122,5 @@ $(function() {
     // globals.dynamicModel.syncNodesAndEdges(true);
     // globals.staticSolver.syncNodesAndEdges();
     globals.pattern = initPattern(globals);
-    globals.threeView.render();
     // globals.threeView.sceneAdd(raycasterPlane);
 });

@@ -159,7 +159,6 @@ function initPattern(globals){
 
         var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts);
         var faces = triangulatePolys(findPolygons(allEdges), allEdges);
-        globals.threeView.render();
 
         var allCreaseParams = getFacesAndVerticesForEdges(faces, allEdges);
 

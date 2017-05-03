@@ -45,7 +45,6 @@ function initStaticSolver(){
         var avg = (bounds.min.add(bounds.max)).multiplyScalar(-0.5);
         // object3D.position.set(avg.x, 0, avg.z);
         // globals.threeView.centerModel(avg);
-        globals.threeView.render();
 
         setUpParams();
     }

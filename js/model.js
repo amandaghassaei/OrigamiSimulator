@@ -130,7 +130,7 @@ function initModel(globals){
         for (var i=0;i<_vertices.length;i++){
             _nodes.push(new Node(_vertices[i].clone(), _nodes.length));
         }
-        _nodes[_faces[0].a].setFixed(true);
+        // _nodes[_faces[0].a].setFixed(true);
         // _nodes[_faces[0].b].setFixed(true);
         // _nodes[_faces[0].c].setFixed(true);
 

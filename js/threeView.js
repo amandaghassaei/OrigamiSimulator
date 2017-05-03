@@ -58,15 +58,12 @@ function initThreeView(globals) {
         controls.noPan = true;
         controls.staticMoving = true;
         controls.dynamicDampingFactor = 0.3;
-        controls.addEventListener('change', render);
-
-        render();
     }
 
     function render() {
-        if (!animationRunning) {
-            _render();
-        }
+        // if (!animationRunning) {
+        //     _render();
+        // }
     }
 
     function startAnimation(callback){
