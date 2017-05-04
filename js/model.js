@@ -8,9 +8,11 @@ function initModel(globals){
     var geometry = new THREE.BufferGeometry();
     geometry.dynamic = true;
 
-    var material;
+    var material, material2;
+    var object3D = new THREE.Mesh(geometry);
+    var object3D2 = new THREE.Mesh(geometry);
+    object3D2.visible = false;
     setMeshMaterial();
-    var object3D = new THREE.Mesh(geometry, material);
 
     var positions;//place to store buffer geo vertex data
     var colors;//place to store buffer geo vertex colors
@@ -22,18 +24,20 @@ function initModel(globals){
     function setMeshMaterial() {
         if (globals.colorMode == "normal") {
             material = new THREE.MeshNormalMaterial({side: THREE.DoubleSide});
+            object3D2.visible = false;
         } else if (globals.colorMode == "axialStrain"){
             material = new THREE.MeshBasicMaterial({vertexColors: THREE.VertexColors, side:THREE.DoubleSide});
+            object3D2.visible = false;
         } else {
             //todo can't do this
-            material = new THREE.MultiMaterial([
-                new THREE.MeshPhongMaterial({shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide}),
-                new THREE.MeshPhongMaterial({shading:THREE.FlatShading, color:0x0000ff, side:THREE.FrontSide})
-            ]);
-            material.materials[0].color.setStyle( "#" + globals.color2);
-            material.materials[1].color.setStyle( "#" + globals.color1);
+            material = new THREE.MeshPhongMaterial({shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide});
+            material2 = new THREE.MeshPhongMaterial({shading:THREE.FlatShading, color:0x0000ff, side:THREE.BackSide});
+            material.color.setStyle( "#" + globals.color1);
+            material2.color.setStyle( "#" + globals.color2);
+            object3D2.visible = true;
         }
-        if (object3D) object3D.material = material;
+        object3D.material = material;
+        object3D2.material = material2;
     }
 
     function updateEdgeVisibility(){
@@ -51,6 +55,7 @@ function initModel(globals){
 
     function updateMeshVisibility(){
         object3D.visible = globals.meshVisible;
+        object3D2.visible = globals.colorMode == "color" && globals.meshVisible;
     }
 
     function getGeometry(){
@@ -167,10 +172,10 @@ function initModel(globals){
 
         globals.threeView.sceneClearModel();
 
-        _.each(_nodes, function(node){
-            var obj3D = node.getObject3D();
-            globals.threeView.sceneAddModel(obj3D);
-        });
+        // _.each(_nodes, function(node){
+        //     var obj3D = node.getObject3D();
+        //     globals.threeView.sceneAddModel(obj3D);
+        // });
         _.each(_edges, function(edge){
             globals.threeView.sceneAddModel(edge.getObject3D());
         });
@@ -242,6 +247,7 @@ function initModel(globals){
         }
 
         globals.threeView.sceneAddModel(object3D);
+        globals.threeView.sceneAddModel(object3D2);
 
         globals.shouldSyncWithModel = true;
         inited = true;
