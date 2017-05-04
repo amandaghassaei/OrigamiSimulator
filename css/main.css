@@ -44,6 +44,9 @@ body{
     max-height: 100%;
     overflow: auto;
 }
+#controlsLeft .radio{
+    width: 200px;
+}
 
 .sliderInput{
     float:right;
@@ -298,4 +301,11 @@ svg{
     color: #34495e;
     font-size: 18px;
     line-height: 18px;
+}
+
+#aboutError{
+    line-height: 2.0
+}
+#aboutStiffness{
+    line-height: 28px;
 }
