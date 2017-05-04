@@ -165,14 +165,27 @@ function initDynamicSolver(globals){
             var parsedPixels = new Float32Array(pixels.buffer);
             var positions = globals.model.getPositionsArray();
             var globalError = 0;
+            var colors;
+            if (globals.colorMode == "error"){
+                colors = globals.model.getColorsArray();
+            }
             for (var i = 0; i < nodes.length; i++) {
                 var rgbaIndex = i * vectorLength;
-                globalError += parsedPixels[rgbaIndex+3];
+                var nodeError = parsedPixels[rgbaIndex+3];
+                globalError += nodeError;
                 var nodePosition = new THREE.Vector3(parsedPixels[rgbaIndex], parsedPixels[rgbaIndex + 1], parsedPixels[rgbaIndex + 2]);
                 var nexPos = nodes[i].render(nodePosition);
                 positions[3*i] = nexPos.x;
                 positions[3*i+1] = nexPos.y;
                 positions[3*i+2] = nexPos.z;
+                if (colors){
+                    var scaledVal = (1-nodeError/globals.errorClip) * 0.7;
+                    var color = new THREE.Color();
+                    color.setHSL(scaledVal, 1, 0.5);
+                    colors[3*i] = color.r;
+                    colors[3*i+1] = color.g;
+                    colors[3*i+2] = color.b;
+                }
             }
             $errorOutput.html((globalError/nodes.length*100).toFixed(7) + " %");
             for (var i=0;i<edges.length;i++){

@@ -44,6 +44,8 @@ function initGlobals(){
         percentDamping: 1,
         density: 1,
 
+        errorClip: 0.05,
+
         //import pattern settings
         vertTol: 3,//vertex merge tolerance
 
