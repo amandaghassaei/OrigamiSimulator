@@ -405,6 +405,9 @@ function initControls(globals){
     setLink("#aboutStaticSim", function(){
         $("#aboutStaticSimModal").modal("show");
     });
+    setLink("#aboutAxialStrain", function(){
+        $("#aboutAxialStrainModal").modal("show");
+    });
 
     function setButtonGroup(id, callback){
         $(id+" a").click(function(e){
