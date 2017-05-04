@@ -166,7 +166,7 @@ function initDynamicSolver(globals){
             var positions = globals.model.getPositionsArray();
             var globalError = 0;
             var colors;
-            if (globals.colorMode == "error"){
+            if (globals.colorMode == "axialStrain"){
                 colors = globals.model.getColorsArray();
             }
             for (var i = 0; i < nodes.length; i++) {

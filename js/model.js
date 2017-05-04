@@ -22,7 +22,7 @@ function initModel(globals){
     function setMeshMaterial() {
         if (globals.colorMode == "normal") {
             material = new THREE.MeshNormalMaterial({side: THREE.DoubleSide});
-        } else if (globals.colorMode == "error"){
+        } else if (globals.colorMode == "axialStrain"){
             material = new THREE.MeshBasicMaterial({vertexColors: THREE.VertexColors, side:THREE.DoubleSide});
         } else {
             //todo can't do this
@@ -133,7 +133,7 @@ function initModel(globals){
                 console.log("static");
             }
             geometry.attributes.position.needsUpdate = true;
-            if (globals.colorMode == "error") geometry.attributes.color.needsUpdate = true;
+            if (globals.colorMode == "axialStrain") geometry.attributes.color.needsUpdate = true;
             geometry.computeVertexNormals();
             // geometry.computeFlatVertexNormals();
         });

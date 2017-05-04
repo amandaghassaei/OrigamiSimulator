@@ -490,8 +490,8 @@
                         Face Normals Material
                     </label>
                     <label class="radio">
-                        <input name="colorMode" value="error" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
-                        Node Error Material
+                        <input name="colorMode" value="axialStrain" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                        Axial Strain Material
                     </label>
                 </div>
             </div><br/>
@@ -618,10 +618,13 @@
                     origami pattern are being violated.  The error at each node is evaluated by averaging the
                     percent deviation of all its distance constraints with adjacent nodes.  This error is
                     reported as a percent of the total length of the distance constraint to remove scaling effects.
+                    <br/><br/>
+                    This measurement is equivalent to <a href="https://en.wikipedia.org/wiki/Deformation_(mechanics)#Engineering_strain" target="_blank">
+                        Cauchy strain or engineering strain</a> of the axial constraints on this system.
                     Increasing the "Axial Stiffness" of the simulation will tighten these constraints and
                     lower the error in the simulation.<br/>
                     <br/>
-                    To visualize the error of each node graphically, select "Node Error Material" under "Mesh Material"
+                    To visualize the error of each node graphically, select "Axial Strain Material" under "Mesh Material"
                      in the left menu.
                 </p>
             </div>
