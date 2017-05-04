@@ -2,7 +2,7 @@
  * Created by ghassaei on 10/7/16.
  */
 
-function initDynamicModel(globals){
+function initDynamicSolver(globals){
 
     globals.gpuMath = initGPUMath();
 
@@ -175,7 +175,7 @@ function initDynamicModel(globals){
     }
 
     function setSolveParams(){
-        var dt = calcDt()/10;//todo this is weird
+        var dt = calcDt()/10;//todo factor of ten?
         var numSteps = 0.5/dt;
         globals.gpuMath.setProgram("thetaCalc");
         globals.gpuMath.setUniformForProgram("thetaCalc", "u_dt", dt, "1f");

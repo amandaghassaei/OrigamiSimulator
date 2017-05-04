@@ -118,9 +118,7 @@ $(function() {
     globals = initGlobals();
     globals.model = initModel(globals);
     globals.staticSolver = initStaticSolver(globals);
-    globals.dynamicModel = initDynamicModel(globals);
-    // globals.dynamicModel.syncNodesAndEdges(true);
-    // globals.staticSolver.syncNodesAndEdges();
+    globals.dynamicSolver = initDynamicSolver(globals);
     globals.pattern = initPattern(globals);
     // globals.threeView.sceneAdd(raycasterPlane);
 });

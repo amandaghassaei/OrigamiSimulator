@@ -116,7 +116,7 @@ function initModel(globals){
         globals.threeView.startAnimation(function(){
             if (!inited) return;
             if (globals.simType == "dynamic"){
-                globals.dynamicModel.solve();
+                globals.dynamicSolver.solve();
             } else {
                 console.log("static");
             }
