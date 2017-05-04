@@ -163,12 +163,16 @@ function initDynamicSolver(globals){
             var pixels = new Uint8Array(height*textureDim*4*vectorLength);
             globals.gpuMath.readPixels(0, 0, textureDim * vectorLength, height, pixels);
             var parsedPixels = new Float32Array(pixels.buffer);
+            var positions = globals.model.getPositionsArray();
             var globalError = 0;
             for (var i = 0; i < nodes.length; i++) {
                 var rgbaIndex = i * vectorLength;
                 globalError += parsedPixels[rgbaIndex+3];
                 var nodePosition = new THREE.Vector3(parsedPixels[rgbaIndex], parsedPixels[rgbaIndex + 1], parsedPixels[rgbaIndex + 2]);
-                nodes[i].render(nodePosition);
+                var nexPos = nodes[i].render(nodePosition);
+                positions[3*i] = nexPos.x;
+                positions[3*i+1] = nexPos.y;
+                positions[3*i+2] = nexPos.z;
             }
             $errorOutput.html((globalError/nodes.length*100).toFixed(7) + " %");
             for (var i=0;i<edges.length;i++){

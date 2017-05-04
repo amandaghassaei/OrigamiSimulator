@@ -5,25 +5,29 @@
 //wireframe model and folding structure
 function initModel(globals){
 
-    var doubleGeoFaces = [];
-    var faces = [];
-    var geometry = new THREE.Geometry();
+    var geometry = new THREE.BufferGeometry();
     geometry.dynamic = true;
 
     var material;
     setMeshMaterial();
+    var object3D = new THREE.Mesh(geometry, material);
+
+    var positions;//place to store buffer geo vertex data
+    var nodes = [];
+    var faces = [];
+    var edges = [];
+    var creases = [];
+
     function setMeshMaterial() {
         if (globals.colorMode == "normal") {
-            // geometry.faces = faces;
             material = new THREE.MeshNormalMaterial({side: THREE.DoubleSide});
         } else if (globals.colorMode == "error"){
-            // geometry.faces = faces;
             material = new THREE.MeshBasicMaterial({ vertexColors: THREE.VertexColors, side:THREE.DoubleSide});
         } else {
-            // geometry.faces = doubleGeoFaces;
+            //todo can't do this
             material = new THREE.MultiMaterial([
-                new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide}),
-                new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0x0000ff, side:THREE.FrontSide})
+                new THREE.MeshPhongMaterial({shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide}),
+                new THREE.MeshPhongMaterial({shading:THREE.FlatShading, color:0x0000ff, side:THREE.FrontSide})
             ]);
             material.materials[0].color.setStyle( "#" + globals.color2);
             material.materials[1].color.setStyle( "#" + globals.color1);
@@ -52,10 +56,10 @@ function initModel(globals){
         return geometry;
     }
 
-    var object3D = new THREE.Mesh(geometry, material);
-    var allNodeObject3Ds = [];
+    function getPositionsArray(){
+        return positions;
+    }
 
-    var nodes = [];
     // nodes.push(new Node(new THREE.Vector3(0,0,0), nodes.length));
     // nodes.push(new Node(new THREE.Vector3(0,0,10), nodes.length));
     // nodes.push(new Node(new THREE.Vector3(10,0,0), nodes.length));
@@ -68,7 +72,6 @@ function initModel(globals){
     // nodes[1].setFixed(true);
     // nodes[2].setFixed(true);
 
-    var edges = [];
     // edges.push(new Beam([nodes[1], nodes[0]]));
     // edges.push(new Beam([nodes[1], nodes[2]]));
     // edges.push(new Beam([nodes[2], nodes[0]]));
@@ -88,7 +91,6 @@ function initModel(globals){
     // faces.push(new THREE.Face3(4,1,0));
     // faces.push(new THREE.Face3(3,4,0));
 
-    var creases = [];
     // creases.push(new Crease(edges[2], 0, 1, Math.PI, 1, nodes[1], nodes[3], 0));
     // creases.push(new Crease(edges[4], 2, 1, -Math.PI, 1, nodes[4], nodes[0], 1));
 
@@ -126,10 +128,9 @@ function initModel(globals){
             } else {
                 console.log("static");
             }
-            geometry.verticesNeedUpdate = true;
-            // geometry.computeFaceNormals();
-            geometry.computeFlatVertexNormals();
-            // geometry.center();
+            geometry.attributes.position.needsUpdate = true;
+            geometry.computeVertexNormals();
+            // geometry.computeFlatVertexNormals();
         });
     }
 
@@ -161,10 +162,8 @@ function initModel(globals){
 
         globals.threeView.sceneClearModel();
 
-        var _allNodeObject3Ds  = [];
         _.each(_nodes, function(node){
             var obj3D = node.getObject3D();
-            _allNodeObject3Ds.push(obj3D);
             globals.threeView.sceneAddModel(obj3D);
         });
         _.each(_edges, function(edge){
@@ -176,7 +175,6 @@ function initModel(globals){
         var oldCreases = creases;
 
         nodes = _nodes;
-        allNodeObject3Ds = _allNodeObject3Ds;
         edges = _edges;
         faces = _faces;
         creases = _creases;
@@ -201,31 +199,44 @@ function initModel(globals){
             vertices.push(nodes[i].getPosition());
         }
 
-        doubleGeoFaces = faces.slice();
-        for (var i=0;i<faces.length;i++){
-            doubleGeoFaces[i].materialIndex = 1;
-            doubleGeoFaces.push(new THREE.Face3(faces[i].a, faces[i].c, faces[i].b));
-        }
+        positions = new Float32Array(vertices.length*3);
+        // var normals = new Float32Array(vertices.length*3);
+        // var colors = new Float32Array(vertices.length*3);
+        var indices = new Uint16Array(faces.length*3);
 
-        geometry.vertices = vertices;
-        geometry.faces = doubleGeoFaces;
-        geometry.verticesNeedUpdate = true;
-        geometry.elementsNeedUpdate = true;
-        geometry.computeFaceNormals();
+        for (var i=0;i<vertices.length;i++){
+            positions[3*i] = vertices[i].x;
+            positions[3*i+1] = vertices[i].y;
+            positions[3*i+2] = vertices[i].z;
+        }
+        for (var i=0;i<faces.length;i++){
+            var face = faces[i];
+            indices[3*i] = face.a;
+            indices[3*i+1] = face.b;//todo no need to make Face3
+            indices[3*i+2] = face.c;
+            // var vecA = vertices[face.c].clone().sub(vertices[face.b]);
+            // var vecB = vertices[face.a].clone().sub(vertices[face.b]);
+            // var normal = (vecA.cross(vecB)).normalize();
+        }
+        geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+        // geometry.addAttribute('normal', new THREE.BufferAttribute(normals, 3));
+        // geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+
+        geometry.computeVertexNormals();
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
         geometry.center();
 
         //update vertices
         for (var i=0;i<vertices.length;i++){
-            nodes[i].setOriginalPosition(vertices[i]);
+            nodes[i].setOriginalPosition(positions[3*i], positions[3*i+1], positions[3*i+2]);
         }
 
         globals.threeView.sceneAddModel(object3D);
 
         globals.shouldSyncWithModel = true;
         inited = true;
-        // globals.staticSolver.syncNodesAndEdges();
         updateEdgeVisibility();
         updateMeshVisibility();
 
@@ -254,10 +265,6 @@ function initModel(globals){
         return creases;
     }
 
-    function getObjectsToIntersect(){
-        return allNodeObject3Ds;
-    }
-
     return {
         pause: pause,
         resume: resume,
@@ -266,10 +273,10 @@ function initModel(globals){
         getFaces: getFaces,
         getCreases: getCreases,
         buildModel: buildModel,
-        getObjectsToIntersect: getObjectsToIntersect,
         setMeshMaterial: setMeshMaterial,
         updateEdgeVisibility: updateEdgeVisibility,
         updateMeshVisibility: updateMeshVisibility,
-        getGeometry: getGeometry
+        getGeometry: getGeometry,//for save stl
+        getPositionsArray: getPositionsArray
     }
 }

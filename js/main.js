@@ -52,7 +52,8 @@ $(function() {
         var _highlightedObj = null;
         if (!isDragging) {
             var objsToIntersect = [];
-            objsToIntersect = objsToIntersect.concat(globals.model.getObjectsToIntersect());
+            //todo fix this
+            // objsToIntersect = objsToIntersect.concat(globals.model.getObjectsToIntersect());
             _highlightedObj = checkForIntersections(e, objsToIntersect);
             setHighlightedObj(_highlightedObj);
         }  else if (isDragging && highlightedObj){

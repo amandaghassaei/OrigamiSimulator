@@ -170,7 +170,8 @@ Node.prototype.render = function(position){
     // if (this.fixed) return;
     position.add(this.getOriginalPosition());
     // console.log(position);
-    this.object3D.position.set(position.x, position.y, position.z);
+    this.object3D.position.set(position.x, position.y, position.z);//todo need this?
+    return position;
 };
 
 Node.prototype.renderChange = function(change){
@@ -189,8 +190,8 @@ Node.prototype.renderChange = function(change){
 Node.prototype.getOriginalPosition = function(){
     return this._originalPosition.clone();
 };
-Node.prototype.setOriginalPosition = function(position){
-    this._originalPosition = position.clone();
+Node.prototype.setOriginalPosition = function(x, y, z){
+    this._originalPosition.set(x, y, z);
 };
 
 Node.prototype.getPosition = function(){

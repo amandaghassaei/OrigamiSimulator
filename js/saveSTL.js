@@ -9,11 +9,6 @@ function saveSTL(){
         globals.warn("No geometry to save.");
         return;
     }
-    if (!globals.doublesidedSTL){
-        for (var i=0;i<geo.faces.length/2;i++){
-            geo.faces.pop();
-        }
-    }
 
     var data = [];
     data.push({geo: geo, offset:new THREE.Vector3(0,0,0), orientation:new THREE.Quaternion(0,0,0,1)});

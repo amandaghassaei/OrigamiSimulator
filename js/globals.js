@@ -10,7 +10,7 @@ function initGlobals(){
         navMode: "simulation",
 
         //view
-        colorMode: "color",
+        colorMode: "normal",
         color1: "ec008b",
         color2: "dddddd",
         edgesVisible: true,
