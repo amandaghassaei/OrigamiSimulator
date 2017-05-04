@@ -128,6 +128,8 @@ function initDynamicSolver(globals){
         gpuMath.swapTextures("u_position", "u_lastPosition");
     }
 
+    var $errorOutput = $("#globalError");
+
     function render(){
 
         // var vectorLength = 2;
@@ -148,7 +150,7 @@ function initDynamicSolver(globals){
         //     console.log("here");
         // }
 
-        var vectorLength = 3;
+        var vectorLength = 4;
         globals.gpuMath.setProgram("packToBytes");
         globals.gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
         globals.gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDim, textureDim], "2f");
@@ -161,11 +163,14 @@ function initDynamicSolver(globals){
             var pixels = new Uint8Array(height*textureDim*4*vectorLength);
             globals.gpuMath.readPixels(0, 0, textureDim * vectorLength, height, pixels);
             var parsedPixels = new Float32Array(pixels.buffer);
+            var globalError = 0;
             for (var i = 0; i < nodes.length; i++) {
                 var rgbaIndex = i * vectorLength;
+                globalError += parsedPixels[rgbaIndex+3];
                 var nodePosition = new THREE.Vector3(parsedPixels[rgbaIndex], parsedPixels[rgbaIndex + 1], parsedPixels[rgbaIndex + 2]);
                 nodes[i].render(nodePosition);
             }
+            $errorOutput.html((globalError/nodes.length*100).toFixed(7) + " %");
             for (var i=0;i<edges.length;i++){
                 edges[i].render();
             }

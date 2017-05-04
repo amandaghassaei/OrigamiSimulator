@@ -287,3 +287,8 @@ svg{
     text-align: center;
     margin: 0 18px;
 }
+
+#aboutError{
+    margin-right: 10px;
+    color: #34495e;
+}

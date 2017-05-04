@@ -102,9 +102,9 @@
                 return;
             }
 
-            vec3 velocity = texture2D(u_velocity, scaledFragCoord).xyz;
-            vec3 position = velocity*u_dt + lastPosition;
-            gl_FragColor = vec4(position, 0.0);
+            vec4 velocityData = texture2D(u_velocity, scaledFragCoord);
+            vec3 position = velocityData.xyz*u_dt + lastPosition;
+            gl_FragColor = vec4(position, velocityData.a);//velocity.a has error info
         }
     </script>
 
@@ -146,6 +146,8 @@
             vec4 neighborIndices = texture2D(u_meta, scaledFragCoord);
             vec4 meta = texture2D(u_meta, scaledFragCoord);
 
+            float nodeError = 0.0;
+
             for (int j=0;j<100;j++){//for all beams (up to 100, had to put a const int in here)
                 if (j >= int(meta[1])) break;
 
@@ -164,11 +166,13 @@
                 vec3 nominalDist = neighborOriginalPosition-originalPosition;
                 vec3 deltaP = neighborLastPosition-lastPosition+nominalDist;
                 deltaP -= normalize(deltaP)*beamMeta[2];
+                nodeError += length(deltaP)/length(nominalDist);
                 vec3 deltaV = neighborLastVelocity-lastVelocity;
 
                 vec3 _force = deltaP*beamMeta[0] + deltaV*beamMeta[1];
                 force += _force;
             }
+            nodeError /= meta[1];
 
             for (int j=0;j<100;j++){//for all creases (up to 100, had to put a const int in here)
                 if (j >= int(meta[3])) break;
@@ -227,7 +231,7 @@
             }
 
             vec3 velocity = force*u_dt/mass[0] + lastVelocity;
-            gl_FragColor = vec4(velocity,0.0);
+            gl_FragColor = vec4(velocity,nodeError);
         }
     </script>
 
@@ -451,6 +455,9 @@
         <span class="label-slider">Damping (0-1): </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
         <input value="" placeholder="" class="form-control" type="text">
     </div>
+    <br/><br/>
+    <b>Error:</b><br/>
+    <div class="indent"> Average Error (per node): <span id="globalError"></span><a class="floatRight" href="#" id="aboutError"><span class="fui-question-circle"></span></a></div>
 
     <div class="extraSpace"></div>
 </div>
@@ -478,6 +485,10 @@
                     <label class="radio">
                         <input name="colorMode" value="normal" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
                         Face Normals Material
+                    </label>
+                    <label class="radio">
+                        <input name="colorMode" value="error" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                        Node Error Material
                     </label>
                 </div>
             </div><br/>
@@ -587,6 +598,28 @@
         <div class="modal-content">
             <div class="modal-body">
                 <p id="warningMessage">
+                </p>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="aboutErrorModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-med">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <p><b>Simulation Error</b><br/><br/>
+                    "Average Error (per node)" gives a sense of how much the distance constraints in the
+                    origami pattern are being violated.  The error at each node is evaluated by averaging the
+                    percent deviation of all its distance constraints with adjacent nodes.  This error is
+                    reported as a percent of the total length of the distance constraint to remove scaling effects.
+                    Increasing the "Axial Stiffness" of the simulation will tighten these constraints and
+                    lower the error in the simulation.<br/>
+                    <br/>
+                    To visualize the error of each node graphically, select "Node Error Material" under "Mesh Material"
+                     in the left menu.
                 </p>
             </div>
         </div><!-- /.modal-content -->

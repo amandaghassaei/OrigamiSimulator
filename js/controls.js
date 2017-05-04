@@ -393,6 +393,10 @@ function initControls(globals){
         else $("#meshMaterialOptions").hide();
     });
 
+    setLink("#aboutError", function(){
+        $("#aboutErrorModal").modal("show");
+    });
+
     function setButtonGroup(id, callback){
         $(id+" a").click(function(e){
             e.preventDefault();

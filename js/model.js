@@ -5,12 +5,22 @@
 //wireframe model and folding structure
 function initModel(globals){
 
+    var doubleGeoFaces = [];
+    var faces = [];
+    var geometry = new THREE.Geometry();
+    geometry.dynamic = true;
+
     var material;
     setMeshMaterial();
-    function setMeshMaterial(){
-        if (globals.colorMode == "normal"){
+    function setMeshMaterial() {
+        if (globals.colorMode == "normal") {
+            // geometry.faces = faces;
             material = new THREE.MeshNormalMaterial({side: THREE.DoubleSide});
+        } else if (globals.colorMode == "error"){
+            // geometry.faces = faces;
+            material = new THREE.MeshBasicMaterial({ vertexColors: THREE.VertexColors, side:THREE.DoubleSide});
         } else {
+            // geometry.faces = doubleGeoFaces;
             material = new THREE.MultiMaterial([
                 new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide}),
                 new THREE.MeshLambertMaterial({shading:THREE.FlatShading, color:0x0000ff, side:THREE.FrontSide})
@@ -38,14 +48,11 @@ function initModel(globals){
         object3D.visible = globals.meshVisible;
     }
 
-    var geometry = new THREE.Geometry();
-    geometry.dynamic = true;
-    var object3D = new THREE.Mesh(geometry, material);
-
     function getGeometry(){
         return geometry;
     }
 
+    var object3D = new THREE.Mesh(geometry, material);
     var allNodeObject3Ds = [];
 
     var nodes = [];
@@ -74,7 +81,6 @@ function initModel(globals){
     // edges.push(new Beam([nodes[4], nodes[1]]));
     // edges.push(new Beam([nodes[3], nodes[4]]));
 
-    var faces = [];
     // faces.push(new THREE.Face3(0,1,2));
     // faces.push(new THREE.Face3(0,2,3));
     // faces.push(new THREE.Face3(4,3,2));
@@ -195,14 +201,14 @@ function initModel(globals){
             vertices.push(nodes[i].getPosition());
         }
 
-        var geofaces = faces.slice();
+        doubleGeoFaces = faces.slice();
         for (var i=0;i<faces.length;i++){
-            geofaces[i].materialIndex = 1;
-            geofaces.push(new THREE.Face3(faces[i].a, faces[i].c, faces[i].b));
+            doubleGeoFaces[i].materialIndex = 1;
+            doubleGeoFaces.push(new THREE.Face3(faces[i].a, faces[i].c, faces[i].b));
         }
 
         geometry.vertices = vertices;
-        geometry.faces = geofaces;
+        geometry.faces = doubleGeoFaces;
         geometry.verticesNeedUpdate = true;
         geometry.elementsNeedUpdate = true;
         geometry.computeFaceNormals();
