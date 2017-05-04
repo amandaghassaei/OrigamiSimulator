@@ -4,10 +4,15 @@
 
 function saveSTL(){
 
-    var geo = globals.model.getGeometry();
+    var geo = globals.model.getGeometry().clone();
     if (geo.vertices.length == 0) {
         globals.warn("No geometry to save.");
         return;
+    }
+    if (!globals.doublesidedSTL){
+        for (var i=0;i<geo.faces.length/2;i++){
+            geo.faces.pop();
+        }
     }
 
     var data = [];

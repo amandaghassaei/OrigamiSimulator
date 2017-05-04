@@ -17,6 +17,9 @@ function initControls(globals){
     setLink("#about", function(){
         $('#aboutModal').modal('show');
     });
+    setLink("#tips", function(){
+        $('#tipsModal').modal('show');
+    });
 
     setLink("#exportSTL", function(){
         $('#exportSTLModal').modal('show');
@@ -112,7 +115,11 @@ function initControls(globals){
                     parseTXTjson(json);
                 });
 
-            } else globals.pattern.loadSVG("assets/" + url);
+            } else {
+                globals.filename = name;
+                globals.extension = extension;
+                globals.pattern.loadSVG("assets/" + url);
+            }
         }
     });
 

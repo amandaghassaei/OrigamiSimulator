@@ -47,8 +47,10 @@ function initGlobals(){
         //import pattern settings
         vertTol: 3,//vertex merge tolerance
 
+        //save stl settings
         filename: null,
-        extension: null
+        extension: null,
+        doublesidedSTL: false
 
     };
 
