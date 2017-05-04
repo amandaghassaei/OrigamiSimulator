@@ -252,10 +252,6 @@ function initModel(globals){
         return allNodeObject3Ds;
     }
 
-    function updateEdgeVis(){
-
-    }
-
     return {
         pause: pause,
         resume: resume,

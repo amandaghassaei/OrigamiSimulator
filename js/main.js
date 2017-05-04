@@ -121,4 +121,5 @@ $(function() {
     globals.dynamicSolver = initDynamicSolver(globals);
     globals.pattern = initPattern(globals);
     // globals.threeView.sceneAdd(raycasterPlane);
+    $(".demo[data-url='Tessellations/miura-ori.svg']").click();
 });

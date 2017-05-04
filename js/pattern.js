@@ -76,8 +76,6 @@ function initPattern(globals){
         });
     }
 
-    loadSVG("assets/Tessellations/miura-ori.svg");
-
     function parsePath(_verticesRaw, _segmentsRaw, $paths){
         for (var i=0;i<$paths.length;i++){
             var segments = $paths[i].getPathData();
