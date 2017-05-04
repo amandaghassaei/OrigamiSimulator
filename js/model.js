@@ -222,6 +222,14 @@ function initModel(globals){
         // globals.staticSolver.syncNodesAndEdges();
         updateEdgeVisibility();
         updateMeshVisibility();
+
+        if (globals.noCreasePatternAvailable() && globals.navMode == "pattern"){
+            //switch to simulation mode
+            $("#navSimulation").parent().addClass("open");
+            $("#navPattern").parent().removeClass("open");
+            $("#svgViewer").hide();
+            globals.navMode = "simulation";
+        }
     }
 
     function getNodes(){

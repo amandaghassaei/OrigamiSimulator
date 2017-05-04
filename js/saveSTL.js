@@ -6,7 +6,7 @@ function saveSTL(){
 
     var geo = globals.model.getGeometry();
     if (geo.vertices.length == 0) {
-        console.warn("no geo");
+        globals.warn("No geometry to save.");
         return;
     }
 

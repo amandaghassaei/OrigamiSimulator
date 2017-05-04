@@ -52,6 +52,17 @@ function initGlobals(){
 
     };
 
+    function warn(msg){
+        $("#warningMessage").html(msg);
+        $("#warningModal").modal("show");
+    }
+    _globals.warn = warn;
+
+    function noCreasePatternAvailable(){
+        return _globals.extension == "fold";
+    }
+    _globals.noCreasePatternAvailable = noCreasePatternAvailable;
+
     var isMobile = {
         Android: function() {
             return navigator.userAgent.match(/Android/i);

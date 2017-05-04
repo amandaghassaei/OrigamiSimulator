@@ -28,9 +28,8 @@ function initControls(globals){
 
 
     setLink("#navPattern", function(){
-        if (globals.extension == "fold"){
-            $("#warningMessage").html("No crease pattern available for FOLD format.");
-            $("#warningModal").modal("show");
+        if (globals.noCreasePatternAvailable()){
+            globals.warn("No crease pattern available for FOLD format.");
             return;
         }
         globals.navMode = "pattern";
@@ -103,14 +102,14 @@ function initControls(globals){
         var url = $(e.target).data("url");
         if (url) {
             var extension = url.split(".");
-            var name = extension.split("/");
+            var name = extension[extension.length-2].split("/");
             name = name[name.length-1];
             extension = extension[extension.length-1];
             if (extension == "txt"){
                 $.getJSON( "assets/"+url, function( json ) {
-                    parseTXTjson(json);
                     globals.filename = name;
                     globals.extension = extension;
+                    parseTXTjson(json);
                 });
 
             } else globals.pattern.loadSVG("assets/" + url);
@@ -118,14 +117,12 @@ function initControls(globals){
     });
 
     function warnUnableToLoad(){
-        $("#warningMessage").html("Unable to load file.");
-        $("#warningModal").modal("show");
+        globals.warn("Unable to load file.");
     }
 
     $("#fileSelector").change(function(e) {
         var files = e.target.files; // FileList object
         if (files.length < 1) {
-            console.warn("no files");
             return;
         }
 
@@ -142,9 +139,9 @@ function initControls(globals){
                         warnUnableToLoad();
                         return;
                     }
-                    parseTXTjson(JSON.parse(reader.result));
                     globals.filename = name;
                     globals.extension = extension;
+                    parseTXTjson(JSON.parse(reader.result));
                 }
             }(file);
             reader.readAsText(file);
@@ -155,9 +152,9 @@ function initControls(globals){
                         warnUnableToLoad();
                         return;
                     }
-                    globals.pattern.loadSVG(reader.result);
                     globals.filename = name;
                     globals.extension = extension;
+                    globals.pattern.loadSVG(reader.result);
                 }
             }(file);
             reader.readAsDataURL(file);
@@ -168,15 +165,14 @@ function initControls(globals){
                         warnUnableToLoad();
                         return;
                     }
-                    parseFoldJSON(JSON.parse(reader.result));
                     globals.filename = name;
                     globals.extension = extension;
+                    parseFoldJSON(JSON.parse(reader.result));
                 }
             }(file);
             reader.readAsText(file);
         } else {
-            $("#warningMessage").html('Unknown file extension: .' + extension);
-            $("#warningModal").modal("show");
+            globals.warn('Unknown file extension: .' + extension);
             return null;
         }
 
