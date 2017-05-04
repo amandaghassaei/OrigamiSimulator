@@ -219,7 +219,7 @@ function initControls(globals){
             var creaseParams = [];
             for (var j=0;j<faces.length;j++){
                 var face = faces[j];
-                var faceVerts = [face.a, face.b, face.c];
+                var faceVerts = [face[0], face[1], face[2]];
                 var v1Index = faceVerts.indexOf(v1);
                 if (v1Index>=0){
                     var v2Index = faceVerts.indexOf(v2);
@@ -269,10 +269,6 @@ function initControls(globals){
 
     function parseTXTjson(json){
 
-        _.each(json.faceNodeIndices, function(face, i){
-            json.faceNodeIndices[i] = new THREE.Face3(face[0], face[1], face[2]);
-        });
-
         var faces = json.faceNodeIndices;
         var allCreaseParams = [];
 
@@ -282,7 +278,7 @@ function initControls(globals){
             var creaseParams = [];
             for (var j=0;j<faces.length;j++){
                 var face = faces[j];
-                var faceVerts = [face.a, face.b, face.c];
+                var faceVerts = [face[0], face[1], face[2]];
                 var v1Index = faceVerts.indexOf(v1);
                 if (v1Index>=0){
                     var v2Index = faceVerts.indexOf(v2);

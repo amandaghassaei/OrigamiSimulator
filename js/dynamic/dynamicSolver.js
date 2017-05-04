@@ -10,6 +10,8 @@ function initDynamicSolver(globals){
     var edges;
     var faces;
     var creases;
+    var positions;
+    var colors;
 
     var originalPosition;
     var position;
@@ -35,6 +37,10 @@ function initDynamicSolver(globals){
         edges = globals.model.getEdges();
         faces = globals.model.getFaces();
         creases = globals.model.getCreases();
+
+        globals.model.sync();
+        positions = globals.model.getPositionsArray();
+        colors = globals.model.getColorsArray();
 
         initTypedArrays();
         initTexturesAndPrograms(globals.gpuMath);
@@ -163,12 +169,8 @@ function initDynamicSolver(globals){
             var pixels = new Uint8Array(height*textureDim*4*vectorLength);
             globals.gpuMath.readPixels(0, 0, textureDim * vectorLength, height, pixels);
             var parsedPixels = new Float32Array(pixels.buffer);
-            var positions = globals.model.getPositionsArray();
             var globalError = 0;
-            var colors;
-            if (globals.colorMode == "axialStrain"){
-                colors = globals.model.getColorsArray();
-            }
+            var shouldUpdateColors = globals.colorMode == "axialStrain";
             for (var i = 0; i < nodes.length; i++) {
                 var rgbaIndex = i * vectorLength;
                 var nodeError = parsedPixels[rgbaIndex+3];
@@ -178,7 +180,7 @@ function initDynamicSolver(globals){
                 positions[3*i] = nexPos.x;
                 positions[3*i+1] = nexPos.y;
                 positions[3*i+2] = nexPos.z;
-                if (colors){
+                if (shouldUpdateColors){
                     var scaledVal = (1-100*nodeError/globals.strainClip) * 0.7;
                     var color = new THREE.Color();
                     color.setHSL(scaledVal, 1, 0.5);
@@ -438,9 +440,9 @@ function initDynamicSolver(globals){
 
         for (var i=0;i<faces.length;i++){
             var face = faces[i];
-            faceVertexIndices[4*i] = face.a;
-            faceVertexIndices[4*i+1] = face.b;
-            faceVertexIndices[4*i+2] = face.c;
+            faceVertexIndices[4*i] = face[0];
+            faceVertexIndices[4*i+1] = face[1];
+            faceVertexIndices[4*i+2] = face[2];
         }
 
         for (var i=0;i<textureDim*textureDim;i++){

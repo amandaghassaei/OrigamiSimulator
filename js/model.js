@@ -16,6 +16,7 @@ function initModel(globals){
 
     var positions;//place to store buffer geo vertex data
     var colors;//place to store buffer geo vertex colors
+    var indices;
     var nodes = [];
     var faces = [];
     var edges = [];
@@ -29,7 +30,6 @@ function initModel(globals){
             material = new THREE.MeshBasicMaterial({vertexColors: THREE.VertexColors, side:THREE.DoubleSide});
             object3D2.visible = false;
         } else {
-            //todo can't do this
             material = new THREE.MeshPhongMaterial({shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide});
             material2 = new THREE.MeshPhongMaterial({shading:THREE.FlatShading, color:0x0000ff, side:THREE.BackSide});
             material.color.setStyle( "#" + globals.color1);
@@ -204,48 +204,6 @@ function initModel(globals){
         }
         oldCreases = null;
 
-        var vertices = [];
-        for (var i=0;i<nodes.length;i++){
-            vertices.push(nodes[i].getPosition());
-        }
-
-        positions = new Float32Array(vertices.length*3);
-        // var normals = new Float32Array(vertices.length*3);
-        colors = new Float32Array(vertices.length*3);
-        var indices = new Uint16Array(faces.length*3);
-
-        for (var i=0;i<vertices.length;i++){
-            positions[3*i] = vertices[i].x;
-            positions[3*i+1] = vertices[i].y;
-            positions[3*i+2] = vertices[i].z;
-            colors[3*i] = 1;
-            colors[3*i+1] = 0;
-            colors[3*i+2] = 1;
-        }
-        for (var i=0;i<faces.length;i++){
-            var face = faces[i];
-            indices[3*i] = face.a;
-            indices[3*i+1] = face.b;//todo no need to make Face3
-            indices[3*i+2] = face.c;
-            // var vecA = vertices[face.c].clone().sub(vertices[face.b]);
-            // var vecB = vertices[face.a].clone().sub(vertices[face.b]);
-            // var normal = (vecA.cross(vecB)).normalize();
-        }
-        geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
-        // geometry.addAttribute('normal', new THREE.BufferAttribute(normals, 3));
-        geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
-        geometry.setIndex(new THREE.BufferAttribute(indices, 1));
-
-        geometry.computeVertexNormals();
-        geometry.computeBoundingBox();
-        geometry.computeBoundingSphere();
-        geometry.center();
-
-        //update vertices
-        for (var i=0;i<vertices.length;i++){
-            nodes[i].setOriginalPosition(positions[3*i], positions[3*i+1], positions[3*i+2]);
-        }
-
         globals.threeView.sceneAddModel(object3D);
         globals.threeView.sceneAddModel(object3D2);
 
@@ -260,6 +218,49 @@ function initModel(globals){
             $("#navPattern").parent().removeClass("open");
             $("#svgViewer").hide();
             globals.navMode = "simulation";
+        }
+    }
+
+    function sync(){
+        var vertices = [];
+        for (var i=0;i<nodes.length;i++){
+            vertices.push(nodes[i].getPosition());
+        }
+        console.log(vertices.length);
+
+        positions = new Float32Array(vertices.length*3);
+        colors = new Float32Array(vertices.length*3);
+        indices = new Uint16Array(faces.length*3);
+
+        for (var i=0;i<vertices.length;i++){
+            positions[3*i] = vertices[i].x;
+            positions[3*i+1] = vertices[i].y;
+            positions[3*i+2] = vertices[i].z;
+            colors[3*i] = 1;
+            colors[3*i+1] = 0;
+            colors[3*i+2] = 1;
+        }
+        for (var i=0;i<faces.length;i++){
+            var face = faces[i];
+            indices[3*i] = face[0];
+            indices[3*i+1] = face[1];
+            indices[3*i+2] = face[2];
+        }
+
+        geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geometry.attributes.position.needsUpdate = true;
+        geometry.attributes.color.needsUpdate = true;
+        geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+
+        geometry.computeVertexNormals();
+        geometry.computeBoundingBox();
+        geometry.computeBoundingSphere();
+        geometry.center();
+
+        //update vertices
+        for (var i=0;i<vertices.length;i++){
+            nodes[i].setOriginalPosition(positions[3*i], positions[3*i+1], positions[3*i+2]);
         }
     }
 
@@ -292,6 +293,7 @@ function initModel(globals){
         updateMeshVisibility: updateMeshVisibility,
         getGeometry: getGeometry,//for save stl
         getPositionsArray: getPositionsArray,
-        getColorsArray: getColorsArray
+        getColorsArray: getColorsArray,
+        sync: sync
     }
 }

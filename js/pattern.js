@@ -184,7 +184,7 @@ function initPattern(globals){
             var creaseParams = [];
             for (var j=0;j<faces.length;j++){
                 var face = faces[j];
-                var faceVerts = [face.a, face.b, face.c];
+                var faceVerts = [face[0], face[1], face[2]];
                 var v1Index = faceVerts.indexOf(v1);
                 if (v1Index>=0){
                     var v2Index = faceVerts.indexOf(v2);
@@ -309,7 +309,7 @@ function initPattern(globals){
 
             var triangles = earcut(polyVerts);
             for (var j=0;j<triangles.length;j+=3){
-                var face = new THREE.Face3(polygons[i][triangles[j+2]], polygons[i][triangles[j+1]], polygons[i][triangles[j]]);
+                var face = [polygons[i][triangles[j+2]], polygons[i][triangles[j+1]], polygons[i][triangles[j]]];
                 var foundEdges = [false, false, false];//ab, bc, ca
 
                 for (var k=0;k<polygonEdges[i].length;k++){
@@ -317,9 +317,9 @@ function initPattern(globals){
                     if (edgeIndex<0) edgeIndex = -edgeIndex-1;
                     var _edgeVertices = allEdges[edgeIndex];
 
-                    var aIndex = _edgeVertices.indexOf(face.a);
-                    var bIndex = _edgeVertices.indexOf(face.b);
-                    var cIndex = _edgeVertices.indexOf(face.c);
+                    var aIndex = _edgeVertices.indexOf(face[0]);
+                    var bIndex = _edgeVertices.indexOf(face[1]);
+                    var cIndex = _edgeVertices.indexOf(face[2]);
 
                     if (aIndex >= 0){
                         if (bIndex >= 0) {
@@ -343,13 +343,13 @@ function initPattern(globals){
                     if (foundEdges[k]) continue;
                     if (k==0){
                         polygonEdges[i].push(allEdges.length);
-                        allEdges.push([face.a, face.b]);
+                        allEdges.push([face[0], face[1]]);
                     } else if (k==1){
                         polygonEdges[i].push(allEdges.length);
-                        allEdges.push([face.c, face.b]);
+                        allEdges.push([face[2], face[1]]);
                     } else if (k==2){
                         polygonEdges[i].push(allEdges.length);
-                        allEdges.push([face.c, face.a]);
+                        allEdges.push([face[2], face[0]]);
                     }
                 }
 
