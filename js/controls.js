@@ -347,10 +347,14 @@ function initControls(globals){
 
     if (globals.colorMode == "color") $("#coloredMaterialOptions").show();
     else $("#coloredMaterialOptions").hide();
+    if (globals.colorMode == "axialStrain") $("#axialStrainMaterialOptions").show();
+    else $("#axialStrainMaterialOptions").hide();
     setRadio("colorMode", globals.colorMode, function(val){
         globals.colorMode = val;
         if (val == "color") $("#coloredMaterialOptions").show();
         else $("#coloredMaterialOptions").hide();
+        if (val == "axialStrain") $("#axialStrainMaterialOptions").show();
+        else $("#axialStrainMaterialOptions").hide();
         globals.model.setMeshMaterial();
     });
 
@@ -408,6 +412,10 @@ function initControls(globals){
     setLink("#aboutAxialStrain", function(){
         $("#aboutAxialStrainModal").modal("show");
     });
+
+    setInput("#strainClip", globals.strainClip, function(val){
+        globals.strainClip = val;
+    }, 0.0001, 100);
 
     function setButtonGroup(id, callback){
         $(id+" a").click(function(e){

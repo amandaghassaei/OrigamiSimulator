@@ -179,7 +179,7 @@ function initDynamicSolver(globals){
                 positions[3*i+1] = nexPos.y;
                 positions[3*i+2] = nexPos.z;
                 if (colors){
-                    var scaledVal = (1-nodeError/globals.errorClip) * 0.7;
+                    var scaledVal = (1-100*nodeError/globals.strainClip) * 0.7;
                     var color = new THREE.Color();
                     color.setHSL(scaledVal, 1, 0.5);
                     colors[3*i] = color.r;
