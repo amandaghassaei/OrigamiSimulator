@@ -396,6 +396,15 @@ function initControls(globals){
     setLink("#aboutError", function(){
         $("#aboutErrorModal").modal("show");
     });
+    setLink("#aboutStiffness", function(){
+        $("#aboutStiffnessModal").modal("show");
+    });
+    setLink("#aboutDynamicSim", function(){
+        $("#aboutDynamicSimModal").modal("show");
+    });
+    setLink("#aboutStaticSim", function(){
+        $("#aboutStaticSimModal").modal("show");
+    });
 
     function setButtonGroup(id, callback){
         $(id+" a").click(function(e){

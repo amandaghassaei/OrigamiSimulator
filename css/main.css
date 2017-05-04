@@ -71,6 +71,11 @@ a.btn:visited, a.btn:focus{
     color: white;
 }
 
+button{
+    border: 0;
+    outline: none;
+}
+
 .editable{
     color:#34495e;
     height: 42px;
@@ -288,7 +293,9 @@ svg{
     margin: 0 18px;
 }
 
-#aboutError{
+.about.floatRight{
     margin-right: 10px;
     color: #34495e;
+    font-size: 18px;
+    line-height: 18px;
 }
