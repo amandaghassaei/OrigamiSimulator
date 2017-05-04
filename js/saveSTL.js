@@ -16,4 +16,5 @@ function saveSTL(){
     if (!stlBin) return;
     var blob = new Blob([stlBin], {type: 'application/octet-binary'});
     saveAs(blob, "Origami : " + parseInt(globals.creasePercent*100) +  "PercentFolded.stl");
+    $("#exportSTLModal").modal("hide");
 }

@@ -225,6 +225,10 @@ span.modal-close{
     color: #666;
 }
 
+.modal-footer .btn+.btn {
+    background: #eee;
+}
+
 .radio .icon-checked{
     transition-duration: 0s;
 }
