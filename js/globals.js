@@ -45,7 +45,10 @@ function initGlobals(){
         density: 1,
 
         //import pattern settings
-        vertTol: 3//vertex merge tolerange
+        vertTol: 3,//vertex merge tolerance
+
+        filename: null,
+        extension: null
 
     };
 

@@ -278,3 +278,8 @@ svg{
 .hexVal{
     border-width:4px;
 }
+
+#warningMessage{
+    text-align: center;
+    margin: 0 18px;
+}

@@ -397,9 +397,8 @@
                             <li><a href="#" class="demo" data-url="Curved/creaseMesh.txt">Curved Crease 1</a></li>
                         </ul>
                     </li>
-                    <li><a class="loadFile" href="#">Import .txt...</a></li>
-                    <li><a class="loadFile" href="#">Import SVG...</a></li>
                     <li class="divider"></li>
+                    <li><a class="loadFile" href="#">Import... (SVG / FOLD / txt)</a></li>
                     <!--<li><a id="saveSVG" href="#">Save Pattern as SVG...</a></li>-->
                     <li><a id="exportSTL" href="#">Save Simulation as STL...</a></li>
                 </ul>
@@ -547,6 +546,34 @@
             <div class="modal-footer">
                 <button id="doSTLsave" type="button" class="btn btn-success">Save</button>
                 <button type="button" class="btn btn default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="importFoldModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-med">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <p><b>Import FOLD</b><br/><br/>
+                use angles as targets
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button id="doImportFold" type="button" class="btn btn-success">Import</button>
+                <button type="button" class="btn btn default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="warningModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p id="warningMessage">
+                </p>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

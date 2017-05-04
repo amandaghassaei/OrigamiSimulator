@@ -28,6 +28,11 @@ function initControls(globals){
 
 
     setLink("#navPattern", function(){
+        if (globals.extension == "fold"){
+            $("#warningMessage").html("No crease pattern available for FOLD format.");
+            $("#warningModal").modal("show");
+            return;
+        }
         globals.navMode = "pattern";
         $("#navPattern").parent().addClass("open");
         $("#navSimulation").parent().removeClass("open");
@@ -98,15 +103,24 @@ function initControls(globals){
         var url = $(e.target).data("url");
         if (url) {
             var extension = url.split(".");
+            var name = extension.split("/");
+            name = name[name.length-1];
             extension = extension[extension.length-1];
             if (extension == "txt"){
                 $.getJSON( "assets/"+url, function( json ) {
                     parseTXTjson(json);
+                    globals.filename = name;
+                    globals.extension = extension;
                 });
 
             } else globals.pattern.loadSVG("assets/" + url);
         }
     });
+
+    function warnUnableToLoad(){
+        $("#warningMessage").html("Unable to load file.");
+        $("#warningModal").modal("show");
+    }
 
     $("#fileSelector").change(function(e) {
         var files = e.target.files; // FileList object
@@ -124,28 +138,45 @@ function initControls(globals){
         if (extension == "txt") {
             reader.onload = function () {
                 return function (e) {
-                    if (!reader.result) return;
+                    if (!reader.result) {
+                        warnUnableToLoad();
+                        return;
+                    }
                     parseTXTjson(JSON.parse(reader.result));
+                    globals.filename = name;
+                    globals.extension = extension;
                 }
             }(file);
             reader.readAsText(file);
         } else if (extension == "svg") {
             reader.onload = function () {
                 return function (e) {
-                    globals.pattern.loadSVG(e.target.result);
+                    if (!reader.result) {
+                        warnUnableToLoad();
+                        return;
+                    }
+                    globals.pattern.loadSVG(reader.result);
+                    globals.filename = name;
+                    globals.extension = extension;
                 }
             }(file);
             reader.readAsDataURL(file);
         } else if (extension == "fold"){
             reader.onload = function () {
                 return function (e) {
-                    if (!reader.result) return;
+                    if (!reader.result) {
+                        warnUnableToLoad();
+                        return;
+                    }
                     parseFoldJSON(JSON.parse(reader.result));
+                    globals.filename = name;
+                    globals.extension = extension;
                 }
             }(file);
             reader.readAsText(file);
         } else {
-            console.warn("unknown extension: " + extension);
+            $("#warningMessage").html('Unknown file extension: .' + extension);
+            $("#warningModal").modal("show");
             return null;
         }
 
