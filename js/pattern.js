@@ -315,17 +315,34 @@ function initPattern(globals){
         vertices = mergedVertices;
     }
 
-    function triangulatePolys(polygonData, allEdges){
+    function triangulatePolys(polygonData, allEdges, _vertices, shouldRotateFace){
+        if (_vertices === undefined) _vertices = vertices;
         var polygons = polygonData[0];
         var polygonEdges = polygonData[1];
         var faces = [];
         for (var i=0;i<polygons.length;i++){
             var polyVerts = [];
-            for (var j=1;j<polygons[i].length;j++){
-                var vertex = vertices[polygons[i][j]];
-                polyVerts.push(vertex.x);
-                polyVerts.push(vertex.z);
+            if (shouldRotateFace){
+                var vecA = _vertices[polygons[i][1]].clone().sub(_vertices[polygons[i][0]]);
+                var vecB = _vertices[polygons[i][polygons[i].length-2]].clone().sub(_vertices[polygons[i][0]]);
+                var translation = _vertices[polygons[i][0]];
+                var normal = (vecA.cross(vecB)).normalize();
+                var axis = ((new THREE.Vector3(0,1,0)).cross(normal)).normalize();
+                var angle = -Math.acos((new THREE.Vector3(0,1,0)).dot(normal));
+                for (var j=1;j<polygons[i].length;j++){
+                    var vertex = _vertices[polygons[i][j]];
+                    vertex = (vertex.clone().sub(translation)).applyAxisAngle(axis, angle);
+                    polyVerts.push(vertex.x);
+                    polyVerts.push(vertex.z);
+                }
+            } else {
+                for (var j=1;j<polygons[i].length;j++){
+                    var vertex = _vertices[polygons[i][j]];
+                    polyVerts.push(vertex.x);
+                    polyVerts.push(vertex.z);
+                }
             }
+
             var triangles = earcut(polyVerts);
             for (var j=0;j<triangles.length;j+=3){
                 var face = new THREE.Face3(polygons[i][triangles[j+2]], polygons[i][triangles[j+1]], polygons[i][triangles[j]]);
@@ -378,10 +395,11 @@ function initPattern(globals){
         return faces;
     }
 
-    function findPolygons(allEdges){
+    function findPolygons(allEdges, _vertices){
         //collect all edges connected to vertices
+        if (_vertices === undefined) _vertices = vertices;
         var vertEdges = [];
-        for (var i=0;i<vertices.length;i++){
+        for (var i=0;i<_vertices.length;i++){
             vertEdges.push([]);
             for (var j=0;j<allEdges.length;j++){
                 if (allEdges[j][0] == i) vertEdges[i].push(j);
@@ -395,13 +413,13 @@ function initPattern(globals){
 
         //order edges ccw
         for (var i=0;i<vertEdges.length;i++){
-            var vertex = vertices[i];
+            var vertex = _vertices[i];
             var thetas = [];
             for (var j=0;j<vertEdges[i].length;j++){
                 var edgeIndex = vertEdges[i][j];
                 var edge;
-                if (allEdges[edgeIndex][0] != i) edge = vertices[allEdges[edgeIndex][0]].clone();
-                else edge = vertices[allEdges[edgeIndex][1]].clone();
+                if (allEdges[edgeIndex][0] != i) edge = _vertices[allEdges[edgeIndex][0]].clone();
+                else edge = _vertices[allEdges[edgeIndex][1]].clone();
                 edge.sub(vertex);
 
                 //find angle of each edge
@@ -424,7 +442,7 @@ function initPattern(globals){
         }
         var polygons = [];
         var polygonEdges = [];
-        for (var i=0;i<vertices.length;i++){
+        for (var i=0;i<_vertices.length;i++){
             var edges = vertEdges[i];
             for (var j=0;j<edges.length;j++){
 
@@ -631,6 +649,7 @@ function initPattern(globals){
 
     return {
         loadSVG: loadSVG,
-        getFacesAndVerticesForEdges: getFacesAndVerticesForEdges
+        getFacesAndVerticesForEdges: getFacesAndVerticesForEdges,
+        triangulatePolys: triangulatePolys
     }
 }

@@ -108,7 +108,7 @@ function initControls(globals){
         }
     });
 
-    $("#fileSelector").change(function(e){
+    $("#fileSelector").change(function(e) {
         var files = e.target.files; // FileList object
         if (files.length < 1) {
             console.warn("no files");
@@ -118,24 +118,32 @@ function initControls(globals){
         var file = files[0];
         var name = file.name;
         var extension = name.split(".");
-        extension = extension[extension.length-1];
+        extension = extension[extension.length - 1];
         var reader = new FileReader();
 
-        if (extension == "txt"){
-            reader.onload = function(){
-                return function(e) {
+        if (extension == "txt") {
+            reader.onload = function () {
+                return function (e) {
                     if (!reader.result) return;
                     parseTXTjson(JSON.parse(reader.result));
                 }
             }(file);
             reader.readAsText(file);
-        } else if (extension == "svg"){
-            reader.onload = function(){
-                return function(e) {
+        } else if (extension == "svg") {
+            reader.onload = function () {
+                return function (e) {
                     globals.pattern.loadSVG(e.target.result);
                 }
             }(file);
             reader.readAsDataURL(file);
+        } else if (extension == "fold"){
+            reader.onload = function () {
+                return function (e) {
+                    if (!reader.result) return;
+                    parseFoldJSON(JSON.parse(reader.result));
+                }
+            }(file);
+            reader.readAsText(file);
         } else {
             console.warn("unknown extension: " + extension);
             return null;
@@ -143,11 +151,94 @@ function initControls(globals){
 
     });
 
+    function parseFoldJSON(json){
+        _.each(json.vertices_coords, function(vertex, i){
+            json.vertices_coords[i] = new THREE.Vector3(vertex[0], vertex[1], vertex[2]);
+        });
+        var faceEdges = [];
+        _.each(json.faces_vertices, function(face){
+            var thisFaceEdge = [];
+            for (var i=0;i<face.length;i++){
+                thisFaceEdge.push(null);
+            }
+            for (var i=0;i<json.edges_vertices.length;i++){
+                var index1 = face.indexOf(json.edges_vertices[i][0]);
+                if (index1 >= 0){
+                    var index2 = face.indexOf(json.edges_vertices[i][1]);
+                    if (index2 >= 0){
+                        for (var j=0;j<face.length;j++){
+                            var nextJ = j+1;
+                            if (nextJ == face.length) nextJ = 0;
+                            if ((index1==j && index2 ==nextJ) || (index1==nextJ && index2 ==j)) thisFaceEdge[j] = i;
+                        }
+                    }
+                }
+            }
+            faceEdges.push(thisFaceEdge);
+            face.push(face[0]);
+        });
+        var faces = globals.pattern.triangulatePolys([json.faces_vertices, faceEdges], json.edges_vertices, json.vertices_coords, true);
+        var allCreaseParams = [];
+        for (var i=0;i<json.edges_vertices.length;i++){
+            var v1 = json.edges_vertices[i][0];
+            var v2 = json.edges_vertices[i][1];
+            var creaseParams = [];
+            for (var j=0;j<faces.length;j++){
+                var face = faces[j];
+                var faceVerts = [face.a, face.b, face.c];
+                var v1Index = faceVerts.indexOf(v1);
+                if (v1Index>=0){
+                    var v2Index = faceVerts.indexOf(v2);
+                    if (v2Index>=0){
+                        creaseParams.push(j);
+                        if (v2Index>v1Index) {//remove larger index first
+                            faceVerts.splice(v2Index, 1);
+                            faceVerts.splice(v1Index, 1);
+                        } else {
+                            faceVerts.splice(v1Index, 1);
+                            faceVerts.splice(v2Index, 1);
+                        }
+                        creaseParams.push(faceVerts[0]);
+                        if (creaseParams.length == 4) {
+
+                            if (v2Index-v1Index == 1 || v2Index-v1Index == -2) {
+                                creaseParams = [creaseParams[2], creaseParams[3], creaseParams[0], creaseParams[1]];
+                            }
+
+                            creaseParams.push(i);
+                            var shouldSkip = false;
+
+                            switch (json.edges_assignment[i]){
+                                case "B":
+                                    //outline
+                                    shouldSkip = true;
+                                    break;
+                                case "M":
+                                    creaseParams.push(Math.PI);
+                                    break;
+                                case "V":
+                                    creaseParams.push(-Math.PI);
+                                    break;
+                                default:
+                                    creaseParams.push(0);
+                                    break;
+                            }
+                            if (!shouldSkip) allCreaseParams.push(creaseParams);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        globals.model.buildModel(faces, json.vertices_coords, json.edges_vertices, allCreaseParams);
+    }
+
     function parseTXTjson(json){
 
         _.each(json.faceNodeIndices, function(face, i){
             json.faceNodeIndices[i] = new THREE.Face3(face[0], face[1], face[2]);
         });
+
         var faces = json.faceNodeIndices;
         var allCreaseParams = [];
 
