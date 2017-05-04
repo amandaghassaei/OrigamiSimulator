@@ -23,7 +23,7 @@ function initModel(globals){
 
     function setMeshMaterial() {
         if (globals.colorMode == "normal") {
-            material = new THREE.MeshNormalMaterial({side: THREE.DoubleSide});
+            material = new THREE.MeshNormalMaterial({shading:THREE.FlatShading, side: THREE.DoubleSide});
             object3D2.visible = false;
         } else if (globals.colorMode == "axialStrain"){
             material = new THREE.MeshBasicMaterial({vertexColors: THREE.VertexColors, side:THREE.DoubleSide});
