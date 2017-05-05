@@ -302,6 +302,10 @@ function initModel(globals){
         geometry.computeBoundingSphere();
         geometry.center();
 
+        var scale = 100/geometry.boundingSphere.radius;
+        globals.scale = scale;
+        globals.threeView.setScale(scale);
+
         object3D.geometry.dispose();
         object3D.geometry = geometry;
         object3D2.geometry = geometry;

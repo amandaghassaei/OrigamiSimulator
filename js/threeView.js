@@ -49,11 +49,11 @@ function initThreeView(globals) {
         //scene.fog = new THREE.FogExp2(0xf4f4f4, 1.7);
         //renderer.setClearColor(scene.fog.color);
 
-        camera.zoom = 1;
+        camera.zoom = 5;
         camera.updateProjectionMatrix();
-        camera.position.x = 4000;
-        camera.position.y = 4000;
-        camera.position.z = 4000;
+        camera.position.x = 200;
+        camera.position.y = 200;
+        camera.position.z = 200;
 
         controls = new THREE.OrthographicTrackballControls(camera, renderer.domElement);
         controls.rotateSpeed = 1.5;
@@ -153,6 +153,10 @@ function initThreeView(globals) {
         modelWrapper.children = [];
     }
 
+    function setScale(scale){
+        modelWrapper.scale.set(scale, scale, scale);
+    }
+
     function onWindowResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.left = -window.innerWidth / 2;
@@ -192,6 +196,7 @@ function initThreeView(globals) {
         enableControls: enableControls,
         scene: scene,
         camera: camera,
-        running: running
+        running: running,
+        setScale:setScale
     }
 }
