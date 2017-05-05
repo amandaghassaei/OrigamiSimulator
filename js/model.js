@@ -24,14 +24,34 @@ function initModel(globals){
 
     function setMeshMaterial() {
         if (globals.colorMode == "normal") {
-            material = new THREE.MeshNormalMaterial({shading:THREE.FlatShading, side: THREE.DoubleSide});
+            material = new THREE.MeshNormalMaterial({
+                shading:THREE.FlatShading, side: THREE.DoubleSide,
+                polygonOffset: true,
+                polygonOffsetFactor: 1, // positive value pushes polygon further away
+                polygonOffsetUnits: 1
+            });
             object3D2.visible = false;
         } else if (globals.colorMode == "axialStrain"){
-            material = new THREE.MeshBasicMaterial({vertexColors: THREE.VertexColors, side:THREE.DoubleSide});
+            material = new THREE.MeshBasicMaterial({
+                vertexColors: THREE.VertexColors, side:THREE.DoubleSide,
+                polygonOffset: true,
+                polygonOffsetFactor: 1, // positive value pushes polygon further away
+                polygonOffsetUnits: 1
+            });
             object3D2.visible = false;
         } else {
-            material = new THREE.MeshPhongMaterial({shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide});
-            material2 = new THREE.MeshPhongMaterial({shading:THREE.FlatShading, color:0x0000ff, side:THREE.BackSide});
+            material = new THREE.MeshPhongMaterial({
+                shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide,
+                polygonOffset: true,
+                polygonOffsetFactor: 1, // positive value pushes polygon further away
+                polygonOffsetUnits: 1
+            });
+            material2 = new THREE.MeshPhongMaterial({
+                shading:THREE.FlatShading, color:0x0000ff, side:THREE.BackSide,
+                polygonOffset: true,
+                polygonOffsetFactor: 1, // positive value pushes polygon further away
+                polygonOffsetUnits: 1
+            });
             material.color.setStyle( "#" + globals.color1);
             material2.color.setStyle( "#" + globals.color2);
             object3D2.visible = true;
