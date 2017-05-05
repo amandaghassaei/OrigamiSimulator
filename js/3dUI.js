@@ -14,6 +14,10 @@ function init3DUI(globals) {
     var mouseDown = false;
     var highlightedObj;
 
+    var highlighter1 = new Node(new THREE.Vector3());
+    highlighter1.setTransparent();
+    globals.threeView.scene.add(highlighter1.getObject3D());
+
     $(document).dblclick(function() {
     });
 
@@ -61,6 +65,11 @@ function init3DUI(globals) {
             highlightedObj.moveManually(intersection);
             globals.nodePositionHasChanged = true;
         }
+
+        if (highlightedObj){
+            var position = highlightedObj.getPosition();
+            highlighter1.getObject3D().position.set(position.x, position.y, position.z);
+        }
     }
 
     function getIntersectionWithObjectPlane(position){
@@ -75,9 +84,13 @@ function init3DUI(globals) {
     function setHighlightedObj(object){
         if (highlightedObj && (object != highlightedObj)) {
             highlightedObj.unhighlight();
+            highlighter1.getObject3D().visible = false;
         }
         highlightedObj = object;
-        if (highlightedObj) highlightedObj.highlight();
+        if (highlightedObj) {
+            highlightedObj.highlight();
+            highlighter1.getObject3D().visible = true;
+        }
     }
 
     function checkForIntersections(e, objects){

@@ -5,7 +5,8 @@
 var nodeMaterial = new THREE.MeshBasicMaterial({color: 0x000000, side:THREE.DoubleSide});
 var nodeMaterialFixed = new THREE.MeshBasicMaterial({color: 0x000000, side:THREE.DoubleSide});
 var nodeMaterialHighlight = new THREE.MeshBasicMaterial({color: 0xffffff, side:THREE.DoubleSide});
-var nodeGeo = new THREE.SphereGeometry(1,20);
+var transparentMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, side:THREE.DoubleSide, opacity:0.5, transparent:true});
+var nodeGeo = new THREE.SphereGeometry(3,20);
 nodeGeo.rotateX(Math.PI/2);
 var nodeFixedGeo = new THREE.CubeGeometry(1, 1, 1);
 nodeFixedGeo.applyMatrix( new THREE.Matrix4().makeTranslation(0, 0.25, 0) );
@@ -142,6 +143,10 @@ Node.prototype.unhighlight = function(){
     else {
         this.object3D.material = nodeMaterial;
     }
+};
+
+Node.prototype.setTransparent = function(){
+    this.object3D.material = transparentMaterial;
 };
 
 Node.prototype.hide = function(){
