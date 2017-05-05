@@ -62,7 +62,7 @@ function initThreeView(globals) {
         controls.staticMoving = true;
         controls.dynamicDampingFactor = 0.3;
 
-           var renderPass = new THREE.RenderPass( scene, camera );
+        var renderPass = new THREE.RenderPass( scene, camera );
 
         // Setup depth pass
         depthMaterial = new THREE.MeshDepthMaterial();
