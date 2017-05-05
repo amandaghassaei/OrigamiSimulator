@@ -316,7 +316,7 @@ function initModel(globals){
             positions[i] *= scale;
         }
         for (var i=0;i<vertices.length;i++){
-            vertices[i].multiplyScalar(scale, scale, scale);
+            vertices[i].multiplyScalar(scale);
         }
 
         //update vertices
