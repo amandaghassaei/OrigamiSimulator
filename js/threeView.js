@@ -49,7 +49,7 @@ function initThreeView(globals) {
         //scene.fog = new THREE.FogExp2(0xf4f4f4, 1.7);
         //renderer.setClearColor(scene.fog.color);
 
-        camera.zoom = 1;
+        camera.zoom = 15;
         camera.updateProjectionMatrix();
         camera.position.x = 4000;
         camera.position.y = 4000;
