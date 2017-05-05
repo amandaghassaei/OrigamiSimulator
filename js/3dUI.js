@@ -38,6 +38,8 @@ function init3DUI(globals) {
             isDragging = true;
         }
 
+        if (!globals.userInteractionEnabled) return;
+
         e.preventDefault();
         mouse.x = (e.clientX/window.innerWidth)*2-1;
         mouse.y = - (e.clientY/window.innerHeight)*2+1;

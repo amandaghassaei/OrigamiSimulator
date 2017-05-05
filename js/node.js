@@ -135,6 +135,7 @@ Node.prototype.highlight = function(){
 };
 
 Node.prototype.unhighlight = function(){
+    if (!this.object3D) return;
     if (this.fixed) {
         this.object3D.material = nodeMaterialFixed;
     }

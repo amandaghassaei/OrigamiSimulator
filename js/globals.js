@@ -53,7 +53,9 @@ function initGlobals(){
         filename: null,
         extension: null,
         doublesidedSTL: false,
-        scale: 1
+        scale: 1,
+
+        userInteractionEnabled: false
 
     };
 

@@ -439,6 +439,10 @@ function initControls(globals){
         globals.strainClip = val;
     }, 0.0001, 100);
 
+    setCheckbox($("#userInteractionEnabled"), globals.userInteractionEnabled, function(val){
+        globals.userInteractionEnabled = val;
+    });
+
     function setButtonGroup(id, callback){
         $(id+" a").click(function(e){
             e.preventDefault();
