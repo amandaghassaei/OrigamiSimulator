@@ -284,23 +284,51 @@ function initPattern(globals){
         var polygonEdges = polygonData[1];
         var faces = [];
         for (var i=0;i<polygons.length;i++){
+
+            var polygon = polygons[i];
+
+            if (polygon.length == 4){
+                faces.push([polygon[0], polygon[1], polygon[2]]);
+                continue;
+            }
+
+            //check for quad and solve manually
+            if (polygon.length == 5){
+                var polyVert1 = _vertices[polygon[0]];
+                var polyVert2 = _vertices[polygon[1]];
+                var polyVert3 = _vertices[polygon[2]];
+                var polyVert4 = _vertices[polygon[3]];
+                var dist1 = (polyVert1.clone().sub(polyVert3)).lengthSq();
+                var dist2 = (polyVert2.clone().sub(polyVert4)).lengthSq();
+                if (dist2<dist1) {
+                    allEdges.push([polygon[1], polygon[3]]);
+                    faces.push([polygon[0], polygon[1], polygon[3]]);
+                    faces.push([polygon[1], polygon[2], polygon[3]]);
+                } else {
+                    allEdges.push([polygon[0], polygon[2]]);
+                    faces.push([polygon[0], polygon[1], polygon[2]]);
+                    faces.push([polygon[0], polygon[2], polygon[3]]);
+                }
+                continue;
+            }
+
             var polyVerts = [];
             if (shouldRotateFace){
-                var vecA = _vertices[polygons[i][1]].clone().sub(_vertices[polygons[i][0]]);
-                var vecB = _vertices[polygons[i][polygons[i].length-2]].clone().sub(_vertices[polygons[i][0]]);
-                var translation = _vertices[polygons[i][0]];
+                var vecA = _vertices[polygon[1]].clone().sub(_vertices[polygon[0]]);
+                var vecB = _vertices[polygon[polygon.length-2]].clone().sub(_vertices[polygon[0]]);
+                var translation = _vertices[polygon[0]];
                 var normal = (vecA.cross(vecB)).normalize();
                 var axis = ((new THREE.Vector3(0,1,0)).cross(normal)).normalize();
                 var angle = -Math.acos((new THREE.Vector3(0,1,0)).dot(normal));
-                for (var j=1;j<polygons[i].length;j++){
-                    var vertex = _vertices[polygons[i][j]];
+                for (var j=1;j<polygon.length;j++){
+                    var vertex = _vertices[polygon[j]];
                     vertex = (vertex.clone().sub(translation)).applyAxisAngle(axis, angle);
                     polyVerts.push(vertex.x);
                     polyVerts.push(vertex.z);
                 }
             } else {
-                for (var j=1;j<polygons[i].length;j++){
-                    var vertex = _vertices[polygons[i][j]];
+                for (var j=1;j<polygon.length;j++){
+                    var vertex = _vertices[polygon[j]];
                     polyVerts.push(vertex.x);
                     polyVerts.push(vertex.z);
                 }
@@ -308,7 +336,7 @@ function initPattern(globals){
 
             var triangles = earcut(polyVerts);
             for (var j=0;j<triangles.length;j+=3){
-                var face = [polygons[i][triangles[j+2]], polygons[i][triangles[j+1]], polygons[i][triangles[j]]];
+                var face = [polygon[triangles[j+2]], polygon[triangles[j+1]], polygon[triangles[j]]];
                 var foundEdges = [false, false, false];//ab, bc, ca
 
                 for (var k=0;k<polygonEdges[i].length;k++){
