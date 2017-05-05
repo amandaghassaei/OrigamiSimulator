@@ -61,6 +61,7 @@ function initThreeView(globals) {
         controls.noPan = true;
         controls.staticMoving = true;
         controls.dynamicDampingFactor = 0.3;
+        controls.addEventListener("change", render);
 
         var renderPass = new THREE.RenderPass( scene, camera );
 
@@ -90,9 +91,9 @@ function initThreeView(globals) {
     }
 
     function render() {
-        // if (!animationRunning) {
-        //     _render();
-        // }
+        if (!animationRunning) {
+            _render();
+        }
     }
 
     function startAnimation(callback){
@@ -111,6 +112,10 @@ function initThreeView(globals) {
 
     function pauseAnimation(){
         if (animationRunning) pauseFlag = true;
+    }
+
+    function running(){
+        return animationRunning;
     }
 
     function _render(){
@@ -186,6 +191,7 @@ function initThreeView(globals) {
         pauseAnimation: pauseAnimation,
         enableControls: enableControls,
         scene: scene,
-        camera: camera
+        camera: camera,
+        running: running
     }
 }

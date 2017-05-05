@@ -126,6 +126,32 @@ function initModel(globals){
         startSolver();
     }
 
+    function reset(){
+        if (globals.simType == "dynamic"){
+            globals.dynamicSolver.reset();
+        } else {
+            globals.staticSolver.reset();
+        }
+        setGeoUpdates();
+        globals.threeView.render();
+    }
+
+    function step(numSteps){
+        if (globals.simType == "dynamic"){
+            globals.dynamicSolver.solve(numSteps);
+        } else {
+            globals.staticSolver.step(numSteps);
+        }
+        setGeoUpdates();
+        globals.threeView.render();
+    }
+
+    function setGeoUpdates(){
+        geometry.attributes.position.needsUpdate = true;
+        if (globals.colorMode == "axialStrain") geometry.attributes.color.needsUpdate = true;
+        geometry.computeVertexNormals();
+    }
+
     var inited = false;
     startSolver();
 
@@ -138,9 +164,7 @@ function initModel(globals){
                 console.log("static");
             }
             geometry.attributes.position.needsUpdate = true;
-            if (globals.colorMode == "axialStrain") geometry.attributes.color.needsUpdate = true;
-            geometry.computeVertexNormals();
-            // geometry.computeFlatVertexNormals();
+            setGeoUpdates();
         });
     }
 
@@ -287,6 +311,8 @@ function initModel(globals){
     return {
         pause: pause,
         resume: resume,
+        reset: reset,
+        step: step,
         getNodes: getNodes,
         getEdges: getEdges,
         getFaces: getFaces,

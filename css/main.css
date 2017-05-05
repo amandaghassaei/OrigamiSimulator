@@ -309,3 +309,13 @@ svg{
 #aboutStiffness{
     line-height: 28px;
 }
+
+#start, #stepForwardOptions{
+    display: none;
+}
+#reset{
+    margin-left: 20px;
+}
+#stepForward{
+    margin-left: 13px;
+}

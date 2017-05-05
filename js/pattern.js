@@ -174,7 +174,6 @@ function initPattern(globals){
     }
 
     function getFacesAndVerticesForEdges(faces, allEdges){
-        //todo merge this
         var allCreaseParams = [];//face1Ind, vertInd, face2Ind, ver2Ind, edgeInd, angle
         for (var i=outlines.length;i<allEdges.length;i++){
             if (i>=outlines.length+mountains.length+valleys.length &&

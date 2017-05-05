@@ -61,6 +61,7 @@ function initDynamicSolver(globals){
         globals.gpuMath.step("zeroTexture", [], "u_lastPosition");
         globals.gpuMath.step("zeroTexture", [], "u_velocity");
         globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
+        render();
         //todo zero thetas
         // for (var i=0;i<creases.length;i++){
         //     lastTheta[i*4] = 0;
@@ -68,10 +69,9 @@ function initDynamicSolver(globals){
         // }
     }
 
-    function solve(){
+    function solve(_numSteps){
         if (globals.shouldSyncWithModel){
             syncNodesAndEdges();
-            // reset();
             globals.shouldSyncWithModel = false;
         } else {
             if (globals.forceHasChanged) {
@@ -94,17 +94,14 @@ function initDynamicSolver(globals){
                 updateMaterials();
                 globals.materialHasChanged = false;
             }
-            if (globals.shouldResetDynamicSim) {
-                reset();
-                globals.shouldResetDynamicSim = false;
-            }
             if (globals.shouldChangeCreasePercent) {
                 setCreasePercent(globals.creasePercent);
                 globals.shouldChangeCreasePercent = false;
             }
         }
 
-        for (var j=0;j<steps;j++){
+        if (_numSteps == undefined) _numSteps = steps;
+        for (var j=0;j<_numSteps;j++){
             solveStep();
         }
         render();
@@ -200,6 +197,7 @@ function initDynamicSolver(globals){
 
     function setSolveParams(){
         var dt = calcDt()/10;//todo factor of ten?
+        $("#deltaT").html(dt);
         var numSteps = 0.5/dt;
         globals.gpuMath.setProgram("thetaCalc");
         globals.gpuMath.setUniformForProgram("thetaCalc", "u_dt", dt, "1f");
@@ -494,6 +492,7 @@ function initDynamicSolver(globals){
     return {
         syncNodesAndEdges: syncNodesAndEdges,
         updateFixed: updateFixed,
-        solve: solve
+        solve: solve,
+        reset: reset
     }
 }

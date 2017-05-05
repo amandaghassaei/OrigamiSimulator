@@ -460,8 +460,18 @@
     <div class="indent">
         <label>Average node error: <span id="globalError"></span></label>
         <a class="about floatRight" href="#" id="aboutError"><span class="fui-question-circle"></span></a>
+    </div><br/>
+    <b>Animation Settings:</b><br/>
+    <span class="floatRight">&Delta; t = <span id="deltaT"></span> seconds</span><br/><br/>
+    <a href="#" id="reset" class="btn btn-lg btn-default">Reset</a>
+    <a href="#" id="start" class="btn btn-lg btn-success">Start Simulation</a>
+    <a href="#" id="pause" class="btn btn-lg btn-warning">Pause Simulation</a>
+    <br/><br/>
+    <div id="stepForwardOptions" class="floatRight">
+        Num Steps: &nbsp;&nbsp;<input id="numSteps" value="100" placeholder="" class="form-control" type="text">
+        <a href="#" id="stepForward" class="btn btn-lg btn-default">Step Forward</a>
     </div>
-
+    <br/><br/>
     <div class="extraSpace"></div>
 </div>
 <div id="svgViewer"></div>

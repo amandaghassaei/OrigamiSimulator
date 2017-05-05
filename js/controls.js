@@ -409,6 +409,32 @@ function initControls(globals){
         $("#aboutAxialStrainModal").modal("show");
     });
 
+    setLink("#start", function(){
+        $("#pause").show();
+        $("#reset").show();
+        $("#start").hide();
+        $("#stepForwardOptions").hide();
+        globals.model.resume();
+    });
+    setLink("#pause", function(){
+        $("#start").show();
+        $("#stepForwardOptions").show();
+        $("#pause").hide();
+        globals.model.pause();
+    });
+    setLink("#reset", function(){
+        if (!globals.threeView.running()) $("#reset").hide();
+        globals.model.reset();
+    });
+    setLink("#stepForward", function(){
+        var numSteps = $("#numSteps").val();
+        numSteps = parseInt(numSteps);
+        if (isNaN(numSteps)) return;
+        if (numSteps<=0) return;
+        $("#numSteps").val(numSteps);
+        globals.model.step(numSteps);
+    });
+
     setInput("#strainClip", globals.strainClip, function(val){
         globals.strainClip = val;
     }, 0.0001, 100);

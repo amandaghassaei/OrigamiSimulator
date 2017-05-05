@@ -52,7 +52,8 @@ function initGlobals(){
         //save stl settings
         filename: null,
         extension: null,
-        doublesidedSTL: false
+        doublesidedSTL: false,
+        scale: 1
 
     };
 
