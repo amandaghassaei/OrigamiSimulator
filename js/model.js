@@ -226,7 +226,6 @@ function initModel(globals){
         for (var i=0;i<nodes.length;i++){
             vertices.push(nodes[i].getPosition());
         }
-        console.log(vertices.length);
 
         positions = new Float32Array(vertices.length*3);
         colors = new Float32Array(vertices.length*3);
@@ -247,16 +246,21 @@ function initModel(globals){
             indices[3*i+2] = face[2];
         }
 
+        geometry = new THREE.BufferGeometry();
+        geometry.dynamic = true;
+
         geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
         geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
-        geometry.attributes.position.needsUpdate = true;
-        geometry.attributes.color.needsUpdate = true;
         geometry.setIndex(new THREE.BufferAttribute(indices, 1));
 
         geometry.computeVertexNormals();
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
         geometry.center();
+
+        object3D.geometry.dispose();
+        object3D.geometry = geometry;
+        object3D2.geometry = geometry;
 
         //update vertices
         for (var i=0;i<vertices.length;i++){
