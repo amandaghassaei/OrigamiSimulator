@@ -277,9 +277,6 @@ function initModel(globals){
             positions[3*i] = vertices[i].x;
             positions[3*i+1] = vertices[i].y;
             positions[3*i+2] = vertices[i].z;
-            colors[3*i] = 1;
-            colors[3*i+1] = 0;
-            colors[3*i+2] = 1;
         }
         for (var i=0;i<faces.length;i++){
             var face = faces[i];

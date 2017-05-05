@@ -45,9 +45,11 @@ function initThreeView(globals) {
         directionalLight5.position.set(0, 30, -100);
         scene.add(directionalLight5);
         var ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
-        scene.add(ambientLight);
+        // scene.add(ambientLight);
         //scene.fog = new THREE.FogExp2(0xf4f4f4, 1.7);
         //renderer.setClearColor(scene.fog.color);
+
+        scene.add(camera);
 
         camera.zoom = 5;
         camera.updateProjectionMatrix();
