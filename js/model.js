@@ -147,21 +147,13 @@ function initModel(globals){
     }
 
     function reset(){
-        if (globals.simType == "dynamic"){
-            globals.dynamicSolver.reset();
-        } else {
-            globals.staticSolver.reset();
-        }
+        getSolver().reset();
         setGeoUpdates();
         globals.threeView.render();
     }
 
     function step(numSteps){
-        if (globals.simType == "dynamic"){
-            globals.dynamicSolver.solve(numSteps);
-        } else {
-            globals.staticSolver.step(numSteps);
-        }
+        getSolver().solve(numSteps);
         setGeoUpdates();
         globals.threeView.render();
     }
@@ -178,11 +170,7 @@ function initModel(globals){
     function startSolver(){
         globals.threeView.startAnimation(function(){
             if (!inited) return;
-            if (globals.simType == "dynamic"){
-                globals.dynamicSolver.solve();
-            } else {
-                console.log("static");
-            }
+            getSolver().solve();
             geometry.attributes.position.needsUpdate = true;
             setGeoUpdates();
         });
@@ -263,6 +251,16 @@ function initModel(globals){
             $("#svgViewer").hide();
             globals.navMode = "simulation";
         }
+
+        if (!globals.threeView.running()) {
+            getSolver().syncNodesAndEdges();
+            sync();
+        }
+    }
+
+    function getSolver(){
+        if (globals.simType == "dynamic") return globals.dynamicSolver;
+        return globals.staticSolver;
     }
 
     function sync(){
@@ -314,6 +312,8 @@ function initModel(globals){
         for (var i=0;i<vertices.length;i++){
             nodes[i].setOriginalPosition(positions[3*i], positions[3*i+1], positions[3*i+2]);
         }
+
+        if (!globals.threeView.running()) reset();
     }
 
     function getNodes(){

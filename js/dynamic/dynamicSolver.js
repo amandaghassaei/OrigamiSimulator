@@ -62,11 +62,6 @@ function initDynamicSolver(globals){
         globals.gpuMath.step("zeroTexture", [], "u_velocity");
         globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
         render();
-        //todo zero thetas
-        // for (var i=0;i<creases.length;i++){
-        //     lastTheta[i*4] = 0;
-        //     lastTheta[i*4+1] = 0;
-        // }
     }
 
     function solve(_numSteps){
