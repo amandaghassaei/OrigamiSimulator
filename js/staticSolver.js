@@ -57,6 +57,11 @@ function initStaticSolver(){
         });
     }
 
+    function solve(){
+    }
+    function reset(){
+    }
+
     function solveStep(){
         console.log("static solve");
         if (fixedIndicesMapping.length == 0){//no boundary conditions
@@ -256,6 +261,8 @@ function initStaticSolver(){
 
 
     return {
-        syncNodesAndEdges: syncNodesAndEdges
+        syncNodesAndEdges: syncNodesAndEdges,
+        solve:solve,
+        reset:reset
     }
 }
