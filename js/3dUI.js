@@ -13,8 +13,7 @@ function init3DUI(globals) {
     var draggingNodeFixed = false;
     var mouseDown = false;
     var highlightedObj;
-    
-    
+
     $(document).dblclick(function() {
     });
 
@@ -71,19 +70,9 @@ function init3DUI(globals) {
         return intersection;
     }
 
-    // function getPointOfIntersectionWithObject(object){
-    //     var intersections = raycaster.intersectObjects([object], false);
-    //     if (intersections.length > 0) {
-    //         return intersections[0].point;
-    //     }
-    //     console.warn("no intersection found");
-    //     return null;
-    // }
-
     function setHighlightedObj(object){
         if (highlightedObj && (object != highlightedObj)) {
             highlightedObj.unhighlight();
-            // globals.controls.hideMoreInfo();
         }
         highlightedObj = object;
         if (highlightedObj) highlightedObj.highlight();

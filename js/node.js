@@ -72,21 +72,6 @@ Node.prototype.getExternalForce = function(){
     return this.externalForce.getForce();
 };
 
-Node.prototype.getLocalLength = function(){
-    var length = 0;
-    _.each(this.beams, function(beam){
-        length += beam.getLength(true)/2;
-    });
-    return length;
-};
-
-
-Node.prototype.getMass = function(){
-    return globals.density*this.getLocalLength();
-};
-
-
-
 Node.prototype.addCrease = function(crease){
     this.creases.push(crease);
 };
@@ -143,10 +128,6 @@ Node.prototype.getIndex = function(){//in nodes array
 
 Node.prototype.getObject3D = function(){
     return this.object3D;
-};
-
-Node.prototype.setDeleteMode = function(){
-    this.object3D.material = nodeMaterialDelete;
 };
 
 Node.prototype.highlight = function(){

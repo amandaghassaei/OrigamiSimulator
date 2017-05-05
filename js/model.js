@@ -307,11 +307,17 @@ function initModel(globals){
 
         var scale = 100/geometry.boundingSphere.radius;
         globals.scale = scale;
-        globals.threeView.setScale(scale);
 
         object3D.geometry.dispose();
         object3D.geometry = geometry;
         object3D2.geometry = geometry;
+
+        for (var i=0;i<positions.length;i++){
+            positions[i] *= scale;
+        }
+        for (var i=0;i<vertices.length;i++){
+            vertices[i].multiplyScalar(scale, scale, scale);
+        }
 
         //update vertices
         for (var i=0;i<vertices.length;i++){
