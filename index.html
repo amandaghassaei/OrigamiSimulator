@@ -167,7 +167,7 @@
                 vec3 deltaP = neighborLastPosition-lastPosition+nominalDist;
                 float deltaPLength = length(deltaP);
                 deltaP -= deltaP*(beamMeta[2]/deltaPLength);
-                nodeError += deltaPLength/length(nominalDist);
+                nodeError += abs(deltaPLength/length(nominalDist) - 1.0);
                 vec3 deltaV = neighborLastVelocity-lastVelocity;
 
                 vec3 _force = deltaP*beamMeta[0] + deltaV*beamMeta[1];
