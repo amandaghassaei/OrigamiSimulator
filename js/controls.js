@@ -441,6 +441,7 @@ function initControls(globals){
 
     setCheckbox($("#userInteractionEnabled"), globals.userInteractionEnabled, function(val){
         globals.userInteractionEnabled = val;
+        if (!val) globals.UI3D.hideHighlighters();
     });
 
     function setButtonGroup(id, callback){

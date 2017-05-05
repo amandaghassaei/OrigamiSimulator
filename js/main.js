@@ -11,7 +11,7 @@ $(function() {
     }, false);
 
     globals = initGlobals();
-    init3DUI(globals);
+    globals.UI3D = init3DUI(globals);
     globals.model = initModel(globals);
     globals.staticSolver = initStaticSolver(globals);
     globals.dynamicSolver = initDynamicSolver(globals);

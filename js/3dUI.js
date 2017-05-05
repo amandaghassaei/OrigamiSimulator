@@ -119,8 +119,16 @@ function init3DUI(globals) {
         }
         return _highlightedObj;
     }
-    
+
+    function hideHighlighters(){
+        highlighter1.getObject3D().visible = false;
+        // highlighter2.getObject3D().visible = false;
+    }
     
     // globals.threeView.sceneAdd(raycasterPlane);
+
+    return {
+        hideHighlighters: hideHighlighters
+    }
 
 }
