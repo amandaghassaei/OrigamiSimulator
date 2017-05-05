@@ -219,6 +219,7 @@ function initControls(globals){
             faceEdges.push(thisFaceEdge);
             face.push(face[0]);
         });
+        //todo merge this with other code
         var faces = globals.pattern.triangulatePolys([json.faces_vertices, faceEdges], json.edges_vertices, json.vertices_coords, true);
         var allCreaseParams = [];
         for (var i=0;i<json.edges_vertices.length;i++){
@@ -250,16 +251,34 @@ function initControls(globals){
                             creaseParams.push(i);
                             var shouldSkip = false;
 
+                            var foldSign = 1;
                             switch (json.edges_assignment[i]){
                                 case "B":
                                     //outline
                                     shouldSkip = true;
                                     break;
-                                case "M":
-                                    creaseParams.push(Math.PI);
-                                    break;
                                 case "V":
-                                    creaseParams.push(-Math.PI);
+                                    foldSign = -1;
+                                case "M":
+                                    if (json.edges_foldAngles && json.edges_foldAngles[i]){
+                                        creaseParams.push(foldSign*json.edges_foldAngles[i]);
+                                        break;
+                                    }
+                                    if (globals.foldUseAngles){
+                                        var face1 = faces[creaseParams[0]];
+                                        var vec1 = json.vertices_coords[face1[1]].clone().sub(json.vertices_coords[face1[0]]);
+                                        var vec2 = json.vertices_coords[face1[2]].clone().sub(json.vertices_coords[face1[0]]);
+                                        var normal1 = (vec2.cross(vec1)).normalize();
+                                        var face2 = faces[creaseParams[2]];
+                                        vec1 = json.vertices_coords[face2[1]].clone().sub(json.vertices_coords[face2[0]]);
+                                        vec2 = json.vertices_coords[face2[2]].clone().sub(json.vertices_coords[face2[0]]);
+                                        var normal2 = (vec2.cross(vec1)).normalize();
+                                        var x = normal1.dot(normal2);
+                                        var y = normal1.cross((json.vertices_coords[v2].clone().sub(json.vertices_coords[v1])).normalize()).dot(normal2);
+                                        creaseParams.push(Math.atan2(y, x));
+                                        break;
+                                    }
+                                    creaseParams.push(foldSign*Math.PI);
                                     break;
                                 default:
                                     creaseParams.push(0);
