@@ -3,7 +3,7 @@
  */
 
 
-function init3DUI(_globals) {
+function init3DUI(globals) {
 
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
@@ -26,8 +26,8 @@ function init3DUI(_globals) {
         if (draggingNode){
             draggingNode.setFixed(draggingNodeFixed);
             draggingNode = null;
-            _globals.fixedHasChanged = true;
-            _globals.threeView.enableControls(true);
+            globals.fixedHasChanged = true;
+            globals.threeView.enableControls(true);
             setHighlightedObj(null);
         }
         mouseDown = false;
@@ -42,35 +42,28 @@ function init3DUI(_globals) {
         e.preventDefault();
         mouse.x = (e.clientX/window.innerWidth)*2-1;
         mouse.y = - (e.clientY/window.innerHeight)*2+1;
-        raycaster.setFromCamera(mouse, _globals.threeView.camera);
+        raycaster.setFromCamera(mouse, globals.threeView.camera);
 
         var _highlightedObj = null;
         if (!isDragging) {
-            
-            var objsToIntersect = [];
-            //todo fix this
-            // objsToIntersect = objsToIntersect.concat(_globals.model.getObjectsToIntersect());
-            _highlightedObj = checkForIntersections(e, objsToIntersect);
-
-
+            _highlightedObj = checkForIntersections(e, globals.model.getMesh());
             setHighlightedObj(_highlightedObj);
         }  else if (isDragging && highlightedObj){
             if (!draggingNode) {
                 draggingNode = highlightedObj;
                 draggingNodeFixed = draggingNode.isFixed();
                 draggingNode.setFixed(true);
-                _globals.fixedHasChanged = true;
-                _globals.threeView.enableControls(false);
+                globals.fixedHasChanged = true;
+                globals.threeView.enableControls(false);
             }
             var intersection = getIntersectionWithObjectPlane(highlightedObj.getPosition().clone());
-            intersection.sub(_globals.threeView.getModelOffset());
             highlightedObj.moveManually(intersection);
-            _globals.nodePositionHasChanged = true;
+            globals.nodePositionHasChanged = true;
         }
     }
 
     function getIntersectionWithObjectPlane(position){
-        var cameraOrientation = _globals.threeView.camera.getWorldDirection();
+        var cameraOrientation = globals.threeView.camera.getWorldDirection();
         var dist = position.dot(cameraOrientation);
         raycasterPlane.set(cameraOrientation, -dist);
         var intersection = new THREE.Vector3();
@@ -90,7 +83,7 @@ function init3DUI(_globals) {
     function setHighlightedObj(object){
         if (highlightedObj && (object != highlightedObj)) {
             highlightedObj.unhighlight();
-            // _globals.controls.hideMoreInfo();
+            // globals.controls.hideMoreInfo();
         }
         highlightedObj = object;
         if (highlightedObj) highlightedObj.highlight();
@@ -98,23 +91,32 @@ function init3DUI(_globals) {
 
     function checkForIntersections(e, objects){
         var _highlightedObj = null;
-        var intersections = raycaster.intersectObjects(objects, true);
-        if (intersections.length > 0) {
-            var objectFound = false;
-            _.each(intersections, function (thing) {
-                if (objectFound) return;
-                if (thing.object && thing.object._myNode){
-                    _highlightedObj = thing.object._myNode;
-                    if (!_highlightedObj.fixed) return;
-                    _highlightedObj.highlight();
-                    objectFound = true;
+        var intersections = raycaster.intersectObject(objects, true);
+        if (intersections.length>0){
+            var face = intersections[0].face;
+            var position = intersections[0].point;
+            var verticesArray = globals.model.getVertices();
+            var vertices = [];
+            vertices.push(verticesArray[face.a]);
+            vertices.push(verticesArray[face.b]);
+            vertices.push(verticesArray[face.c]);
+            var dist = vertices[0].clone().sub(position).lengthSq();
+            var nodeIndex = face.a;
+            for (var i=1;i<3;i++){
+                var _dist = (vertices[i].clone().sub(position)).lengthSq();
+                if (_dist<dist){
+                    dist = _dist;
+                    if (i==1) nodeIndex = face.b;
+                    else nodeIndex = face.c;
                 }
-            });
+            }
+            var nodesArray = globals.model.getNodes();
+            _highlightedObj = nodesArray[nodeIndex];
         }
         return _highlightedObj;
     }
     
     
-    // _globals.threeView.sceneAdd(raycasterPlane);
+    // globals.threeView.sceneAdd(raycasterPlane);
 
 }

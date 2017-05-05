@@ -21,6 +21,7 @@ function initModel(globals){
     var faces = [];
     var edges = [];
     var creases = [];
+    var vertices = [];
 
     function setMeshMaterial() {
         if (globals.colorMode == "normal") {
@@ -80,6 +81,13 @@ function initModel(globals){
 
     function getGeometry(){
         return geometry;
+    }
+
+    function getMesh(){
+        return object3D;
+    }
+    function getVertices(){
+        return vertices;
     }
 
     function getPositionsArray(){
@@ -264,7 +272,7 @@ function initModel(globals){
     }
 
     function sync(){
-        var vertices = [];
+        vertices = [];
         for (var i=0;i<nodes.length;i++){
             vertices.push(nodes[i].getPosition());
         }
@@ -345,6 +353,8 @@ function initModel(globals){
         getGeometry: getGeometry,//for save stl
         getPositionsArray: getPositionsArray,
         getColorsArray: getColorsArray,
-        sync: sync
+        sync: sync,
+        getMesh: getMesh,
+        getVertices: getVertices
     }
 }
