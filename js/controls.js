@@ -174,7 +174,15 @@ function initControls(globals){
                     }
                     globals.filename = name;
                     globals.extension = extension;
-                    parseFoldJSON(JSON.parse(reader.result));
+                    if (reader.result && reader.result.edges_foldAngles){
+                        parseFoldJSON(JSON.parse(reader.result));
+                        return;
+                    }
+                    $("#importFoldModal").modal("show");
+                    $('#importFoldModal').on('hidden.bs.modal', function () {
+                        parseFoldJSON(JSON.parse(reader.result));
+                    });
+
                 }
             }(file);
             reader.readAsText(file);
@@ -442,6 +450,10 @@ function initControls(globals){
     setCheckbox($("#userInteractionEnabled"), globals.userInteractionEnabled, function(val){
         globals.userInteractionEnabled = val;
         if (!val) globals.UI3D.hideHighlighters();
+    });
+
+    setCheckbox($("#foldUseAngles"), globals.foldUseAngles, function(val){
+        globals.foldUseAngles = val;
     });
 
     function setButtonGroup(id, callback){
