@@ -260,6 +260,10 @@ function initControls(globals){
         globals.foldUseAngles = val;
     });
 
+    setLink("#shouldCenterGeo", function(){
+        globals.shouldCenterGeo = true;
+    });
+
     function setButtonGroup(id, callback){
         $(id+" a").click(function(e){
             e.preventDefault();

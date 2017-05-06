@@ -32,6 +32,7 @@ function init3DUI(globals) {
             globals.fixedHasChanged = true;
             globals.threeView.enableControls(true);
             setHighlightedObj(null);
+            globals.shouldCenterGeo = true;
         }
         mouseDown = false;
     }, false);

@@ -81,6 +81,18 @@
             gl_FragColor = vec4(0.0);
         }
     </script>
+    <script id="centerTexture" type="x-shader/x-fragment">
+        precision mediump float;
+        uniform sampler2D u_lastPosition;
+        uniform vec2 u_textureDim;
+        uniform vec3 u_center;
+        void main(){
+            vec2 fragCoord = gl_FragCoord.xy;
+            vec2 scaledFragCoord = fragCoord/u_textureDim;
+            vec3 position = texture2D(u_lastPosition, scaledFragCoord).xyz;
+            gl_FragColor = vec4(position-u_center, 0.0);
+        }
+    </script>
 
     <script id="positionCalcShader" type="x-shader/x-fragment">
         precision mediump float;
@@ -482,6 +494,7 @@
     </div><br/>
     <b>Animation Settings:</b><br/>
     <span class="floatRight">&Delta; t = <span id="deltaT"></span> seconds</span><br/><br/>
+    <a href="#" id="shouldCenterGeo" class="btn btn-lg btn-default">Re-center geometry</a><br/><br/>
     <a href="#" id="reset" class="btn btn-lg btn-default">Reset</a>
     <a href="#" id="start" class="btn btn-lg btn-success">Start Simulation</a>
     <a href="#" id="pause" class="btn btn-lg btn-warning">Pause Simulation</a>
@@ -665,7 +678,7 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
                 <b>Import FOLD</b><br/><br/>
-                <label class="checkbox" for="foldUseAngles">
+                <label class="bigLabel checkbox" for="foldUseAngles">
                     <input id="foldUseAngles" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
                     Use current angles as target fold angles
                 </label>

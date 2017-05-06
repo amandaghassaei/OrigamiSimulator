@@ -31,6 +31,8 @@ function initGlobals(){
         shouldChangeCreasePercent: false,
         shouldSyncWithModel: false,
         nodePositionHasChanged: false,
+        shouldZeroDynamicVelocity: false,
+        shouldCenterGeo: false,
 
         //3d vis
         simType: "dynamic",

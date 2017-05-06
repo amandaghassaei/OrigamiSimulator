@@ -93,6 +93,21 @@ function initDynamicSolver(globals){
                 setCreasePercent(globals.creasePercent);
                 globals.shouldChangeCreasePercent = false;
             }
+            // if (globals.shouldZeroDynamicVelocity){
+            //     globals.gpuMath.step("zeroTexture", [], "u_velocity");
+            //     globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
+            //     globals.shouldZeroDynamicVelocity = false;
+            // }
+            if (globals.shouldCenterGeo){
+                var avgPosition = getAvgPosition();
+                globals.gpuMath.setProgram("centerTexture");
+                globals.gpuMath.setUniformForProgram("centerTexture", "u_center", [avgPosition.x, avgPosition.y, avgPosition.z], "3f");
+                globals.gpuMath.step("centerTexture", ["u_lastPosition"], "u_position");
+                globals.gpuMath.swapTextures("u_position", "u_lastPosition");
+                globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
+                globals.gpuMath.step("zeroTexture", [], "u_velocity");
+                globals.shouldCenterGeo = false;
+            }
         }
 
         if (_numSteps == undefined) _numSteps = steps;
@@ -127,6 +142,20 @@ function initDynamicSolver(globals){
     }
 
     var $errorOutput = $("#globalError");
+
+    function getAvgPosition(){
+        var xavg = 0;
+        var yavg = 0;
+        var zavg = 0;
+        for (var i=0;i<positions.length;i+=3){
+            xavg += positions[i];
+            yavg += positions[i+1];
+            zavg += positions[i+2];
+        }
+        var avgPosition = new THREE.Vector3(xavg, yavg, zavg);
+        avgPosition.multiplyScalar(3/positions.length);
+        return avgPosition;
+    }
 
     function render(){
 
@@ -285,6 +314,9 @@ function initDynamicSolver(globals){
         gpuMath.setUniformForProgram("packToBytes", "u_floatTexture", 0, "1i");
 
         gpuMath.createProgram("zeroTexture", vertexShader, document.getElementById("zeroTexture").text);
+        gpuMath.createProgram("centerTexture", vertexShader, document.getElementById("centerTexture").text);
+        gpuMath.setUniformForProgram("centerTexture", "u_lastPosition", 0, "1i");
+        gpuMath.setUniformForProgram("centerTexture", "u_textureDim", [textureDim, textureDim], "2f");
 
         gpuMath.setSize(textureDim, textureDim);
 
