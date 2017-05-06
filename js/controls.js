@@ -26,7 +26,7 @@ function initControls(globals){
         $("#foldFilename").val(globals.filename + " : " + parseInt(globals.creasePercent*100) +  "PercentFolded");
         var units = globals.foldUnits;
         if (units == "unit") units = "unitless";
-        $("#unitsDisplay").html(units);
+        $(".unitsDisplay").html(units);
         $('#exportFOLDModal').modal('show');
     });
     setLink("#exportSTL", function(){
@@ -45,6 +45,15 @@ function initControls(globals){
     }
     setCheckbox("#doublesidedSTL", globals.doublesidedSTL, function(val){
         globals.doublesidedSTL = val;
+    });
+    setLink(".units", function(e){
+        var units = $(e.target).data("id");
+        globals.foldUnits = units;
+        if (units == "unit") units = "unitless";
+        $(".unitsDisplay").html(units);
+    });
+    setCheckbox("#triangulateFOLDexport", globals.triangulateFOLDexport, function(val){
+        globals.triangulateFOLDexport = val;
     });
 
     setLink("#doSTLsave", function(){

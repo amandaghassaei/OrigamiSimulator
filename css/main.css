@@ -320,6 +320,7 @@ svg{
 
 .bigLabel{
     font-size:18px;
+    margin-top: 20px;
 }
 .checkbox.bigLabel .icons, .radio .icons {
     top: 2px;

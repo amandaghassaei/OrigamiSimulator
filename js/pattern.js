@@ -19,6 +19,7 @@ function initPattern(globals){
     var outlines = [];
     var cuts = [];
     var triangulations = [];
+    var polygons = [];
 
     var SVGloader = new THREE.SVGLoader();
 
@@ -167,7 +168,8 @@ function initPattern(globals){
         mergeVertices();
 
         var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulationsRaw);
-        var faces = triangulatePolys(findPolygons(allEdges), allEdges);
+        polygons = findPolygons(allEdges);
+        var faces = triangulatePolys(polygons, allEdges);
 
         var allCreaseParams = getFacesAndVerticesForEdges(faces, allEdges);
         globals.model.buildModel(faces, vertices, allEdges, allCreaseParams);
@@ -656,10 +658,26 @@ function initPattern(globals){
         document.body.removeChild(downloadLink);
     }
 
+    function getAllEdges(){
+        return {
+            mountains: mountains,
+            valleys: valleys,
+            outlines: outlines,
+            cuts: cuts,
+            triangulations: triangulations
+        }
+    }
+
+    function getPolygons(){
+        return polygons[0];
+    }
+
     return {
         loadSVG: loadSVG,
         saveSVG: saveSVG,
         getFacesAndVerticesForEdges: getFacesAndVerticesForEdges,
-        triangulatePolys: triangulatePolys
+        triangulatePolys: triangulatePolys,
+        getAllEdges: getAllEdges,
+        getPolygons: getPolygons
     }
 }
