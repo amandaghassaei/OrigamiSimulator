@@ -108,6 +108,7 @@ function initControls(globals){
             var name = extension[extension.length-2].split("/");
             name = name[name.length-1];
             extension = extension[extension.length-1];
+            // globals.setCreasePercent(0);
             if (extension == "txt"){
                 $.getJSON( "assets/"+url, function( json ) {
                     globals.filename = name;
@@ -148,6 +149,7 @@ function initControls(globals){
                     }
                     globals.filename = name;
                     globals.extension = extension;
+                    // globals.setCreasePercent(0);
                     parseTXTjson(JSON.parse(reader.result));
                 }
             }(file);
@@ -161,6 +163,7 @@ function initControls(globals){
                     }
                     globals.filename = name;
                     globals.extension = extension;
+                    // globals.setCreasePercent(0);
                     globals.pattern.loadSVG(reader.result);
                 }
             }(file);
@@ -180,6 +183,7 @@ function initControls(globals){
                     }
                     $("#importFoldModal").modal("show");
                     $('#importFoldModal').on('hidden.bs.modal', function () {
+                        if (globals.foldUseAngles) globals.setCreasePercent(1);
                         parseFoldJSON(JSON.parse(reader.result));
                     });
 
@@ -276,6 +280,8 @@ function initControls(globals){
                                         var x = normal1.dot(normal2);
                                         var y = normal1.cross((json.vertices_coords[v2].clone().sub(json.vertices_coords[v1])).normalize()).dot(normal2);
                                         var angle = Math.atan2(y, x);
+                                        if (angle>0) console.log(json.edges_assignment[i]);
+                                        else console.log(json.edges_assignment[i]);
                                         if (Math.abs(Math.PI-Math.abs(angle)) < 0.2){
                                             angle = Math.PI*foldSign;
                                         }

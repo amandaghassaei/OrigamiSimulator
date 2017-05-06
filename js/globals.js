@@ -35,7 +35,7 @@ function initGlobals(){
         simType: "dynamic",
 
         //sim settings
-        creasePercent: 0,
+        creasePercent: 0.5,
         axialStiffness: 2000,
         creaseStiffness: 70,
         panelStiffness: 70,
@@ -59,6 +59,13 @@ function initGlobals(){
         userInteractionEnabled: false
 
     };
+
+    function setCreasePercent(percent){
+        _globals.creasePercent = percent;
+        $("#creasePercent>div").slider({value:percent});
+        $("#creasePercent>input").val(percent);
+    }
+    _globals.setCreasePercent = setCreasePercent;
 
     function warn(msg){
         $("#warningMessage").html(msg);
