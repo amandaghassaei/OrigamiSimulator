@@ -8,6 +8,7 @@ function initGlobals(){
     var _globals = {
 
         navMode: "simulation",
+        scale: 1,
 
         //view
         colorMode: "color",
@@ -54,7 +55,7 @@ function initGlobals(){
         filename: null,
         extension: null,
         doublesidedSTL: false,
-        scale: 1,
+        stlScale: 1,
 
         userInteractionEnabled: false
 

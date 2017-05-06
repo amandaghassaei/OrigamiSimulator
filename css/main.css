@@ -325,3 +325,17 @@ svg{
     margin-top:9px;
     color: white;
 }
+
+.bigLabel{
+    font-size:18px;
+}
+.checkbox.bigLabel .icons, .radio .icons {
+    top: 2px;
+}
+
+.smallTxt{
+    font-size: 14px;
+}
+#stlFilename{
+    width:300px;
+}

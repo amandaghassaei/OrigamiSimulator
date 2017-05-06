@@ -22,7 +22,21 @@ function initControls(globals){
     });
 
     setLink("#exportSTL", function(){
+        updateDimensions();
+        $("#stlFilename").val(globals.filename + " : " + parseInt(globals.creasePercent*100) +  "PercentFolded");
         $('#exportSTLModal').modal('show');
+    });
+    setInput("#stlScale", globals.stlScale, function(val){
+        globals.stlScale = val;
+        updateDimensions();
+    }, 0);
+    function updateDimensions(){
+        var dim = globals.model.getDimensions();
+        dim.multiplyScalar(globals.stlScale/globals.scale);
+        $("#stlDimensions").html(dim.x.toFixed(2) + " x " + dim.y.toFixed(2) + " x " + dim.z.toFixed(2));
+    }
+    setCheckbox("#doublesidedSTL", globals.doublesidedSTL, function(val){
+        globals.doublesidedSTL = val;
     });
 
     setLink("#doSTLsave", function(){
@@ -261,6 +275,7 @@ function initControls(globals){
             if ($input.hasClass("int")){
                 if (isNaN(parseInt(val))) return;
                 val = parseInt(val);
+            } else if ($input.hasClass("text")){
             } else {
                 if (isNaN(parseFloat(val))) return;
                 val = parseFloat(val);

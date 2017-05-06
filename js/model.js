@@ -343,6 +343,11 @@ function initModel(globals){
         return creases;
     }
 
+    function getDimensions(){
+        geometry.computeBoundingBox();
+        return geometry.boundingBox.max.clone().sub(geometry.boundingBox.min);
+    }
+
     return {
         pause: pause,
         resume: resume,
@@ -361,6 +366,7 @@ function initModel(globals){
         getColorsArray: getColorsArray,
         sync: sync,
         getMesh: getMesh,
-        getVertices: getVertices
+        getVertices: getVertices,
+        getDimensions: getDimensions
     }
 }

@@ -597,13 +597,18 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
                 <p><b>Export STL</b><br/><br/>
-                    settings:<br/>
-                    single sided/double sided<br/>
-                    scale
+                    Filename: &nbsp;&nbsp;<input id="stlFilename" value="" placeholder="" class="text form-control" type="text"> .stl<br/><br/>
+                    Scale: &nbsp;&nbsp;<input id="stlScale" value="" placeholder="" class="form-control" type="text"><br/><br/>
+                    Dimensions: &nbsp;&nbsp;<b><span id="stlDimensions"></span></b><br/>
+                    <span class="smallTxt">(the STL file format is unitless, but typically assumed to be either in inches or mm)</span><br/><br/>
+                    <label class="bigLabel checkbox" for="doublesidedSTL">
+                        <input id="doublesidedSTL" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                        Double Sided
+                    </label>
                 </p>
             </div>
             <div class="modal-footer">
-                <button id="doSTLsave" type="button" class="btn btn-success">Save</button>
+                <button id="doSTLsave" type="button" class="btn btn-success" data-dismiss="modal">Save</button>
                 <button type="button" class="btn btn default" data-dismiss="modal">Cancel</button>
             </div>
         </div><!-- /.modal-content -->
