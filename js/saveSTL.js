@@ -11,9 +11,9 @@ function saveSTL(){
         return;
     }
 
-    if (globals.stlScale != 1){
+    if (globals.exportScale != 1){
         for (var i=0;i<geo.vertices.length;i++){
-            geo.vertices[i].multiplyScalar(globals.stlScale);
+            geo.vertices[i].multiplyScalar(globals.exportScale);
         }
     }
 

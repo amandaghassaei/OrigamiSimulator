@@ -336,6 +336,6 @@ svg{
 .smallTxt{
     font-size: 14px;
 }
-#stlFilename{
+input.form-control.bigInput{
     width:300px;
 }

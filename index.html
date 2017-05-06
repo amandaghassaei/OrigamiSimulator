@@ -374,6 +374,7 @@
     <script type="text/javascript" src="js/dynamic/dynamicSolver.js"></script>
     <script type="text/javascript" src="js/pattern.js"></script>
     <script type="text/javascript" src="js/saveSTL.js"></script>
+    <script type="text/javascript" src="js/saveFOLD.js"></script>
     <script type="text/javascript" src="js/importer.js"></script>
 
 
@@ -411,6 +412,7 @@
                     <li><a class="loadFile" href="#">Import... (SVG / FOLD / txt)</a></li>
 
                     <li class="divider"></li>
+                    <li><a id="exportFOLD" href="#">Save Simulation as FOLD...</a></li>
                     <li><a id="exportSTL" href="#">Save Simulation as STL...</a></li>
                     <li><a id="saveSVG" href="#">Save Pattern as SVG...</a></li>
                     <!--<li><a id="saveSVGScreenshot" href="#">Save SVG screenshot</a></li>-->
@@ -597,9 +599,9 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
                 <p><b>Export STL</b><br/><br/>
-                    Filename: &nbsp;&nbsp;<input id="stlFilename" value="" placeholder="" class="text form-control" type="text"> .stl<br/><br/>
-                    Scale: &nbsp;&nbsp;<input id="stlScale" value="" placeholder="" class="form-control" type="text"><br/><br/>
-                    Dimensions: &nbsp;&nbsp;<b><span id="stlDimensions"></span></b><br/>
+                    Filename: &nbsp;&nbsp;<input id="stlFilename" value="" placeholder="" class="bigInput text form-control" type="text"> .stl<br/><br/>
+                    Scale: &nbsp;&nbsp;<input value="" placeholder="" class="exportScale form-control" type="text"><br/><br/>
+                    Dimensions: &nbsp;&nbsp;<b><span class="exportDimensions"></span></b><br/>
                     <span class="smallTxt">(the STL file format is unitless, but typically assumed to be either in inches or mm)</span><br/><br/>
                     <label class="bigLabel checkbox" for="doublesidedSTL">
                         <input id="doublesidedSTL" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
@@ -609,6 +611,29 @@
             </div>
             <div class="modal-footer">
                 <button id="doSTLsave" type="button" class="btn btn-success" data-dismiss="modal">Save</button>
+                <button type="button" class="btn btn default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="exportFOLDModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-med">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <p><b>Export FOLD</b><br/><br/>
+                    Filename: &nbsp;&nbsp;<input id="foldFilename" value="" placeholder="" class="bigInput text form-control" type="text"> .stl<br/><br/>
+                    Author: &nbsp;&nbsp;<input id="foldAuthor" value="Amanda Ghassaei" placeholder="" class="bigInput text form-control" type="text"><br/><br/>
+                    Scale: &nbsp;&nbsp;<input value="" placeholder="" class="exportScale form-control" type="text"><br/><br/>
+                    Dimensions: &nbsp;&nbsp;<b><span class="exportDimensions"></span></b><br/>
+                    <span class="smallTxt">(the FOLD file format is unitless)</span><br/><br/>
+
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button id="doFOLDsave" type="button" class="btn btn-success" data-dismiss="modal">Save</button>
                 <button type="button" class="btn btn default" data-dismiss="modal">Cancel</button>
             </div>
         </div><!-- /.modal-content -->

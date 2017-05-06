@@ -21,19 +21,24 @@ function initControls(globals){
         $('#tipsModal').modal('show');
     });
 
+    setLink("#exportFOLD", function(){
+        updateDimensions();
+        $("#foldFilename").val(globals.filename + " : " + parseInt(globals.creasePercent*100) +  "PercentFolded");
+        $('#exportFOLDModal').modal('show');
+    });
     setLink("#exportSTL", function(){
         updateDimensions();
         $("#stlFilename").val(globals.filename + " : " + parseInt(globals.creasePercent*100) +  "PercentFolded");
         $('#exportSTLModal').modal('show');
     });
-    setInput("#stlScale", globals.stlScale, function(val){
-        globals.stlScale = val;
+    setInput(".exportScale", globals.exportScale, function(val){
+        globals.exportScale = val;
         updateDimensions();
     }, 0);
     function updateDimensions(){
         var dim = globals.model.getDimensions();
-        dim.multiplyScalar(globals.stlScale/globals.scale);
-        $("#stlDimensions").html(dim.x.toFixed(2) + " x " + dim.y.toFixed(2) + " x " + dim.z.toFixed(2));
+        dim.multiplyScalar(globals.exportScale/globals.scale);
+        $(".exportDimensions").html(dim.x.toFixed(2) + " x " + dim.y.toFixed(2) + " x " + dim.z.toFixed(2));
     }
     setCheckbox("#doublesidedSTL", globals.doublesidedSTL, function(val){
         globals.doublesidedSTL = val;
@@ -41,6 +46,9 @@ function initControls(globals){
 
     setLink("#doSTLsave", function(){
         saveSTL();
+    });
+    setLink("#doFOLDsave", function(){
+        saveFOLD();
     });
 
 
