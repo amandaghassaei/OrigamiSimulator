@@ -12,6 +12,7 @@ $(function() {
 
     globals = initGlobals();
     globals.UI3D = init3DUI(globals);
+    globals.importer = initImporter(globals);
     globals.model = initModel(globals);
     globals.staticSolver = initStaticSolver(globals);
     globals.dynamicSolver = initDynamicSolver(globals);

@@ -343,6 +343,8 @@
     <script type="text/javascript" src="dependencies/three.js"></script>
     <script type="text/javascript" src="dependencies/binary_stl_writer.js"></script>
     <script type="text/javascript" src="dependencies/OrthographicTrackballControls.js"></script>
+    <script type="text/javascript" src="dependencies/Projector.js"></script>
+    <script type="text/javascript" src="dependencies/SVGRenderer.js"></script>
     <script type="text/javascript" src="dependencies/underscore-min.js"></script>
     <script type="text/javascript" src="dependencies/FileSaver.min.js"></script>
     <script type="text/javascript" src="dependencies/SVGLoader.js"></script>
@@ -372,6 +374,8 @@
     <script type="text/javascript" src="js/dynamic/dynamicSolver.js"></script>
     <script type="text/javascript" src="js/pattern.js"></script>
     <script type="text/javascript" src="js/saveSTL.js"></script>
+    <script type="text/javascript" src="js/importer.js"></script>
+
 
     <script type="text/javascript" src="js/main.js"></script>
 </head>
@@ -405,8 +409,11 @@
                     </li>
                     <li class="divider"></li>
                     <li><a class="loadFile" href="#">Import... (SVG / FOLD / txt)</a></li>
-                    <!--<li><a id="saveSVG" href="#">Save Pattern as SVG...</a></li>-->
+
+                    <li class="divider"></li>
                     <li><a id="exportSTL" href="#">Save Simulation as STL...</a></li>
+                    <!--<li><a id="saveSVG" href="#">Save Pattern as SVG...</a></li>-->
+                    <li><a id="saveSVGScreenshot" href="#">Save SVG screenshot</a></li>
                 </ul>
             </li>
             <li><a id="navPattern" href="#">Pattern</a></li>
