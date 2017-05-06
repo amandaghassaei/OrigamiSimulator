@@ -191,6 +191,8 @@ function initThreeView(globals) {
     function saveSVG(){
         // svgRenderer.setClearColor(0xffffff);
         svgRenderer.setSize(window.innerWidth,window.innerHeight);
+        svgRenderer.sortElements = true;
+        svgRenderer.sortObjects = true;
         svgRenderer.setQuality('high');
         svgRenderer.render(scene,camera);
         //get svg source.
