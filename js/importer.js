@@ -191,6 +191,9 @@ function initImporter(globals){
                                     }
                                     creaseParams.push(foldSign*Math.PI);
                                     break;
+                                case "F":
+                                    creaseParams.push(0);
+                                    break;
                                 default:
                                     creaseParams.push(0);
                                     break;
