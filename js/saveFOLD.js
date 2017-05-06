@@ -17,12 +17,24 @@ function saveFOLD(){
         }
     }
 
-    // var data = [];
-    // data.push({geo: geo, offset:new THREE.Vector3(0,0,0), orientation:new THREE.Quaternion(0,0,0,1)});
-    // var stlBin = geometryToSTLBin(data);
-    // if (!stlBin) return;
-    // var blob = new Blob([stlBin], {type: 'application/octet-binary'});
     var filename = $("#foldFilename").val();
     if (filename == "") filename = globals.filename;
+
+    var json = {
+        file_spec: 1,
+        file_creator: "Origami Simulator: http://git.amandaghassaei.com/OrigamiSimulator/",
+        file_author: "",
+        frame_title: filename,
+        frame_classes: ["singleModel"],
+        frame_attributes: ["3D"],
+        frame_description: "",
+        frame_unit: globals.foldUnits,
+        vertices_coords: [],
+        edges_vertices: [],
+        edges_foldAngles: [],
+        faces_vertices: []
+    };
+
+    var blob = new Blob([JSON.stringify(json)], {type: 'application/octet-binary'});
     saveAs(blob, filename + ".fold");
 }
