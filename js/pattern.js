@@ -638,8 +638,27 @@ function initPattern(globals){
         };
     }
 
+    function saveSVG(){
+        if (globals.extension == "fold"){
+            //todo solve for crease pattern
+            globals.warn("No crease pattern available for FOLD format.");
+            return;
+        }
+        var serializer = new XMLSerializer();
+        var source = serializer.serializeToString(document.getElementById("mySVG"));
+        var svgBlob = new Blob([source], {type:"image/svg+xml;charset=utf-8"});
+        var svgUrl = URL.createObjectURL(svgBlob);
+        var downloadLink = document.createElement("a");
+        downloadLink.href = svgUrl;
+        downloadLink.download =  globals.filename + ".svg";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }
+
     return {
         loadSVG: loadSVG,
+        saveSVG: saveSVG,
         getFacesAndVerticesForEdges: getFacesAndVerticesForEdges,
         triangulatePolys: triangulatePolys
     }

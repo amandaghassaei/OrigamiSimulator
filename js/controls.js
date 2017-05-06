@@ -112,6 +112,10 @@ function initControls(globals){
         globals.threeView.saveSVG();
     });
 
+    setLink("#saveSVG", function(){
+        globals.pattern.saveSVG();
+    });
+
     setCheckbox("#ambientOcclusion", globals.ambientOcclusion, function(val){
         globals.ambientOcclusion = val;
     });
