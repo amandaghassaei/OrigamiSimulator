@@ -29,25 +29,22 @@ function initPattern(globals){
 
                 //format all lines
                 var $paths = _$svg.children("path");
-                $paths.css({fill:"none", 'stroke-width':3, 'stroke-dasharray':"none"});
+                $paths.css({fill:"none", 'stroke-dasharray':"none"});
 
                 var $outlines = $paths.filter(function(){
                     var stroke = $(this).attr("stroke").toLowerCase();
                     return stroke == "#000000" || stroke == "#000";
                 });
-                // $outlines.css({fill:'#ffffff'});
 
                 var $mountains = $paths.filter(function(){
                     var stroke = $(this).attr("stroke").toLowerCase();
                     return stroke == "#ff0000" || stroke == "#f00";
                 });
-                $mountains.css({'stroke-dasharray':'12, 6, 3, 6'});
 
                 var $valleys = $paths.filter(function(){
                     var stroke = $(this).attr("stroke").toLowerCase();
                     return stroke == "#0000ff" || stroke == "#00f";
                 });
-                $valleys.css({'stroke-dasharray':'7, 6, 7, 6'});
 
                 var $cuts = $paths.filter(function(){
                     var stroke = $(this).attr("stroke").toLowerCase();
@@ -59,7 +56,30 @@ function initPattern(globals){
                     return stroke == "#ffff00" || stroke == "#ff0";
                 });
 
-                var $svg = $('<svg version="1.1" viewBox="'+_$svg.attr("viewBox")+'" id="mySVG" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> </svg>');
+                parseSVG($outlines, $mountains, $valleys, $cuts, $triangulations);
+
+                //find max and min vertices
+                var max = new THREE.Vector3(0,0,0);
+                var min = new THREE.Vector3(Infinity,Infinity,Infinity);
+                for (var i=0;i<vertices.length;i++){
+                    max.max(vertices[i]);
+                    min.min(vertices[i]);
+                }
+                max.sub(min);
+                var border = new THREE.Vector3(0.1, 0, 0.1);
+                var scale = max.x;
+                if (max.z < scale) scale = max.z;
+
+                var strokeWidth = scale/300;
+                $mountains.css({'stroke-dasharray': strokeWidth*6 + ', ' + strokeWidth*3 + ', ' + strokeWidth*1.5 + ', ' + strokeWidth*3});
+                $valleys.css({'stroke-dasharray': strokeWidth*4 + ', ' + strokeWidth*3 + ', ' + strokeWidth*4 + ', ' + strokeWidth*3});
+                $paths.css({'stroke-width':strokeWidth});
+
+                border.multiplyScalar(scale);
+                min.sub(border);
+                max.add(border.multiplyScalar(2));
+                var viewBoxTxt = min.x + " " + min.z + " " + max.x + " " + max.z;
+                var $svg = $('<svg version="1.1" viewBox="' + viewBoxTxt + '" id="mySVG" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> </svg>');
                 $svg.append($outlines);
                 $svg.append($mountains);
                 $svg.append($valleys);
@@ -67,8 +87,6 @@ function initPattern(globals){
                 $svg.append($triangulations);
 
                 $("#svgViewer").html($svg);
-
-                parseSVG($outlines, $mountains, $valleys, $cuts, $triangulations);
             },
             function(){},
             function(error){
@@ -207,7 +225,7 @@ function initPattern(globals){
 
                             creaseParams.push(i);
                             if (i<(outlines.length+mountains.length+valleys.length)){
-                                var angle = Math.PI;
+                                var angle = -Math.PI;
                                 if (i<(outlines.length+mountains.length)){
                                     angle *= -1;
                                 }
