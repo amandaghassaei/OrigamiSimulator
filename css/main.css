@@ -123,10 +123,6 @@ input.form-control {
     float:right;
 }
 
-.modal-body li{
-    margin-bottom:10px;
-}
-
 #threeContainer {
     width:100%;
     height:100%;
@@ -233,10 +229,6 @@ span.modal-close{
     color: #666;
 }
 
-.modal-footer .btn+.btn {
-    background: #eee;
-}
-
 .radio .icon-checked{
     transition-duration: 0s;
 }
@@ -338,4 +330,13 @@ svg{
 }
 input.form-control.bigInput{
     width:300px;
+}
+
+.actionButton{
+    width: 100px;
+}
+
+#unitsDropdown{
+    height: 100px;
+    overflow: auto;
 }

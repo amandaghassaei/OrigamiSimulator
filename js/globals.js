@@ -59,16 +59,6 @@ function initGlobals(){
 
         //save fold settings
         foldUnits: "unit",
-        allFOLDUnits:{
-            unit: "unitless",
-            in: "in",
-            pt: "pt",
-            m: "m",
-            cm: "cm",
-            mm: "mm",
-            um: "um",
-            nm: "nm"
-        },
 
         userInteractionEnabled: false
 

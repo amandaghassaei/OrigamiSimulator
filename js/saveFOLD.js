@@ -23,7 +23,7 @@ function saveFOLD(){
     var json = {
         file_spec: 1,
         file_creator: "Origami Simulator: http://git.amandaghassaei.com/OrigamiSimulator/",
-        file_author: "",
+        file_author: $("#foldAuthor").val(),
         frame_title: filename,
         frame_classes: ["singleModel"],
         frame_attributes: ["3D"],
@@ -35,6 +35,6 @@ function saveFOLD(){
         faces_vertices: []
     };
 
-    var blob = new Blob([JSON.stringify(json)], {type: 'application/octet-binary'});
+    var blob = new Blob([JSON.stringify(json, null, 4)], {type: 'application/octet-binary'});
     saveAs(blob, filename + ".fold");
 }

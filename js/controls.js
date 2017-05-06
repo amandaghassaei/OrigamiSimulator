@@ -24,6 +24,9 @@ function initControls(globals){
     setLink("#exportFOLD", function(){
         updateDimensions();
         $("#foldFilename").val(globals.filename + " : " + parseInt(globals.creasePercent*100) +  "PercentFolded");
+        var units = globals.foldUnits;
+        if (units == "unit") units = "unitless";
+        $("#unitsDisplay").html(units);
         $('#exportFOLDModal').modal('show');
     });
     setLink("#exportSTL", function(){
@@ -50,7 +53,6 @@ function initControls(globals){
     setLink("#doFOLDsave", function(){
         saveFOLD();
     });
-
 
     setLink("#navPattern", function(){
         if (globals.noCreasePatternAvailable()){
