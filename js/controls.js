@@ -276,7 +276,9 @@ function initControls(globals){
                                         var x = normal1.dot(normal2);
                                         var y = normal1.cross((json.vertices_coords[v2].clone().sub(json.vertices_coords[v1])).normalize()).dot(normal2);
                                         var angle = Math.atan2(y, x);
-                                        angle = Math.abs(angle)*foldSign;
+                                        if (Math.abs(Math.PI-Math.abs(angle)) < 0.2){
+                                            angle = Math.PI*foldSign;
+                                        }
                                         creaseParams.push(angle);
                                         break;
                                     }
