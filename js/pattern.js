@@ -204,6 +204,11 @@ function initPattern(globals){
         triangulationsRaw = _triangulationsRaw;
 
         mergeVertices();
+        console.log(vertices);
+        console.log(vertices.length);
+        console.log(mountains);
+        console.log(valleys);
+        console.log(outlines);
 
         var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulationsRaw);
         polygons = findPolygons(allEdges);
@@ -264,13 +269,14 @@ function initPattern(globals){
     function mergeVertices(){
 
         vertices = verticesRaw.slice();
+        console.log(vertices.length);
 
         var tolSq = globals.vertTol*globals.vertTol;
         var combined = [];
         var mergedVertices = [];
         var _weededVertices = vertices.slice();
         var goodVertices = [];
-        var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulations);
+        var allEdges = outlinesRaw.concat(mountainsRaw).concat(valleysRaw).concat(cutsRaw).concat(triangulationsRaw);
         var js = [];
         for (var i=0;i<vertices.length;i++){
             js.push(i);
@@ -297,17 +303,17 @@ function initPattern(globals){
                 }
                 i -= numCombined;
             } else {
-                // var vertexEdges = [];
-                // for (k=0;k<allEdges.length;k++){
-                //     if (allEdges[k][0] == i || allEdges[k][1] == i) vertexEdges.push(k);
-                // }
-                // if (vertexEdges.length>2){
-                //     goodVertices.push([vertices[i], i].concat(vertexEdges));
-                //     _weededVertices.splice(i, 1);
-                // }
+                var vertexEdges = [];
+                for (k=0;k<allEdges.length;k++){
+                    if (allEdges[k][0] == js[i] || allEdges[k][1] == js[i]) vertexEdges.push(k);
+                }
+                if (vertexEdges.length>1){
+                    goodVertices.push([vertices[i], js[i]].concat(vertexEdges));
+                    _weededVertices.splice(i, 1);
+                }
             }
         }
-
+        
         outlines = outlinesRaw.slice();
         mountains = mountainsRaw.slice();
         valleys = valleysRaw.slice();
@@ -315,7 +321,6 @@ function initPattern(globals){
         triangulations = triangulationsRaw.slice();
 
         var strays = findStrayVertices();
-        combined.concat(strays);
         for (var i=0;i<strays.length;i++){
             for (var j=0;j<_weededVertices.length;j++){
                 if (vertices[strays[i]].equals(_weededVertices[j])){
@@ -335,18 +340,17 @@ function initPattern(globals){
         removeCombinedFromSet(combined, cuts);
         removeCombinedFromSet(combined, triangulations);
 
-        // for (var i=0;i<goodVertices.length;i++){
-        //     var newIndex = mergedVertices.length;
-        //     var oldIndex = goodVertices[i][1];
-        //     mergedVertices.push(goodVertices[i][0]);
-        //     for (var j=0;j<goodVertices[i].length-2;j++){
-        //         var edge = allEdges[goodVertices[i][j+2]];
-        //         console.log(goodVertices[i][j+2]);
-        //         edge[edge.indexOf(oldIndex)] = newIndex;
-        //     }
-        // }
+        for (var i=0;i<goodVertices.length;i++){
+            var newIndex = mergedVertices.length;
+            var oldIndex = goodVertices[i][1];
+            mergedVertices.push(goodVertices[i][0]);
+            for (var j=0;j<goodVertices[i].length-2;j++){
+                var edge = allEdges[goodVertices[i][j+2]];
+                edge[edge.indexOf(oldIndex)] = newIndex;
+            }
+        }
 
-        vertices = mergedVertices.concat(goodVertices);
+        vertices = mergedVertices;
     }
 
     function findStrayVertices(){
@@ -633,7 +637,7 @@ function initPattern(globals){
             for (var i=0;i<combined.length;i++){
                 if (combined[i].indexOf(set[j][0]) >= 0) {
                     set[j][0] = i;
-                    break;
+                    break;//ensures that we replace only once
                 }
             }
             for (var i=0;i<combined.length;i++) {
