@@ -658,13 +658,12 @@ function initPattern(globals){
                         set1.splice(i+1, 0, [vertIndex, set1[i][1], set1[i][2]]);
                         set1.splice(i, 1);
                         i++;
-                        if (j==0) i++;
                     }
                     if (seg2Int){
-                        set2.splice(j+1, 0, [vertIndex, set2[j][0], set2[i][2]]);
-                        set2.splice(j+1, 0, [vertIndex, set2[j][1], set2[i][2]]);
+                        set2.splice(j+1, 0, [vertIndex, set2[j][0], set2[j][2]]);
+                        set2.splice(j+1, 0, [vertIndex, set2[j][1], set2[j][2]]);
                         set2.splice(j, 1);
-                        j += 2;
+                        j ++;
                     }
                 }
             }
