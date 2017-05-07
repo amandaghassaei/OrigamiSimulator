@@ -296,16 +296,27 @@ function initPattern(globals){
             }
         }
 
-        if (_weededVertices.length > 0){
-            alert("Some vertices are not fully connected, try increasing vertex merge tolerance");
-            return;
-        }
-
         outlines = outlinesRaw.slice();
         mountains = mountainsRaw.slice();
         valleys = valleysRaw.slice();
         cuts = cutsRaw.slice();
         triangulations = triangulationsRaw.slice();
+
+        var strays = findStrayVertices();
+        combined.concat(strays);
+        for (var i=0;i<strays.length;i++){
+            for (var j=0;j<_weededVertices.length;j++){
+                if (vertices[strays[i]].equals(_weededVertices[j])){
+                    _weededVertices.splice(j,1);
+                    break;
+                }
+            }
+        }
+
+        if (_weededVertices.length > 0){
+            alert("Some vertices are not fully connected, try increasing vertex merge tolerance");
+            return;
+        }
 
         removeCombinedFromSet(combined, outlines);
         removeCombinedFromSet(combined, mountains);
@@ -313,6 +324,24 @@ function initPattern(globals){
         removeCombinedFromSet(combined, cuts);
         removeCombinedFromSet(combined, triangulations);
         vertices = mergedVertices;
+    }
+
+    function findStrayVertices(){
+        var connected = [];
+        for (var i=0;i<vertices.length;i++){
+            connected.push(false);
+        }
+        var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulations);
+        for (var i=0;i<allEdges.length;i++){
+            var edge = allEdges[i];
+            connected[edge[0]]= true;
+            connected[edge[1]]= true;
+        }
+        var strays = [];
+        for (var i=0;i<vertices.length;i++){
+            if (!connected[i]) strays.push(i);
+        }
+        return strays;
     }
 
     function triangulatePolys(polygonData, allEdges, _vertices, shouldRotateFace){
