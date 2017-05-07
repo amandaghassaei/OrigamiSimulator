@@ -207,6 +207,7 @@ function initPattern(globals){
 
         var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulationsRaw);
         polygons = findPolygons(allEdges);
+        console.log(polygons[0]);
         var faces = triangulatePolys(polygons, allEdges);
 
         var allCreaseParams = getFacesAndVerticesForEdges(faces, allEdges);

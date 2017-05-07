@@ -27,6 +27,7 @@
     border-radius: 0;
     padding:0;
     margin:0;
+    padding-bottom: 3px;
 }
 .navbar-inverse .navbar-nav>.open>.dropdown-menu>li>a{
     -webkit-border-radius: 0!important;
@@ -85,7 +86,7 @@ img{
 
 .dropdown-submenu a{
     height: 32px;
-    padding-bottom: 16px;
+    padding-bottom: 18px;
     color: #e1e4e7!important;
     white-space: normal;
 }
@@ -117,6 +118,7 @@ img{
     margin-top: 0;
     margin-left: -1px;
     border-radius: 0;
+    padding-bottom: 3px;
     /*-webkit-border-radius: 0 6px 6px 6px;*/
     /*-moz-border-radius: 0 6px 6px;*/
     /*border-radius: 0 6px 6px 6px;*/
