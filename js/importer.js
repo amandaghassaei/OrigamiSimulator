@@ -257,7 +257,7 @@ function initImporter(globals){
                                     break;
                                 case 2:
                                     //crease
-                                    creaseParams.push(Math.PI);
+                                    creaseParams.push(Math.PI);//todo only mtn
                                     break;
                             }
                             if (!shouldSkip) allCreaseParams.push(creaseParams);

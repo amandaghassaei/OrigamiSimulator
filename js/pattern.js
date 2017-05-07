@@ -43,7 +43,7 @@ function initPattern(globals){
                     if (stroke == "#ff0000" || stroke == "#f00"){
                         var opacity = parseFloat($(this).attr("opacity"));
                         if (isNaN(opacity)) opacity = 1;
-                        _mountainAngles.push(-opacity*Math.PI);
+                        _mountainAngles.push(opacity*Math.PI);
                         return true;
                     }
                     return false;
@@ -54,7 +54,7 @@ function initPattern(globals){
                     if (stroke == "#0000ff" || stroke == "#00f"){
                         var opacity = parseFloat($(this).attr("opacity"));
                         if (isNaN(opacity)) opacity = 1;
-                        _valleyAngles.push(opacity*Math.PI);
+                        _valleyAngles.push(-opacity*Math.PI);
                         return true;
                     }
                     return false;
@@ -268,6 +268,8 @@ function initPattern(globals){
         var combined = [];
         var mergedVertices = [];
         var _weededVertices = vertices.slice();
+        var goodVertices = [];
+        var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulations);
         var js = [];
         for (var i=0;i<vertices.length;i++){
             js.push(i);
@@ -293,6 +295,15 @@ function initPattern(globals){
                     js.splice(indicesToRemove[k], 1);
                 }
                 i -= numCombined;
+            } else {
+                // var vertexEdges = [];
+                // for (k=0;k<allEdges.length;k++){
+                //     if (allEdges[k][0] == i || allEdges[k][1] == i) vertexEdges.push(k);
+                // }
+                // if (vertexEdges.length>2){
+                //     goodVertices.push([vertices[i], i].concat(vertexEdges));
+                //     _weededVertices.splice(i, 1);
+                // }
             }
         }
 
@@ -312,7 +323,6 @@ function initPattern(globals){
                 }
             }
         }
-
         if (_weededVertices.length > 0){
             alert("Some vertices are not fully connected, try increasing vertex merge tolerance");
             return;
@@ -323,7 +333,19 @@ function initPattern(globals){
         removeCombinedFromSet(combined, valleys);
         removeCombinedFromSet(combined, cuts);
         removeCombinedFromSet(combined, triangulations);
-        vertices = mergedVertices;
+
+        // for (var i=0;i<goodVertices.length;i++){
+        //     var newIndex = mergedVertices.length;
+        //     var oldIndex = goodVertices[i][1];
+        //     mergedVertices.push(goodVertices[i][0]);
+        //     for (var j=0;j<goodVertices[i].length-2;j++){
+        //         var edge = allEdges[goodVertices[i][j+2]];
+        //         console.log(goodVertices[i][j+2]);
+        //         edge[edge.indexOf(oldIndex)] = newIndex;
+        //     }
+        // }
+
+        vertices = mergedVertices.concat(goodVertices);
     }
 
     function findStrayVertices(){
@@ -463,6 +485,7 @@ function initPattern(globals){
                 if (allEdges[j][1] == i) vertEdges[i].push(j);
             }
             if (vertEdges[i].length < 2){//check that all vertices have at least two edges
+                console.log(vertEdges[i].length);
                 alert("Some vertices are not fully connected, try increasing vertex merge tolerance");
                 return;
             }

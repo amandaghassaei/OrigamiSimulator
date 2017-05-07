@@ -24,11 +24,12 @@ function initModel(globals){
     var vertices = [];
 
     function setMeshMaterial() {
+        var polygonOffset = 2;
         if (globals.colorMode == "normal") {
             material = new THREE.MeshNormalMaterial({
                 shading:THREE.FlatShading, side: THREE.DoubleSide,
                 polygonOffset: true,
-                polygonOffsetFactor: 1, // positive value pushes polygon further away
+                polygonOffsetFactor: polygonOffset, // positive value pushes polygon further away
                 polygonOffsetUnits: 1
             });
             object3D2.visible = false;
@@ -36,7 +37,7 @@ function initModel(globals){
             material = new THREE.MeshBasicMaterial({
                 vertexColors: THREE.VertexColors, side:THREE.DoubleSide,
                 polygonOffset: true,
-                polygonOffsetFactor: 1, // positive value pushes polygon further away
+                polygonOffsetFactor: polygonOffset, // positive value pushes polygon further away
                 polygonOffsetUnits: 1
             });
             object3D2.visible = false;
@@ -44,13 +45,13 @@ function initModel(globals){
             material = new THREE.MeshPhongMaterial({
                 shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide,
                 polygonOffset: true,
-                polygonOffsetFactor: 1, // positive value pushes polygon further away
+                polygonOffsetFactor: polygonOffset, // positive value pushes polygon further away
                 polygonOffsetUnits: 1
             });
             material2 = new THREE.MeshPhongMaterial({
                 shading:THREE.FlatShading, color:0x0000ff, side:THREE.BackSide,
                 polygonOffset: true,
-                polygonOffsetFactor: 1, // positive value pushes polygon further away
+                polygonOffsetFactor: polygonOffset, // positive value pushes polygon further away
                 polygonOffsetUnits: 1
             });
             material.color.setStyle( "#" + globals.color1);
