@@ -32,8 +32,8 @@ function initImporter(globals){
         }
 
         var file = files[0];
-        var name = file.name;
-        var extension = name.split(".");
+        var extension = file.name.split(".");
+        var name = extension[0];
         extension = extension[extension.length - 1];
         var reader = new FileReader();
 

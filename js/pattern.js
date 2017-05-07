@@ -39,18 +39,22 @@ function initPattern(globals){
                 });
 
                 var $mountains = $paths.filter(function(){
-                    var color = hexToColor($(this).attr("stroke").toLowerCase());
-                    if (color.r > 0 && color.g == 0 && color.b == 0){
-                        _mountainAngles.push(-color.r*Math.PI);
+                    var stroke = $(this).attr("stroke").toLowerCase();
+                    if (stroke == "#ff0000" || stroke == "#f00"){
+                        var opacity = parseFloat($(this).attr("opacity"));
+                        if (isNaN(opacity)) opacity = 1;
+                        _mountainAngles.push(-opacity*Math.PI);
                         return true;
                     }
                     return false;
                 });
 
                 var $valleys = $paths.filter(function(){
-                    var color = hexToColor($(this).attr("stroke").toLowerCase());
-                    if (color.b > 0 && color.g == 0 && color.r == 0){
-                        _valleyAngles.push(color.b*Math.PI);
+                    var stroke = $(this).attr("stroke").toLowerCase();
+                    if (stroke == "#0000ff" || stroke == "#00f"){
+                        var opacity = parseFloat($(this).attr("opacity"));
+                        if (isNaN(opacity)) opacity = 1;
+                        _valleyAngles.push(opacity*Math.PI);
                         return true;
                     }
                     return false;
@@ -103,14 +107,6 @@ function initPattern(globals){
             alert("Error loading SVG: " + url);
             console.log(error);
         });
-    }
-
-    function hexToColor(stroke){
-        stroke = stroke.slice(1);
-        if (stroke.length == 3){
-            stroke = stroke[0]+stroke[0]+stroke[1]+stroke[1]+stroke[2]+stroke[2];
-        }
-        return new THREE.Color(parseInt("0x" + stroke));
     }
 
     function parsePath(_verticesRaw, _segmentsRaw, $paths, angles){
