@@ -60,6 +60,7 @@ function initModel(globals){
         }
         object3D.material = material;
         object3D2.material = material2;
+        globals.threeView.render();
     }
 
     function updateEdgeVisibility(){
@@ -73,6 +74,7 @@ function initModel(globals){
         for (var i=0;i<creases.length;i++){
             creases[i].setVisibility();
         }
+        globals.threeView.render();
     }
 
     function updateMeshVisibility(){

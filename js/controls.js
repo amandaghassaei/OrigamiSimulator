@@ -245,6 +245,7 @@ function initControls(globals){
         if (numSteps<=0) return;
         $("#numSteps").val(numSteps);
         globals.model.step(numSteps);
+        $("#reset").show();
     });
 
     setInput("#strainClip", globals.strainClip, function(val){
