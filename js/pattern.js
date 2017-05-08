@@ -40,7 +40,7 @@ function initPattern(globals){
 
                 var $mountains = $paths.filter(function(){
                     var stroke = $(this).attr("stroke").toLowerCase();
-                    if (stroke == "#ff0000" || stroke == "#f00"){
+                    if (stroke == "#ff0000" || stroke == "#f00" || stroke == "#FF0000" || stroke == "#F00"){
                         var opacity = parseFloat($(this).attr("opacity"));
                         if (isNaN(opacity)) opacity = 1;
                         _mountainAngles.push(opacity*Math.PI);
@@ -51,7 +51,7 @@ function initPattern(globals){
 
                 var $valleys = $paths.filter(function(){
                     var stroke = $(this).attr("stroke").toLowerCase();
-                    if (stroke == "#0000ff" || stroke == "#00f"){
+                    if (stroke == "#0000ff" || stroke == "#00f" || stroke == "#0000FF" || stroke == "#00F"){
                         var opacity = parseFloat($(this).attr("opacity"));
                         if (isNaN(opacity)) opacity = 1;
                         _valleyAngles.push(-opacity*Math.PI);
@@ -67,7 +67,7 @@ function initPattern(globals){
 
                 var $triangulations = $paths.filter(function(){
                     var stroke = $(this).attr("stroke").toLowerCase();
-                    return stroke == "#ffff00" || stroke == "#ff0";
+                    return stroke == "#ffff00" || stroke == "#ff0" || stroke == "#FFFF00" || stroke == "#FF0";
                 });
 
                 parseSVG($outlines, $mountains, $valleys, $cuts, $triangulations, _mountainAngles, _valleyAngles);
@@ -327,8 +327,9 @@ function initPattern(globals){
             }
         }
         if (_weededVertices.length > 0){
-            alert("Some vertices are not fully connected, try increasing vertex merge tolerance");
-            return;
+            console.log(_weededVertices);
+            globals.warn("Some vertices are not fully connected, try increasing vertex merge tolerance");
+            // return;
         }
 
         removeCombinedFromSet(combined, outlines);
