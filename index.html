@@ -439,6 +439,8 @@
                                     <li><a href="#" class="demo" data-url="Origami/hypar.svg">Hypar</a></li>
                                     <li><a href="#" class="demo" data-url="Tessellations/hyperbolic_limit_cp.svg">Lang Hyperbolic Limit</a></li>
                                     <li><a href="#" class="demo" data-url="Tessellations/honeycomb_333_cp.svg">Lang Honeycomb Tessellation</a></li>
+                                    <li><a href="#" class="demo" data-url="Tessellations/wedged_double_faced.svg">Lang Wedged Double Faced Tessellation</a></li>
+                                    <li><a href="#" class="demo" data-url="Tessellations/rattanweaveLang.svg">Lang Rattan Weave</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -621,7 +623,30 @@
         <div class="modal-content">
             <div class="modal-body">
                 <p><b>File Import Tips</b><br/><br/>
-                    ....
+                    Bad design files will throw errors and create models that explode or cannot be solved, here are some tips for
+                    importing FOLD or svg files that work.<br/><br/>
+                    <b>Importing FOLD:</b><br/>
+                    <br/><br/>
+                    <b>Importing SVG:</b><br/>
+                    supported line types: path objects, line objects (coming), rect objects (coming).<br/>
+                    valley: red rgb(255, 0, 0), hex #ff0000<br/>
+                    mtn: blue rgb(0, 0, 255), hex #0000ff<br/>
+                    outline: black rgb(0,0,0) hex #000000<br/>
+                    stroke and line style do not matter.<br/>
+                    target fold angle set by opacity: 1.0 = PI, 0.5 = PI/2, 0 = 0<br/>
+                    This tool should be able to automatically clean files of slightly misaligned vertices, stray vertices,
+                    duplicate lines (coming), and anchor points falling in the middle of an edge (coming),
+                    but it is recommended to remove these errors yourself in order to avoid problems.<br/><br/>
+                    <b>For Adobe Illustrator users:</b><br/>
+                    I use Illustrator to create SVGs (though any vector editing program should be fine), here are some tips to make patterns that will work.<br/>
+                    If you are starting with a premade vector file, first ungroup any groups, release all compound paths
+                    (<b>Select all + Object>Compound Path>Release</b>), and release all clipping masks (<b>Select all + Object>Clipping Mask>Release</b>).<br/>
+                    Create geometry using the <b>Line Segment Tool</b>.<br/>
+                    Illustrator can help you select all lines of a particular type so that you can edit their color or opacity together.  Click the line,
+                    then go to <b>Select>Same>Appearance</b> to select all similar lines in the pattern.
+                    To turn lines and polygons into path objects, select the geometry then right click and select <b>Make Compound Path</b>.<br/>
+                    Finally hit <b>Save As</b> and select <b>.svg</b> extension. I'm using the default SVG Tiny 1.1 settings, but I believe versions 1.0 and 1.1 will work.
+
                 </p>
             </div>
         </div><!-- /.modal-content -->
