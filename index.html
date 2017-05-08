@@ -480,6 +480,17 @@
 <div  id="threeContainer"></div>
 <canvas id="gpuMathCanvas"></canvas>
 <div id="controls">
+    <div>
+        <a href="#" id="reset" class="btn floatRight btn-lg btn-default">Reset</a>
+        <a href="#" id="start" class="btn floatRight btn-lg btn-success">Start Simulation</a>
+        <a href="#" id="pause" class="btn floatRight btn-lg btn-warning">Pause Simulation</a>
+        <br/><br/>
+        <div id="stepForwardOptions" class="floatRight">
+            Num Steps: &nbsp;&nbsp;<input id="numSteps" value="100" placeholder="" class="form-control" type="text">
+            <a href="#" id="stepForward" class="btn btn-lg btn-default">Step Forward</a>
+            <br/><br/>
+        </div><br/>
+    </div>
     <b>Simulation Type:</b><br/>
     <div class="indent">
         <label class="radio">
@@ -521,14 +532,7 @@
     <b>Animation Settings:</b><br/>
     <span class="floatRight">&Delta; t = <span id="deltaT"></span> seconds</span><br/><br/>
     <a href="#" id="shouldCenterGeo" class="btn btn-lg btn-default">Re-center geometry</a><br/><br/>
-    <a href="#" id="reset" class="btn btn-lg btn-default">Reset</a>
-    <a href="#" id="start" class="btn btn-lg btn-success">Start Simulation</a>
-    <a href="#" id="pause" class="btn btn-lg btn-warning">Pause Simulation</a>
-    <br/><br/>
-    <div id="stepForwardOptions" class="floatRight">
-        Num Steps: &nbsp;&nbsp;<input id="numSteps" value="100" placeholder="" class="form-control" type="text">
-        <a href="#" id="stepForward" class="btn btn-lg btn-default">Step Forward</a>
-    </div>
+
     <br/><br/>
     <div class="extraSpace"></div>
 </div>
