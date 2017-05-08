@@ -625,9 +625,19 @@
                 <p><b>File Import Tips</b><br/><br/>
                     Bad design files will throw errors and create models that explode or cannot be solved, here are some tips for
                     importing FOLD or svg files that work.<br/><br/>
-                    <b>Importing FOLD:</b><br/>
-                    <br/><br/>
-                    <b>Importing SVG:</b><br/>
+                    <b>Importing FOLD:</b><br/><br/>
+                    The FOLD file format is specified in <a target="_blank" href="https://github.com/edemaine/fold">these docs</a>.
+                    This tool imports FOLD v1.0 files with <b>all</b> of the following fields populated:
+                    <ul>
+                        <li>vertices_coords</li>
+                        <li>edges_vertices</li>
+                        <li>edges_assignment</li>
+                        <li>faces_vertices</li>
+                    </ul>
+                    If you are unsure whether your FOLD file is valid, you can inspect it using the
+                    <a target="_blank" href="https://edemaine.github.io/fold/examples/foldviewer.html">FOLD Viewer</a>.<br/>
+                    <br/>
+                    <b>Importing SVG:</b><br/><br/>
                     <ul>
                         <li>The SVG importer supports path objects and line objects (coming).  Please convert polygons to paths before importing.</li>
                         <li>Valley folds are red - <span style="color:red">rgb(255, 0, 0), hex #ff0000</span></li>
