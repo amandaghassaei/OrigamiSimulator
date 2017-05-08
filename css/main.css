@@ -273,6 +273,7 @@ span.modal-close{
     right:0;
     background: white;
     display: none;
+    padding-top: 56px;
 }
 svg{
     width: 100%;
