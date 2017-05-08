@@ -204,11 +204,9 @@ function initPattern(globals){
         triangulationsRaw = _triangulationsRaw;
 
         mergeVertices();
-        console.log(vertices);
-        console.log(vertices.length);
-        console.log(mountains);
-        console.log(valleys);
-        console.log(outlines);
+
+        //remove duplicates for each set of edges
+        //remove vertices that are not useful
 
         var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulationsRaw);
         polygons = findPolygons(allEdges);
@@ -269,7 +267,6 @@ function initPattern(globals){
     function mergeVertices(){
 
         vertices = verticesRaw.slice();
-        console.log(vertices.length);
 
         var tolSq = globals.vertTol*globals.vertTol;
         var combined = [];
@@ -308,12 +305,12 @@ function initPattern(globals){
                     if (allEdges[k][0] == js[i] || allEdges[k][1] == js[i]) vertexEdges.push(k);
                 }
                 if (vertexEdges.length>1){
-                    goodVertices.push([vertices[i], js[i]].concat(vertexEdges));
+                    goodVertices.push([vertices[js[i]], js[i]].concat(vertexEdges));
                     _weededVertices.splice(i, 1);
                 }
             }
         }
-        
+
         outlines = outlinesRaw.slice();
         mountains = mountainsRaw.slice();
         valleys = valleysRaw.slice();
@@ -344,12 +341,11 @@ function initPattern(globals){
             var newIndex = mergedVertices.length;
             var oldIndex = goodVertices[i][1];
             mergedVertices.push(goodVertices[i][0]);
-            for (var j=0;j<goodVertices[i].length-2;j++){
-                var edge = allEdges[goodVertices[i][j+2]];
+            for (var j=2;j<goodVertices[i].length;j++){
+                var edge = allEdges[goodVertices[i][j]];
                 edge[edge.indexOf(oldIndex)] = newIndex;
             }
         }
-
         vertices = mergedVertices;
     }
 
