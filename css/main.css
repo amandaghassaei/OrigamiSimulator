@@ -341,3 +341,7 @@ input.form-control.bigInput{
     height: 100px;
     overflow: auto;
 }
+
+.modal img{
+    width: 200px;
+}
