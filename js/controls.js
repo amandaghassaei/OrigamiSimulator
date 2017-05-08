@@ -220,6 +220,13 @@ function initControls(globals){
     setLink("#aboutAxialStrain", function(){
         $("#aboutAxialStrainModal").modal("show");
     });
+    setLink("#aboutVR", function(){
+        $("#aboutVRmodal").modal("show");
+    });
+
+    setCheckbox("#vrEnabled", globals.vrEnabled, function(val){
+        globals.vrEnabled = val;
+    });
 
     setLink("#start", function(){
         $("#pause").show();

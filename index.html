@@ -599,6 +599,17 @@
                     <!--Ambient Occlusion-->
                 <!--</label>-->
             <!--</div>-->
+            VR:
+            <div class="indent smallTxt">
+                Status: &nbsp;<span id="VRstatus">No device connected</span>
+                <a class="about floatRight" href="#" id="aboutVR"><span class="fui-question-circle"></span></a><br/>
+                <div id="VRoptions">
+                    <label class="checkbox" for="vrEnabled">
+                        <input id="vrEnabled" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                        Connect
+                    </label>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -669,6 +680,19 @@
                         <li>Finally hit <b>Save As</b> and select <b>.svg</b> extension. I'm using the default SVG Tiny 1.1 settings, but I believe versions 1.0 and 1.1 will work.</li>
                     </ul>
                 </p>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="aboutVRmodal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-med">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <b>VR</b><br/><br/>
+                Working on VR support for Vive....
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
