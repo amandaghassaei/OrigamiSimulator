@@ -188,8 +188,16 @@ function initModel(globals){
     }
 
     function buildModel(_faces, _vertices, _allEdges, allCreaseParams){
-        if (_vertices.length == 0 || _faces.length == 0 || _allEdges.length == 0) {
-            console.warn("bad geometry");
+        if (_vertices.length == 0) {
+            console.warn("no vertices");
+            return;
+        }
+        if (_faces.length == 0) {
+            console.warn("no faces");
+            return;
+        }
+        if (_allEdges.length == 0) {
+            console.warn("no edges");
             return;
         }
 
