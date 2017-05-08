@@ -646,16 +646,21 @@ function initPattern(globals){
     }
 
     function findIntersections(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw){
+        findIntersectionsInSets(_verticesRaw, _outlinesRaw, _outlinesRaw);
         findIntersectionsInSets(_verticesRaw, _outlinesRaw, _mountainsRaw);
         findIntersectionsInSets(_verticesRaw, _outlinesRaw, _valleysRaw);
         findIntersectionsInSets(_verticesRaw, _outlinesRaw, _cutsRaw);
         findIntersectionsInSets(_verticesRaw, _outlinesRaw, _triangulationsRaw);
+        findIntersectionsInSets(_verticesRaw, _mountainsRaw, _mountainsRaw);
         findIntersectionsInSets(_verticesRaw, _mountainsRaw, _valleysRaw);
         findIntersectionsInSets(_verticesRaw, _mountainsRaw, _cutsRaw);
         findIntersectionsInSets(_verticesRaw, _mountainsRaw, _triangulationsRaw);
+        findIntersectionsInSets(_verticesRaw, _valleysRaw, _valleysRaw);
         findIntersectionsInSets(_verticesRaw, _valleysRaw, _cutsRaw);
         findIntersectionsInSets(_verticesRaw, _valleysRaw, _triangulationsRaw);
+        findIntersectionsInSets(_verticesRaw, _cutsRaw, _cutsRaw);
         findIntersectionsInSets(_verticesRaw, _cutsRaw, _triangulationsRaw);
+        findIntersectionsInSets(_verticesRaw, _triangulationsRaw, _triangulationsRaw);
     }
 
     function findIntersectionsInSets(_verticesRaw, set1, set2){
