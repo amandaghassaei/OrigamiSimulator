@@ -96,7 +96,7 @@ function init3DUI(globals) {
 
     function checkForIntersections(e, objects){
         var _highlightedObj = null;
-        var intersections = raycaster.intersectObject(objects, true);
+        var intersections = raycaster.intersectObjects(objects, false);
         if (intersections.length>0){
             var face = intersections[0].face;
             var position = intersections[0].point;

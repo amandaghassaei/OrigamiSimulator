@@ -87,7 +87,7 @@ function initModel(globals){
     }
 
     function getMesh(){
-        return object3D;
+        return [object3D, object3D2];
     }
     function getVertices(){
         return vertices;
@@ -173,6 +173,8 @@ function initModel(globals){
         geometry.attributes.position.needsUpdate = true;
         if (globals.colorMode == "axialStrain") geometry.attributes.color.needsUpdate = true;
         geometry.computeVertexNormals();
+        // geometry.computeBoundingBox();
+        // geometry.computeBoundingSphere();
     }
 
     var inited = false;
