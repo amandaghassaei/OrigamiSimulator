@@ -624,11 +624,16 @@
                 <p><b>Origami Simulator</b><br/><br/>
                     <a target="_blank" href="http://www2.eng.cam.ac.uk/~sdg/preprint/5OSME.pdf">Origami Folding; A Structural Engineering Approach</a><br/>
                     <a target="_blank" href="http://origami.c.u-tokyo.ac.jp/~tachi/cg/SimulationOfRigidOrigami_tachi_4OSME.pdf">Rigid Origami Simulator</a><br/>
-                    <a target="_blank" href="https://github.com/mapbox/earcut">Earcut Library</a><br/>
-
-                <br/><br/>
-                Built by <a href="http://www.amandaghassaei.com/" target="_blank">Amanda Ghassaei</a> as a final project for <a href="http://courses.csail.mit.edu/6.849/spring17/" target="_blank">Geometric Folding Algorithms</a>.
-                Code available on <a href="https://github.com/amandaghassaei/OrigamiSimulator" target="_blank">Github</a>.
+                    <br/>
+                    This app uses <a target="_blank" href="https://threejs.org/">three.js</a> to visualize and interact with the 3D geometry of the folding.<br/>
+                    Triangulation of quad faces in origami patterns is achieved by adding the shortest edge across the quad (this helps to preserve symmetry, which
+                    makes the simulation work better). Arbitrary polygonal faces are triangulated using the <a target="_blank" href="https://github.com/mapbox/earcut">Earcut Library</a>.<br/>
+                    Additionally, I used <a target="_blank" href="https://jquery.com/">jQuery</a>, <a target="_blank" href="http://getbootstrap.com/">Bootstrap</a> and the
+                    <a target="_blank" href="http://designmodo.github.io/Flat-UI/">Flat UI theme</a> to build the GUI.<br/>
+                    <br/>
+                    Built by <a href="http://www.amandaghassaei.com/" target="_blank">Amanda Ghassaei</a> as a final project for <a href="http://courses.csail.mit.edu/6.849/spring17/" target="_blank">Geometric Folding Algorithms</a>.
+                    Code available on <a href="https://github.com/amandaghassaei/OrigamiSimulator" target="_blank">Github</a>.  If you have interesting crease patterns that would
+                    make good demo files, please send them to me (Amanda) so I can add them to the <b>File>Demos</b> menu.  My email address is on my website.  Thanks!
                 </p>
             </div>
         </div><!-- /.modal-content -->
@@ -656,16 +661,17 @@
                     <b>Importing SVG:</b><br/><br/>
                     <ul>
                         <li>The SVG importer supports path objects and line objects (coming).  Please convert polygons to paths before importing.</li>
-                        <li>Valley folds are red - <span style="color:red">rgb(255, 0, 0), hex #ff0000</span></li>
-                        <li>Mountain folds are blue - <span style="color:blue">rgb(0, 0, 255), hex #0000ff</span></li>
-                        <li>Outline edges are black - <span style="color:black">rgb(0, 0, 0), hex #000000</span></li>
+                        <li>Valley folds are <span style="color:red">red</span> - rgb(255, 0, 0), hex #ff0000</li>
+                        <li>Mountain folds are <span style="color:blue">blue</span> - rgb(0, 0, 255), hex #0000ff</li>
+                        <li>Outline edges are <span style="color:black">black</span> - rgb(0, 0, 0), hex #000000</li>
                         <img src="assets/examplepattern.jpg"/>
                         <li>This tool will automatically triangulate regions in the pattern that form polygons with more than three sides.
-                        To control the triangulations draw lines in yellow - <span style="color:#999900">rgb(255, 255, 0), hex #ffff00</span></li>
+                        To control the triangulations draw lines in <span style="color:#cccc00">yellow</span> - rgb(255, 255, 0), hex #ffff00<br/>
+                        In general, patterns move better when their triangulation is symmetric and minimizes long, skinny triangles.</li>
                         <img src="assets/patternwithtriangulations.jpg"/>
                         <li>Stroke and line style do not matter.</li>
                         <li>The final fold angle of a mountain or valley fold is set by its opacity. For example, 1.0 = 180&deg;
-                        (fully folded), 0.5 = 90&deg;, 0 = 0&deg; (flat).</li>
+                        (fully folded), 0.5 = 90&deg;, 0 = 0&deg; (flat).  Any fold angle between  0&deg; and 180&deg; may be used.</li>
                         <li>This tool should be able to automatically clean files of slightly misaligned vertices, stray vertices,
                         duplicate lines (coming), and extra vertices falling in the middle of an edge (coming),
                         but it is recommended to remove these errors yourself in order to avoid problems.</li>
