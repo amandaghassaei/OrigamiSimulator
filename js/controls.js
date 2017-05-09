@@ -68,6 +68,8 @@ function initControls(globals){
             globals.warn("No crease pattern available for FOLD format.");
             return;
         }
+        globals.pausedForPatternView = globals.threeView.running();
+        globals.model.pause();
         globals.navMode = "pattern";
         $("#navPattern").parent().addClass("open");
         $("#navSimulation").parent().removeClass("open");
@@ -77,6 +79,7 @@ function initControls(globals){
     $("#navPattern").parent().removeClass("open");
     setLink("#navSimulation", function(){
         globals.navMode = "simulation";
+        if (globals.pausedForPatternView) globals.model.resume();
         $("#navSimulation").parent().addClass("open");
         $("#navPattern").parent().removeClass("open");
         $("#svgViewer").hide();

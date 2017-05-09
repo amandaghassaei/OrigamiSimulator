@@ -64,6 +64,8 @@ function initGlobals(){
         triangulateFOLDexport: false,
         exportFoldAngle: false,
 
+        pausedForPatternView: false,
+
         userInteractionEnabled: false,
         vrEnabled: false
 
