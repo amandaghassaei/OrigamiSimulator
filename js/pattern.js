@@ -206,15 +206,76 @@ function initPattern(globals){
         mergeVertices();
 
         //remove duplicates for each set of edges
-        //remove vertices that are not useful
+        removeDuplicates(outlines, outlines);
+        removeDuplicates(mountains, mountains);
+        removeDuplicates(valleys, valleys);
+        removeDuplicates(cuts, cuts);
+        removeDuplicates(triangulations, triangulations);
+        //todo remove duplicates between sets?
 
-        var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulationsRaw);
+        //remove vertices that are not useful
+        removeRedundantVertices(outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulations));
+
+        var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulations);
+
         polygons = findPolygons(allEdges);
-        console.log(polygons[0]);
         var faces = triangulatePolys(polygons, allEdges);
 
         var allCreaseParams = getFacesAndVerticesForEdges(faces, allEdges);
         globals.model.buildModel(faces, vertices, allEdges, allCreaseParams);
+    }
+
+    function removeRedundantVertices(set){
+        // var badVertices = [];
+        // for (var i=0;i<vertices.length;i++){
+        //     var vertexEdges = [];
+        //     for (var j=0;j<=set.length;j++){
+        //         if (set[j][0] == i || set[j][1] == i) vertexEdges.push(j);
+        //     }
+        //     if (vertexEdges.length == 2){
+        //         var edge1 = set[vertexEdges[0]];
+        //         var edge2 = set[vertexEdges[1]];
+        //         var angle1 = Math.atan2(vertices[edge1[0]].z-vertices[edge1[1]].z, vertices[edge1[0]].x-vertices[edge1[1]].x);
+        //         var angle2 = Math.atan2(vertices[edge2[0]].z-vertices[edge2[1]].z, vertices[edge2[0]].x-vertices[edge2[1]].x);
+        //         if (Math.abs(angle1-angle2) < 0.01 || Math.abs(angle1-angle2-Math.PI) < 0.01){
+        //             badVertices.push(i);
+        //             var v1 = edge1[0];
+        //             if (v1 = i) v1 = edge1[1];
+        //             var v2 = edge2[0];
+        //             if (v2 = i) v2 = edge2[1];
+        //             set[vertexEdges[0]] = [v1, v2];//favor outlines over mtn valleys
+        //             set.splice(vertexEdges[1], 1);//delete extra
+        //         }
+        //     }
+        // }
+        // if (badVertices.length>0){
+        //
+        //
+        //
+        //     // for (var j=0;j<=set.length;j++){
+        //     //     if (set[j][0] == i || set[j][1] == i) vertexEdges.push(j);
+        //     // }
+        //     //
+        //     removeDuplicates(outlines, outlines);
+        //     removeDuplicates(mountains, mountains);
+        //     removeDuplicates(valleys, valleys);
+        //     removeDuplicates(cuts, cuts);
+        //     removeDuplicates(triangulations, triangulations);
+        //     removeRedundantVertices(set);
+        // }
+    }
+
+    function removeDuplicates(set1, set2){
+        for (var i=set1.length-1;i>=0;i--){
+            for (var j=i-1;j>=0;j--){
+                var edge1 = set1[i];
+                var edge2 = set2[j];
+                if (edge2.indexOf(edge1[0]) >= 0 && edge2.indexOf(edge1[1]) >= 0){
+                    set2.splice(j, 1);
+                    j--;
+                }
+            }
+        }
     }
 
     function getFacesAndVerticesForEdges(faces, allEdges){

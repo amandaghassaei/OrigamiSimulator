@@ -253,11 +253,11 @@ function initImporter(globals){
                                     break;
                                 case 3:
                                     //outline
-                                    shouldSkip = true;
+                                    creaseParams.push(-Math.PI);
                                     break;
                                 case 2:
                                     //crease
-                                    creaseParams.push(Math.PI);//todo only mtn
+                                    creaseParams.push(Math.PI);
                                     break;
                             }
                             if (!shouldSkip) allCreaseParams.push(creaseParams);
