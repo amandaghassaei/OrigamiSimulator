@@ -256,13 +256,16 @@ function initPattern(globals){
         }
         if (badVertices.length>0){
 
+            console.log(badVertices);
+
             //bad vertices in ascending order
             for (var i=badVertices.length-1;i>=0;i--){
                 vertices.splice(badVertices[i], 1);
-                // for (var j=badVertices[i];j<set.length;j++){
-                //     set[j][0]--;
-                //     set[j][1]--;
-                // }
+                for (var j=0;j<set.length;j++){
+                    var edge = set[j];
+                    if (edge[0]>badVertices[i]) edge[0]--;
+                    if (edge[1]>badVertices[i]) edge[1]--;
+                }
             }
 
             removeDuplicates(outlines, outlines);
