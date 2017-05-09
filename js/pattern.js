@@ -226,43 +226,67 @@ function initPattern(globals){
     }
 
     function removeRedundantVertices(set){
-        // var badVertices = [];
-        // for (var i=0;i<vertices.length;i++){
-        //     var vertexEdges = [];
-        //     for (var j=0;j<=set.length;j++){
-        //         if (set[j][0] == i || set[j][1] == i) vertexEdges.push(j);
-        //     }
-        //     if (vertexEdges.length == 2){
-        //         var edge1 = set[vertexEdges[0]];
-        //         var edge2 = set[vertexEdges[1]];
-        //         var angle1 = Math.atan2(vertices[edge1[0]].z-vertices[edge1[1]].z, vertices[edge1[0]].x-vertices[edge1[1]].x);
-        //         var angle2 = Math.atan2(vertices[edge2[0]].z-vertices[edge2[1]].z, vertices[edge2[0]].x-vertices[edge2[1]].x);
-        //         if (Math.abs(angle1-angle2) < 0.01 || Math.abs(angle1-angle2-Math.PI) < 0.01){
-        //             badVertices.push(i);
-        //             var v1 = edge1[0];
-        //             if (v1 = i) v1 = edge1[1];
-        //             var v2 = edge2[0];
-        //             if (v2 = i) v2 = edge2[1];
-        //             set[vertexEdges[0]] = [v1, v2];//favor outlines over mtn valleys
-        //             set.splice(vertexEdges[1], 1);//delete extra
-        //         }
-        //     }
-        // }
-        // if (badVertices.length>0){
-        //
-        //
-        //
-        //     // for (var j=0;j<=set.length;j++){
-        //     //     if (set[j][0] == i || set[j][1] == i) vertexEdges.push(j);
-        //     // }
-        //     //
-        //     removeDuplicates(outlines, outlines);
-        //     removeDuplicates(mountains, mountains);
-        //     removeDuplicates(valleys, valleys);
-        //     removeDuplicates(cuts, cuts);
-        //     removeDuplicates(triangulations, triangulations);
-        //     removeRedundantVertices(set);
-        // }
+        var badVertices = [];
+        for (var i=0;i<vertices.length;i++){
+            var vertexEdges = [];
+            for (var j=0;j<set.length;j++){
+                if (set[j][0] == i || set[j][1] == i) vertexEdges.push(j);
+            }
+            if (vertexEdges.length == 2){
+                var edge1 = set[vertexEdges[0]];
+                var edge2 = set[vertexEdges[1]];
+                var angle1 = Math.atan2(vertices[edge1[0]].z-vertices[edge1[1]].z, vertices[edge1[0]].x-vertices[edge1[1]].x);
+                var angle2 = Math.atan2(vertices[edge2[0]].z-vertices[edge2[1]].z, vertices[edge2[0]].x-vertices[edge2[1]].x);
+                if (Math.abs(angle1-angle2) < 0.01 || Math.abs(angle1-angle2-Math.PI) < 0.01){
+                    badVertices.push(i);
+                    var v1 = edge1[0];
+                    if (v1 == i) v1 = edge1[1];
+                    var v2 = edge2[0];
+                    if (v2 == i) v2 = edge2[1];
+                    var angle = set[vertexEdges[0]][2];
+                    if (set[vertexEdges[1]][2] != angle) console.warn("different types of edges being joined");
+
+                    var set1 = getSetForIndex(vertexEdges[0]);
+                    var set2 = getSetForIndex(vertexEdges[1]);
+
+                    set1[getIndexInSet(vertexEdges[0])] = [v1, v2, angle];//favor outlines over mtn valleys
+                    set2.splice(getIndexInSet(vertexEdges[1]), 1);//delete extra
+                }
+            }
+        }
+        if (badVertices.length>0){
+
+            //bad vertices in ascending order
+            for (var i=badVertices.length-1;i>=0;i--){
+                vertices.splice(badVertices[i], 1);
+                // for (var j=badVertices[i];j<set.length;j++){
+                //     set[j][0]--;
+                //     set[j][1]--;
+                // }
+            }
+
+            removeDuplicates(outlines, outlines);
+            removeDuplicates(mountains, mountains);
+            removeDuplicates(valleys, valleys);
+            removeDuplicates(cuts, cuts);
+            removeDuplicates(triangulations, triangulations);
+            removeRedundantVertices(set);
+        }
+    }
+
+    function getSetForIndex(i){
+        if (i<outlines.length) return outlines;
+        if (i<mountains.length+outlines.length) return mountains;
+        if (i<valleys.length+mountains.length+outlines.length) return valleys;
+        if (i<cuts.length+valleys.length+mountains.length+outlines.length) return cuts;
+        return triangulations;
+    }
+    function getIndexInSet(i){
+        if (i<outlines.length) return i;
+        if (i<mountains.length+outlines.length) return i-outlines.length;
+        if (i<valleys.length+mountains.length+outlines.length) return i-outlines.length-mountains.length;
+        if (i<cuts.length+valleys.length+mountains.length+outlines.length) return i-outlines.length-mountains.length-valleys.length;
+        return i-outlines.length-mountains.length-valleys.length-cuts.length;
     }
 
     function removeDuplicates(set1, set2){
