@@ -406,49 +406,8 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">File <b class="caret"></b></a>
                 <span class="dropdown-arrow"></span>
                 <ul class="dropdown-menu">
-                    <li class="dropdown-submenu">
-                        <a tabindex="-1">Demo Files<span class="pull-right fui-arrow-right"></span></a>
-                        <ul class="dropdown-menu">
-                            <li class="dropdown-submenu">
-                                <a tabindex="-1">Origami<span class="pull-right fui-arrow-right"></span></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#" class="demo" data-url="Origami/randlettflappingbird.svg">Randlett Flapping Bird</a></li>
-                                    <li><a href="#" class="demo" data-url="Origami/singlesquaretwist.svg">Square Twist (single)</a></li>
-                                    <li><a href="#" class="demo" data-url="Origami/squaretwistManyAngles.svg">Square Twist (many angles)</a></li>
-                                </ul>
-                            </li>
-                            <li class="dropdown-submenu">
-                                <a tabindex="-1">Tesselations<span class="pull-right fui-arrow-right"></span></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#" class="demo" data-url="Tessellations/miura-ori.svg">Miura-Ori</a></li>
-                                    <li><a href="#" class="demo" data-url="Tessellations/waterbomb.svg">Waterbomb (six-crease base)</a></li>
-                                    <li><a href="#" class="demo" data-url="Tessellations/waterbombTwist.svg">Waterbomb (eight-crease base)</a></li>
-                                    <li><a href="#" class="demo" data-url="Tessellations/reschtritessellation.svg">Resch Triangle Tessellation</a></li>
-                                    <li><a href="#" class="demo" data-url="Tessellations/reschbarbell.svg">Resch Barbell Tessellation</a></li>
-                                    <li><a href="#" class="demo" data-url="Tessellations/oval_tessellation_cp.svg">Lang Oval Tessellation</a></li>
-                                </ul>
-                            </li>
-                            <li class="dropdown-submenu">
-                                <a tabindex="-1">Curved Creases<span class="pull-right fui-arrow-right"></span></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#" class="demo" data-url="Curved/creaseMesh.txt">Curved Crease 1</a></li>
-                                </ul>
-                            </li>
-                            <li class="dropdown-submenu">
-                                <a tabindex="-1">Problematic Patterns<span class="pull-right fui-arrow-right"></span></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#" class="demo" data-url="Origami/hypar.svg">Hypar</a></li>
-                                    <li><a href="#" class="demo" data-url="Tessellations/hyperbolic_limit_cp.svg">Lang Hyperbolic Limit</a></li>
-                                    <li><a href="#" class="demo" data-url="Tessellations/honeycomb_333_cp.svg">Lang Honeycomb Tessellation</a></li>
-                                    <li><a href="#" class="demo" data-url="Tessellations/wedged_double_faced.svg">Lang Wedged Double Faced Tessellation</a></li>
-                                    <li><a href="#" class="demo" data-url="Tessellations/rattanweaveLang.svg">Lang Rattan Weave</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="divider"></li>
                     <li><a class="loadFile" href="#">Import... (SVG / FOLD / txt)</a></li>
-
+                    <li><a id="tips" href="#">File Import Tips</a></li>
                     <li class="divider"></li>
                     <li><a id="exportFOLD" href="#">Save Simulation as FOLD...</a></li>
                     <li><a id="exportSTL" href="#">Save Simulation as STL...</a></li>
@@ -456,10 +415,51 @@
                     <!--<li><a id="saveSVGScreenshot" href="#">Save SVG screenshot</a></li>-->
                 </ul>
             </li>
+            <li class="dropdown navDropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Examples <b class="caret"></b></a>
+                <span class="dropdown-arrow"></span>
+                <ul class="dropdown-menu">
+                    <li class="dropdown-submenu">
+                        <a tabindex="-1">Origami<span class="pull-right fui-arrow-right"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" class="demo" data-url="Origami/randlettflappingbird.svg">Randlett Flapping Bird</a></li>
+                            <li><a href="#" class="demo" data-url="Origami/singlesquaretwist.svg">Square Twist (single)</a></li>
+                            <li><a href="#" class="demo" data-url="Origami/squaretwistManyAngles.svg">Square Twist (many angles)</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown-submenu">
+                        <a tabindex="-1">Tesselations<span class="pull-right fui-arrow-right"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" class="demo" data-url="Tessellations/miura-ori.svg">Miura-Ori</a></li>
+                            <li><a href="#" class="demo" data-url="Tessellations/waterbomb.svg">Waterbomb (six-crease base)</a></li>
+                            <li><a href="#" class="demo" data-url="Tessellations/waterbombTwist.svg">Waterbomb (eight-crease base)</a></li>
+                            <li><a href="#" class="demo" data-url="Tessellations/reschtritessellation.svg">Resch Triangle Tessellation</a></li>
+                            <li><a href="#" class="demo" data-url="Tessellations/reschbarbell.svg">Resch Barbell Tessellation</a></li>
+                            <li><a href="#" class="demo" data-url="Tessellations/oval_tessellation_cp.svg">Lang Oval Tessellation</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown-submenu">
+                        <a tabindex="-1">Curved Creases<span class="pull-right fui-arrow-right"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" class="demo" data-url="Curved/creaseMesh.txt">Curved Crease 1</a></li>
+                        </ul>
+                    </li>
+                    <li class="divider"></li>
+                    <li class="dropdown-submenu">
+                        <a tabindex="-1">Problematic Patterns<span class="pull-right fui-arrow-right"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" class="demo" data-url="Origami/hypar.svg">Hypar</a></li>
+                            <li><a href="#" class="demo" data-url="Tessellations/hyperbolic_limit_cp.svg">Lang Hyperbolic Limit</a></li>
+                            <li><a href="#" class="demo" data-url="Tessellations/honeycomb_333_cp.svg">Lang Honeycomb Tessellation</a></li>
+                            <li><a href="#" class="demo" data-url="Tessellations/wedged_double_faced.svg">Lang Wedged Double Faced Tessellation</a></li>
+                            <li><a href="#" class="demo" data-url="Tessellations/rattanweaveLang.svg">Lang Rattan Weave</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
             <li><a id="navPattern" href="#">Pattern</a></li>
             <li><a id="navSimulation" href="#">Simulation</a></li>
             <li><a id="about" class="menuHoverControls" target="_blank" href="#">About</a></li>
-            <li><a id="tips" class="menuHoverControls" target="_blank" href="#">File Import Tips</a></li>
         </ul>
         <!--<form class="navbar-form navbar-right" action="#" role="search">-->
             <!--<div class="form-group">-->
@@ -687,7 +687,7 @@
                         <li>Illustrator can help you select all lines of a particular type so that you can edit their color or opacity together.  Click the line,
                         then go to <b>Select>Same>Appearance</b> to select all similar lines in the pattern.
                         <li>To turn lines and polygons into path objects, select the geometry then right click and select <b>Make Compound Path</b>.</li>
-                        <li>Finally hit <b>Save As</b> and select <b>.svg</b> extension. I'm using the default SVG Tiny 1.1 settings, but I believe versions 1.0 and 1.1 will work.</li>
+                        <li>Finally hit <b>Save As</b> and select <b>.svg</b> extension. I'm using the default SVG 1.1 settings, but version 1.0 will work as well.</li>
                     </ul>
                 </p>
             </div>
