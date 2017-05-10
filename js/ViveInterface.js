@@ -15,11 +15,7 @@ function initViveInterface(globals){
     $status.html("No device connected.");
     $("#VRoptions").show();
 
-     WEBVR.getVRDisplay(function(display){
-         if (display) document.body.appendChild(WEBVR.getButton(display, globals.threeView.renderer.domElement));
-         $status.html("VR device detected.");
-         setup();
-    });
+    connect();
 
     var controls, controller1, controller2, effect;
 
@@ -48,8 +44,15 @@ function initViveInterface(globals){
 
     function connect(){
         WEBVR.getVRDisplay( function ( display ) {
-
-            document.body.appendChild( WEBVR.getButton( display, renderer.domElement ) );
+            if (!display) return;
+            $status.html("VR device detected.");
+            setup();
+            var button = WEBVR.getButton( display, renderer.domElement );
+            document.body.appendChild(button);
+            button.onclick = function () {
+				if (display.isPresenting) globals.vrEnabled = false;
+                else globals.vrEnabled = true;
+			};
 
         } );
     }
