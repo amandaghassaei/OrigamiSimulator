@@ -15,32 +15,26 @@ function initViveInterface(globals){
     $status.html("No device connected.");
     $("#VRoptions").show();
 
-    connect();
-
-    var controls, controller1, controller2, effect;
-
     var mesh = new THREE.Mesh(new THREE.CubeGeometry(1, 1,1 ), new THREE.MeshLambertMaterial({color:0xff0000}));
 
-    function setup(){
+    var controls = new THREE.VRControls(globals.threeView.camera);
+    controls.standing = true;
 
-        controls = new THREE.VRControls(globals.threeView.camera);
-        controls.standing = true;
+    // controllers
+    controller1 = new THREE.ViveController( 0 );
+    var controller1.standingMatrix = controls.getStandingMatrix();
+    globals.threeView.scene.add( controller1 );
 
-        // controllers
-        controller1 = new THREE.ViveController( 0 );
-        controller1.standingMatrix = controls.getStandingMatrix();
-        globals.threeView.scene.add( controller1 );
+    var controller2 = new THREE.ViveController( 1 );
+    controller2.standingMatrix = controls.getStandingMatrix();
+    globals.threeView.scene.add( controller2 );
 
-        controller2 = new THREE.ViveController( 1 );
-        controller2.standingMatrix = controls.getStandingMatrix();
-        globals.threeView.scene.add( controller2 );
+    controller1.add(mesh.clone());
+    controller2.add(mesh.clone());
 
-        controller1.add(mesh.clone());
-        controller2.add(mesh.clone());
+    var effect = new THREE.VREffect(globals.threeView.renderer);
 
-        effect = new THREE.VREffect(globals.threeView.renderer);
-
-    }
+    connect();
 
     function connect(){
         WEBVR.getVRDisplay( function ( display ) {
