@@ -206,12 +206,14 @@ function initPattern(globals){
         mergeVertices();
 
         //remove duplicates for each set of edges
-        removeDuplicates(outlines, outlines);
-        removeDuplicates(mountains, mountains);
-        removeDuplicates(valleys, valleys);
-        removeDuplicates(cuts, cuts);
-        removeDuplicates(triangulations, triangulations);
+        var duplicates = 0;
+        duplicates += removeDuplicates(outlines, outlines);
+        duplicates += removeDuplicates(mountains, mountains);
+        duplicates += removeDuplicates(valleys, valleys);
+        duplicates += removeDuplicates(cuts, cuts);
+        duplicates += removeDuplicates(triangulations, triangulations);
         //todo remove duplicates between sets?
+        if (duplicates>0) console.warn(duplicates + " duplicate edges removed");
 
         //remove vertices that are not useful
         removeRedundantVertices(outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulations));
@@ -219,6 +221,8 @@ function initPattern(globals){
         var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulations);
 
         polygons = findPolygons(allEdges);
+        console.log(polygons[0]);
+        console.log(vertices);
         var faces = triangulatePolys(polygons, allEdges);
 
         var allCreaseParams = getFacesAndVerticesForEdges(faces, allEdges);
@@ -226,6 +230,7 @@ function initPattern(globals){
     }
 
     function removeRedundantVertices(set){
+        // console.log(JSON.stringify(set));
         var badVertices = [];
         for (var i=0;i<vertices.length;i++){
             var vertexEdges = [];
@@ -237,7 +242,8 @@ function initPattern(globals){
                 var edge2 = set[vertexEdges[1]];
                 var angle1 = Math.atan2(vertices[edge1[0]].z-vertices[edge1[1]].z, vertices[edge1[0]].x-vertices[edge1[1]].x);
                 var angle2 = Math.atan2(vertices[edge2[0]].z-vertices[edge2[1]].z, vertices[edge2[0]].x-vertices[edge2[1]].x);
-                if (Math.abs(angle1-angle2) < 0.01 || Math.abs(angle1-angle2-Math.PI) < 0.01){
+                var diff = Math.abs(angle1-angle2);
+                if (diff < 0.01 || Math.abs(diff-Math.PI) < 0.01 || Math.abs(diff-2*Math.PI) < 0.01){
                     badVertices.push(i);
                     var v1 = edge1[0];
                     if (v1 == i) v1 = edge1[1];
@@ -257,22 +263,30 @@ function initPattern(globals){
         if (badVertices.length>0){
 
             console.log(badVertices);
+            console.log(JSON.stringify(set));
+
+            console.warn(badVertices.length + " extra vertices found on line segments and removed");
 
             //bad vertices in ascending order
             for (var i=badVertices.length-1;i>=0;i--){
-                vertices.splice(badVertices[i], 1);
+                var index = badVertices[i];
+                vertices.splice(index, 1);
                 for (var j=0;j<set.length;j++){
                     var edge = set[j];
-                    if (edge[0]>badVertices[i]) edge[0]--;
-                    if (edge[1]>badVertices[i]) edge[1]--;
+                    if (edge[0]>=index) edge[0]--;
+                    if (edge[1]>=index) edge[1]--;
                 }
             }
+            console.log(JSON.stringify(set));
+            console.log(JSON.stringify(vertices));
 
-            removeDuplicates(outlines, outlines);
-            removeDuplicates(mountains, mountains);
-            removeDuplicates(valleys, valleys);
-            removeDuplicates(cuts, cuts);
-            removeDuplicates(triangulations, triangulations);
+            var duplicates = 0;
+            duplicates += removeDuplicates(outlines, outlines);
+            duplicates += removeDuplicates(mountains, mountains);
+            duplicates += removeDuplicates(valleys, valleys);
+            duplicates += removeDuplicates(cuts, cuts);
+            duplicates += removeDuplicates(triangulations, triangulations);
+            if (duplicates>0) console.warn(duplicates + " duplicate edges removed");
             removeRedundantVertices(set);
         }
     }
@@ -293,16 +307,21 @@ function initPattern(globals){
     }
 
     function removeDuplicates(set1, set2){
-        for (var i=set1.length-1;i>=0;i--){
+        //todo need to change some stuff to make this work with two different sets
+        var num = 0;
+        for (var i=set1.length-1;i>=1;i--){
             for (var j=i-1;j>=0;j--){
                 var edge1 = set1[i];
                 var edge2 = set2[j];
                 if (edge2.indexOf(edge1[0]) >= 0 && edge2.indexOf(edge1[1]) >= 0){
                     set2.splice(j, 1);
+                    if (set2 == set1) i--;
                     j--;
+                    num++;
                 }
             }
         }
+        return num;
     }
 
     function getFacesAndVerticesForEdges(faces, allEdges){
@@ -498,14 +517,14 @@ function initPattern(globals){
                 var normal = (vecA.cross(vecB)).normalize();
                 var axis = ((new THREE.Vector3(0,1,0)).cross(normal)).normalize();
                 var angle = -Math.acos((new THREE.Vector3(0,1,0)).dot(normal));
-                for (var j=1;j<polygon.length;j++){
+                for (var j=0;j<polygon.length-1;j++){
                     var vertex = _vertices[polygon[j]];
                     vertex = (vertex.clone().sub(translation)).applyAxisAngle(axis, angle);
                     polyVerts.push(vertex.x);
                     polyVerts.push(vertex.z);
                 }
             } else {
-                for (var j=1;j<polygon.length;j++){
+                for (var j=0;j<polygon.length-1;j++){
                     var vertex = _vertices[polygon[j]];
                     polyVerts.push(vertex.x);
                     polyVerts.push(vertex.z);
