@@ -15,6 +15,12 @@ function initViveInterface(globals){
     $status.html("No device connected.");
     $("#VRoptions").show();
 
+     WEBVR.getVRDisplay(function(display){
+         if (display) document.body.appendChild(WEBVR.getButton(display, globals.threeView.renderer.domElement));
+         $status.html("VR device detected.");
+         setup();
+    });
+
     var controls, controller1, controller2, effect;
 
     var mesh = new THREE.Mesh(new THREE.CubeGeometry(1, 1,1 ), new THREE.MeshLambertMaterial({color:0xff0000}));

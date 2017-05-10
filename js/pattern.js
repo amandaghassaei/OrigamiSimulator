@@ -35,12 +35,12 @@ function initPattern(globals){
 
                 var $outlines = $paths.filter(function(){
                     var stroke = $(this).attr("stroke").toLowerCase();
-                    return stroke == "#000000" || stroke == "#000";
+                    return stroke == "#000000" || stroke == "#000" || stroke == "black";
                 });
 
                 var $mountains = $paths.filter(function(){
                     var stroke = $(this).attr("stroke").toLowerCase();
-                    if (stroke == "#ff0000" || stroke == "#f00" || stroke == "#FF0000" || stroke == "#F00"){
+                    if (stroke == "#ff0000" || stroke == "#f00" || stroke == "#FF0000" || stroke == "#F00" || stroke == "red"){
                         var opacity = parseFloat($(this).attr("opacity"));
                         if (isNaN(opacity)) opacity = 1;
                         _mountainAngles.push(opacity*Math.PI);
@@ -51,7 +51,7 @@ function initPattern(globals){
 
                 var $valleys = $paths.filter(function(){
                     var stroke = $(this).attr("stroke").toLowerCase();
-                    if (stroke == "#0000ff" || stroke == "#00f" || stroke == "#0000FF" || stroke == "#00F"){
+                    if (stroke == "#0000ff" || stroke == "#00f" || stroke == "#0000FF" || stroke == "#00F" || stroke == "greeen"){
                         var opacity = parseFloat($(this).attr("opacity"));
                         if (isNaN(opacity)) opacity = 1;
                         _valleyAngles.push(-opacity*Math.PI);
@@ -62,12 +62,12 @@ function initPattern(globals){
 
                 var $cuts = $paths.filter(function(){
                     var stroke = $(this).attr("stroke").toLowerCase();
-                    return stroke == "#00ff00" || stroke == "#0f0";
+                    return stroke == "#00ff00" || stroke == "#0f0" || stroke == "green";
                 });
 
                 var $triangulations = $paths.filter(function(){
                     var stroke = $(this).attr("stroke").toLowerCase();
-                    return stroke == "#ffff00" || stroke == "#ff0" || stroke == "#FFFF00" || stroke == "#FF0";
+                    return stroke == "#ffff00" || stroke == "#ff0" || stroke == "#FFFF00" || stroke == "#FF0" || stroke == "yellow";
                 });
 
                 parseSVG($outlines, $mountains, $valleys, $cuts, $triangulations, _mountainAngles, _valleyAngles);
