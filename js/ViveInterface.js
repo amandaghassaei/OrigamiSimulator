@@ -40,7 +40,6 @@ function initViveInterface(globals){
         WEBVR.getVRDisplay( function ( display ) {
             if (!display) return;
             $status.html("VR device detected.");
-            setup();
             var button = WEBVR.getButton( display, globals.threeView.renderer.domElement );
             document.body.appendChild(button);
             button.onclick = function () {
