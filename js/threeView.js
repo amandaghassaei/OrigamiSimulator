@@ -122,6 +122,10 @@ function initThreeView(globals) {
     }
 
     function _render(){
+        if (globals.vrEnabled){
+            globals.vive.render();
+            return;
+        }
         if (globals.ambientOcclusion) {
             // Render depth into depthRenderTarget
             scene.overrideMaterial = depthMaterial;
@@ -129,13 +133,19 @@ function initThreeView(globals) {
             // Render renderPass and SSAO shaderPass
             scene.overrideMaterial = null;
             effectComposer.render();
-        } else {
-            renderer.render(scene, camera);
+            return;
         }
+        renderer.render(scene, camera);
     }
 
     function _loop(callback){
         callback();
+        if (globals.vrEnabled){
+            globals.vive.effect.requestAnimationFrame(function(){
+                _loop(callback);
+            });
+            return;
+        }
         requestAnimationFrame(function(){
             if (pauseFlag) {
                 pauseFlag = false;
@@ -231,6 +241,7 @@ function initThreeView(globals) {
         enableControls: enableControls,
         scene: scene,
         camera: camera,
+        renderer: renderer,
         running: running,
         setScale:setScale,
         saveSVG: saveSVG

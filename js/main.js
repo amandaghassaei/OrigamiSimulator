@@ -17,5 +17,6 @@ $(function() {
     globals.staticSolver = initStaticSolver(globals);
     globals.dynamicSolver = initDynamicSolver(globals);
     globals.pattern = initPattern(globals);
+    globals.vive = initViveInterface(globals);
     $(".demo[data-url='Tessellations/waterbomb.svg']").click();
 });

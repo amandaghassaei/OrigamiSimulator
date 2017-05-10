@@ -61,6 +61,7 @@ function initDynamicSolver(globals){
         globals.gpuMath.step("zeroTexture", [], "u_lastPosition");
         globals.gpuMath.step("zeroTexture", [], "u_velocity");
         globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
+        //todo reset theta
         render();
     }
 
@@ -172,7 +173,9 @@ function initDynamicSolver(globals){
         //     var pixels = new Uint8Array(height*textureDimCreases*4*vectorLength);
         //     globals.gpuMath.readPixels(0, 0, textureDimCreases * vectorLength, height, pixels);
         //     var parsedPixels = new Float32Array(pixels.buffer);
-        //     console.log(parsedPixels);
+        //     for (var i=0;i<parsedPixels.length;i+=2){
+        //         if (Math.abs(parsedPixels[i+1])>3.0) console.log(parsedPixels[i+1]);
+        //     }
         // } else {
         //     console.log("here");
         // }

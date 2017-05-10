@@ -284,7 +284,6 @@
             float dotNormals = dot(normal1, normal2);//normals are already normalized, no need to divide by length
             if (dotNormals < -1.0) dotNormals = -1.0;
             else if (dotNormals > 1.0) dotNormals = 1.0;
-            //float theta = acos(dotNormals);
 
             vec2 creaseVectorIndices = texture2D(u_creaseVectors, scaledFragCoord).xy;
             vec2 creaseNodeIndex = vec2(mod(creaseVectorIndices[0], u_textureDim.x)+0.5, floor(creaseVectorIndices[0]/u_textureDim.x)+0.5);
@@ -301,10 +300,7 @@
 
             float theta = atan(y, x);
 
-            //float sign = dot(cross(normal1, normal2), creaseVector);
-            //if (sign < 0.0) theta *= -1.0;
             float diff = theta-lastTheta[0];
-            float projectedTheta = lastTheta[0] + lastTheta[1]*u_dt;
             if (diff < -5.0) {
                 diff += TWO_PI;
                 theta = lastTheta[0] + diff;
@@ -312,7 +308,7 @@
                 diff  -= TWO_PI;
                 theta = lastTheta[0] + diff;
             }
-            gl_FragColor = vec4(theta, creaseVectorIndices[1], lastTheta[2], lastTheta[3]);//[theta, w, normal1Index, normal2Index]
+            gl_FragColor = vec4(theta, theta, lastTheta[2], lastTheta[3]);//[theta, w, normal1Index, normal2Index]
         }
     </script>
 
@@ -345,7 +341,9 @@
             scaledNodeIndex = nodeIndex/u_textureDim;
             vec3 c = texture2D(u_lastPosition, scaledNodeIndex).xyz + texture2D(u_originalPosition, scaledNodeIndex).xyz;
 
-            gl_FragColor = vec4(normalize(cross(b-a, c-a)), 0.0);
+            vec3 normal = normalize(cross(b-a, c-a));
+
+            gl_FragColor = vec4(normal, 0.0);
         }
     </script>
 
@@ -372,6 +370,11 @@
     <script type="text/javascript" src="dependencies/Detector.js"></script>
     <script type="text/javascript" src="dependencies/RenderPass.js"></script>
 
+    <script type="text/javascript" src="dependencies/WebVR.js"></script>
+    <script type="text/javascript" src="dependencies/VREffect.js"></script>
+    <script type="text/javascript" src="dependencies/ViveController.js"></script>
+    <script type="text/javascript" src="dependencies/VRControls.js"></script>
+
     <script type="text/javascript" src="js/dynamic/GLBoilerplate.js"></script>
     <script type="text/javascript" src="js/dynamic/GPUMath.js"></script>
     <script type="text/javascript" src="js/controls.js"></script>
@@ -388,7 +391,7 @@
     <script type="text/javascript" src="js/saveSTL.js"></script>
     <script type="text/javascript" src="js/saveFOLD.js"></script>
     <script type="text/javascript" src="js/importer.js"></script>
-
+    <script type="text/javascript" src="js/ViveInterface.js"></script>
 
     <script type="text/javascript" src="js/main.js"></script>
 </head>
@@ -605,7 +608,7 @@
             <!--</div>-->
             VR:
             <div class="indent smallTxt">
-                Status: &nbsp;<span id="VRstatus">No device connected</span>
+                Status: &nbsp;<span id="VRstatus"></span>
                 <a class="about floatRight" href="#" id="aboutVR"><span class="fui-question-circle"></span></a><br/>
                 <div id="VRoptions">
                     <label class="checkbox" for="vrEnabled">
