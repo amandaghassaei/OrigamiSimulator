@@ -21,8 +21,8 @@ function initViveInterface(globals){
     controls.standing = true;
 
     // controllers
-    controller1 = new THREE.ViveController( 0 );
-    var controller1.standingMatrix = controls.getStandingMatrix();
+    var controller1 = new THREE.ViveController( 0 );
+    controller1.standingMatrix = controls.getStandingMatrix();
     globals.threeView.scene.add( controller1 );
 
     var controller2 = new THREE.ViveController( 1 );
