@@ -436,7 +436,7 @@ function initPattern(globals){
         if (_weededVertices.length > 0){
             console.log(_weededVertices);
             globals.warn("Some vertices are not fully connected, try increasing vertex merge tolerance");
-            // return;
+            return;
         }
 
         removeCombinedFromSet(combined, outlines);

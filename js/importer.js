@@ -36,6 +36,7 @@ function initImporter(globals){
         var name = extension[0];
         extension = extension[extension.length - 1];
         var reader = new FileReader();
+        $(e.target).val("");
 
         if (extension == "txt") {
             reader.onload = function () {
