@@ -221,8 +221,6 @@ function initPattern(globals){
         var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulations);
 
         polygons = findPolygons(allEdges);
-        console.log(polygons[0]);
-        console.log(vertices);
         var faces = triangulatePolys(polygons, allEdges);
 
         var allCreaseParams = getFacesAndVerticesForEdges(faces, allEdges);
@@ -262,9 +260,6 @@ function initPattern(globals){
         }
         if (badVertices.length>0){
 
-            console.log(badVertices);
-            console.log(JSON.stringify(set));
-
             console.warn(badVertices.length + " extra vertices found on line segments and removed");
 
             //bad vertices in ascending order
@@ -277,8 +272,6 @@ function initPattern(globals){
                     if (edge[1]>=index) edge[1]--;
                 }
             }
-            console.log(JSON.stringify(set));
-            console.log(JSON.stringify(vertices));
 
             var duplicates = 0;
             duplicates += removeDuplicates(outlines, outlines);
