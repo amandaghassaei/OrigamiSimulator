@@ -174,7 +174,7 @@ function initDynamicSolver(globals){
         //     globals.gpuMath.readPixels(0, 0, textureDimCreases * vectorLength, height, pixels);
         //     var parsedPixels = new Float32Array(pixels.buffer);
         //     for (var i=0;i<parsedPixels.length;i+=2){
-        //         if (Math.abs(parsedPixels[i+1])>3.0) console.log(parsedPixels[i+1]);
+        //         if (Math.abs(parsedPixels[i+1])>0.1) console.log(parsedPixels[i+1]);
         //     }
         // } else {
         //     console.log("here");

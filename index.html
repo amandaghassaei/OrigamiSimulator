@@ -301,14 +301,15 @@
             float theta = atan(y, x);
 
             float diff = theta-lastTheta[0];
+            float origDiff = diff;
             if (diff < -5.0) {
                 diff += TWO_PI;
-                theta = lastTheta[0] + diff;
             } else if (diff > 5.0) {
                 diff  -= TWO_PI;
-                theta = lastTheta[0] + diff;
             }
-            gl_FragColor = vec4(theta, theta, lastTheta[2], lastTheta[3]);//[theta, w, normal1Index, normal2Index]
+            //if (abs(diff)>0.01) diff = 0.0;
+            theta = lastTheta[0] + diff;
+            gl_FragColor = vec4(theta, origDiff, lastTheta[2], lastTheta[3]);//[theta, w, normal1Index, normal2Index]
         }
     </script>
 

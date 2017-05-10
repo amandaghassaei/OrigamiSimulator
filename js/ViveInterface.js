@@ -12,6 +12,8 @@ function initViveInterface(globals){
         $("#VRoptions").hide();
         return;
     }
+    $status.html("No device connected.");
+    $("#VRoptions").show();
 
     var controls, controller1, controller2, effect;
 
