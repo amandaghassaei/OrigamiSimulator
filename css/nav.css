@@ -141,3 +141,7 @@ img{
     border-radius: 6px 0 6px 6px;
 }
 
+.dropdown-submenu .fui-arrow-right{
+    position: absolute;
+    right: 10px;
+}
