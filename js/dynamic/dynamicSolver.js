@@ -174,7 +174,10 @@ function initDynamicSolver(globals){
         //     globals.gpuMath.readPixels(0, 0, textureDimCreases * vectorLength, height, pixels);
         //     var parsedPixels = new Float32Array(pixels.buffer);
         //     for (var i=0;i<parsedPixels.length;i+=2){
-        //         if (Math.abs(parsedPixels[i+1])>0.1) console.log(parsedPixels[i+1]);
+        //         if (Math.abs(parsedPixels[i])>Math.PI) {
+        //             console.log(creases[i]);
+        //         }
+        //
         //     }
         // } else {
         //     console.log("here");
@@ -197,7 +200,7 @@ function initDynamicSolver(globals){
             var shouldUpdateColors = globals.colorMode == "axialStrain";
             for (var i = 0; i < nodes.length; i++) {
                 var rgbaIndex = i * vectorLength;
-                var nodeError = parsedPixels[rgbaIndex+3];
+                var nodeError = parsedPixels[rgbaIndex+3]*100;
                 globalError += nodeError;
                 var nodePosition = new THREE.Vector3(parsedPixels[rgbaIndex], parsedPixels[rgbaIndex + 1], parsedPixels[rgbaIndex + 2]);
                 var nexPos = nodes[i].render(nodePosition);
@@ -206,7 +209,7 @@ function initDynamicSolver(globals){
                 positions[3*i+2] = nexPos.z;
                 if (shouldUpdateColors){
                     if (nodeError>globals.strainClip) nodeError = globals.strainClip;
-                    var scaledVal = (1-100*nodeError/globals.strainClip) * 0.7;
+                    var scaledVal = (1-nodeError/globals.strainClip) * 0.7;
                     var color = new THREE.Color();
                     color.setHSL(scaledVal, 1, 0.5);
                     colors[3*i] = color.r;
@@ -214,7 +217,7 @@ function initDynamicSolver(globals){
                     colors[3*i+2] = color.b;
                 }
             }
-            $errorOutput.html((globalError/nodes.length*100).toFixed(7) + " %");
+            $errorOutput.html((globalError/nodes.length).toFixed(7) + " %");
             for (var i=0;i<edges.length;i++){
                 edges[i].render();
             }
@@ -224,7 +227,7 @@ function initDynamicSolver(globals){
     }
 
     function setSolveParams(){
-        var dt = calcDt()/10;//todo factor of ten?
+        var dt = calcDt()/2;//todo factor of ten?
         $("#deltaT").html(dt);
         var numSteps = 0.5/dt;
         globals.gpuMath.setProgram("thetaCalc");
@@ -405,6 +408,7 @@ function initDynamicSolver(globals){
             creaseMeta[i*4] = crease.getK();
             creaseMeta[i*4+1] = crease.getD();
             if (initing) creaseMeta[i*4+2] = crease.getTargetTheta();
+            // if (crease.getTargetTheta()<)
         }
         globals.gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true);
     }

@@ -38,6 +38,8 @@ Crease.prototype.getNormal2Index = function(){
 };
 
 Crease.prototype.getTargetTheta = function(){
+    // if (this.targetTheta<0) this.edge.setMountain();
+    // else this.edge.setValley();
     return this.targetTheta;
 };
 

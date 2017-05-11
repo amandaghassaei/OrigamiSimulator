@@ -79,6 +79,16 @@ Beam.prototype.getOtherNode = function(node){
     return this.nodes[0];
 };
 
+var valleyColor = new THREE.LineBasicMaterial({color:0x0000ff});
+var mtnColor = new THREE.LineBasicMaterial({color:0xff0000});
+
+Beam.prototype.setMountain = function(){
+    this.object3D.material = mtnColor;
+};
+
+Beam.prototype.setValley = function(){
+    this.object3D.material = valleyColor;
+};
 
 
 //render
