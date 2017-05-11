@@ -174,7 +174,7 @@ function initModel(globals){
         if (globals.colorMode == "axialStrain") geometry.attributes.color.needsUpdate = true;
         geometry.computeVertexNormals();
         // geometry.computeBoundingBox();
-        // geometry.computeBoundingSphere();
+        geometry.computeBoundingSphere();
     }
 
     var inited = false;
@@ -318,7 +318,7 @@ function initModel(globals){
         geometry.computeBoundingSphere();
         geometry.center();
 
-        var scale = 100/geometry.boundingSphere.radius;
+        var scale = 1/geometry.boundingSphere.radius;
         globals.scale = scale;
 
         object3D.geometry.dispose();

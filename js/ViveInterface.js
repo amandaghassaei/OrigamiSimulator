@@ -15,7 +15,7 @@ function initViveInterface(globals){
     $status.html("No device connected.");
     $("#VRoptions").show();
 
-    var mesh = new THREE.Mesh(new THREE.CubeGeometry(1, 1,1 ), new THREE.MeshLambertMaterial({color:0xff0000}));
+    var mesh = new THREE.Mesh(new THREE.CubeGeometry(1,1,1), new THREE.MeshLambertMaterial({color:0xff0000}));
 
     var controls = new THREE.VRControls(globals.threeView.camera);
     controls.standing = true;
@@ -44,16 +44,18 @@ function initViveInterface(globals){
             document.body.appendChild(button);
             var callback = button.onclick;
             button.onclick = function () {
-				if (display.isPresenting) globals.vrEnabled = false;
-                else globals.vrEnabled = true;
+				globals.vrEnabled = !display.isPresenting;
+                var y = 0;
+                if (globals.vrEnabled) y = 1;
+                globals.threeView.modelWrapper.position.set(0,y,0);
+                // var scale = 0.01;
+                // globals.threeView.modelWrapper.scale.set(scale, scale, scale);
                 if (callback) callback();
 			};
-
         } );
     }
 
     function disconnect(){
-
     }
 
     function render(){
