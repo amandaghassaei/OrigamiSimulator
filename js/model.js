@@ -172,9 +172,9 @@ function initModel(globals){
     function setGeoUpdates(){
         geometry.attributes.position.needsUpdate = true;
         if (globals.colorMode == "axialStrain") geometry.attributes.color.needsUpdate = true;
-        geometry.computeVertexNormals();
+        else geometry.computeVertexNormals();
         // geometry.computeBoundingBox();
-        geometry.computeBoundingSphere();
+        // geometry.computeBoundingSphere();
     }
 
     var inited = false;

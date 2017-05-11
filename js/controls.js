@@ -99,17 +99,17 @@ function initControls(globals){
         globals.simType = val;
     });
 
-    setSliderInput("#axialStiffness", globals.axialStiffness, 1000, 4000, 1, function(val){
+    setSliderInput("#axialStiffness", globals.axialStiffness, 10, 40, 1, function(val){
         globals.axialStiffness = val;
         globals.materialHasChanged = true;
     });
 
-    setSliderInput("#creaseStiffness", globals.creaseStiffness, 0, 100, 1, function(val){
+    setSliderInput("#creaseStiffness", globals.creaseStiffness, 0, 1, 0.01, function(val){
         globals.creaseStiffness = val;
         globals.creaseMaterialHasChanged = true;
     });
 
-    setSliderInput("#panelStiffness", globals.panelStiffness, 0, 100, 1, function(val){
+    setSliderInput("#panelStiffness", globals.panelStiffness, 0, 1, 0.01, function(val){
         globals.panelStiffness = val;
         globals.creaseMaterialHasChanged = true;
     });

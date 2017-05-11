@@ -7,7 +7,7 @@ function initThreeView(globals) {
     var scene = new THREE.Scene();
     var modelWrapper = new THREE.Object3D();
 
-    var camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, 0.01, 1000);
+    var camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, 0.1, 100);
     // var camera = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, -10000, 10000);//-40, 40);
     var renderer = new THREE.WebGLRenderer({antialias: true});
     var svgRenderer = new THREE.SVGRenderer();
@@ -54,15 +54,15 @@ function initThreeView(globals) {
 
         scene.add(camera);
 
-        camera.zoom = 25;
+        camera.zoom = 30;
         camera.updateProjectionMatrix();
         camera.position.x = 10;
         camera.position.y = 10;
         camera.position.z = 10;
 
         controls = new THREE.TrackballControls(camera, renderer.domElement);
-        controls.rotateSpeed = 1.0;
-        controls.zoomSpeed = 1.2;
+        controls.rotateSpeed = 4.0;
+        controls.zoomSpeed = 15;
         controls.noPan = true;
         controls.staticMoving = true;
         controls.dynamicDampingFactor = 0.3;
@@ -97,6 +97,7 @@ function initThreeView(globals) {
 
     function render() {
         if (!animationRunning) {
+            console.log("render");
             _render();
         }
     }
@@ -108,10 +109,7 @@ function initThreeView(globals) {
             return;
         }
         animationRunning = true;
-        _loop(function(){
-            callback();
-            _render();
-        });
+        _loop(callback);
 
     }
 
@@ -146,9 +144,9 @@ function initThreeView(globals) {
             globals.vive.effect.requestAnimationFrame(function(){
                 _loop(callback);
             });
+            _render();
             return;
         }
-        controls.update();//todo put this above callback?
         requestAnimationFrame(function(){
             if (pauseFlag) {
                 pauseFlag = false;
@@ -159,6 +157,8 @@ function initThreeView(globals) {
             }
             _loop(callback);
         });
+        controls.update();
+        _render();
     }
 
     function sceneAddModel(object){//beams and nodes
