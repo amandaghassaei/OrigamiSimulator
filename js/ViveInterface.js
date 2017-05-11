@@ -15,7 +15,8 @@ function initViveInterface(globals){
     $status.html("No device connected.");
     $("#VRoptions").show();
 
-    var mesh = new THREE.Mesh(new THREE.CubeGeometry(1,1,1), new THREE.MeshLambertMaterial({color:0xff0000}));
+    var mesh = new THREE.Mesh(new THREE.CubeGeometry(0.01,0.01,0.01), new THREE.MeshLambertMaterial({color:0xff0000}));
+    mesh.visible = false;
 
     var controls = new THREE.VRControls(globals.threeView.camera);
     controls.standing = true;
@@ -41,7 +42,8 @@ function initViveInterface(globals){
             if (!display) return;
             $status.html("VR device detected.");
             var button = WEBVR.getButton( display, globals.threeView.renderer.domElement );
-            document.body.appendChild(button);
+            console.log(button);
+            $("#VRoptions").html(button);
             var callback = button.onclick;
             button.onclick = function () {
 				globals.vrEnabled = !display.isPresenting;
@@ -53,9 +55,6 @@ function initViveInterface(globals){
                 if (callback) callback();
 			};
         } );
-    }
-
-    function disconnect(){
     }
 
     function render(){
