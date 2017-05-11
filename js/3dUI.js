@@ -123,7 +123,6 @@ function init3DUI(globals) {
 
     function hideHighlighters(){
         highlighter1.getObject3D().visible = false;
-        // highlighter2.getObject3D().visible = false;
     }
     
     // globals.threeView.sceneAdd(raycasterPlane);

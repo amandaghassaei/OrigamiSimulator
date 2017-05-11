@@ -60,7 +60,7 @@ THREE.ViveController = function ( id ) {
 	this.update = function () {
 
 		gamepad = findGamepad( id );
-
+		//not working in chrome https://github.com/mrdoob/three.js/issues/9723
 		if ( gamepad !== undefined && gamepad.pose !== undefined ) {
 
 			if ( gamepad.pose === null ) return; // No user action yet

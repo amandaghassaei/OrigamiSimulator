@@ -5,12 +5,11 @@
 var nodeMaterial = new THREE.MeshBasicMaterial({color: 0x000000, side:THREE.DoubleSide});
 var nodeMaterialFixed = new THREE.MeshBasicMaterial({color: 0x000000, side:THREE.DoubleSide});
 var nodeMaterialHighlight = new THREE.MeshBasicMaterial({color: 0xffffff, side:THREE.DoubleSide});
-var transparentMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, side:THREE.DoubleSide, opacity:0.5, transparent:true});
-var nodeGeo = new THREE.SphereGeometry(0.04,20);
-nodeGeo.rotateX(Math.PI/2);
-var nodeFixedGeo = new THREE.CubeGeometry(1, 1, 1);
-nodeFixedGeo.applyMatrix( new THREE.Matrix4().makeTranslation(0, 0.25, 0) );
+var transparentMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, opacity:0.5, transparent:true});
+var transparentVRMaterial = new THREE.MeshBasicMaterial({color: 0xeeeeee, opacity:0.8, transparent:true});
 
+var nodeGeo = new THREE.SphereGeometry(0.04,20);
+var nodeFixedGeo = new THREE.CubeGeometry(1, 1, 1);
 
 function Node(position, index){
 
@@ -147,6 +146,11 @@ Node.prototype.unhighlight = function(){
 
 Node.prototype.setTransparent = function(){
     this.object3D.material = transparentMaterial;
+};
+
+Node.prototype.setTransparentVR = function(){
+    this.object3D.material = transparentVRMaterial;
+    this.object3D.scale.set(0.2, 0.2, 0.2);
 };
 
 Node.prototype.hide = function(){
