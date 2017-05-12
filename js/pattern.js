@@ -220,6 +220,11 @@ function initPattern(globals){
 
         var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulations);
 
+        $("#numMtns").html("(" + mountains.length + ")");
+        $("#numValleys").html("(" + valleys.length + ")");
+        $("#numFacets").html("(" + triangulations.length + ")");
+        $("#numPassive").html("(" + outlines.length + ")");
+
         polygons = findPolygons(allEdges);
         var faces = triangulatePolys(polygons, allEdges);
 
