@@ -47,7 +47,6 @@ function initViveInterface(globals){
     });
 
     var nodes = [null, null];
-    var draggingEvent = [false, false];
     var releaseEvent = [false, false];
     var effect = new THREE.VREffect(globals.threeView.renderer);
 
@@ -84,11 +83,9 @@ function initViveInterface(globals){
     function setControllerEvents(){
         controller1.addEventListener('triggerdown', function() {
             controllerStates[0] = true;
-            draggingEvent[0] = true;
         });
         controller2.addEventListener('triggerdown', function() {
             controllerStates[1] = true;
-            draggingEvent[1] = true;
         });
         controller1.addEventListener('triggerup', function() {
             controllerStates[0] = false;
@@ -118,10 +115,9 @@ function initViveInterface(globals){
 
             if (controllerStates[i] && nodes[i]){
                 //drag node
-                if (draggingEvent[i]) {
+                if (!nodes[i].isFixed()) {
                     nodes[i].setFixed(true);
                     globals.fixedHasChanged = true;
-                    draggingEvent[i] = false;
                 }
                 position.y -= yOffset;
                 position.multiplyScalar(1/scale);
@@ -135,7 +131,6 @@ function initViveInterface(globals){
                 globals.fixedHasChanged = true;
             }
 
-            draggingEvent[i] = false;
             releaseEvent[i] = false;
 
             var direction = new THREE.Vector3(0,0,-1);
