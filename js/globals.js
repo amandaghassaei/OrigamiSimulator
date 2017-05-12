@@ -67,7 +67,9 @@ function initGlobals(){
         pausedForPatternView: false,
 
         userInteractionEnabled: false,
-        vrEnabled: false
+        vrEnabled: false,
+
+        numSteps: 100
 
     };
 

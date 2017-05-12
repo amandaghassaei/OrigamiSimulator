@@ -275,6 +275,10 @@ function initControls(globals){
         globals.shouldCenterGeo = true;
     });
 
+    setInput("#numStepsPerRender", globals.numSteps, function(val){
+        globals.numSteps = val;
+    }, 1);
+
     function setButtonGroup(id, callback){
         $(id+" a").click(function(e){
             e.preventDefault();

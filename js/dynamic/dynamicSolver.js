@@ -44,10 +44,9 @@ function initDynamicSolver(globals){
 
         initTypedArrays();
         initTexturesAndPrograms(globals.gpuMath);
-        steps = parseInt(setSolveParams());
+        setSolveParams();
     }
 
-    var steps;
     var programsInited = false;//flag for initial setup
 
     var textureDim = 0;
@@ -111,7 +110,7 @@ function initDynamicSolver(globals){
             }
         }
 
-        if (_numSteps == undefined) _numSteps = steps;
+        if (_numSteps == undefined) _numSteps = globals.numSteps;
         for (var j=0;j<_numSteps;j++){
             solveStep();
         }
@@ -229,7 +228,6 @@ function initDynamicSolver(globals){
     function setSolveParams(){
         var dt = calcDt()/2;//todo factor of ten?
         $("#deltaT").html(dt);
-        var numSteps = 0.5/dt;
         globals.gpuMath.setProgram("thetaCalc");
         globals.gpuMath.setUniformForProgram("thetaCalc", "u_dt", dt, "1f");
         globals.gpuMath.setProgram("velocityCalc");
@@ -237,7 +235,6 @@ function initDynamicSolver(globals){
         globals.gpuMath.setProgram("positionCalc");
         globals.gpuMath.setUniformForProgram("positionCalc", "u_dt", dt, "1f");
         globals.controls.setDeltaT(dt);
-        return numSteps;
     }
 
     function calcDt(){
