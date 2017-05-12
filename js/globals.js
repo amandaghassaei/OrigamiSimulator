@@ -44,7 +44,7 @@ function initGlobals(){
         panelStiffness: 0.7,
 
         //dynamic sim settings
-        percentDamping: 1,
+        percentDamping: 0.5,
         density: 1,
 
         strainClip: 5.0,
