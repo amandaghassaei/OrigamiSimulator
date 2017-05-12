@@ -534,7 +534,7 @@
         <label>Average node error: <span id="globalError"></span></label>
         <a class="about floatRight" href="#" id="aboutError"><span class="fui-question-circle"></span></a>
     </div><br/>
-    <b>Animation Settings:</b><br/>
+    <b>Animation Settings:</b><a class="about floatRight" href="#" id="aboutAnimation"><span class="fui-question-circle"></span></a><br/>
         <div class="indent">
             <span class="smallTxt">&Delta; t = <span id="deltaT"></span> seconds</span><br/>
             <span class="smallTxt">Num steps per render: &nbsp;&nbsp;<input id="numStepsPerRender" value="" placeholder="" class="int form-control" type="text"></span><br/><br/>
@@ -704,8 +704,38 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <b>VR</b><br/><br/>
-                Working on VR support for Vive....
+                <p><b>VR</b><br/><br/>
+                This tool currently supports an interactive Virtual Reality mode using the Vive headset and controllers.
+                For this to work, you must first use a <a href="https://webvr.info/" target="_blank">WebVR enabled browser</a>:
+                currently only <a href="https://webvr.rocks/firefox" target="_blank">Firefox Nightly</a> is supported by this app.
+                <br/><br/>
+                When you open this page with the appropriate browser and a Vive connected, you will see a button that says "Enter VR".  Clicking this will
+                put the app in an interactive VR mode.  The hand controllers will allow you to grab the origami mesh and pull on it.
+                This is especially cool if you set the mesh material to <b>Axial Strain Visualization</b> so you can see how your interactions
+                change the internal strains in the material.
+                <br/><br/>
+                If the simulation looks choppy, consider lowering the <b>Num steps per render</b> setting in the right hand menu.
+                </p>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="aboutAnimationModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-med">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <b>Animation Settings</b><br/><br/>
+                The dynamic simulation is calculated by moving time forward in small <b>&Delta; t</b> steps, solving the system, and moving the
+                vertices of the origami incrementally.  The time step size for this animation is calculated automatically
+                based on the material stiffnesses set in the <b>Stiffness Settings</b> section: more stiff settings
+                require shorter time steps to solve and will slow down the simulation.<br/>
+                <br/>
+                <b>Num steps per render</b> allows you to control the number of tiny time steps forward to take on each
+                render cycle.  If the simulation looks choppy to you, you might consider lowering this setting.
+                Lowering the number of steps per render will slow down the simulation, but will result in a more smooth animation.
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -813,17 +843,17 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
                 <p><b>Simulation Error</b><br/><br/>
-                    "Average node error" gives a sense of how much the distance constraints in the
+                    <b>Average node error</b> gives a sense of how much the distance constraints in the
                     origami pattern are being violated.  The error at each node is evaluated by averaging the
                     percent deviation of all its distance constraints with adjacent nodes.  This error is
                     reported as a percent of the total length of the distance constraint to remove scaling effects.
                     <br/><br/>
                     This measurement is equivalent to <a href="https://en.wikipedia.org/wiki/Deformation_(mechanics)#Engineering_strain" target="_blank">
                         Cauchy strain or engineering strain</a> of the axial constraints on this system.
-                    Increasing the "Axial Stiffness" will tighten these constraints and
+                    Increasing the <b>Axial Stiffness</b> will tighten these constraints and
                     lower the error in the simulation.<br/>
                     <br/>
-                    To visualize the error of each node graphically, select "Axial Strain Visualization" under "Mesh Material"
+                    To visualize the error of each node graphically, select <b>Axial Strain Visualization</b> under <b>Mesh Material</b>
                      in the left menu.
                 </p>
             </div>

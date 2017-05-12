@@ -20,6 +20,9 @@ function initControls(globals){
     setLink("#tips", function(){
         $('#tipsModal').modal('show');
     });
+    setLink("#aboutAnimation", function(){
+        $('#aboutAnimationModal').modal('show');
+    });
 
     setLink("#exportFOLD", function(){
         updateDimensions();
