@@ -57,6 +57,7 @@ function initGlobals(){
         filename: null,
         extension: null,
         doublesidedSTL: false,
+        doublesidedOBJ: false,
         exportScale: 1,
 
         //save fold settings

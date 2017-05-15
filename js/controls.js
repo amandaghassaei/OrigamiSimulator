@@ -53,10 +53,9 @@ function initControls(globals){
     }
     setCheckbox("#doublesidedSTL", globals.doublesidedSTL, function(val){
         globals.doublesidedSTL = val;
-        //todo sync stuff
     });
-    setCheckbox("#doublesidedOBJ", globals.doublesidedSTL, function(val){
-        globals.doublesidedSTL = val;
+    setCheckbox("#doublesidedOBJ", globals.doublesidedOBJ, function(val){
+        globals.doublesidedOBJ = val;
     });
     setLink(".units", function(e){
         var units = $(e.target).data("id");

@@ -2,7 +2,7 @@
  * Created by amandaghassaei on 5/2/17.
  */
 
-function makeSaveGEO(){
+function makeSaveGEO(doublesided){
     var geo = new THREE.Geometry().fromBufferGeometry( globals.model.getGeometry() );
 
     if (geo.vertices.length == 0 || geo.faces.length == 0) {
@@ -16,7 +16,7 @@ function makeSaveGEO(){
         }
     }
 
-    if (globals.doublesidedSTL){
+    if (doublesided){
         var numFaces = geo.faces.length;
         for (var i=0;i<numFaces;i++){
             var face = geo.faces[i];
@@ -29,7 +29,7 @@ function makeSaveGEO(){
 function saveSTL(){
 
     var data = [];
-    data.push({geo: makeSaveGEO(), offset:new THREE.Vector3(0,0,0), orientation:new THREE.Quaternion(0,0,0,1)});
+    data.push({geo: makeSaveGEO(globals.doublesidedSTL), offset:new THREE.Vector3(0,0,0), orientation:new THREE.Quaternion(0,0,0,1)});
     var stlBin = geometryToSTLBin(data);
     if (!stlBin) return;
     var blob = new Blob([stlBin], {type: 'application/octet-binary'});
@@ -40,7 +40,7 @@ function saveSTL(){
 
 function saveOBJ(){
     var exporter = new THREE.OBJExporter();
-    var result = exporter.parse (new THREE.Mesh(makeSaveGEO()));
+    var result = exporter.parse (new THREE.Mesh(makeSaveGEO(globals.doublesidedOBJ)));
     if (!result) return;
     var blob = new Blob([result], {type: 'application/octet-binary'});
     var filename = $("#objFilename").val();
