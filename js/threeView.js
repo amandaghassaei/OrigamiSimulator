@@ -96,6 +96,7 @@ function initThreeView(globals) {
     }
 
     function render() {
+        console.log("here");
         if (!animationRunning) {
             console.log("render");
             _render();
