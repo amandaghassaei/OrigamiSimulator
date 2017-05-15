@@ -359,6 +359,7 @@
     <script type="text/javascript" src="dependencies/underscore-min.js"></script>
     <script type="text/javascript" src="dependencies/FileSaver.min.js"></script>
     <script type="text/javascript" src="dependencies/SVGLoader.js"></script>
+    <script type="text/javascript" src="dependencies/OBJExporter.js"></script>
     <script type="text/javascript" src="dependencies/path-data-polyfill.js"></script>
     <script type="text/javascript" src="dependencies/earcut.js"></script>
     <script type="text/javascript" src="dependencies/numeric-1.2.6.js"></script>
@@ -415,6 +416,7 @@
                     <li class="divider"></li>
                     <li><a id="exportFOLD" href="#">Save Simulation as FOLD...</a></li>
                     <li><a id="exportSTL" href="#">Save Simulation as STL...</a></li>
+                    <li><a id="exportOBJ" href="#">Save Simulation as OBJ...</a></li>
                     <li><a id="saveSVG" href="#">Save Pattern as SVG...</a></li>
                     <!--<li><a id="saveSVGScreenshot" href="#">Save SVG screenshot</a></li>-->
                 </ul>
@@ -760,6 +762,29 @@
             </div>
             <div class="modal-footer">
                 <button id="doSTLsave" type="button" class="actionButton btn btn-success" data-dismiss="modal">Save</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="exportOBJModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-med">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <b>Export OBJ</b><br/><br/>
+                Filename: &nbsp;&nbsp;<input id="objFilename" value="" placeholder="" class="bigInput text form-control" type="text"> .stl<br/><br/>
+                Scale: &nbsp;&nbsp;<input value="" placeholder="" class="exportScale form-control" type="text"><br/><br/>
+                Dimensions: &nbsp;&nbsp;<b><span class="exportDimensions"></span></b><br/>
+                <span class="smallTxt">(the OBJ file format is unitless, but typically assumed to be either in inches or mm)</span><br/>
+                <label class="bigLabel checkbox" for="doublesidedOBJ">
+                    <input id="doublesidedOBJ" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                    Double Sided
+                </label>
+            </div>
+            <div class="modal-footer">
+                <button id="doOBJsave" type="button" class="actionButton btn btn-success" data-dismiss="modal">Save</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

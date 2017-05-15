@@ -37,6 +37,11 @@ function initControls(globals){
         $("#stlFilename").val(globals.filename + " : " + parseInt(globals.creasePercent*100) +  "PercentFolded");
         $('#exportSTLModal').modal('show');
     });
+    setLink("#exportOBJ", function(){
+        updateDimensions();
+        $("#objFilename").val(globals.filename + " : " + parseInt(globals.creasePercent*100) +  "PercentFolded");
+        $('#exportOBJModal').modal('show');
+    });
     setInput(".exportScale", globals.exportScale, function(val){
         globals.exportScale = val;
         updateDimensions();
@@ -47,6 +52,10 @@ function initControls(globals){
         $(".exportDimensions").html(dim.x.toFixed(2) + " x " + dim.y.toFixed(2) + " x " + dim.z.toFixed(2));
     }
     setCheckbox("#doublesidedSTL", globals.doublesidedSTL, function(val){
+        globals.doublesidedSTL = val;
+        //todo sync stuff
+    });
+    setCheckbox("#doublesidedOBJ", globals.doublesidedSTL, function(val){
         globals.doublesidedSTL = val;
     });
     setLink(".units", function(e){
@@ -61,6 +70,9 @@ function initControls(globals){
 
     setLink("#doSTLsave", function(){
         saveSTL();
+    });
+    setLink("#doOBJsave", function(){
+        saveOBJ();
     });
     setLink("#doFOLDsave", function(){
         saveFOLD();
