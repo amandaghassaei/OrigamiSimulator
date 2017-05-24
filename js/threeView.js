@@ -16,7 +16,7 @@ function initThreeView(globals) {
     // var depthMaterial, effectComposer, depthRenderTarget;
     // var ssaoPass;
 
-    var animationRunning = false;
+    var simulationRunning = false;
     var pauseFlag = false;
 
     init();
@@ -66,7 +66,7 @@ function initThreeView(globals) {
         controls.noPan = true;
         controls.staticMoving = true;
         controls.dynamicDampingFactor = 0.3;
-        controls.addEventListener("change", render);
+        // controls.addEventListener("change", render);
 
         // var renderPass = new THREE.RenderPass( scene, camera );
 
@@ -95,50 +95,37 @@ function initThreeView(globals) {
         // effectComposer.addPass( ssaoPass );
     }
 
-    function setCameraX(){
-        controls.reset(new THREE.Vector3(1,0,0));
-        manuallySetCamera();
+    function setCameraX(sign){
+        controls.reset(new THREE.Vector3(sign,0,0));
     }
-    function setCameraY(){
-        controls.reset(new THREE.Vector3(0,1,0));
-        manuallySetCamera();
+    function setCameraY(sign){
+        controls.reset(new THREE.Vector3(0,sign,0));
     }
-    function setCameraZ(){
-        controls.reset(new THREE.Vector3(0,0,1));
-        manuallySetCamera();
+    function setCameraZ(sign){
+        controls.reset(new THREE.Vector3(0,0,sign));
     }
     function setCameraOrtho(){
         controls.reset(new THREE.Vector3(1,1,1));
-        manuallySetCamera();
-    }
-    function manuallySetCamera(){
-        render();
-    }
-
-    function render() {
-        if (!animationRunning) {
-            console.log("render");
-            _render();
-        }
     }
 
     function startAnimation(callback){
         console.log("starting animation");
-        if (animationRunning){
-            console.warn("animation already running");
-            return;
-        }
-        animationRunning = true;
+        simulationRunning = true;
         _loop(callback);
 
     }
 
-    function pauseAnimation(){
-        if (animationRunning) pauseFlag = true;
+    function pauseSimulation(){
+        if (simulationRunning) pauseFlag = true;
+    }
+
+    function startSimulation(){
+        console.log("starting simulation");
+        simulationRunning = true;
     }
 
     function running(){
-        return animationRunning;
+        return simulationRunning;
     }
 
     function _render(){
@@ -159,7 +146,12 @@ function initThreeView(globals) {
     }
 
     function _loop(callback){
-        callback();
+        if (pauseFlag) {
+            pauseFlag = false;
+            simulationRunning = false;
+            console.log("pausing simulation");
+        }
+        if (simulationRunning) callback();
         if (globals.vrEnabled){
             globals.vive.effect.requestAnimationFrame(function(){
                 _loop(callback);
@@ -168,13 +160,6 @@ function initThreeView(globals) {
             return;
         }
         requestAnimationFrame(function(){
-            if (pauseFlag) {
-                pauseFlag = false;
-                animationRunning = false;
-                console.log("pausing animation");
-                render();//for good measure
-                return;
-            }
             _loop(callback);
         });
         controls.update();
@@ -258,10 +243,10 @@ function initThreeView(globals) {
     return {
         sceneAddModel: sceneAddModel,
         sceneClearModel: sceneClearModel,
-        render: render,
         onWindowResize: onWindowResize,
         startAnimation: startAnimation,
-        pauseAnimation: pauseAnimation,
+        startSimulation: startSimulation,
+        pauseSimulation: pauseSimulation,
         enableControls: enableControls,
         scene: scene,
         camera: camera,

@@ -25,13 +25,22 @@ function initControls(globals){
     });
 
     setLink("#cameraX", function(){
-        globals.threeView.setCameraX();
+        globals.threeView.setCameraX(1);
     });
     setLink("#cameraY", function(){
-        globals.threeView.setCameraY();
+        globals.threeView.setCameraY(1);
     });
     setLink("#cameraZ", function(){
-        globals.threeView.setCameraZ();
+        globals.threeView.setCameraZ(1);
+    });
+    setLink("#cameraMinusX", function(){
+        globals.threeView.setCameraX(-1);
+    });
+    setLink("#cameraMinusY", function(){
+        globals.threeView.setCameraY(-1);
+    });
+    setLink("#cameraMinusZ", function(){
+        globals.threeView.setCameraZ(-1);
     });
     setLink("#cameraOrtho", function(){
         globals.threeView.setCameraOrtho();

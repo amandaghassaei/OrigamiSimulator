@@ -60,7 +60,6 @@ function initDynamicSolver(globals){
         globals.gpuMath.step("zeroTexture", [], "u_lastPosition");
         globals.gpuMath.step("zeroTexture", [], "u_velocity");
         globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
-        //todo reset theta
         render();
     }
 
