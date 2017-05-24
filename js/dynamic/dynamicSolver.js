@@ -26,7 +26,7 @@ function initDynamicSolver(globals){
     var normals;
     var faceVertexIndices;//[a,b,c]
     var creaseMeta;//[k, d, targetTheta]
-    var creaseMeta2;//[creaseIndex (thetaIndex), length to node, nodeIndex (1/2), ]
+    var creaseMeta2;//[creaseIndex (thetaIndex), length to node, nodeIndex (1/2)]
                     //[creaseIndex (thetaIndex), length to node1, length to node2, -1]
     var creaseVectors;//indices of crease nodes
     var theta;//[theta, w, normalIndex1, normalIndex2]
@@ -395,6 +395,7 @@ function initDynamicSolver(globals){
             // this.vertices[1].clone().sub(this.vertices[0]);
             creaseVectors[rgbaIndex] = nodes[0].getIndex();
             creaseVectors[rgbaIndex+1] = nodes[1].getIndex();
+            //todo percent to moment arm here?
         }
         globals.gpuMath.initTextureFromData("u_creaseVectors", textureDimCreases, textureDimCreases, "FLOAT", creaseVectors, true);
     }
@@ -403,9 +404,8 @@ function initDynamicSolver(globals){
         for (var i=0;i<creases.length;i++){
             var crease = creases[i];
             creaseMeta[i*4] = crease.getK();
-            creaseMeta[i*4+1] = crease.getD();
+            creaseMeta[i*4+1] = crease.getD();//todo not using this
             if (initing) creaseMeta[i*4+2] = crease.getTargetTheta();
-            // if (crease.getTargetTheta()<)
         }
         globals.gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true);
     }
@@ -494,20 +494,21 @@ function initDynamicSolver(globals){
             mass[4*i] = nodes[i].getSimMass();
             meta[i*4+2] = index;
             var nodeCreases = nodes[i].creases;
-            var nodeInvCreases = nodes[i].invCreases;
+            var nodeInvCreases = nodes[i].invCreases;//nodes attached to crease move in opposite direction
             // console.log(nodeInvCreases);
             meta[i*4+3] = nodeCreases.length + nodeInvCreases.length;
             for (var j=0;j<nodeCreases.length;j++){
                 creaseMeta2[index*4] = nodeCreases[j].getIndex();
                 creaseMeta2[index*4+1] = nodeCreases[j].getLengthTo(nodes[i]);
                 creaseMeta2[index*4+2] = nodeCreases[j].getNodeIndex(nodes[i]);//type 1 or 2
+                //creaseMeta2[index*4+2] = 0 tells us that it is a node opposite a crease
                 index++;
             }
             for (var j=0;j<nodeInvCreases.length;j++){
                 creaseMeta2[index*4] = nodeInvCreases[j].getIndex();
-                creaseMeta2[index*4+1] = nodeInvCreases[j].getLengthToNode1();
-                creaseMeta2[index*4+2] = nodeInvCreases[j].getLengthToNode2();
-                creaseMeta2[index*4+3] = -1;
+                creaseMeta2[index*4+1] = nodeInvCreases[j].getCoef1(nodes[i]);
+                creaseMeta2[index*4+2] = nodeInvCreases[j].getCoef2(nodes[i]);
+                creaseMeta2[index*4+3] = -1;//this tells us that it is node on a crease
                 index++;
             }
         }

@@ -14,8 +14,8 @@ function Crease(edge, face1Index, face2Index, targetTheta, type, node1, node2, i
     this.face2Index = face2Index;
     this.targetTheta = targetTheta;
     this.type = type;
-    this.node1 = node1;
-    this.node2 = node2;
+    this.node1 = node1;//node at vertex of face 1
+    this.node2 = node2;//node at vertex of face 2
     this.index = index;
     node1.addCrease(this);
     node2.addCrease(this);
@@ -25,8 +25,8 @@ Crease.prototype.getLength = function(){
     return this.edge.getLength();
 };
 
-Crease.prototype.getVector = function(){
-    return this.edge.getVector();
+Crease.prototype.getVector = function(fromNode){
+    return this.edge.getVector(fromNode);
 };
 
 Crease.prototype.getNormal1Index = function(){
@@ -63,6 +63,28 @@ Crease.prototype.getLengthToNode1 = function(){
 
 Crease.prototype.getLengthToNode2 = function(){
     return this.getLengthTo(this.node2);
+};
+
+Crease.prototype.getCoef1 = function(edgeNode){
+    return this.getCoef(this.node1, edgeNode);
+};
+Crease.prototype.getCoef2 = function(edgeNode){
+    return this.getCoef(this.node2, edgeNode);
+};
+
+Crease.prototype.getCoef = function(node, edgeNode){
+    var vector1 = this.getVector(edgeNode);
+    var creaseLength = vector1.length();
+    vector1.normalize();
+    var nodePosition = node.getOriginalPosition();
+    var vector2 = nodePosition.sub(edgeNode.getOriginalPosition());
+    var projLength = vector1.dot(vector2);
+    var length = Math.sqrt(vector2.lengthSq()-projLength*projLength);
+    if (length <= 0.0) {
+        console.warn("bad moment arm");
+        length = 0.001;
+    }
+    return (1-projLength/creaseLength)/length;
 };
 
 Crease.prototype.getLengthTo = function(node){

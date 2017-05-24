@@ -205,7 +205,7 @@
                 float targetTheta = creaseMeta[2] * u_creasePercent;
                 float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
 
-                if (creaseMeta2[3] < 0.0){//crease reaction
+                if (creaseMeta2[3] < 0.0){//crease reaction, node is on a crease
                     float nodeNum = creaseMeta2[2];
 
                     //node #1
@@ -220,10 +220,10 @@
                     scaledNormalsIndex = normalsIndex/u_textureDimFaces;
                     vec3 normal2 = texture2D(u_normals, scaledNormalsIndex).xyz;
 
-                    float momentArm1 = creaseMeta2[1];
-                    float momentArm2 = creaseMeta2[2];
+                    float coef1 = creaseMeta2[1];
+                    float coef2 = creaseMeta2[2];
 
-                    vec3 _force = -0.5*(angForce/momentArm1*normal1 + angForce/momentArm2*normal2);
+                    vec3 _force = -angForce*(coef1*normal1 + coef2*normal2);
                     force += _force;
                 } else {
                     float nodeNum = creaseMeta2[2];
