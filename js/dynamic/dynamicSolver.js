@@ -395,7 +395,6 @@ function initDynamicSolver(globals){
             // this.vertices[1].clone().sub(this.vertices[0]);
             creaseVectors[rgbaIndex] = nodes[0].getIndex();
             creaseVectors[rgbaIndex+1] = nodes[1].getIndex();
-            //todo percent to moment arm here?
         }
         globals.gpuMath.initTextureFromData("u_creaseVectors", textureDimCreases, textureDimCreases, "FLOAT", creaseVectors, true);
     }
