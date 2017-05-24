@@ -95,6 +95,26 @@ function initThreeView(globals) {
         // effectComposer.addPass( ssaoPass );
     }
 
+    function setCameraX(){
+        controls.reset(new THREE.Vector3(1,0,0));
+        manuallySetCamera();
+    }
+    function setCameraY(){
+        controls.reset(new THREE.Vector3(0,1,0));
+        manuallySetCamera();
+    }
+    function setCameraZ(){
+        controls.reset(new THREE.Vector3(0,0,1));
+        manuallySetCamera();
+    }
+    function setCameraOrtho(){
+        controls.reset(new THREE.Vector3(1,1,1));
+        manuallySetCamera();
+    }
+    function manuallySetCamera(){
+        render();
+    }
+
     function render() {
         if (!animationRunning) {
             console.log("render");
@@ -249,6 +269,10 @@ function initThreeView(globals) {
         modelWrapper:modelWrapper,
         running: running,
         setScale:setScale,
-        saveSVG: saveSVG
+        saveSVG: saveSVG,
+        setCameraX:setCameraX,
+        setCameraY: setCameraY,
+        setCameraZ: setCameraZ,
+        setCameraOrtho: setCameraOrtho
     }
 }

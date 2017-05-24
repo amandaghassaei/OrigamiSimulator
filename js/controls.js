@@ -24,6 +24,19 @@ function initControls(globals){
         $('#aboutAnimationModal').modal('show');
     });
 
+    setLink("#cameraX", function(){
+        globals.threeView.setCameraX();
+    });
+    setLink("#cameraY", function(){
+        globals.threeView.setCameraY();
+    });
+    setLink("#cameraZ", function(){
+        globals.threeView.setCameraZ();
+    });
+    setLink("#cameraOrtho", function(){
+        globals.threeView.setCameraOrtho();
+    });
+
     setLink("#exportFOLD", function(){
         updateDimensions();
         $("#foldFilename").val(globals.filename + " : " + parseInt(globals.creasePercent*100) +  "PercentFolded");

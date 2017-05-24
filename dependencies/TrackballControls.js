@@ -211,6 +211,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 			_touchZoomDistanceStart = _touchZoomDistanceEnd;
 			_eye.multiplyScalar( factor );
 
+
 		} else {
 
 			factor = 1.0 + ( _zoomEnd.y - _zoomStart.y ) * _this.zoomSpeed;
@@ -331,13 +332,15 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	};
 
-	this.reset = function () {
+	this.reset = function (position) {
 
 		_state = STATE.NONE;
 		_prevState = STATE.NONE;
 
 		_this.target.copy( _this.target0 );
-		_this.object.position.copy( _this.position0 );
+		if (position === undefined) position = _this.position0;
+		else position.normalize().multiplyScalar(_this.object.position.length());
+		_this.object.position.copy( position );
 		_this.object.up.copy( _this.up0 );
 
 		_eye.subVectors( _this.object.position, _this.target );
