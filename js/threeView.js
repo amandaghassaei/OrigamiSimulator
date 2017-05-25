@@ -7,7 +7,7 @@ function initThreeView(globals) {
     var scene = new THREE.Scene();
     var modelWrapper = new THREE.Object3D();
 
-    var camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, 0.1, 100);
+    var camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, 0.1, 500);
     // var camera = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, -10000, 10000);//-40, 40);
     var renderer = new THREE.WebGLRenderer({antialias: true});
     var svgRenderer = new THREE.SVGRenderer();

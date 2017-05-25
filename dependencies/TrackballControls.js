@@ -31,7 +31,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 	this.dynamicDampingFactor = 0.2;
 
 	this.minDistance = 0;
-	this.maxDistance = Infinity;
+	this.maxDistance = 400;
 
 	this.keys = [ 65 /*A*/, 83 /*S*/, 68 /*D*/ ];
 
@@ -217,7 +217,6 @@ THREE.TrackballControls = function ( object, domElement ) {
 			factor = 1.0 + ( _zoomEnd.y - _zoomStart.y ) * _this.zoomSpeed;
 
 			if ( factor !== 1.0 && factor > 0.0 ) {
-
 				_eye.multiplyScalar( factor );
 
 			}
