@@ -85,8 +85,8 @@ function initPattern(globals){
                 if (max.z < scale) scale = max.z;
 
                 var strokeWidth = scale/300;
-                $mountains.css({'stroke-dasharray': strokeWidth*6 + ', ' + strokeWidth*3 + ', ' + strokeWidth*1.5 + ', ' + strokeWidth*3});
-                $valleys.css({'stroke-dasharray': strokeWidth*4 + ', ' + strokeWidth*3 + ', ' + strokeWidth*4 + ', ' + strokeWidth*3});
+                // $mountains.css({'stroke-dasharray': strokeWidth*6 + ', ' + strokeWidth*3 + ', ' + strokeWidth*1.5 + ', ' + strokeWidth*3});
+                // $valleys.css({'stroke-dasharray': strokeWidth*4 + ', ' + strokeWidth*3 + ', ' + strokeWidth*4 + ', ' + strokeWidth*3});
                 $paths.css({'stroke-width':strokeWidth});
 
                 border.multiplyScalar(scale);
