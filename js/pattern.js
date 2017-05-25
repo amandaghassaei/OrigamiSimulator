@@ -219,14 +219,15 @@ function initPattern(globals){
         removeRedundantVertices(outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulations));
 
         var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulations);
-
-        $("#numMtns").html("(" + mountains.length + ")");
-        $("#numValleys").html("(" + valleys.length + ")");
-        $("#numFacets").html("(" + triangulations.length + ")");
-        $("#numPassive").html("(" + outlines.length + ")");
+        var preTriLength = allEdges.length;
 
         polygons = findPolygons(allEdges);
         var faces = triangulatePolys(polygons, allEdges);
+
+        $("#numMtns").html("(" + mountains.length + ")");
+        $("#numValleys").html("(" + valleys.length + ")");
+        $("#numFacets").html("(" + (triangulations.length+allEdges.length-preTriLength) + ")");
+        $("#numPassive").html("(" + outlines.length + ")");
 
         var allCreaseParams = getFacesAndVerticesForEdges(faces, allEdges);
         globals.model.buildModel(faces, vertices, allEdges, allCreaseParams);

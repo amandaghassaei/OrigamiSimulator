@@ -305,11 +305,10 @@
             if (diff < -5.0) {
                 diff += TWO_PI;
             } else if (diff > 5.0) {
-                diff  -= TWO_PI;
+                diff -= TWO_PI;
             }
-            //if (abs(diff)>0.01) diff = 0.0;
             theta = lastTheta[0] + diff;
-            gl_FragColor = vec4(theta, origDiff, lastTheta[2], lastTheta[3]);//[theta, w, normal1Index, normal2Index]
+            gl_FragColor = vec4(theta, diff, lastTheta[2], lastTheta[3]);//[theta, w, normal1Index, normal2Index]
         }
     </script>
 
@@ -540,7 +539,7 @@
     <b>Animation Settings:</b><a class="about floatRight" href="#" id="aboutAnimation"><span class="fui-question-circle"></span></a><br/>
         <div class="indent">
             <span class="smallTxt">&Delta; t = <span id="deltaT"></span> seconds</span><br/>
-            <span class="smallTxt">Num steps per render: &nbsp;&nbsp;<input id="numStepsPerRender" value="" placeholder="" class="int form-control" type="text"></span><br/><br/>
+            <span class="smallTxt">Num simulation steps per render: &nbsp;&nbsp;<input id="numStepsPerRender" value="" placeholder="" class="int form-control" type="text"></span><br/><br/>
             <a href="#" id="shouldCenterGeo" class="floatRight btn btn-lg btn-default">Re-center geometry</a>
         </div>
     <div class="extraSpace"></div>
@@ -727,7 +726,7 @@
                 This is especially cool if you set the mesh material to <b>Axial Strain Visualization</b> so you can see how your interactions
                 change the internal strains in the material.
                 <br/><br/>
-                If the simulation looks choppy, consider lowering the <b>Num steps per render</b> setting in the right hand menu.
+                If the simulation looks choppy, consider lowering the <b>Num simulation per render</b> setting in the right hand menu.
                 </p>
             </div>
         </div><!-- /.modal-content -->
@@ -746,7 +745,7 @@
                 based on the material stiffnesses set in the <b>Stiffness Settings</b> section: more stiff settings
                 require shorter time steps to solve and will slow down the simulation.<br/>
                 <br/>
-                <b>Num steps per render</b> allows you to control the number of tiny time steps forward to take on each
+                <b>Num simulation steps per render</b> allows you to control the number of tiny time steps forward to take on each
                 render cycle.  If the simulation looks choppy to you, you might consider lowering this setting.
                 Lowering the number of steps per render will slow down the simulation, but will result in a more smooth animation.
                 </p>
