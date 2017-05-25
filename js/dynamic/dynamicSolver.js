@@ -26,8 +26,8 @@ function initDynamicSolver(globals){
     var normals;
     var faceVertexIndices;//[a,b,c]
     var creaseMeta;//[k, d, targetTheta]
-    var creaseMeta2;//[creaseIndex (thetaIndex), length to node, nodeIndex (1/2)]
-                    //[creaseIndex (thetaIndex), length to node1, length to node2, -1]
+    var creaseMeta2;//[creaseIndex (thetaIndex), length to node, nodeIndex (1/2)] - this is for nodes which are opposite the crease
+                    //[creaseIndex (thetaIndex), coef1, coef2, -1] - this is for nodes which are on the crease
     var creaseVectors;//indices of crease nodes
     var theta;//[theta, w, normalIndex1, normalIndex2]
     var lastTheta;//[theta, w, normalIndex1, normalIndex2]
