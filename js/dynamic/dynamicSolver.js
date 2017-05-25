@@ -158,28 +158,28 @@ function initDynamicSolver(globals){
 
     function render(){
 
-        var vectorLength = 2;
-        globals.gpuMath.setProgram("packToBytes");
-        globals.gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
-        globals.gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDimCreases, textureDimCreases], "2f");
-        globals.gpuMath.setSize(textureDimCreases*vectorLength, textureDimCreases);
-        globals.gpuMath.step("packToBytes", ["u_lastTheta"], "outputBytes");
-
-        if (globals.gpuMath.readyToRead()) {
-            var numPixels = nodes.length*vectorLength;
-            var height = Math.ceil(numPixels/(textureDimCreases*vectorLength));
-            var pixels = new Uint8Array(height*textureDimCreases*4*vectorLength);
-            globals.gpuMath.readPixels(0, 0, textureDimCreases * vectorLength, height, pixels);
-            var parsedPixels = new Float32Array(pixels.buffer);
-            for (var i=0;i<parsedPixels.length;i+=2){
-                if (Math.abs(parsedPixels[i])>Math.PI) {
-                    console.log(parsedPixels[i+1]);//theta
-                }
-
-            }
-        } else {
-            console.log("here");
-        }
+        // var vectorLength = 2;
+        // globals.gpuMath.setProgram("packToBytes");
+        // globals.gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
+        // globals.gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDimCreases, textureDimCreases], "2f");
+        // globals.gpuMath.setSize(textureDimCreases*vectorLength, textureDimCreases);
+        // globals.gpuMath.step("packToBytes", ["u_lastTheta"], "outputBytes");
+        //
+        // if (globals.gpuMath.readyToRead()) {
+        //     var numPixels = nodes.length*vectorLength;
+        //     var height = Math.ceil(numPixels/(textureDimCreases*vectorLength));
+        //     var pixels = new Uint8Array(height*textureDimCreases*4*vectorLength);
+        //     globals.gpuMath.readPixels(0, 0, textureDimCreases * vectorLength, height, pixels);
+        //     var parsedPixels = new Float32Array(pixels.buffer);
+        //     for (var i=0;i<parsedPixels.length;i+=2){
+        //         if (Math.abs(parsedPixels[i])>Math.PI) {
+        //             console.log(parsedPixels[i+1]);//theta
+        //         }
+        //
+        //     }
+        // } else {
+        //     console.log("here");
+        // }
 
         var vectorLength = 4;
         globals.gpuMath.setProgram("packToBytes");
