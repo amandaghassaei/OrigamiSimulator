@@ -5,13 +5,6 @@
 
 function initStaticSolver(){
 
-    var material = new THREE.MeshNormalMaterial({shading: THREE.FlatShading, side: THREE.FrontSide});
-    var geometry = new THREE.Geometry();
-    geometry.dynamic = true;
-    var object3D = new THREE.Mesh(geometry, material);
-    // globals.threeView.sceneAdd(object3D);
-
-
     var nodes;
     var edges;
     var faces;
@@ -28,33 +21,7 @@ function initStaticSolver(){
         faces = globals.model.getFaces();
         creases = globals.model.getCreases();
 
-        var vertices = [];
-        for (var i=0;i<nodes.length;i++){
-            vertices.push(nodes[i].getPosition());
-        }
-
-        geometry.vertices = vertices;
-        geometry.faces = faces;
-        geometry.verticesNeedUpdate = true;
-        geometry.elementsNeedUpdate = true;
-        geometry.computeFaceNormals();
-        geometry.computeBoundingBox();
-        geometry.computeBoundingSphere();
-
-        var bounds = geometry.boundingBox;
-        var avg = (bounds.min.add(bounds.max)).multiplyScalar(-0.5);
-        // object3D.position.set(avg.x, 0, avg.z);
-        // globals.threeView.centerModel(avg);
-
         setUpParams();
-    }
-
-    function startSolver(){
-        globals.threeView.startAnimation(function(){
-            for (var j=0;j<1;j++){
-                solveStep();
-            }
-        });
     }
 
     function solve(){
