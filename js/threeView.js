@@ -199,7 +199,7 @@ function initThreeView(globals) {
         // depthRenderTarget.setSize( newWidth, newHeight );
         // effectComposer.setSize( newWidth, newHeight );
 
-        render();
+        // render();
     }
 
     function enableControls(state){
