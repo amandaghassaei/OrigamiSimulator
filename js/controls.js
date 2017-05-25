@@ -121,17 +121,13 @@ function initControls(globals){
         $("#svgViewer").hide();
     });
 
-    setCheckbox("#dynamic", globals.simType == "dynamic", function(val){
-        globals.simType = val;
-    });
-    setCheckbox("#static", globals.simType == "static", function(val){
-        globals.simType = val;
-    });
-    setCheckbox("#schematic", globals.schematicVisible, function(val){
-        globals.schematicVisible = val;
-    });
 
     setRadio("simType", globals.simType, function(val){
+        if (val == "static"){
+            globals.staticSolver.syncNodesAndEdges();
+        } else if (val == "dynamic"){
+            globals.dynamicSolver.syncNodesAndEdges();
+        }
         globals.simType = val;
     });
 

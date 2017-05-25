@@ -38,6 +38,9 @@ Beam.prototype.getLength = function(){
 Beam.prototype.getOriginalLength = function(){
     return this.originalLength;
 };
+Beam.prototype.recalcOriginalLength = function(){
+    this.originalLength = this.getVector().length();
+};
 
 Beam.prototype.isFixed = function(){
     return this.nodes[0].fixed && this.nodes[1].fixed;

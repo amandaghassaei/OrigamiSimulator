@@ -333,8 +333,6 @@ function initPattern(globals){
                 var edge1 = set1[i];
                 var edge2 = set2[j];
                 if ((edge2[0] == edge1[0] || edge2[0] == edge1[1]) && (edge2[1] == edge1[0] || edge2[1] == edge1[1])){
-                    console.log(edge1);
-                    console.log(edge2);
                     set2.splice(j, 1);
                     if (set2 == set1) i--;
                     j--;

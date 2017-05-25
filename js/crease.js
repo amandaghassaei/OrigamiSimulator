@@ -10,7 +10,7 @@ function Crease(edge, face1Index, face2Index, targetTheta, type, node1, node2, i
     for (var i=0;i<edge.nodes.length;i++){
         edge.nodes[i].addInvCrease(this);
     }
-    this.face1Index = face1Index;
+    this.face1Index = face1Index;//todo this is useless
     this.face2Index = face2Index;
     this.targetTheta = targetTheta;
     this.type = type;
@@ -38,8 +38,6 @@ Crease.prototype.getNormal2Index = function(){
 };
 
 Crease.prototype.getTargetTheta = function(){
-    // if (this.targetTheta<0) this.edge.setMountain();
-    // else this.edge.setValley();
     return this.targetTheta;
 };
 

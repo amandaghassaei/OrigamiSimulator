@@ -531,10 +531,9 @@
         <input value="" placeholder="" class="form-control" type="text">
     </div>
     <br/><br/>
-    <b>Error:</b><br/>
+    <b>Error:</b><a class="about floatRight" href="#" id="aboutError"><span class="fui-question-circle"></span></a><br/>
     <div class="indent">
         <label>Average node error: <span id="globalError"></span></label>
-        <a class="about floatRight" href="#" id="aboutError"><span class="fui-question-circle"></span></a>
     </div><br/>
     <b>Animation Settings:</b><a class="about floatRight" href="#" id="aboutAnimation"><span class="fui-question-circle"></span></a><br/>
         <div class="indent">
@@ -710,7 +709,7 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <div class="modal fade" id="aboutVRmodal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-med">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-body">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -733,14 +732,14 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <div class="modal fade" id="aboutAnimationModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-med">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-body">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
                 <p><b>Animation Settings</b><br/><br/>
-                The dynamic simulation is calculated by moving time forward in small <b>&Delta; t</b> steps, solving the system, and moving the
+                The dynamic simulation is calculated by moving time forward in small <b>&Delta;t</b> steps, solving the system, and moving the
                 vertices of the origami incrementally.  The time step size for this animation is calculated automatically
                 based on the material stiffnesses set in the <b>Stiffness Settings</b> section: more stiff settings
                 require shorter time steps to solve and will slow down the simulation.<br/>
@@ -872,7 +871,7 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <div class="modal fade" id="aboutErrorModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-med">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-body">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">

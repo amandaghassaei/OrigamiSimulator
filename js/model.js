@@ -24,7 +24,7 @@ function initModel(globals){
     var vertices = [];
 
     function setMeshMaterial() {
-        var polygonOffset = 2;
+        var polygonOffset = 0.5;
         if (globals.colorMode == "normal") {
             material = new THREE.MeshNormalMaterial({
                 shading:THREE.FlatShading, side: THREE.DoubleSide,
@@ -168,7 +168,6 @@ function initModel(globals){
     function setGeoUpdates(){
         geometry.attributes.position.needsUpdate = true;
         if (globals.colorMode == "axialStrain") geometry.attributes.color.needsUpdate = true;
-        else geometry.computeVertexNormals();
         if (globals.userInteractionEnabled || globals.vrEnabled) geometry.computeBoundingBox();
 
         // geometry.computeBoundingSphere();
@@ -330,9 +329,12 @@ function initModel(globals){
             vertices[i].multiplyScalar(scale);
         }
 
-        //update vertices
+        //update vertices and edges
         for (var i=0;i<vertices.length;i++){
             nodes[i].setOriginalPosition(positions[3*i], positions[3*i+1], positions[3*i+2]);
+        }
+        for (var i=0;i<edges.length;i++){
+            edges[i].recalcOriginalLength();
         }
 
         if (!globals.threeView.running()) reset();
