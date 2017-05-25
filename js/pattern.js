@@ -205,6 +205,14 @@ function initPattern(globals){
 
         mergeVertices();
 
+        var nullEdges = 0;
+        nullEdges += removeNullEdges(outlines);
+        nullEdges += removeNullEdges(mountains);
+        nullEdges += removeNullEdges(valleys);
+        nullEdges += removeNullEdges(cuts);
+        nullEdges += removeNullEdges(triangulations);
+        if (nullEdges>0) console.warn(nullEdges + " null edges removed");
+
         //remove duplicates for each set of edges
         var duplicates = 0;
         duplicates += removeDuplicates(outlines, outlines);
@@ -231,6 +239,18 @@ function initPattern(globals){
 
         var allCreaseParams = getFacesAndVerticesForEdges(faces, allEdges);
         globals.model.buildModel(faces, vertices, allEdges, allCreaseParams);
+    }
+
+    function removeNullEdges(allEdges){
+        var num = 0;
+        for (var i=allEdges.length-1;i>=0;i--){
+            var edge = allEdges[i];
+            if (edge[0]==edge[1]){
+                allEdges.splice(i, 1);
+                num++;
+            }
+        }
+        return num;
     }
 
     function removeRedundantVertices(set){
@@ -312,7 +332,9 @@ function initPattern(globals){
             for (var j=i-1;j>=0;j--){
                 var edge1 = set1[i];
                 var edge2 = set2[j];
-                if (edge2.indexOf(edge1[0]) >= 0 && edge2.indexOf(edge1[1]) >= 0){
+                if ((edge2[0] == edge1[0] || edge2[0] == edge1[1]) && (edge2[1] == edge1[0] || edge2[1] == edge1[1])){
+                    console.log(edge1);
+                    console.log(edge2);
                     set2.splice(j, 1);
                     if (set2 == set1) i--;
                     j--;
