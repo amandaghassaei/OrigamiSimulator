@@ -388,6 +388,7 @@
     <script type="text/javascript" src="js/3dUI.js"></script>
     <script type="text/javascript" src="js/staticSolver.js"></script>
     <script type="text/javascript" src="js/dynamic/dynamicSolver.js"></script>
+    <script type="text/javascript" src="js/rigidSolver.js"></script>
     <script type="text/javascript" src="js/pattern.js"></script>
     <script type="text/javascript" src="js/saveSTL.js"></script>
     <script type="text/javascript" src="js/saveFOLD.js"></script>
@@ -507,6 +508,10 @@
         <label class="radio">
             <input name="simType" value="static" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
             Compliant Static Simulation <a class="about floatRight" href="#" id="aboutStaticSim"><span class="fui-question-circle"></span></a>
+        </label>
+        <label class="radio">
+            <input name="simType" value="rigid" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+            Rigid Static Simulation <a class="about floatRight" href="#" id="aboutRigidSim"><span class="fui-question-circle"></span></a>
         </label>
     </div><br/>
     <label class="checkbox" for="userInteractionEnabled">
@@ -931,6 +936,20 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
                 <p><b>Compliant Static Simulation</b><br/><br/>
+                    ....
+                </p>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="aboutRigidSimModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-med">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <p><b>Rigid Static Simulation</b><br/><br/>
                     ....
                 </p>
             </div>

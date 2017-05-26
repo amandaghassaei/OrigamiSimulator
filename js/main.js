@@ -16,6 +16,7 @@ $(function() {
     globals.model = initModel(globals);
     globals.staticSolver = initStaticSolver(globals);
     globals.dynamicSolver = initDynamicSolver(globals);
+    globals.rigidSolver = initRigidSolver(globals);
     globals.pattern = initPattern(globals);
     globals.vive = initViveInterface(globals);
     $(".demo[data-url='Tessellations/waterbomb.svg']").click();

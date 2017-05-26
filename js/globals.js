@@ -29,10 +29,10 @@ function initGlobals(){
         creaseMaterialHasChanged: false,
         shouldResetDynamicSim: false,
         shouldChangeCreasePercent: false,
-        shouldSyncWithModel: false,
         nodePositionHasChanged: false,
         shouldZeroDynamicVelocity: false,
         shouldCenterGeo: false,
+        needsSync: false,
 
         //3d vis
         simType: "dynamic",

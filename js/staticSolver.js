@@ -34,6 +34,11 @@ function initStaticSolver(){
     function reset(){
     }
 
+    function pinv(A) { //for linearly ind rows
+      var AT = numeric.transpose(A);
+      return numeric.dot(AT, numeric.inv(numeric.dot(AT,A)));
+    }
+
     function solveStep(){
         console.log("static solve");
         // if (fixedIndicesMapping.length == 0){//no boundary conditions
@@ -47,9 +52,14 @@ function initStaticSolver(){
         for (var i=0;i<_F.length;i++) {
             _F[i] += F_rxn[i];
         }
-
-        var X = numeric.dot(numeric.inv(Ctrans_Q_C), _F);
-        console.log(_F);
+        var X = numeric.solve(Ctrans_Q_C, _F);
+        // var sum = new THREE.Vector3();
+        // for (var i=0;i<_F.length;i+=3){
+        //     sum.x += _F[i];
+        //     sum.y += _F[i+1];
+        //     sum.z += _F[i+2];
+        // }
+        // console.log(sum);
 
         render(X);
     }
@@ -59,7 +69,7 @@ function initStaticSolver(){
         for (var i=0;i<numVerticesFree;i++){
             var index = indicesMapping[i];
             var nodePosition = new THREE.Vector3(X[3*i], X[3*i+1], X[3*i+2]);
-            var nexPos = nodes[index].render(nodePosition);
+            var nexPos = nodes[index].renderDelta(nodePosition);
             positions[3*index] = nexPos.x;
             positions[3*index+1] = nexPos.y;
             positions[3*index+2] = nexPos.z;
@@ -98,6 +108,7 @@ function initStaticSolver(){
     function updateMatrices(){
         calcCsAndRxns();
         Ctrans = numeric.transpose(C);
+        // console.log(Q);
         Ctrans_Q = numeric.dot(Ctrans, Q);
         Ctrans_Q_C = numeric.dot(Ctrans_Q, C);
     }
@@ -201,65 +212,64 @@ function initStaticSolver(){
         }
 
 
-        for (var j=0;j<numFreeCreases;j++){
-            var crease = creases[freeCreasesMapping[j]];
-            var normal1 = normals[crease.face1Index];
-            var normal2 = normals[crease.face2Index];
-            var dotNormals = normal1.dot(normal2);
-            if (dotNormals < -1.0) dotNormals = -1.0;
-            else if (dotNormals > 1.0) dotNormals = 1.0;
-
-            var creaseVector = crease.getVector().normalize();
-            //https://math.stackexchange.com/questions/47059/how-do-i-calculate-a-dihedral-angle-given-cartesian-coordinates
-            var theta = Math.atan2((normal1.clone().cross(creaseVector)).dot(normal2), dotNormals);
-
-            var diff = theta - globals.creasePercent*crease.targetTheta;
-            var rxnForceScale = crease.getK()*diff;
-
-            var partial1, partial2;
-
-            if (!crease.node1.fixed){
-                var i = indicesMapping.indexOf(crease.node1.getIndex());
-                var dist = crease.getLengthToNode1();
-                var partial1 = normal1.clone().divideScalar(dist);
-                C[j+numFreeEdges][3*i] = partial1.x;
-                C[j+numFreeEdges][3*i+1] = partial1.y;
-                C[j+numFreeEdges][3*i+2] = partial1.z;
-                F_rxn[3*i] -= partial1.x*rxnForceScale;
-                F_rxn[3*i+1] -= partial1.y*rxnForceScale;
-                F_rxn[3*i+2] -= partial1.z*rxnForceScale;
-            }
-            if (!crease.node2.fixed){
-                var i = indicesMapping.indexOf(crease.node2.getIndex());
-                var dist = crease.getLengthToNode2();
-                var partial2 = normal2.clone().divideScalar(dist);
-                C[j+numFreeEdges][3*i] = partial2.x;
-                C[j+numFreeEdges][3*i+1] = partial2.y;
-                C[j+numFreeEdges][3*i+2] = partial2.z;
-                F_rxn[3*i] -= partial2.x*rxnForceScale;
-                F_rxn[3*i+1] -= partial2.y*rxnForceScale;
-                F_rxn[3*i+2] -= partial2.z*rxnForceScale;
-            }
-            var creaseNodes = crease.edge.nodes;
-            for (var k=0;k<creaseNodes.length;k++){
-                var node = creaseNodes[k];
-                if (node.fixed) continue;
-                var i = indicesMapping.indexOf(node.getIndex());
-
-                C[j+numFreeEdges][3*i] = -(partial1.x+partial2.x)/2;
-                C[j+numFreeEdges][3*i+1] = -(partial1.y+partial2.y)/2;
-                C[j+numFreeEdges][3*i+2] = -(partial1.z+partial2.z)/2;
-                F_rxn[3*i] += (partial1.x+partial2.x)/2*rxnForceScale;
-                F_rxn[3*i+1] += (partial1.y+partial2.y)/2*rxnForceScale;
-                F_rxn[3*i+2] += (partial1.z+partial2.z)/2*rxnForceScale;
-            }
-        }
+        // for (var j=0;j<numFreeCreases;j++){
+        //     var crease = creases[freeCreasesMapping[j]];
+        //     var normal1 = normals[crease.face1Index];
+        //     var normal2 = normals[crease.face2Index];
+        //     var dotNormals = normal1.dot(normal2);
+        //     if (dotNormals < -1.0) dotNormals = -1.0;
+        //     else if (dotNormals > 1.0) dotNormals = 1.0;
+        //
+        //     var creaseVector = crease.getVector().normalize();
+        //     //https://math.stackexchange.com/questions/47059/how-do-i-calculate-a-dihedral-angle-given-cartesian-coordinates
+        //     var theta = Math.atan2((normal1.clone().cross(creaseVector)).dot(normal2), dotNormals);
+        //
+        //     var diff = theta - globals.creasePercent*crease.targetTheta;
+        //     var rxnForceScale = crease.getK()*diff;
+        //
+        //     var partial1, partial2;
+        //
+        //     if (!crease.node1.fixed){
+        //         var i = indicesMapping.indexOf(crease.node1.getIndex());
+        //         var dist = crease.getLengthToNode1();
+        //         var partial1 = normal1.clone().divideScalar(dist);
+        //         C[j+numFreeEdges][3*i] = partial1.x;
+        //         C[j+numFreeEdges][3*i+1] = partial1.y;
+        //         C[j+numFreeEdges][3*i+2] = partial1.z;
+        //         F_rxn[3*i] -= partial1.x*rxnForceScale;
+        //         F_rxn[3*i+1] -= partial1.y*rxnForceScale;
+        //         F_rxn[3*i+2] -= partial1.z*rxnForceScale;
+        //     }
+        //     if (!crease.node2.fixed){
+        //         var i = indicesMapping.indexOf(crease.node2.getIndex());
+        //         var dist = crease.getLengthToNode2();
+        //         var partial2 = normal2.clone().divideScalar(dist);
+        //         C[j+numFreeEdges][3*i] = partial2.x;
+        //         C[j+numFreeEdges][3*i+1] = partial2.y;
+        //         C[j+numFreeEdges][3*i+2] = partial2.z;
+        //         F_rxn[3*i] -= partial2.x*rxnForceScale;
+        //         F_rxn[3*i+1] -= partial2.y*rxnForceScale;
+        //         F_rxn[3*i+2] -= partial2.z*rxnForceScale;
+        //     }
+        //     var creaseNodes = crease.edge.nodes;
+        //     for (var k=0;k<creaseNodes.length;k++){
+        //         var node = creaseNodes[k];
+        //         if (node.fixed) continue;
+        //         var i = indicesMapping.indexOf(node.getIndex());
+        //
+        //         C[j+numFreeEdges][3*i] = -(partial1.x+partial2.x)/2;
+        //         C[j+numFreeEdges][3*i+1] = -(partial1.y+partial2.y)/2;
+        //         C[j+numFreeEdges][3*i+2] = -(partial1.z+partial2.z)/2;
+        //         F_rxn[3*i] += (partial1.x+partial2.x)/2*rxnForceScale;
+        //         F_rxn[3*i+1] += (partial1.y+partial2.y)/2*rxnForceScale;
+        //         F_rxn[3*i+2] += (partial1.z+partial2.z)/2*rxnForceScale;
+        //     }
+        // }
     }
 
     function calcQ() {
-        var axialStiffness = globals.axialStiffness;
         for (var i = 0; i < numFreeEdges; i++) {
-            Q[i][i] = axialStiffness/edges[freeEdgesMapping[i]].getOriginalLength();
+            Q[i][i] = edges[freeEdgesMapping[i]].getK();
         }
         for (var i = 0; i < numFreeCreases; i++) {
             var crease = creases[freeCreasesMapping[i]];

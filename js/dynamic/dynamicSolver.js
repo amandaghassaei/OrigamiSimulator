@@ -38,7 +38,7 @@ function initDynamicSolver(globals){
         faces = globals.model.getFaces();
         creases = globals.model.getCreases();
 
-        globals.model.sync();
+        // globals.model.sync();
         positions = globals.model.getPositionsArray();
         colors = globals.model.getColorsArray();
 
@@ -64,49 +64,45 @@ function initDynamicSolver(globals){
     }
 
     function solve(_numSteps){
-        if (globals.shouldSyncWithModel){
-            syncNodesAndEdges();
-            globals.shouldSyncWithModel = false;
-        } else {
-            if (globals.forceHasChanged) {
-                updateExternalForces();
-                globals.forceHasChanged = false;
-            }
-            if (globals.fixedHasChanged) {
-                updateFixed();
-                globals.fixedHasChanged = false;
-            }
-            if (globals.nodePositionHasChanged) {
-                updateLastPosition();
-                globals.nodePositionHasChanged = false;
-            }
-            if (globals.creaseMaterialHasChanged) {
-                updateCreasesMeta();
-                globals.creaseMaterialHasChanged = false;
-            }
-            if (globals.materialHasChanged) {
-                updateMaterials();
-                globals.materialHasChanged = false;
-            }
-            if (globals.shouldChangeCreasePercent) {
-                setCreasePercent(globals.creasePercent);
-                globals.shouldChangeCreasePercent = false;
-            }
-            // if (globals.shouldZeroDynamicVelocity){
-            //     globals.gpuMath.step("zeroTexture", [], "u_velocity");
-            //     globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
-            //     globals.shouldZeroDynamicVelocity = false;
-            // }
-            if (globals.shouldCenterGeo){
-                var avgPosition = getAvgPosition();
-                globals.gpuMath.setProgram("centerTexture");
-                globals.gpuMath.setUniformForProgram("centerTexture", "u_center", [avgPosition.x, avgPosition.y, avgPosition.z], "3f");
-                globals.gpuMath.step("centerTexture", ["u_lastPosition"], "u_position");
-                globals.gpuMath.swapTextures("u_position", "u_lastPosition");
-                globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
-                globals.gpuMath.step("zeroTexture", [], "u_velocity");
-                globals.shouldCenterGeo = false;
-            }
+
+        if (globals.forceHasChanged) {
+            updateExternalForces();
+            globals.forceHasChanged = false;
+        }
+        if (globals.fixedHasChanged) {
+            updateFixed();
+            globals.fixedHasChanged = false;
+        }
+        if (globals.nodePositionHasChanged) {
+            updateLastPosition();
+            globals.nodePositionHasChanged = false;
+        }
+        if (globals.creaseMaterialHasChanged) {
+            updateCreasesMeta();
+            globals.creaseMaterialHasChanged = false;
+        }
+        if (globals.materialHasChanged) {
+            updateMaterials();
+            globals.materialHasChanged = false;
+        }
+        if (globals.shouldChangeCreasePercent) {
+            setCreasePercent(globals.creasePercent);
+            globals.shouldChangeCreasePercent = false;
+        }
+        // if (globals.shouldZeroDynamicVelocity){
+        //     globals.gpuMath.step("zeroTexture", [], "u_velocity");
+        //     globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
+        //     globals.shouldZeroDynamicVelocity = false;
+        // }
+        if (globals.shouldCenterGeo){
+            var avgPosition = getAvgPosition();
+            globals.gpuMath.setProgram("centerTexture");
+            globals.gpuMath.setUniformForProgram("centerTexture", "u_center", [avgPosition.x, avgPosition.y, avgPosition.z], "3f");
+            globals.gpuMath.step("centerTexture", ["u_lastPosition"], "u_position");
+            globals.gpuMath.swapTextures("u_position", "u_lastPosition");
+            globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
+            globals.gpuMath.step("zeroTexture", [], "u_velocity");
+            globals.shouldCenterGeo = false;
         }
 
         if (_numSteps == undefined) _numSteps = globals.numSteps;

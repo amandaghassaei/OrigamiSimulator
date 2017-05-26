@@ -123,12 +123,8 @@ function initControls(globals){
 
 
     setRadio("simType", globals.simType, function(val){
-        if (val == "static"){
-            globals.staticSolver.syncNodesAndEdges();
-        } else if (val == "dynamic"){
-            globals.dynamicSolver.syncNodesAndEdges();
-        }
         globals.simType = val;
+        globals.needsSync = true;
     });
 
     setSliderInput("#axialStiffness", globals.axialStiffness, 10, 40, 1, function(val){
@@ -251,6 +247,9 @@ function initControls(globals){
     });
     setLink("#aboutStaticSim", function(){
         $("#aboutStaticSimModal").modal("show");
+    });
+    setLink("#aboutRigidSim", function(){
+        $("#aboutRigidSimModal").modal("show");
     });
     setLink("#aboutAxialStrain", function(){
         $("#aboutAxialStrainModal").modal("show");

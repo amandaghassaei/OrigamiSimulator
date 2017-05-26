@@ -717,6 +717,7 @@ function initPattern(globals){
             if (!containsInnerCrease) {
                 polygons.splice(i,1);
                 polygonEdges.splice(i,1);
+                break;//todo only remove once
             }
         }
 

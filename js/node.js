@@ -164,6 +164,11 @@ Node.prototype.render = function(position){
     this.object3D.position.set(position.x, position.y, position.z);//todo need this?
     return position;
 };
+Node.prototype.renderDelta = function(delta){
+    // if (this.fixed) return;
+    this.object3D.position.add(delta);
+    return this.object3D.position;
+};
 
 Node.prototype.renderChange = function(change){
     this.object3D.position.add(change);
