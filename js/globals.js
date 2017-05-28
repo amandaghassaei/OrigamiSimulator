@@ -38,7 +38,7 @@ function initGlobals(){
         //3d vis
         simType: "dynamic",
 
-        //sim settings
+        //compliant sim settings
         creasePercent: 0.5,
         axialStiffness: 20,
         creaseStiffness: 0.7,
@@ -48,11 +48,11 @@ function initGlobals(){
         percentDamping: 0.5,
         density: 1,
 
-        strainClip: 5.0,
+        strainClip: 5.0,//for strain visualization, % strain that is drawn red
 
         //import pattern settings
         vertTol: 3,//vertex merge tolerance
-        foldUseAngles: true,
+        foldUseAngles: true,//import current angles from fold format as target angles
 
         //save stl settings
         filename: null,

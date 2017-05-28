@@ -46,6 +46,10 @@ function initModel(globals){
                 polygonOffsetUnits: 1
             });
             backside.visible = false;
+            if (!globals.threeView.simulationRunning) {
+                getSolver().render();
+                setGeoUpdates();
+            }
         } else {
             material = new THREE.MeshPhongMaterial({
                 shading:THREE.FlatShading, side:THREE.FrontSide,

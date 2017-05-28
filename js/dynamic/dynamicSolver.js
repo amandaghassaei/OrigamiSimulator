@@ -519,6 +519,7 @@ function initDynamicSolver(globals){
         syncNodesAndEdges: syncNodesAndEdges,
         updateFixed: updateFixed,
         solve: solve,
+        render: render,
         reset: reset
     }
 }
