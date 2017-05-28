@@ -23,6 +23,7 @@ function initGlobals(){
         ambientOcclusion: false,
 
         //flags
+        simulationRunning: true,
         fixedHasChanged: false,
         forceHasChanged: false,
         materialHasChanged: false,

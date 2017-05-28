@@ -13,12 +13,6 @@ function initThreeView(globals) {
     var svgRenderer = new THREE.SVGRenderer();
     var controls;
 
-    // var depthMaterial, effectComposer, depthRenderTarget;
-    // var ssaoPass;
-
-    var simulationRunning = false;
-    var pauseFlag = false;
-
     init();
 
     function init() {
@@ -54,7 +48,7 @@ function initThreeView(globals) {
 
         scene.add(camera);
 
-        camera.zoom = 30;
+        camera.zoom = 15;
         camera.updateProjectionMatrix();
         camera.position.x = 10;
         camera.position.y = 10;
@@ -68,31 +62,8 @@ function initThreeView(globals) {
         controls.dynamicDampingFactor = 0.3;
         // controls.addEventListener("change", render);
 
-        // var renderPass = new THREE.RenderPass( scene, camera );
+        _render();//render before model loads
 
-        // Setup depth pass
-        // depthMaterial = new THREE.MeshDepthMaterial();
-        // depthMaterial.depthPacking = THREE.RGBADepthPacking;
-        // depthMaterial.blending = THREE.NoBlending;
-
-        // var pars = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter };
-        // depthRenderTarget = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, pars );
-        //
-        // // Setup SSAO pass
-        // ssaoPass = new THREE.ShaderPass( THREE.SSAOShader );
-        // ssaoPass.renderToScreen = true;
-        // //ssaoPass.uniforms[ "tDiffuse" ].value will be set by ShaderPass
-        // ssaoPass.uniforms[ "tDepth" ].value = depthRenderTarget.texture;
-        // ssaoPass.uniforms[ 'size' ].value.set( window.innerWidth, window.innerHeight );
-        // ssaoPass.uniforms[ 'cameraNear' ].value = camera.near;
-        // ssaoPass.uniforms[ 'cameraFar' ].value = camera.far;
-        // ssaoPass.uniforms[ 'onlyAO' ].value = 0;
-        // ssaoPass.uniforms[ 'aoClamp' ].value = 0.7;
-        // ssaoPass.uniforms[ 'lumInfluence' ].value = 0.8;
-        // // Add pass to effect composer
-        // effectComposer = new THREE.EffectComposer( renderer );
-        // effectComposer.addPass( renderPass );
-        // effectComposer.addPass( ssaoPass );
     }
 
     function setCameraX(sign){
@@ -110,22 +81,18 @@ function initThreeView(globals) {
 
     function startAnimation(callback){
         console.log("starting animation");
-        simulationRunning = true;
         _loop(callback);
 
     }
 
     function pauseSimulation(){
-        if (simulationRunning) pauseFlag = true;
+        globals.simulationRunning = false;
+        console.log("pausing simulation");
     }
 
     function startSimulation(){
         console.log("starting simulation");
-        simulationRunning = true;
-    }
-
-    function running(){
-        return simulationRunning;
+        globals.simulationRunning = true;
     }
 
     function _render(){
@@ -133,25 +100,15 @@ function initThreeView(globals) {
             globals.vive.render();
             return;
         }
-        // if (globals.ambientOcclusion) {
-        //     // Render depth into depthRenderTarget
-        //     scene.overrideMaterial = depthMaterial;
-        //     renderer.render(scene, camera, depthRenderTarget, true);
-        //     // Render renderPass and SSAO shaderPass
-        //     scene.overrideMaterial = null;
-        //     effectComposer.render();
-        //     return;
-        // }
         renderer.render(scene, camera);
     }
 
     function _loop(callback){
-        if (pauseFlag) {
-            pauseFlag = false;
-            simulationRunning = false;
-            console.log("pausing simulation");
+        if (globals.needsSync){
+            globals.model.sync();
+            globals.needsSync = false;
         }
-        if (simulationRunning) callback();
+        if (globals.simulationRunning) callback();
         if (globals.vrEnabled){
             globals.vive.effect.requestAnimationFrame(function(){
                 _loop(callback);
@@ -174,10 +131,6 @@ function initThreeView(globals) {
         modelWrapper.children = [];
     }
 
-    function setScale(scale){
-        modelWrapper.scale.set(scale, scale, scale);
-    }
-
     function onWindowResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
         // camera.left = -window.innerWidth / 2;
@@ -188,18 +141,6 @@ function initThreeView(globals) {
 
         renderer.setSize(window.innerWidth, window.innerHeight);
         controls.handleResize();
-
-        // var width = window.innerWidth;
-        // var height = window.innerHeight;
-
-        // ssaoPass.uniforms[ 'size' ].value.set( width, height );
-        // var pixelRatio = renderer.getPixelRatio();
-        // var newWidth  = Math.floor( width / pixelRatio ) || 1;
-        // var newHeight = Math.floor( height / pixelRatio ) || 1;
-        // depthRenderTarget.setSize( newWidth, newHeight );
-        // effectComposer.setSize( newWidth, newHeight );
-
-        // render();
     }
 
     function enableControls(state){
@@ -244,17 +185,19 @@ function initThreeView(globals) {
         sceneAddModel: sceneAddModel,
         sceneClearModel: sceneClearModel,
         onWindowResize: onWindowResize,
+
         startAnimation: startAnimation,
         startSimulation: startSimulation,
         pauseSimulation: pauseSimulation,
-        enableControls: enableControls,
+
+        enableControls: enableControls,//user interaction
         scene: scene,
-        camera: camera,
-        renderer: renderer,
+        camera: camera,//needed for user interaction
+        renderer: renderer,//needed for VR
         modelWrapper:modelWrapper,
-        running: running,
-        setScale:setScale,
-        saveSVG: saveSVG,
+
+        saveSVG: saveSVG,//svg screenshot
+
         setCameraX:setCameraX,
         setCameraY: setCameraY,
         setCameraZ: setCameraZ,

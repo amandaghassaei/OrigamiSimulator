@@ -38,7 +38,6 @@ function initDynamicSolver(globals){
         faces = globals.model.getFaces();
         creases = globals.model.getCreases();
 
-        // globals.model.sync();
         positions = globals.model.getPositionsArray();
         colors = globals.model.getColorsArray();
 

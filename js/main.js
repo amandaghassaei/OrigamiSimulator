@@ -19,5 +19,5 @@ $(function() {
     globals.rigidSolver = initRigidSolver(globals);
     globals.pattern = initPattern(globals);
     globals.vive = initViveInterface(globals);
-    $(".demo[data-url='Tessellations/waterbomb.svg']").click();
+    $(".demo[data-url='Tessellations/waterbomb.svg']").click();//load demo models
 });

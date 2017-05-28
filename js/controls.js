@@ -104,7 +104,7 @@ function initControls(globals){
             globals.warn("No crease pattern available for FOLD format.");
             return;
         }
-        globals.pausedForPatternView = globals.threeView.running();
+        globals.pausedForPatternView = globals.simulationRunning;
         globals.model.pause();
         globals.navMode = "pattern";
         $("#navPattern").parent().addClass("open");
@@ -276,7 +276,7 @@ function initControls(globals){
         globals.model.pause();
     });
     setLink("#reset", function(){
-        if (!globals.threeView.running()) $("#reset").hide();
+        if (!globals.simulationRunning) $("#reset").hide();
         globals.model.reset();
     });
     setLink("#stepForward", function(){

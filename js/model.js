@@ -2,16 +2,17 @@
  * Created by amandaghassaei on 2/24/17.
  */
 
-//wireframe model and folding structure
+//model updates object3d geometry and materials
+
 function initModel(globals){
 
     var geometry = new THREE.BufferGeometry();
     geometry.dynamic = true;
 
     var material, material2;
-    var object3D = new THREE.Mesh(geometry);
-    var object3D2 = new THREE.Mesh(geometry);
-    object3D2.visible = false;
+    var frontside = new THREE.Mesh(geometry);//front face of mesh
+    var backside = new THREE.Mesh(geometry);//back face of mesh (different color)
+    backside.visible = false;
     setMeshMaterial();
 
     var positions;//place to store buffer geo vertex data
@@ -21,7 +22,11 @@ function initModel(globals){
     var faces = [];
     var edges = [];
     var creases = [];
-    var vertices = [];
+    var vertices = [];//indexed vertices array
+
+    var nextNodes, nextEdges, nextCreases, nextFaces;
+
+    var inited = false;
 
     function setMeshMaterial() {
         var polygonOffset = 0.5;
@@ -32,7 +37,7 @@ function initModel(globals){
                 polygonOffsetFactor: polygonOffset, // positive value pushes polygon further away
                 polygonOffsetUnits: 1
             });
-            object3D2.visible = false;
+            backside.visible = false;
         } else if (globals.colorMode == "axialStrain"){
             material = new THREE.MeshBasicMaterial({
                 vertexColors: THREE.VertexColors, side:THREE.DoubleSide,
@@ -40,26 +45,26 @@ function initModel(globals){
                 polygonOffsetFactor: polygonOffset, // positive value pushes polygon further away
                 polygonOffsetUnits: 1
             });
-            object3D2.visible = false;
+            backside.visible = false;
         } else {
             material = new THREE.MeshPhongMaterial({
-                shading:THREE.FlatShading, color:0xff0000, side:THREE.FrontSide,
+                shading:THREE.FlatShading, side:THREE.FrontSide,
                 polygonOffset: true,
                 polygonOffsetFactor: polygonOffset, // positive value pushes polygon further away
                 polygonOffsetUnits: 1
             });
             material2 = new THREE.MeshPhongMaterial({
-                shading:THREE.FlatShading, color:0x0000ff, side:THREE.BackSide,
+                shading:THREE.FlatShading, side:THREE.BackSide,
                 polygonOffset: true,
                 polygonOffsetFactor: polygonOffset, // positive value pushes polygon further away
                 polygonOffsetUnits: 1
             });
             material.color.setStyle( "#" + globals.color1);
             material2.color.setStyle( "#" + globals.color2);
-            object3D2.visible = true;
+            backside.visible = true;
         }
-        object3D.material = material;
-        object3D2.material = material2;
+        frontside.material = material;
+        backside.material = material2;
     }
 
     function updateEdgeVisibility(){
@@ -76,8 +81,8 @@ function initModel(globals){
     }
 
     function updateMeshVisibility(){
-        object3D.visible = globals.meshVisible;
-        object3D2.visible = globals.colorMode == "color" && globals.meshVisible;
+        frontside.visible = globals.meshVisible;
+        backside.visible = globals.colorMode == "color" && globals.meshVisible;
     }
 
     function getGeometry(){
@@ -85,7 +90,7 @@ function initModel(globals){
     }
 
     function getMesh(){
-        return [object3D, object3D2];
+        return [frontside, backside];
     }
     function getVertices(){
         return vertices;
@@ -107,45 +112,37 @@ function initModel(globals){
     }
 
     function reset(){
-        var solver = getSolver();
-        if (globals.needsSync){
-            solver.syncNodesAndEdges();
-            globals.needsSync = false;
-        }
-        solver.reset();
+        getSolver().reset();
         setGeoUpdates();
     }
 
     function step(numSteps){
-        var solver = getSolver();
-        if (globals.needsSync){
-            solver.syncNodesAndEdges();
-            globals.needsSync = false;
-        }
-        solver.solve(numSteps);
-        geometry.attributes.position.needsUpdate = true;
+        getSolver().solve(numSteps);
         setGeoUpdates();
     }
 
     function setGeoUpdates(){
         geometry.attributes.position.needsUpdate = true;
         if (globals.colorMode == "axialStrain") geometry.attributes.color.needsUpdate = true;
-        if (globals.userInteractionEnabled || globals.vrEnabled) geometry.computeBoundingBox();
-
-        // geometry.computeBoundingSphere();
+        // if (globals.userInteractionEnabled || globals.vrEnabled) geometry.computeBoundingBox();
     }
-
-    var inited = false;
-    startSolver();
 
     function startSolver(){
-        globals.threeView.startAnimation(function(){
-            if (!inited) return;
-            step();
-        });
+        globals.threeView.startAnimation(step);
     }
 
+    function getSolver(){
+        if (globals.simType == "dynamic") return globals.dynamicSolver;
+        else if (globals.simType == "static") return globals.staticSolver;
+        return globals.rigidSolver;
+    }
+
+
+
+
+
     function buildModel(_faces, _vertices, _allEdges, allCreaseParams){
+
         if (_vertices.length == 0) {
             console.warn("no vertices");
             return;
@@ -159,26 +156,40 @@ function initModel(globals){
             return;
         }
 
-        var _nodes = [];
+        nextNodes = [];
         for (var i=0;i<_vertices.length;i++){
-            _nodes.push(new Node(_vertices[i].clone(), _nodes.length));
+            nextNodes.push(new Node(_vertices[i].clone(), nextNodes.length));
         }
         // _nodes[_faces[0][0]].setFixed(true);
         // _nodes[_faces[0][1]].setFixed(true);
         // _nodes[_faces[0][2]].setFixed(true);
 
-        var _edges = [];
+        nextEdges = [];
         for (var i=0;i<_allEdges.length;i++) {
-            _edges.push(new Beam([_nodes[_allEdges[i][0]], _nodes[_allEdges[i][1]]]));
+            nextEdges.push(new Beam([nextNodes[_allEdges[i][0]], nextNodes[_allEdges[i][1]]]));
         }
 
-        var _creases = [];
+        nextCreases = [];
         for (var i=0;i<allCreaseParams.length;i++) {//allCreaseParams.length
             var creaseParams = allCreaseParams[i];//face1Ind, vert1Ind, face2Ind, ver2Ind, edgeInd, angle
             var type = creaseParams[5]!=0 ? 1:0;
             //edge, face1Index, face2Index, targetTheta, type, node1, node2, index
-            _creases.push(new Crease(_edges[creaseParams[4]], creaseParams[0], creaseParams[2], creaseParams[5], type, _nodes[creaseParams[1]], _nodes[creaseParams[3]], _creases.length));
+            nextCreases.push(new Crease(nextEdges[creaseParams[4]], creaseParams[0], creaseParams[2], creaseParams[5], type, nextNodes[creaseParams[1]], nextNodes[creaseParams[3]], nextCreases.length));
         }
+
+        nextFaces = _faces;
+
+        globals.needsSync = true;
+
+        if (!inited) {
+            startSolver();//start animation loop
+            inited = true;
+        }
+    }
+
+
+
+    function sync(){
 
         globals.threeView.sceneClearModel();
 
@@ -186,40 +197,31 @@ function initModel(globals){
         //     var obj3D = node.getObject3D();
         //     globals.threeView.sceneAddModel(obj3D);
         // });
-        _.each(_edges, function(edge){
+        _.each(nextEdges, function(edge){
             globals.threeView.sceneAddModel(edge.getObject3D());
         });
 
-        var oldNodes = nodes;
-        var oldEdges = edges;
-        var oldCreases = creases;
-
-        nodes = _nodes;
-        edges = _edges;
-        faces = _faces;
-        creases = _creases;
-
-        for (var i=0;i<oldNodes.length;i++){
-            oldNodes[i].destroy();
+        for (var i=0;i<nodes.length;i++){
+            nodes[i].destroy();
         }
-        oldNodes = null;
 
-        for (var i=0;i<oldEdges.length;i++){
-            oldEdges[i].destroy();
+        for (var i=0;i<edges.length;i++){
+            edges[i].destroy();
         }
-        oldEdges = null;
 
-        for (var i=0;i<oldCreases.length;i++){
-            oldCreases[i].destroy();
+        for (var i=0;i<creases.length;i++){
+            creases[i].destroy();
         }
-        oldCreases = null;
 
-        globals.threeView.sceneAddModel(object3D);
-        globals.threeView.sceneAddModel(object3D2);
+        nodes = nextNodes;
+        edges = nextEdges;
+        faces = nextFaces;
+        creases = nextCreases;
 
-        inited = true;
-        updateEdgeVisibility();
-        updateMeshVisibility();
+        vertices = [];
+        for (var i=0;i<nodes.length;i++){
+            vertices.push(nodes[i].getPosition());
+        }
 
         if (globals.noCreasePatternAvailable() && globals.navMode == "pattern"){
             //switch to simulation mode
@@ -227,24 +229,6 @@ function initModel(globals){
             $("#navPattern").parent().removeClass("open");
             $("#svgViewer").hide();
             globals.navMode = "simulation";
-        }
-
-        if (!globals.threeView.running()) {
-            sync();
-        }
-        globals.needsSync = true;
-    }
-
-    function getSolver(){
-        if (globals.simType == "dynamic") return globals.dynamicSolver;
-        else if (globals.simType == "static") return globals.staticSolver;
-        return globals.rigidSolver;
-    }
-
-    function sync(){
-        vertices = [];
-        for (var i=0;i<nodes.length;i++){
-            vertices.push(nodes[i].getPosition());
         }
 
         positions = new Float32Array(vertices.length*3);
@@ -278,10 +262,11 @@ function initModel(globals){
         var scale = 1/geometry.boundingSphere.radius;
         globals.scale = scale;
 
-        object3D.geometry.dispose();
-        object3D.geometry = geometry;
-        object3D2.geometry = geometry;
+        backside.geometry = geometry;
+        frontside.geometry.dispose();
+        frontside.geometry = geometry;
 
+        //scale geometry
         for (var i=0;i<positions.length;i++){
             positions[i] *= scale;
         }
@@ -297,7 +282,15 @@ function initModel(globals){
             edges[i].recalcOriginalLength();
         }
 
-        if (!globals.threeView.running()) reset();
+        globals.threeView.sceneAddModel(frontside);
+        globals.threeView.sceneAddModel(backside);
+
+        updateEdgeVisibility();
+        updateMeshVisibility();
+
+        getSolver().syncNodesAndEdges();
+
+        if (!globals.simulationRunning) reset();
     }
 
     function getNodes(){
@@ -326,20 +319,25 @@ function initModel(globals){
         resume: resume,
         reset: reset,
         step: step,
+
         getNodes: getNodes,
         getEdges: getEdges,
         getFaces: getFaces,
         getCreases: getCreases,
-        buildModel: buildModel,
+        getGeometry: getGeometry,//for save stl
+        getVertices: getVertices,//for user interaction, vive interface
+        getPositionsArray: getPositionsArray,
+        getColorsArray: getColorsArray,
+        getMesh: getMesh,
+
+        buildModel: buildModel,//load new model
+        sync: sync,//update geometry to new model
+
+        //rendering
         setMeshMaterial: setMeshMaterial,
         updateEdgeVisibility: updateEdgeVisibility,
         updateMeshVisibility: updateMeshVisibility,
-        getGeometry: getGeometry,//for save stl
-        getPositionsArray: getPositionsArray,
-        getColorsArray: getColorsArray,
-        sync: sync,
-        getMesh: getMesh,
-        getVertices: getVertices,
-        getDimensions: getDimensions
+
+        getDimensions: getDimensions//for save stl
     }
 }
