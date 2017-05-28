@@ -181,7 +181,7 @@ function initRigidSolver(){
             var partial1, partial2;
 
             if (!crease.node1.fixed){
-                var i = indicesMapping.indexOf(crease.node1.getIndex());
+                var i = crease.node1.getIndex();
                 var dist = crease.getLengthToNode1();
                 var partial1 = normal1.clone().divideScalar(dist);
                 // C[j+numFreeEdges][3*i] = partial1.x;
@@ -192,7 +192,7 @@ function initRigidSolver(){
                 F[3*i+2] -= partial1.z*rxnForceScale;
             }
             if (!crease.node2.fixed){
-                var i = indicesMapping.indexOf(crease.node2.getIndex());
+                var i = crease.node2.getIndex();
                 var dist = crease.getLengthToNode2();
                 var partial2 = normal2.clone().divideScalar(dist);
                 // C[j+numFreeEdges][3*i] = partial2.x;
@@ -206,7 +206,7 @@ function initRigidSolver(){
             for (var k=0;k<creaseNodes.length;k++){
                 var node = creaseNodes[k];
                 if (node.fixed) continue;
-                var i = indicesMapping.indexOf(node.getIndex());
+                var i = node.getIndex();
 
                 // C[j+numFreeEdges][3*i] = -(partial1.x+partial2.x)/2;
                 // C[j+numFreeEdges][3*i+1] = -(partial1.y+partial2.y)/2;
