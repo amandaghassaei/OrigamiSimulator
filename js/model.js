@@ -184,6 +184,7 @@ function initModel(globals){
         nextFaces = _faces;
 
         globals.needsSync = true;
+        globals.simNeedsSync = true;
 
         if (!inited) {
             startSolver();//start animation loop
@@ -292,9 +293,15 @@ function initModel(globals){
         updateEdgeVisibility();
         updateMeshVisibility();
 
-        getSolver().syncNodesAndEdges();
+        syncSolver();
 
+        globals.needsSync = false;
         if (!globals.simulationRunning) reset();
+    }
+
+    function syncSolver(){
+        getSolver().syncNodesAndEdges();
+        globals.simNeedsSync = false;
     }
 
     function getNodes(){
@@ -336,6 +343,7 @@ function initModel(globals){
 
         buildModel: buildModel,//load new model
         sync: sync,//update geometry to new model
+        syncSolver: syncSolver,//update solver params
 
         //rendering
         setMeshMaterial: setMeshMaterial,

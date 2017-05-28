@@ -34,6 +34,7 @@ function initGlobals(){
         shouldZeroDynamicVelocity: false,
         shouldCenterGeo: false,
         needsSync: false,
+        simNeedsSync: false,
 
         //3d vis
         simType: "dynamic",

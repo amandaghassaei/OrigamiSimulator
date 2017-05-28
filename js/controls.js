@@ -124,7 +124,7 @@ function initControls(globals){
 
     setRadio("simType", globals.simType, function(val){
         globals.simType = val;
-        globals.needsSync = true;
+        globals.simNeedsSync = true;
     });
 
     setSliderInput("#axialStiffness", globals.axialStiffness, 10, 40, 1, function(val){

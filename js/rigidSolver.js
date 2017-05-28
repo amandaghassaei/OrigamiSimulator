@@ -163,8 +163,8 @@ function initRigidSolver(){
         }
 
 
-        for (var j=0;j<numFreeCreases;j++){
-            var crease = creases[freeCreasesMapping[j]];
+        for (var j=0;j<creases.length;j++){
+            var crease = creases[j];
             var normal1 = normals[crease.face1Index];
             var normal2 = normals[crease.face2Index];
             var dotNormals = normal1.dot(normal2);

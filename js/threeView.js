@@ -106,7 +106,9 @@ function initThreeView(globals) {
     function _loop(callback){
         if (globals.needsSync){
             globals.model.sync();
-            globals.needsSync = false;
+        }
+        if (globals.simNeedsSync){
+            globals.model.syncSolver();
         }
         if (globals.simulationRunning) callback();
         if (globals.vrEnabled){
