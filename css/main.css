@@ -230,6 +230,9 @@ span.modal-close{
 .checkbox input.custom-checkbox[type="checkbox"]:checked + .icons .icon-checked, .radio input.custom-checkbox[type="checkbox"]:checked + .icons .icon-checked, .checkbox input.custom-radio[type="radio"]:checked + .icons .icon-checked, .radio input.custom-radio[type="radio"]:checked + .icons .icon-checked {
     color: #666;
 }
+.checkbox .icon-checked, .radio .icon-checked, .checkbox .icon-unchecked, .radio .icon-unchecked {
+    color: #bdc3c7;
+}
 
 .radio .icon-checked{
     transition-duration: 0s;

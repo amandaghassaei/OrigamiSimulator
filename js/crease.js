@@ -82,7 +82,7 @@ Crease.prototype.getCoef = function(node, edgeNode){
         console.warn("bad moment arm");
         length = 0.001;
     }
-    return (1-projLength/creaseLength)/length;
+    return (1-projLength/creaseLength);
 };
 
 Crease.prototype.getLengthTo = function(node){
@@ -101,7 +101,8 @@ Crease.prototype.getLengthTo = function(node){
 Crease.prototype.getNodeIndex = function(node){
     if (node == this.node1) return 1;
     else if (node == this.node2) return 2;
-    console.warn("no node found");
+    else if (node == this.edge.nodes[0]) return 3;
+    else if (node == this.edge.nodes[1]) return 4;
     return 0;
 };
 

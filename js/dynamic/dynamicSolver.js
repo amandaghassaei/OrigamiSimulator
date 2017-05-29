@@ -28,6 +28,8 @@ function initDynamicSolver(globals){
     var creaseMeta;//[k, d, targetTheta]
     var creaseMeta2;//[creaseIndex (thetaIndex), length to node, nodeIndex (1/2), 0] - this is for nodes which are opposite the crease
                     //[creaseIndex (thetaIndex), coef1, coef2, -1] - this is for nodes which are on the crease
+    var creaseMeta3;//[node1Index, node2Index, node3index, node4index]//nodes 1 and 2 are opposite crease, 3 and 4 are on crease
+    var creaseGeo;//[h1, h2, coef1, coef2]
     var creaseVectors;//indices of crease nodes
     var theta;//[theta, w, normalIndex1, normalIndex2]
     var lastTheta;//[theta, w, normalIndex1, normalIndex2]
@@ -124,10 +126,14 @@ function initDynamicSolver(globals){
         gpuMath.step("thetaCalc", ["u_normals", "u_lastTheta", "u_creaseVectors", "u_lastPosition",
             "u_originalPosition"], "u_theta");
 
+        gpuMath.setProgram("updateCreaseGeo");
+        //already at textureDimCreasesxtextureDimCreases
+        gpuMath.step("updateCreaseGeo", ["u_lastPosition", "u_originalPosition", "u_creaseMeta3"], "u_creaseGeo");
+
         gpuMath.setProgram("velocityCalc");
         gpuMath.setSize(textureDim, textureDim);
         gpuMath.step("velocityCalc", ["u_lastPosition", "u_lastVelocity", "u_originalPosition", "u_externalForces",
-            "u_mass", "u_meta", "u_beamMeta", "u_creaseMeta", "u_creaseMeta2", "u_normals", "u_theta"], "u_velocity");
+            "u_mass", "u_meta", "u_beamMeta", "u_creaseMeta", "u_creaseMeta2", "u_normals", "u_theta", "u_creaseGeo"], "u_velocity");
         gpuMath.step("positionCalc", ["u_velocity", "u_lastPosition", "u_mass"], "u_position");
 
         gpuMath.swapTextures("u_theta", "u_lastTheta");
@@ -261,6 +267,9 @@ function initDynamicSolver(globals){
 
         gpuMath.initTextureFromData("u_meta", textureDim, textureDim, "FLOAT", meta, true);
         gpuMath.initTextureFromData("u_creaseMeta2", textureDimNodeCreases, textureDimNodeCreases, "FLOAT", creaseMeta2, true);
+        gpuMath.initTextureFromData("u_creaseMeta3", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta3, true);
+        gpuMath.initTextureFromData("u_creaseGeo", textureDimCreases, textureDimCreases, "FLOAT", creaseGeo, true);
+        gpuMath.initFrameBufferForTexture("u_creaseGeo", true);
         gpuMath.initTextureFromData("u_faceVertexIndices", textureDimFaces, textureDimFaces, "FLOAT", faceVertexIndices, true);
 
         gpuMath.createProgram("positionCalc", vertexShader, document.getElementById("positionCalcShader").text);
@@ -281,6 +290,7 @@ function initDynamicSolver(globals){
         gpuMath.setUniformForProgram("velocityCalc", "u_creaseMeta2", 8, "1i");
         gpuMath.setUniformForProgram("velocityCalc", "u_normals", 9, "1i");
         gpuMath.setUniformForProgram("velocityCalc", "u_theta", 10, "1i");
+        gpuMath.setUniformForProgram("velocityCalc", "u_creaseGeo", 11, "1i");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDim", [textureDim, textureDim], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimEdges", [textureDimEdges, textureDimEdges], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimFaces", [textureDimFaces, textureDimFaces], "2f");
@@ -315,6 +325,13 @@ function initDynamicSolver(globals){
         gpuMath.createProgram("centerTexture", vertexShader, document.getElementById("centerTexture").text);
         gpuMath.setUniformForProgram("centerTexture", "u_lastPosition", 0, "1i");
         gpuMath.setUniformForProgram("centerTexture", "u_textureDim", [textureDim, textureDim], "2f");
+
+        gpuMath.createProgram("updateCreaseGeo", vertexShader, document.getElementById("updateCreaseGeo").text);
+        gpuMath.setUniformForProgram("updateCreaseGeo", "u_lastPosition", 0, "1i");
+        gpuMath.setUniformForProgram("updateCreaseGeo", "u_originalPosition", 1, "1i");
+        gpuMath.setUniformForProgram("updateCreaseGeo", "u_creaseMeta3", 2, "1i");
+        gpuMath.setUniformForProgram("updateCreaseGeo", "u_textureDim", [textureDim, textureDim], "2f");
+        gpuMath.setUniformForProgram("updateCreaseGeo", "u_textureDimCreases", [textureDimCreases, textureDimCreases], "2f");
 
         gpuMath.setSize(textureDim, textureDim);
 
@@ -437,7 +454,7 @@ function initDynamicSolver(globals){
         for (var i=0;i<nodes.length;i++){
             numNodeCreases += nodes[i].numCreases();
         }
-        numNodeCreases += numCreases*2;
+        numNodeCreases += numCreases*2;//reactions
         textureDimNodeCreases = calcTextureSize(numNodeCreases);
 
         var numFaces = faces.length;
@@ -457,6 +474,8 @@ function initDynamicSolver(globals){
         faceVertexIndices = new Float32Array(textureDimFaces*textureDimFaces*4);
         creaseMeta = new Float32Array(textureDimCreases*textureDimCreases*4);
         creaseMeta2 = new Float32Array(textureDimNodeCreases*textureDimNodeCreases*4);
+        creaseMeta3 = new Float32Array(textureDimCreases*textureDimCreases*4);
+        creaseGeo = new Float32Array(textureDimCreases*textureDimCreases*4);
         creaseVectors = new Float32Array(textureDimCreases*textureDimCreases*4);
         theta = new Float32Array(textureDimCreases*textureDimCreases*4);
         lastTheta = new Float32Array(textureDimCreases*textureDimCreases*4);
@@ -492,8 +511,7 @@ function initDynamicSolver(globals){
             meta[i*4+3] = nodeCreases.length + nodeInvCreases.length;
             for (var j=0;j<nodeCreases.length;j++){
                 creaseMeta2[index*4] = nodeCreases[j].getIndex();
-                creaseMeta2[index*4+1] = nodeCreases[j].getLengthTo(nodes[i]);
-                creaseMeta2[index*4+2] = nodeCreases[j].getNodeIndex(nodes[i]);//type 1 or 2
+                creaseMeta2[index*4+2] = nodeCreases[j].getNodeIndex(nodes[i]);//type 1, 2, 3, 4
                 //creaseMeta2[index*4+2] = 0 tells us that it is a node opposite a crease
                 index++;
             }
@@ -504,6 +522,14 @@ function initDynamicSolver(globals){
                 creaseMeta2[index*4+3] = -1;//this tells us that it is node on a crease
                 index++;
             }
+        }
+        for (var i=0;i<creases.length;i++){
+            var crease = creases[i];
+            creaseMeta3[i*4] = crease.node1.getIndex();
+            creaseMeta3[i*4+1] = crease.node2.getIndex();
+            creaseMeta3[i*4+2] = crease.edge.nodes[0].getIndex();
+            creaseMeta3[i*4+3] = crease.edge.nodes[1].getIndex();
+            index++;
         }
 
         updateOriginalPosition();

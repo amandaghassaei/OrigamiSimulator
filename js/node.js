@@ -8,7 +8,7 @@ var nodeMaterialHighlight = new THREE.MeshBasicMaterial({color: 0xffffff, side:T
 var transparentMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, opacity:0.5, transparent:true});
 var transparentVRMaterial = new THREE.MeshBasicMaterial({color: 0xeeeeee, opacity:0.8, transparent:true});
 
-var nodeGeo = new THREE.SphereGeometry(0.04,20);
+var nodeGeo = new THREE.SphereGeometry(0.02,20);
 var nodeFixedGeo = new THREE.CubeGeometry(1, 1, 1);
 
 function Node(position, index){
@@ -150,7 +150,7 @@ Node.prototype.setTransparent = function(){
 
 Node.prototype.setTransparentVR = function(){
     this.object3D.material = transparentVRMaterial;
-    this.object3D.scale.set(0.2, 0.2, 0.2);
+    this.object3D.scale.set(0.4, 0.4, 0.4);
 };
 
 Node.prototype.hide = function(){
