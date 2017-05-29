@@ -15,6 +15,14 @@ function initModel(globals){
     backside.visible = false;
     setMeshMaterial();
 
+    var lineMaterial = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1});
+    var mountainLines = new THREE.LineSegments(geometry);
+    var valleyLines = new THREE.LineSegments(geometry);
+    var facetLines = new THREE.LineSegments(geometry);
+    var hingeLines = new THREE.LineSegments(geometry);
+    var cutLines = new THREE.LineSegments(geometry);
+    // var borderLines = new THREE.LineSegments(geometry);
+
     var positions;//place to store buffer geo vertex data
     var colors;//place to store buffer geo vertex colors
     var indices;

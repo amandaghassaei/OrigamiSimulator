@@ -40,7 +40,7 @@ body{
     position: absolute;
     bottom:0;
     left:0;
-    /*width: 420px;*/
+    width: 420px;
     top:53px;
     padding:20px 20px;
     max-height: 100%;
@@ -350,4 +350,22 @@ input.form-control.bigInput{
 
 .modal img{
     width: 200px;
+}
+
+a.seeMore{
+    float:none!important;
+    color: #34495e;
+}
+a.seeMore>.fui-triangle-down{
+    display: inline-block;
+    margin-right:10px;
+}
+a.seeMore.closed>.fui-triangle-down{
+    -ms-transform: rotate(-90deg); /* IE 9 */
+    -webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
+    transform: rotate(-90deg);
+}
+
+.hide{
+    display: none;
 }

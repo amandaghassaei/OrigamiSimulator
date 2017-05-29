@@ -121,6 +121,40 @@ function initControls(globals){
         $("#svgViewer").hide();
     });
 
+    setLink(".seeMore", function(e){
+        var $target = $(e.target);
+        if (!$target.hasClass("seeMore")) $target = $target.parent();
+        var $div = $("#"+ $target.data("id"));
+        if ($target.hasClass("closed")){
+            $target.removeClass("closed");
+            $target.addClass("open");
+            AnimateRotate(-90, 0, $target.children("span"));
+            $div.removeClass("hide");
+            $div.show();
+        } else {
+            $target.removeClass("open");
+            $target.addClass("closed");
+            AnimateRotate(0, -90, $target.children("span"));
+            $div.hide();
+        }
+    });
+
+    function AnimateRotate(from, to, $elem) {
+        // we use a pseudo object for the animation
+        // (starts from `0` to `angle`), you can name it as you want
+        $({deg: from}).animate({deg: to}, {
+            duration: 200,
+            step: function(now) {
+                // in the step-callback (that is fired each step of the animation),
+                // you can use the `now` paramter which contains the current
+                // animation-position (`0` up to `angle`)
+                $elem.css({
+                    transform: 'rotate(' + now + 'deg)'
+                });
+            }
+        });
+    }
+
 
     setRadio("simType", globals.simType, function(val){
         globals.simType = val;

@@ -466,6 +466,7 @@
                     <li><a id="exportFOLD" href="#">Save Simulation as FOLD...</a></li>
                     <li><a id="exportSTL" href="#">Save Simulation as STL...</a></li>
                     <li><a id="exportOBJ" href="#">Save Simulation as OBJ...</a></li>
+                    <li class="divider"></li>
                     <li><a id="saveSVG" href="#">Save Pattern as SVG...</a></li>
                     <!--<li><a id="saveSVGScreenshot" href="#">Save SVG screenshot</a></li>-->
                 </ul>
@@ -544,55 +545,61 @@
             Num Steps: &nbsp;&nbsp;<input id="numSteps" value="100" placeholder="" class="form-control" type="text">
             <a href="#" id="stepForward" class="btn btn-lg btn-default">Step Forward</a>
             <br/><br/>
-        </div><br/>
+        </div>
+        <a href="#" id="shouldCenterGeo" class="floatRight btn btn-lg btn-default">Re-center geometry</a>
     </div>
-    <b>Simulation Type:</b><br/>
-    <div class="indent">
-        <label class="radio">
-            <input name="simType" value="dynamic" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
-            Compliant Dynamic Simulation <a class="about floatRight" href="#" id="aboutDynamicSim"><span class="fui-question-circle"></span></a>
-        </label>
+    <!--<b>Simulation Type:</b><br/>-->
+    <!--<div class="indent">-->
         <!--<label class="radio">-->
-            <!--<input name="simType" value="static" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>-->
-            <!--Compliant Static Simulation <a class="about floatRight" href="#" id="aboutStaticSim"><span class="fui-question-circle"></span></a>-->
+            <!--<input name="simType" value="dynamic" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>-->
+            <!--Compliant Dynamic Simulation <a class="about floatRight" href="#" id="aboutDynamicSim"><span class="fui-question-circle"></span></a>-->
         <!--</label>-->
-        <!--<label class="radio">-->
-            <!--<input name="simType" value="rigid" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>-->
-            <!--Rigid Static Simulation <a class="about floatRight" href="#" id="aboutRigidSim"><span class="fui-question-circle"></span></a>-->
-        <!--</label>-->
-    </div><br/>
+        <!--&lt;!&ndash;<label class="radio">&ndash;&gt;-->
+            <!--&lt;!&ndash;<input name="simType" value="static" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>&ndash;&gt;-->
+            <!--&lt;!&ndash;Compliant Static Simulation <a class="about floatRight" href="#" id="aboutStaticSim"><span class="fui-question-circle"></span></a>&ndash;&gt;-->
+        <!--&lt;!&ndash;</label>&ndash;&gt;-->
+        <!--&lt;!&ndash;<label class="radio">&ndash;&gt;-->
+            <!--&lt;!&ndash;<input name="simType" value="rigid" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>&ndash;&gt;-->
+            <!--&lt;!&ndash;Rigid Static Simulation <a class="about floatRight" href="#" id="aboutRigidSim"><span class="fui-question-circle"></span></a>&ndash;&gt;-->
+        <!--&lt;!&ndash;</label>&ndash;&gt;-->
+    <!--</div><br/>-->
     <label class="checkbox" for="userInteractionEnabled">
         <input id="userInteractionEnabled" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
         Allow User Interaction
     </label><br/>
-    <b>Stiffness Settings:</b><a class="floatRight about" href="#" id="aboutStiffness"><span class="fui-question-circle"></span></a><br/><br/>
-    <div class="sliderInput" id="axialStiffness">
-        <span class="label-slider">Axial Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-        <input value="" placeholder="" class="form-control" type="text">
+    <a href="#" class="seeMore closed" data-id="simulationSettings"><span class="fui-triangle-down"></span><b>Simulation Settings:</b></a><a class="floatRight about" href="#" id="aboutStiffness"><span class="fui-question-circle"></span></a><br/><br/>
+    <div id="simulationSettings" class="hide">
+        <div class="sliderInput" id="axialStiffness">
+            <span class="label-slider">Axial Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+            <input value="" placeholder="" class="form-control" type="text">
+        </div>
+        <div class="sliderInput" id="creaseStiffness">
+            <span class="label-slider">Fold Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+            <input value="" placeholder="" class="form-control" type="text">
+        </div>
+        <div class="sliderInput" id="panelStiffness">
+            <span class="label-slider">Facet Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+            <input value="" placeholder="" class="form-control" type="text">
+        </div>
+        <div class="sliderInput" id="percentDamping">
+            <span class="label-slider">Damping (0-1): </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+            <input value="" placeholder="" class="form-control" type="text">
+        </div>
+        <br/><br/>
     </div>
-    <div class="sliderInput" id="creaseStiffness">
-        <span class="label-slider">Fold Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-        <input value="" placeholder="" class="form-control" type="text">
-    </div>
-    <div class="sliderInput" id="panelStiffness">
-        <span class="label-slider">Facet Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-        <input value="" placeholder="" class="form-control" type="text">
-    </div>
-    <div class="sliderInput" id="percentDamping">
-        <span class="label-slider">Damping (0-1): </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-        <input value="" placeholder="" class="form-control" type="text">
-    </div>
-    <br/><br/>
+    <a href="#" class="seeMore closed" data-id="animationsSettings"><span class="fui-triangle-down"></span><b>Animation Settings:</b></a><a class="about floatRight" href="#" id="aboutAnimation"><span class="fui-question-circle"></span></a><br/>
+    <div id="animationsSettings" class="hide">
+        <div class="indent">
+            <span class="smallTxt">&Delta;t = <span id="deltaT"></span> seconds</span><br/>
+            <span class="smallTxt">Num simulation steps per render: &nbsp;&nbsp;<input id="numStepsPerRender" value="" placeholder="" class="int form-control" type="text"></span><br/><br/>
+        </div>
+    </div><br/><br/>
+
     <b>Error:</b><a class="about floatRight" href="#" id="aboutError"><span class="fui-question-circle"></span></a><br/>
     <div class="indent">
         <label>Average node error: <span id="globalError"></span></label>
     </div><br/>
-    <b>Animation Settings:</b><a class="about floatRight" href="#" id="aboutAnimation"><span class="fui-question-circle"></span></a><br/>
-        <div class="indent">
-            <span class="smallTxt">&Delta;t = <span id="deltaT"></span> seconds</span><br/>
-            <span class="smallTxt">Num simulation steps per render: &nbsp;&nbsp;<input id="numStepsPerRender" value="" placeholder="" class="int form-control" type="text"></span><br/><br/>
-            <a href="#" id="shouldCenterGeo" class="floatRight btn btn-lg btn-default">Re-center geometry</a>
-        </div>
+
     <div class="extraSpace"></div>
 </div>
 <div id="svgViewer"></div>
@@ -601,8 +608,8 @@
     <div>
         <b>View Settings:</b><br/><br/>
         <div class="indent">
-            Mesh Material:
-            <div class="indent">
+            <a href="#" class="seeMore open" data-id="materialSettings"><span class="fui-triangle-down"></span>Mesh Material:</a><br/>
+            <div id="materialSettings" class="indent">
                 <label class="checkbox" for="meshVisible">
                     <input id="meshVisible" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
                     Mesh Visible
@@ -622,7 +629,7 @@
                     </label>
                     <label class="radio">
                         <input name="colorMode" value="axialStrain" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
-                        Axial Strain Visualization<a class="about floatRight" href="#" id="aboutAxialStrain"><span class="fui-question-circle"></span></a>
+                        Strain Visualization<a class="about floatRight" href="#" id="aboutAxialStrain"><span class="fui-question-circle"></span></a>
                     </label>
                     <div id="axialStrainMaterialOptions" class="indent">
                         <label>Max Strain: &nbsp;&nbsp;</label>
@@ -630,8 +637,9 @@
                     </div>
                 </div>
             </div><br/>
-            Edges:
-            <div class="indent">
+
+            <a href="#" class="seeMore closed" data-id="edgeVisiblity"><span class="fui-triangle-down"></span>Edge Visiblity</a>:
+            <div id="edgeVisiblity" class="hide indent">
                 <label class="checkbox" for="edgesVisible">
                     <input id="edgesVisible" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
                     Edges Visible
@@ -654,7 +662,7 @@
                         Undriven Edges <span id="numPassive"></span>
                     </label>
                 </div>
-            </div><br/>
+            </div><br/><br/>
             <!--Rendering:-->
             <!--<div class="indent">-->
                 <!--<label class="checkbox" for="ambientOcclusion">-->
@@ -662,16 +670,14 @@
                     <!--Ambient Occlusion-->
                 <!--</label>-->
             <!--</div>-->
-            VR: <a class="about floatRight" href="#" id="aboutVR"><span class="fui-question-circle"></span></a>
-            <div class="indent smallTxt">
-                Status: &nbsp;<span id="VRstatus"></span>
-               <br/>
+            <a href="#" class="seeMore closed" data-id="virtualReality"><span class="fui-triangle-down"></span>Virtual Reality:</a>
+            <div id="virtualReality" class="hide indent smallTxt">
+                Status: &nbsp;<span id="VRstatus"></span><a class="about floatRight" href="#" id="aboutVR"><span class="fui-question-circle"></span></a>
                 <div id="VRoptions">
-
                 </div>
-            </div><br/>
-            View Angle:<br/><br/>
-            <div class="indent">
+            </div><br/><br/>
+            <a href="#" class="seeMore closed" data-id="cameraAngle"><span class="fui-triangle-down"></span>View Angle:</a><br/><br/>
+            <div id="cameraAngle" class="hide indent">
                 <a href="#" id="cameraZ" class="paddingBottom btn btn-lg btn-default">Front</a>
                 <a href="#" id="cameraMinusZ" class="paddingBottom btn btn-lg btn-default">Back</a>
                 <a href="#" id="cameraX" class="paddingBottom btn btn-lg btn-default">Right</a>
@@ -774,10 +780,10 @@
                 <br/><br/>
                 When you open this page with the appropriate browser and a Vive connected through Steam VR, you will see a button that says "Enter VR".  Clicking this will
                 put the app in an interactive VR mode.  The hand controllers will allow you to grab the origami mesh and pull on it.
-                This is especially cool if you set the mesh material to <b>Axial Strain Visualization</b> so you can see how your interactions
+                This is especially cool if you set the <b>Mesh Material</b> to <b>Strain Visualization</b> so you can see how your interactions
                 change the internal strains in the material.
                 <br/><br/>
-                If the simulation looks choppy, consider lowering the <b>Num simulation per render</b> setting in the right hand menu.
+                If the simulation looks choppy, consider lowering the <b>Num simulation steps per render</b> setting under <b>Animation Settings</b> in the right hand menu.
                 </p>
             </div>
         </div><!-- /.modal-content -->
@@ -940,7 +946,7 @@
                     Increasing the <b>Axial Stiffness</b> will tighten these constraints and
                     lower the error in the simulation.<br/>
                     <br/>
-                    To visualize the error of each node graphically, select <b>Axial Strain Visualization</b> under <b>Mesh Material</b>
+                    To visualize the error of each node graphically, select <b>Strain Visualization</b> under <b>Mesh Material</b>
                      in the left menu.
                 </p>
             </div>
@@ -1010,7 +1016,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <p><b>Axial Strain</b><br/><br/>
+                <p><b>Strain Visualization</b><br/><br/>
                     ....
                 </p>
             </div>
