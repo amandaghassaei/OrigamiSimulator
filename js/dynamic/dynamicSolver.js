@@ -26,8 +26,7 @@ function initDynamicSolver(globals){
     var normals;
     var faceVertexIndices;//[a,b,c]
     var creaseMeta;//[k, d, targetTheta]
-    var creaseMeta2;//[creaseIndex (thetaIndex), length to node, nodeIndex (1/2), 0] - this is for nodes which are opposite the crease
-                    //[creaseIndex (thetaIndex), coef1, coef2, -1] - this is for nodes which are on the crease
+    var creaseMeta2;//[creaseIndex (thetaIndex), nodeIndex (1/2/3/4), -, -]
     var creaseMeta3;//[node1Index, node2Index, node3index, node4index]//nodes 1 and 2 are opposite crease, 3 and 4 are on crease
     var creaseGeo;//[h1, h2, coef1, coef2]
     var creaseVectors;//indices of crease nodes
@@ -511,15 +510,12 @@ function initDynamicSolver(globals){
             meta[i*4+3] = nodeCreases.length + nodeInvCreases.length;
             for (var j=0;j<nodeCreases.length;j++){
                 creaseMeta2[index*4] = nodeCreases[j].getIndex();
-                creaseMeta2[index*4+2] = nodeCreases[j].getNodeIndex(nodes[i]);//type 1, 2, 3, 4
-                //creaseMeta2[index*4+2] = 0 tells us that it is a node opposite a crease
+                creaseMeta2[index*4+1] = nodeCreases[j].getNodeIndex(nodes[i]);//type 1, 2, 3, 4
                 index++;
             }
             for (var j=0;j<nodeInvCreases.length;j++){
                 creaseMeta2[index*4] = nodeInvCreases[j].getIndex();
-                creaseMeta2[index*4+1] = nodeInvCreases[j].getCoef1(nodes[i]);
-                creaseMeta2[index*4+2] = nodeInvCreases[j].getCoef2(nodes[i]);
-                creaseMeta2[index*4+3] = -1;//this tells us that it is node on a crease
+                creaseMeta2[index*4+1] = nodeInvCreases[j].getNodeIndex(nodes[i]);//type 1, 2, 3, 4
                 index++;
             }
         }

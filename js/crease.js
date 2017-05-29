@@ -103,6 +103,7 @@ Crease.prototype.getNodeIndex = function(node){
     else if (node == this.node2) return 2;
     else if (node == this.edge.nodes[0]) return 3;
     else if (node == this.edge.nodes[1]) return 4;
+    console.log("unknown node type");
     return 0;
 };
 

@@ -137,7 +137,7 @@
         uniform sampler2D u_meta;//[beamsIndex, numBeam, creaseMeta2Index, numCreases]
         uniform sampler2D u_beamMeta;//[k, d, length, otherNodeIndex]
         uniform sampler2D u_creaseMeta;//[k, d, targetTheta]
-        uniform sampler2D u_creaseMeta2;//[creaseIndex, momentArmLength, nodeIndex]
+        uniform sampler2D u_creaseMeta2;//[creaseIndex, nodeIndex, -, -]
         uniform sampler2D u_normals;
         uniform sampler2D u_theta;//[theta, z, normal1Index, normal2Index]
         uniform sampler2D u_creaseGeo;//[h1, h2, coef1, coef2]
@@ -207,9 +207,9 @@
                 float targetTheta = creaseMeta[2] * u_creasePercent;
                 float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
 
-                float nodeNum = creaseMeta2[2];//1, 2, 3, 4
+                float nodeNum = creaseMeta2[1];//1, 2, 3, 4
 
-                if (creaseMeta2[3] < 0.0){//crease reaction, node is on a crease
+                if (nodeNum > 2.0){//crease reaction, node is on a crease
 
                     //node #1
                     float normalIndex1D = thetas[2];
@@ -223,13 +223,13 @@
                     scaledNormalsIndex = normalsIndex/u_textureDimFaces;
                     vec3 normal2 = texture2D(u_normals, scaledNormalsIndex).xyz;
 
-                    float coef1 = creaseMeta2[1];
-                    float coef2 = creaseMeta2[2];
+                    float coef1 = creaseGeo[2];
+                    float coef2 = creaseGeo[3];
 
-                    //if (nodeNum == 3.0){
-                     //   coef1 = 1.0-coef1;
-                     //   coef2 = 1.0-coef2;
-                    //}
+                    if (nodeNum == 3.0){
+                        coef1 = 1.0-coef1;
+                        coef2 = 1.0-coef2;
+                    }
 
                     vec3 _force = -angForce*(coef1/creaseGeo[0]*normal1 + coef2/creaseGeo[1]*normal2);
                     force += _force;
@@ -375,10 +375,10 @@
             vec2 node3Index = vec2(mod(creaseMeta[2], u_textureDim.x)+0.5, floor(creaseMeta[2]/u_textureDim.x)+0.5)/u_textureDim;
             vec2 node4Index = vec2(mod(creaseMeta[3], u_textureDim.x)+0.5, floor(creaseMeta[3]/u_textureDim.x)+0.5)/u_textureDim;
 
-            vec3 node1 = texture2D(u_lastPosition, node1Index).xyz + texture2D(u_originalPosition, node1Index).xyz;
-            vec3 node2 = texture2D(u_lastPosition, node2Index).xyz + texture2D(u_originalPosition, node2Index).xyz;
-            vec3 node3 = texture2D(u_lastPosition, node3Index).xyz + texture2D(u_originalPosition, node3Index).xyz;
-            vec3 node4 = texture2D(u_lastPosition, node4Index).xyz + texture2D(u_originalPosition, node4Index).xyz;
+            vec3 node1 = texture2D(u_originalPosition, node1Index).xyz + texture2D(u_lastPosition, node1Index).xyz;
+            vec3 node2 = texture2D(u_originalPosition, node2Index).xyz + texture2D(u_lastPosition, node2Index).xyz;
+            vec3 node3 = texture2D(u_originalPosition, node3Index).xyz + texture2D(u_lastPosition, node3Index).xyz;
+            vec3 node4 = texture2D(u_originalPosition, node4Index).xyz + texture2D(u_lastPosition, node4Index).xyz;
 
             vec3 creaseVector = node4-node3;
             float creaseLength = length(creaseVector);
@@ -392,11 +392,7 @@
             float dist1 = sqrt(vector1.x*vector1.x+vector1.y*vector1.y+vector1.z*vector1.z-proj1Length*proj1Length);
             float dist2 = sqrt(vector2.x*vector2.x+vector2.y*vector2.y+vector2.z*vector2.z-proj2Length*proj2Length);
 
-            float tol = 0.0001;
-            if (dist1<tol) dist1 = tol;
-            if (dist2<tol) dist2 = tol;
-
-            gl_FragColor = vec4(dist1, dist2, (proj1Length/creaseLength)/dist1, (proj2Length/creaseLength)/dist2);
+            gl_FragColor = vec4(dist1, dist2, proj1Length/creaseLength, proj2Length/creaseLength);
         }
     </script>
 
