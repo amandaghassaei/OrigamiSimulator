@@ -40,7 +40,7 @@ function initGlobals(){
         simType: "dynamic",
 
         //compliant sim settings
-        creasePercent: 0.5,
+        creasePercent: 0.6,
         axialStiffness: 20,
         creaseStiffness: 0.7,
         panelStiffness: 0.7,
