@@ -460,7 +460,7 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">File <b class="caret"></b></a>
                 <span class="dropdown-arrow"></span>
                 <ul class="dropdown-menu">
-                    <li><a class="loadFile" href="#">Import... (SVG / FOLD / txt)</a></li>
+                    <li><a class="loadFile" href="#">Import... (SVG / FOLD)</a></li>
                     <li><a id="tips" href="#">File Import Tips</a></li>
                     <li class="divider"></li>
                     <li><a id="exportFOLD" href="#">Save Simulation as FOLD...</a></li>
@@ -604,7 +604,7 @@
     <div class="fullWidth">
         <a href="#" class="seeMore closed" data-id="errorInfo"><span class="fui-triangle-down"></span><b>Error:</b></a><a class="about" href="#" id="aboutError"><span class="fui-question-circle"></span></a><br/>
         <div id="errorInfo" class="hide smallTxt doubleIndent">
-            <label>Average node error: <span id="globalError"></span></label>
+            <label>Average vertex error: <span id="globalError"></span></label>
         </div>
     </div><br/>
 
@@ -763,7 +763,7 @@
                         <li>The final fold angle of a mountain or valley fold is set by its opacity. For example, 1.0 = 180&deg;
                         (fully folded), 0.5 = 90&deg;, 0 = 0&deg; (flat).  Any fold angle between  0&deg; and 180&deg; may be used.</li>
                         <li>This tool should be able to automatically clean files of slightly misaligned vertices, stray vertices,
-                        duplicate lines (coming), and extra vertices falling in the middle of an edge (coming),
+                        duplicate lines, and extra vertices falling in the middle of an edge,
                         but it is recommended to remove these errors yourself in order to avoid problems.</li>
                         <li>If your simulation is not working, check that the pattern looks correct by clicking on the "Pattern" view in the top nav bar.</li>
                     </ul><br/>
@@ -798,7 +798,7 @@
                 <br/><br/>
                 When you open this page with the appropriate browser and a Vive connected through Steam VR, you will see a button that says "Enter VR".  Clicking this will
                 put the app in an interactive VR mode.  The hand controllers will allow you to grab the origami mesh and pull on it.
-                This is especially cool if you set the <b>Mesh Material</b> to <b>Strain Visualization</b> so you can see how your interactions
+                This is especially interesting if you set the <b>Mesh Material</b> to <b>Strain Visualization</b> so you can see how your interactions
                 change the internal strains in the material.
                 <br/><br/>
                 If the simulation looks choppy, consider lowering the <b>Num simulation steps per render</b> setting under <b>Animation Settings</b> in the right hand menu.
@@ -815,9 +815,9 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
                 <p><b>Animation Settings</b><br/><br/>
-                The dynamic simulation is calculated by moving time forward in small <b>&Delta;t</b> steps, solving the system, and moving the
-                vertices of the origami incrementally.  The time step size for this animation is calculated automatically
-                based on the material stiffnesses set in the <b>Stiffness Settings</b> section: more stiff settings
+                The dynamic simulation is calculated by solving for all the forces in the system, moving time forward in small <b>&Delta;t</b> steps,
+                and updating the vertices of the origami incrementally.  The time step size for this animation is calculated automatically
+                based on the material stiffnesses set in the <b>Simulation Settings</b> section: more stiff settings
                 require shorter time steps to solve and will slow down the simulation.<br/>
                 <br/>
                 <b>Num simulation steps per render</b> allows you to control the number of tiny time steps forward to take on each
@@ -954,17 +954,17 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
                 <p><b>Simulation Error</b><br/><br/>
-                    <b>Average node error</b> gives a sense of how much the distance constraints in the
-                    origami pattern are being violated.  The error at each node is evaluated by averaging the
-                    percent deviation of all its distance constraints with adjacent nodes.  This error is
+                    <b>Average vertex error</b> gives a sense of how much the distance constraints in the
+                    origami pattern are being violated (i.e. how much the sheet is being stretched).  The error at each vertex is evaluated by averaging the
+                    percent deviation of all its distance constraints with adjacent vertices.  This error is
                     reported as a percent of the total length of the distance constraint to remove scaling effects.
                     <br/><br/>
                     This measurement is equivalent to <a href="https://en.wikipedia.org/wiki/Deformation_(mechanics)#Engineering_strain" target="_blank">
-                        Cauchy strain or engineering strain</a> of the axial constraints on this system.
+                        Cauchy strain or engineering strain</a> of the distance constraints on this system.
                     Increasing the <b>Axial Stiffness</b> will tighten these constraints and
                     lower the error in the simulation.<br/>
                     <br/>
-                    To visualize the error of each node graphically, select <b>Strain Visualization</b> under <b>Mesh Material</b>
+                    To visualize the error of each vertex graphically, select <b>Strain Visualization</b> under <b>Mesh Material</b>
                      in the left menu.
                 </p>
             </div>

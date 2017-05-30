@@ -238,7 +238,10 @@ function initPattern(globals){
         $("#numPassive").html("(" + outlines.length + ")");
 
         var allCreaseParams = getFacesAndVerticesForEdges(faces, allEdges);
-        globals.model.buildModel(faces, vertices, allEdges, allCreaseParams);
+
+        var allTypes = [outlines.length, mountains.length, valleys.length, cuts.length];
+
+        globals.model.buildModel(faces, vertices, allEdges, allCreaseParams, allTypes);
     }
 
     function removeNullEdges(allEdges){

@@ -125,7 +125,7 @@ function initThreeView(globals) {
         _render();
     }
 
-    function sceneAddModel(object){//beams and nodes
+    function sceneAddModel(object){
         modelWrapper.add(object);
     }
 

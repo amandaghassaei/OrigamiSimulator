@@ -15,17 +15,33 @@ function initModel(globals){
     backside.visible = false;
     setMeshMaterial();
 
+    var lineGeometries = [];
+    for (var i=0;i<5;i++){
+        var lineGeometry = new THREE.BufferGeometry();
+        lineGeometry.dynamic = true;
+        lineGeometries.push(lineGeometry);
+    }
+
     var lineMaterial = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1});
-    var mountainLines = new THREE.LineSegments(geometry);
-    var valleyLines = new THREE.LineSegments(geometry);
-    var facetLines = new THREE.LineSegments(geometry);
-    var hingeLines = new THREE.LineSegments(geometry);
-    var cutLines = new THREE.LineSegments(geometry);
+    var hingeLines = new THREE.LineSegments(lineGeometries[0], lineMaterial);
+    var mountainLines = new THREE.LineSegments(lineGeometries[1], lineMaterial);
+    var valleyLines = new THREE.LineSegments(lineGeometries[2], lineMaterial);
+    var cutLines = new THREE.LineSegments(lineGeometries[3], lineMaterial);
+    var facetLines = new THREE.LineSegments(lineGeometries[4], lineMaterial);
+    var allTypes;//place to store line types
     // var borderLines = new THREE.LineSegments(geometry);
+
+    globals.threeView.sceneAddModel(frontside);
+    globals.threeView.sceneAddModel(backside);
+    globals.threeView.sceneAddModel(mountainLines);
+    globals.threeView.sceneAddModel(valleyLines);
+    globals.threeView.sceneAddModel(facetLines);
+    globals.threeView.sceneAddModel(hingeLines);
+    globals.threeView.sceneAddModel(cutLines);
 
     var positions;//place to store buffer geo vertex data
     var colors;//place to store buffer geo vertex colors
-    var indices;
+    var indices, lineIndices;
     var nodes = [];
     var faces = [];
     var edges = [];
@@ -80,16 +96,11 @@ function initModel(globals){
     }
 
     function updateEdgeVisibility(){
-        for (var i=0;i<edges.length;i++){
-            edges[i].setVisibility(false);
-        }
-        if (!globals.edgesVisible) return;
-        for (var i=0;i<edges.length;i++){
-            edges[i].setVisibility(globals.passiveEdgesVisible);
-        }
-        for (var i=0;i<creases.length;i++){
-            creases[i].setVisibility();
-        }
+        mountainLines.visible = globals.edgesVisible && globals.mtnsVisible;
+        valleyLines.visible = globals.edgesVisible && globals.valleysVisible;
+        facetLines.visible = globals.edgesVisible && globals.panelsVisible;
+        hingeLines.visible = globals.edgesVisible && globals.passiveEdgesVisible;
+        cutLines.visible = false;
     }
 
     function updateMeshVisibility(){
@@ -153,7 +164,9 @@ function initModel(globals){
 
 
 
-    function buildModel(_faces, _vertices, _allEdges, allCreaseParams){
+    function buildModel(_faces, _vertices, _allEdges, allCreaseParams, _allTypes){
+
+        allTypes = _allTypes;
 
         if (_vertices.length == 0) {
             console.warn("no vertices");
@@ -204,16 +217,6 @@ function initModel(globals){
 
     function sync(){
 
-        globals.threeView.sceneClearModel();
-
-        // _.each(_nodes, function(node){
-        //     var obj3D = node.getObject3D();
-        //     globals.threeView.sceneAddModel(obj3D);
-        // });
-        _.each(nextEdges, function(edge){
-            globals.threeView.sceneAddModel(edge.getObject3D());
-        });
-
         for (var i=0;i<nodes.length;i++){
             nodes[i].destroy();
         }
@@ -247,6 +250,7 @@ function initModel(globals){
         positions = new Float32Array(vertices.length*3);
         colors = new Float32Array(vertices.length*3);
         indices = new Uint16Array(faces.length*3);
+        lineIndices = new Uint16Array(edges.length*2);
 
         for (var i=0;i<vertices.length;i++){
             positions[3*i] = vertices[i].x;
@@ -259,25 +263,34 @@ function initModel(globals){
             indices[3*i+1] = face[1];
             indices[3*i+2] = face[2];
         }
+        for (var i=0;i<edges.length;i++){
+            var edge = edges[i];
+            lineIndices[2*i] = edge.nodes[0].getIndex();
+            lineIndices[2*i+1] = edge.nodes[1].getIndex();
+        }
 
-        geometry = new THREE.BufferGeometry();
-        geometry.dynamic = true;
-
-        geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+        var positionsAttribute = new THREE.BufferAttribute(positions, 3);
+        geometry.addAttribute('position', positionsAttribute);
         geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
         geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+
 
         geometry.computeVertexNormals();
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
         geometry.center();
 
+        _.each(lineGeometries, function(lineGeometry){
+            lineGeometry.addAttribute('position', positionsAttribute);
+            lineGeometry.setIndex(new THREE.BufferAttribute(lineIndices, 1));
+            lineGeometry.computeBoundingBox();
+            lineGeometry.computeBoundingSphere();
+            lineGeometry.center();
+        });
+
         var scale = 1/geometry.boundingSphere.radius;
         globals.scale = scale;
 
-        backside.geometry = geometry;
-        frontside.geometry.dispose();
-        frontside.geometry = geometry;
 
         //scale geometry
         for (var i=0;i<positions.length;i++){
@@ -295,8 +308,12 @@ function initModel(globals){
             edges[i].recalcOriginalLength();
         }
 
-        globals.threeView.sceneAddModel(frontside);
-        globals.threeView.sceneAddModel(backside);
+        console.log(allTypes[4]);
+        hingeLines.geometry.setDrawRange(0, allTypes[0]*2);
+        mountainLines.geometry.setDrawRange(allTypes[0]*2, allTypes[1]*2);
+        valleyLines.geometry.setDrawRange((allTypes[0]+allTypes[1])*2, allTypes[2]*2);
+        cutLines.geometry.setDrawRange((allTypes[0]+allTypes[1]+allTypes[2])*2, allTypes[3]*2);
+        facetLines.geometry.setDrawRange((allTypes[0]+allTypes[1]+allTypes[2]+allTypes[3])*2, Infinity);
 
         updateEdgeVisibility();
         updateMeshVisibility();
