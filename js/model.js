@@ -236,7 +236,7 @@ function initModel(globals){
 
         vertices = [];
         for (var i=0;i<nodes.length;i++){
-            vertices.push(nodes[i].getPosition());
+            vertices.push(nodes[i].getOriginalPosition());
         }
 
         if (globals.noCreasePatternAvailable() && globals.navMode == "pattern"){
@@ -283,14 +283,13 @@ function initModel(globals){
         _.each(lineGeometries, function(lineGeometry){
             lineGeometry.addAttribute('position', positionsAttribute);
             lineGeometry.setIndex(new THREE.BufferAttribute(lineIndices, 1));
-            lineGeometry.computeBoundingBox();
-            lineGeometry.computeBoundingSphere();
-            lineGeometry.center();
+        //     lineGeometry.computeBoundingBox();
+        //     lineGeometry.computeBoundingSphere();
+        //     lineGeometry.center();
         });
 
         var scale = 1/geometry.boundingSphere.radius;
         globals.scale = scale;
-
 
         //scale geometry
         for (var i=0;i<positions.length;i++){

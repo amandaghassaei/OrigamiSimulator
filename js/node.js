@@ -17,42 +17,31 @@ function Node(position, index){
     this.index = index;
     this._originalPosition = position.clone();
 
-    this.object3D = new THREE.Mesh(nodeGeo, nodeMaterial);
-    this.object3D._myNode = this;
-    this.object3D.visible = false;
-
     this.beams = [];
     this.creases = [];
     this.invCreases = [];
     this.externalForce = null;
     this.fixed = false;
 
-    this.render(new THREE.Vector3(0,0,0));
+    // this.render(new THREE.Vector3(0,0,0));
 }
 
 Node.prototype.setFixed = function(fixed){
     this.fixed = fixed;
-    if (fixed) {
-        this.object3D.material = nodeMaterialFixed;
-        this.object3D.geometry = nodeFixedGeo;
-        if (this.externalForce) this.externalForce.hide();
-    }
-    else {
-        this.object3D.material = nodeMaterial;
-        this.object3D.geometry = nodeGeo;
-        if (this.externalForce) this.externalForce.show();
-    }
+    // if (fixed) {
+    //     this.object3D.material = nodeMaterialFixed;
+    //     this.object3D.geometry = nodeFixedGeo;
+    //     if (this.externalForce) this.externalForce.hide();
+    // }
+    // else {
+    //     this.object3D.material = nodeMaterial;
+    //     this.object3D.geometry = nodeGeo;
+    //     if (this.externalForce) this.externalForce.show();
+    // }
 };
 
 Node.prototype.isFixed = function(){
     return this.fixed;
-};
-
-Node.prototype.moveManually = function(position){
-    this.object3D.position.set(position.x, position.y, position.z);
-    _.each(this.beams, function(beam){
-        beam.render();
-    });
 };
 
 
@@ -130,49 +119,57 @@ Node.prototype.getObject3D = function(){
     return this.object3D;
 };
 
-Node.prototype.highlight = function(){
-    this.object3D.material = nodeMaterialHighlight;
-};
-
-Node.prototype.unhighlight = function(){
-    if (!this.object3D) return;
-    if (this.fixed) {
-        this.object3D.material = nodeMaterialFixed;
-    }
-    else {
-        this.object3D.material = nodeMaterial;
-    }
-};
+// Node.prototype.highlight = function(){
+//     this.object3D.material = nodeMaterialHighlight;
+// };
+//
+// Node.prototype.unhighlight = function(){
+//     if (!this.object3D) return;
+//     if (this.fixed) {
+//         this.object3D.material = nodeMaterialFixed;
+//     }
+//     else {
+//         this.object3D.material = nodeMaterial;
+//     }
+// };
 
 Node.prototype.setTransparent = function(){
+    if (!this.object3D){
+        this.object3D = new THREE.Mesh(nodeGeo, nodeMaterial);
+        this.object3D.visible = false;
+    }
     this.object3D.material = transparentMaterial;
 };
 
 Node.prototype.setTransparentVR = function(){
+    if (!this.object3D){
+        this.object3D = new THREE.Mesh(nodeGeo, nodeMaterial);
+        this.object3D.visible = false;
+    }
     this.object3D.material = transparentVRMaterial;
     this.object3D.scale.set(0.4, 0.4, 0.4);
 };
 
-Node.prototype.hide = function(){
-    this.object3D.visible = false;
-};
+// Node.prototype.hide = function(){
+//     this.object3D.visible = false;
+// };
 
-Node.prototype.render = function(position){
+// Node.prototype.render = function(position){
     // if (this.fixed) return;
-    position.add(this.getOriginalPosition());
+    // position.add(this.getOriginalPosition());
     // console.log(position);
-    this.object3D.position.set(position.x, position.y, position.z);//todo need this?
-    return position;
-};
-Node.prototype.renderDelta = function(delta){
-    // if (this.fixed) return;
-    this.object3D.position.add(delta);
-    return this.object3D.position;
-};
+    // this.object3D.position.set(position.x, position.y, position.z);
+    // return position;
+// };
+// Node.prototype.renderDelta = function(delta){
+//     // if (this.fixed) return;
+//     this.object3D.position.add(delta);
+//     return this.object3D.position;
+// };
 
-Node.prototype.renderChange = function(change){
-    this.object3D.position.add(change);
-};
+// Node.prototype.renderChange = function(change){
+//     this.object3D.position.add(change);
+// };
 
 
 
@@ -191,11 +188,21 @@ Node.prototype.setOriginalPosition = function(x, y, z){
 };
 
 Node.prototype.getPosition = function(){
-    return this.object3D.position;
+    var positions = globals.model.getPositionsArray();
+    var i = this.getIndex();
+    return new THREE.Vector3(positions[3*i], positions[3*i+1], positions[3*i+2]);
+};
+
+Node.prototype.moveManually = function(position){
+    var positions = globals.model.getPositionsArray();
+    var i = this.getIndex();
+    positions[3*i] = position.x;
+    positions[3*i+1] = position.y;
+    positions[3*i+2] = position.z;
 };
 
 Node.prototype.getRelativePosition = function(){
-    return this.object3D.position.clone().sub(this._originalPosition);
+    return this.getPosition().sub(this._originalPosition);
 };
 
 Node.prototype.getSimMass = function(){
@@ -210,7 +217,6 @@ Node.prototype.getSimMass = function(){
 
 Node.prototype.destroy = function(){
     //object3D is removed in outer scope
-    this.object3D._myNode = null;
     this.object3D = null;
     this.beams = null;
     this.creases = null;

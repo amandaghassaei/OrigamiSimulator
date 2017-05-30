@@ -84,12 +84,12 @@ function init3DUI(globals) {
 
     function setHighlightedObj(object){
         if (highlightedObj && (object != highlightedObj)) {
-            highlightedObj.unhighlight();
+            // highlightedObj.unhighlight();
             highlighter1.getObject3D().visible = false;
         }
         highlightedObj = object;
         if (highlightedObj) {
-            highlightedObj.highlight();
+            // highlightedObj.highlight();
             highlighter1.getObject3D().visible = true;
         }
     }
