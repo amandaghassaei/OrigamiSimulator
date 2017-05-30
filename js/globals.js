@@ -36,6 +36,8 @@ function initGlobals(){
         needsSync: false,
         simNeedsSync: false,
 
+        menusVisible: true,
+
         //3d vis
         simType: "dynamic",
 

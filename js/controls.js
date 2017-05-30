@@ -14,6 +14,19 @@ function initControls(globals){
         $("#activeLogo").hide();
     });
 
+    setLink("#menuVis", function(){
+        if (globals.menusVisible){
+            $("#controls").fadeOut();
+            $("#controlsLeft").fadeOut();
+            $("#creasePercentNav").fadeIn();
+        } else {
+            $("#controls").fadeIn();
+            $("#controlsLeft").fadeIn();
+            $("#creasePercentNav").fadeOut();
+        }
+        globals.menusVisible = !globals.menusVisible;
+    });
+
     setLink("#about", function(){
         $('#aboutModal').modal('show');
     });
@@ -181,9 +194,17 @@ function initControls(globals){
         globals.materialHasChanged = true;
     });
 
-    setSliderInput("#creasePercent", globals.creasePercent, -1, 1, 0.01, function(val){
+    var creasePercentNavSlider, creasePercentSlider;
+    creasePercentSlider = setSliderInput("#creasePercent", globals.creasePercent, -1, 1, 0.01, function(val){
         globals.creasePercent = val;
         globals.shouldChangeCreasePercent = true;
+        creasePercentNavSlider.slider('value', val);
+    });
+    creasePercentNavSlider = setSlider("#creasePercentNav>div", globals.creasePercent, -1, 1, 0.01, function(val){
+        globals.creasePercent = val;
+        globals.shouldChangeCreasePercent = true;
+        creasePercentSlider.slider('value', val);
+        $('#creasePercent>input').val(val);
     });
 
     function setDeltaT(val){
@@ -430,7 +451,8 @@ function initControls(globals){
         slider.on("slidestop", function(){
             var val = slider.slider('value');
             if (callbackOnStop) callbackOnStop(val);
-        })
+        });
+        return slider;
     }
 
     function setLogSliderInput(id, val, min, max, incr, callback){
@@ -508,16 +530,10 @@ function initControls(globals){
             $input.val(val);
             callback(val);
         });
-    }
-
-    function update(){
-        function setInput(id, val){
-            $(id).val(val);
-        }
+        return slider;
     }
 
     return {
-        update:update,
         setDeltaT: setDeltaT
     }
 }

@@ -3,7 +3,7 @@ html{
     height:100%;
     padding:0;
     overflow: hidden;
-    min-width: 1080px;
+    min-width: 1025px;
 }
 
 body{
@@ -12,7 +12,7 @@ body{
     padding:0;
     margin:0;
     overflow: hidden;
-    min-width: 1080px;
+    min-width: 1025px;
     /*-webkit-touch-callout: none; !* iOS Safari *!*/
     /*-webkit-user-select: none;   !* Chrome/Safari/Opera *!*/
     /*-khtml-user-select: none;    !* Konqueror *!*/
@@ -329,10 +329,11 @@ svg{
     margin-right: 20px;
 }
 
-#creasePercent{
+#creasePercentNav{
     margin-bottom: 0;
-    margin-top:9px;
+    margin-top:12px;
     color: white;
+    display: none;
 }
 
 .bigLabel{
