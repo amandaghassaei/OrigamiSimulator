@@ -308,7 +308,6 @@ function initModel(globals){
             edges[i].recalcOriginalLength();
         }
 
-        console.log(allTypes[4]);
         hingeLines.geometry.setDrawRange(0, allTypes[0]*2);
         mountainLines.geometry.setDrawRange(allTypes[0]*2, allTypes[1]*2);
         valleyLines.geometry.setDrawRange((allTypes[0]+allTypes[1])*2, allTypes[2]*2);

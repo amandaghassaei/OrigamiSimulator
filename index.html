@@ -77,8 +77,20 @@
     </script>
 
     <script id="zeroTexture" type="x-shader/x-fragment">
+        precision mediump float;
         void main(){
             gl_FragColor = vec4(0.0);
+        }
+    </script>
+    <script id="zeroThetaTexture" type="x-shader/x-fragment">
+        precision mediump float;
+        uniform sampler2D u_theta;
+        uniform vec2 u_textureDimCreases;
+        void main(){
+            vec2 fragCoord = gl_FragCoord.xy;
+            vec2 scaledFragCoord = fragCoord/u_textureDimCreases;
+            vec4 theta = texture2D(u_theta, scaledFragCoord);
+            gl_FragColor = vec4(0.0, 0.0, theta[2], theta[3]);
         }
     </script>
     <script id="centerTexture" type="x-shader/x-fragment">
@@ -704,6 +716,7 @@
                 <a href="#" id="cameraMinusY" class="btn btn-sm btn-default">Bottom</a>
                 <a href="#" id="cameraOrtho" class="btn btn-sm btn-default">Ortho</a>
             </div>
+            <div class="extraSpace"></div>
         </div>
     </div>
 </div>

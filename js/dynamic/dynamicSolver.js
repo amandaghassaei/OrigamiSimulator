@@ -60,6 +60,8 @@ function initDynamicSolver(globals){
         globals.gpuMath.step("zeroTexture", [], "u_lastPosition");
         globals.gpuMath.step("zeroTexture", [], "u_velocity");
         globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
+        globals.gpuMath.step("zeroThetaTexture", ["u_lastTheta"], "u_theta");
+        globals.gpuMath.step("zeroThetaTexture", ["u_theta"], "u_lastTheta");
         render();
     }
 
@@ -321,6 +323,10 @@ function initDynamicSolver(globals){
         gpuMath.setUniformForProgram("packToBytes", "u_floatTexture", 0, "1i");
 
         gpuMath.createProgram("zeroTexture", vertexShader, document.getElementById("zeroTexture").text);
+        gpuMath.createProgram("zeroThetaTexture", vertexShader, document.getElementById("zeroThetaTexture").text);
+        gpuMath.setUniformForProgram("zeroThetaTexture", "u_theta", 0, "1i");
+        gpuMath.setUniformForProgram("zeroThetaTexture", "u_textureDimCreases", [textureDimCreases, textureDimCreases], "2f");
+
         gpuMath.createProgram("centerTexture", vertexShader, document.getElementById("centerTexture").text);
         gpuMath.setUniformForProgram("centerTexture", "u_lastPosition", 0, "1i");
         gpuMath.setUniformForProgram("centerTexture", "u_textureDim", [textureDim, textureDim], "2f");
