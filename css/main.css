@@ -34,7 +34,7 @@ body{
     background:rgba(10,10,10,0.1);
 }
 #controls>a{
-    float:right;
+    /*float:right;*/
 }
 #controlsLeft{
     position: absolute;
@@ -62,6 +62,9 @@ body{
 
 .indent{
     padding-left:20px;
+}
+.doubleIndent{
+    padding-left:40px;
 }
 
 #gpuMathCanvas{
@@ -294,11 +297,18 @@ svg{
     margin: 0 18px;
 }
 
-.about.floatRight{
+.about{
+
     margin-right: 10px;
-    color: #34495e;
+    color: #34495e!important;
     font-size: 18px;
     line-height: 18px;
+}
+#controls .about{
+    position: absolute;
+    line-height: 1.7;
+    margin-top: 2px;
+    right:5px;
 }
 
 #aboutError{
@@ -315,7 +325,8 @@ svg{
     margin-left: 20px;
 }
 #stepForward{
-    margin-left: 13px;
+    display: inline-block;
+    margin-right: 20px;
 }
 
 #creasePercent{
@@ -368,4 +379,20 @@ a.seeMore.closed>.fui-triangle-down{
 
 .hide{
     display: none;
+}
+
+.inlineBlock{
+    display: inline-block;
+}
+
+.alignRight{
+    text-align: right;
+}
+
+.fullWidth{
+    width: 100%;
+}
+
+#simulationSettings, #errorInfo,  #animationsSettings, #cameraAngle, #edgeVisiblity, #virtualReality, #materialSettings{
+    margin-top: 15px;
 }

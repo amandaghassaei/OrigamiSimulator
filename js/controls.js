@@ -130,7 +130,7 @@ function initControls(globals){
             $target.addClass("open");
             AnimateRotate(-90, 0, $target.children("span"));
             $div.removeClass("hide");
-            $div.show();
+            $div.css('display', 'inline-block');
         } else {
             $target.removeClass("open");
             $target.addClass("closed");
@@ -297,15 +297,15 @@ function initControls(globals){
     });
 
     setLink("#start", function(){
-        $("#pause").show();
-        $("#reset").show();
+        $("#pause").css('display', 'inline-block');
+        $("#reset").css('display', 'inline-block');
         $("#start").hide();
         $("#stepForwardOptions").hide();
         globals.model.resume();
     });
     setLink("#pause", function(){
-        $("#start").show();
-        $("#stepForwardOptions").show();
+        $("#start").css('display', 'inline-block');
+        $("#stepForwardOptions").css('display', 'inline-block');
         $("#pause").hide();
         globals.model.pause();
     });
@@ -320,7 +320,7 @@ function initControls(globals){
         if (numSteps<=0) return;
         $("#numSteps").val(numSteps);
         globals.model.step(numSteps);
-        $("#reset").show();
+        $("#reset").css('display', 'inline-block');
     });
 
     setInput("#strainClip", globals.strainClip, function(val){
