@@ -203,10 +203,10 @@ function initDynamicSolver(globals){
                 var nodeError = parsedPixels[rgbaIndex+3]*100;
                 globalError += nodeError;
                 var nodePosition = new THREE.Vector3(parsedPixels[rgbaIndex], parsedPixels[rgbaIndex + 1], parsedPixels[rgbaIndex + 2]);
-                var nexPos = nodes[i].render(nodePosition);
-                positions[3*i] = nexPos.x;
-                positions[3*i+1] = nexPos.y;
-                positions[3*i+2] = nexPos.z;
+                nodePosition.add(nodes[i]._originalPosition);
+                positions[3*i] = nodePosition.x;
+                positions[3*i+1] = nodePosition.y;
+                positions[3*i+2] = nodePosition.z;
                 if (shouldUpdateColors){
                     if (nodeError>globals.strainClip) nodeError = globals.strainClip;
                     var scaledVal = (1-nodeError/globals.strainClip) * 0.7;
@@ -218,9 +218,6 @@ function initDynamicSolver(globals){
                 }
             }
             $errorOutput.html((globalError/nodes.length).toFixed(7) + " %");
-            for (var i=0;i<edges.length;i++){
-                edges[i].render();
-            }
         } else {
             console.log("shouldn't be here");
         }
