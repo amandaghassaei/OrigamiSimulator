@@ -56,14 +56,17 @@ function initViveInterface(globals){
     var scale = 0.5;
 
     function connect(){
+
         WEBVR.getVRDisplay( function ( display ) {
             if (!display) return;
             $status.html("VR device detected.");
             var button = WEBVR.getButton( display, globals.threeView.renderer.domElement );
-            $("#VRoptions").html(button);
+            var $link = $("#enterVR");
+            $link.html(button.textContent);
             var callback = button.onclick;
-            button.onclick = function () {
-				globals.vrEnabled = !display.isPresenting;
+            $link.click(function(e){
+                e.preventDefault();
+                globals.vrEnabled = !display.isPresenting;
                 var y = 0;
                 if (globals.vrEnabled) y = yOffset;
                 globals.threeView.modelWrapper.scale.set(scale, scale, scale);
@@ -76,7 +79,7 @@ function initViveInterface(globals){
                 });
                 setControllerEvents();
                 if (callback) callback();
-			};
+            });
         } );
     }
 
