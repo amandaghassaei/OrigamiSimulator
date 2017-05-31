@@ -499,15 +499,16 @@
     <script type="text/javascript" src="dependencies/OBJExporter.js"></script>
     <script type="text/javascript" src="dependencies/path-data-polyfill.js"></script>
     <script type="text/javascript" src="dependencies/earcut.js"></script>
-    <script type="text/javascript" src="dependencies/numeric-1.2.6.js"></script>
+    <script type="text/javascript" src="dependencies/fold.js"></script>
+    <!--<script type="text/javascript" src="dependencies/numeric-1.2.6.js"></script>-->
 
-    <script type="text/javascript" src="dependencies/EffectComposer.js"></script>
-    <script type="text/javascript" src="dependencies/MaskPass.js"></script>
-    <script type="text/javascript" src="dependencies/ShaderPass.js"></script>
-    <script type="text/javascript" src="dependencies/CopyShader.js"></script>
-    <script type="text/javascript" src="dependencies/SSAOShader.js"></script>
-    <script type="text/javascript" src="dependencies/Detector.js"></script>
-    <script type="text/javascript" src="dependencies/RenderPass.js"></script>
+    <!--<script type="text/javascript" src="dependencies/EffectComposer.js"></script>-->
+    <!--<script type="text/javascript" src="dependencies/MaskPass.js"></script>-->
+    <!--<script type="text/javascript" src="dependencies/ShaderPass.js"></script>-->
+    <!--<script type="text/javascript" src="dependencies/CopyShader.js"></script>-->
+    <!--<script type="text/javascript" src="dependencies/SSAOShader.js"></script>-->
+    <!--<script type="text/javascript" src="dependencies/Detector.js"></script>-->
+    <!--<script type="text/javascript" src="dependencies/RenderPass.js"></script>-->
 
     <script type="text/javascript" src="dependencies/WebVR.js"></script>
     <script type="text/javascript" src="dependencies/VREffect.js"></script>
@@ -592,6 +593,7 @@
                             <li><a href="#" class="demo" data-url="Tessellations/langHoneycomb.svg">Lang Honeycomb Tessellation</a></li>
                             <li><a href="#" class="demo" data-url="Tessellations/langOvalTessellation.svg">Lang Oval Tessellation</a></li>
                             <li><a href="#" class="demo" data-url="Tessellations/langHyperbolicLimit.svg">Lang Hyperbolic Limit</a></li>
+							<li><a href="#" class="demo" data-url="Tessellations/test.svg">test (REMOVE)</a></li>
                         </ul>
                     </li>
                     <li class="dropdown-submenu">
@@ -757,7 +759,6 @@
     <div class="extraSpace"></div>
 </div>
 <div id="svgViewer"></div>
-
 <div id="controlsLeft" class="flipped">
     <div>
         <b>View Settings:</b><br/><br/>
@@ -843,23 +844,49 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-body">
-                <p><b>Origami Simulator</b><br/><br/>
-                    <a target="_blank" href="http://www2.eng.cam.ac.uk/~sdg/preprint/5OSME.pdf">Origami Folding; A Structural Engineering Approach</a><br/>
-                    <a target="_blank" href="http://origami.c.u-tokyo.ac.jp/~tachi/cg/SimulationOfRigidOrigami_tachi_4OSME.pdf">Rigid Origami Simulator</a><br/>
+                <b>Origami Simulator</b><br/><br/>
+                <p>
+                    This app allows you to upload any origami crease pattern and simulate how it will fold.  It uses a physics-based
+                    approach to iteratively solve for small displacements in the geometry of an initially flat sheet due to forces
+                    exerted by creases.  This physics solver extends work from the following sources: <br/><br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="http://www2.eng.cam.ac.uk/~sdg/preprint/5OSME.pdf">Origami Folding; A Structural Engineering Approach</a> by Mark Schenk and Simon D. Guest<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="http://origami.c.u-tokyo.ac.jp/~tachi/cg/SimulationOfRigidOrigami_tachi_4OSME.pdf">Rigid Origami Simulator</a> by Tomohiro Tachi<br/>
                     <br/>
-                    This app uses <a target="_blank" href="https://threejs.org/">three.js</a> to visualize and interact with the 3D geometry of the folding.<br/>
-                    Triangulation of quad faces in origami patterns is achieved by adding the shortest edge across the quad (this helps to preserve symmetry, which
-                    makes the simulation work better). Arbitrary polygonal faces are triangulated using the <a target="_blank" href="https://github.com/mapbox/earcut">Earcut Library</a>.<br/>
-                    Additionally, I used <a target="_blank" href="https://jquery.com/">jQuery</a>, <a target="_blank" href="http://getbootstrap.com/">Bootstrap</a>, and the
-                    <a target="_blank" href="http://designmodo.github.io/Flat-UI/">Flat UI theme</a> to build the GUI.<br/>
+                    All simulation methods were written from scratch and are executed in parallel in several GPU fragment shaders for fast performance.
+                </p><br/>
+                    <b>Instructions:</b><br/><br/>
+                    <ul>
+                        <li>Slide the <b>Fold Angle</b> slider to control the degree of folding of the pattern (1 is fully folded, 0 is unfolded,
+                            and -1 is fully folded with the opposite mountain/valley assignments).</li>
+                        <li>Import other patterns under the <b>Examples</b> menu.</li>
+                        <li>Upload your own crease patterns in SVG or FOLD formats, following <a href="#" class="goToImportInstructions">these instructions</a>.</li>
+                        <li>Export FOLD files or 3D models ( STL or OBJ ) of the folded state of your design ( <b>File>Save Simulation as...</b> ).</li>
+                        <li>Visualize the internal strain of the origami as it folds using the <b>Strain Visualization</b> in the left menu.</li>
+                        <li>If you are working from a computer connected to a Vive, follow <a href="#" id="goToViveInstructions">these instructions</a>
+                            to use this app in an interactive virtual reality mode.</li>
+                    </ul>
+                    <br/>
+
+                    <b>External Libraries:</b><br/><br/>
+                    <ul>
+                        <li>All rendering and 3D interaction done with <a target="_blank" href="https://threejs.org/">three.js</a></li>
+                        <li><a href="https://www.npmjs.com/package/path-data-polyfill" target="_blank">path-data-polyfill</a> helps with SVG parsing</li>
+                        <li>Arbitrary polygonal faces of imported geometry are triangulated using the <a target="_blank" href="https://github.com/mapbox/earcut">Earcut Library</a></li>
+                        <li><a target="_blank" href="https://jquery.com/">jQuery</a>, <a target="_blank" href="http://getbootstrap.com/">Bootstrap</a>, and the
+                            <a target="_blank" href="http://designmodo.github.io/Flat-UI/">Flat UI theme</a> used to build the GUI</li>
+                    </ul>
+                <p>
                     <br/>
                     Built by <a href="http://www.amandaghassaei.com/" target="_blank">Amanda Ghassaei</a> as a final project for <a href="http://courses.csail.mit.edu/6.849/spring17/" target="_blank">Geometric Folding Algorithms</a>.
                     Code available on <a href="https://github.com/amandaghassaei/OrigamiSimulator" target="_blank">Github</a>.  If you have interesting crease patterns that would
-                    make good demo files, please send them to me (Amanda) so I can add them to the <b>Examples</b> menu.  My email address is on my website.  Thanks!
+                    make good demo files, please send them to me (Amanda) so I can add them to the <b>Examples</b> menu.  My email address is on my website.  Thanks!<br/>
+                    <br/>
+                    More documentation coming soon.
                 </p>
             </div>
         </div><!-- /.modal-content -->
@@ -931,7 +958,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <p><b>VR</b><br/><br/>
+                <p><b>Virtual Reality</b><br/><br/>
                 This tool currently supports an interactive Virtual Reality mode using the Vive headset and controllers.
                 For this to work, you must first use a <a href="https://webvr.info/" target="_blank">WebVR enabled browser</a>:
                 currently only <a href="https://webvr.rocks/firefox" target="_blank">Firefox Nightly</a> is supported by this app.
@@ -1104,7 +1131,7 @@
                     <br/><br/>
                     This measurement is equivalent to <a href="https://en.wikipedia.org/wiki/Deformation_(mechanics)#Engineering_strain" target="_blank">
                         Cauchy strain or engineering strain</a> of the distance constraints on this system.
-                    Increasing the <b>Axial Stiffness</b> will tighten these constraints and
+                    Increasing the <b>Axial Strength</b> will tighten these constraints and
                     lower the error in the simulation.<br/>
                     <br/>
                     To visualize the error of each vertex graphically, select <b>Strain Visualization</b> under <b>Mesh Material</b>
@@ -1193,14 +1220,16 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <div class="modal fade" id="aboutAxialStrainModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-med">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-body">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
                 <p><b>Strain Visualization</b><br/><br/>
-                    ....
+                    <a href="https://en.wikipedia.org/wiki/Deformation_(mechanics)#Engineering_strain" target="_blank">
+                        Cauchy strain or engineering strain</a> is a unitless measurement of how much a material is being stretched or compressed under load.
+                    The <b>Strain Visualization</b> illustrates the strain across an origami sheet by mapping it to a color from blue (no strain) to red (max strain).
                 </p>
             </div>
         </div><!-- /.modal-content -->

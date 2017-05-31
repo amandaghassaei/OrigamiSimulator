@@ -207,6 +207,16 @@ function initControls(globals){
         });
     }
 
+    setLink(".goToImportInstructions", function(){
+       $("#aboutModal").modal("hide");
+        $("#tipsModal").modal("show");
+    });
+
+    setLink("#goToViveInstructions", function(){
+       $("#aboutModal").modal("hide");
+        $("#aboutVRmodal").modal("show");
+    });
+
 
     setRadio("simType", globals.simType, function(val){
         globals.simType = val;

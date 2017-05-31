@@ -4,6 +4,20 @@
 
 function initPattern(globals){
 
+    var FOLD = require('fold');
+
+    var foldData = {};
+    clearFold();
+
+    function clearFold(){
+        foldData.vertices_coords = [];
+        foldData.edges_vertices = edges_vertices = [];
+        foldData.edges_assignment = edges_assignment = [];//B = boundary, M = mountain, V = valley, C = cut, F = facet, H/U = hinge
+        foldData.edges_foldAngles = [];//target angles
+        foldData.faces_vertices = [];
+    }
+
+
     var verticesRaw = [];//list of vertex3's
     //refs to vertex indices
     var mountainsRaw = [];
@@ -365,11 +379,49 @@ function initPattern(globals){
         cutsRaw = _cutsRaw;
         triangulationsRaw = _triangulationsRaw;
 
+		//FOLD.convert.edges_vertices_to_faces_vertices(fold)
+
+		//FOLD.filter.removeLoopEdges
+        clearFold();
+        _.each(_verticesRaw, function(vertex){
+            foldData.vertices_coords.push([vertex.x, vertex.z]);
+        });
+        _.each(_outlinesRaw, function(edge){
+            foldData.edges_vertices.push([edge[0], edge[1]]);
+            foldData.edges_assignment.push("B");
+            foldData.edges_foldAngles.push(null);
+        });
+        _.each(_mountainsRaw, function(edge, i){
+            foldData.edges_vertices.push([edge[0], edge[1]]);
+            foldData.edges_assignment.push("M");
+            foldData.edges_foldAngles.push(_mountainAngles[i]);
+        });
+        _.each(_valleysRaw, function(edge, i){
+            foldData.edges_vertices.push([edge[0], edge[1]]);
+            foldData.edges_assignment.push("V");
+            foldData.edges_foldAngles.push(_valleyAngles[i]);
+        });
+        _.each(_triangulationsRaw, function(edge){
+            foldData.edges_vertices.push([edge[0], edge[1]]);
+            foldData.edges_assignment.push("F");
+            foldData.edges_foldAngles.push(0);
+        });
+
         var error = mergeVertices();
         if (error) {
             console.warn("aborting file import");
             return;
         }
+
+        console.log(JSON.stringify(foldData.vertices_coords));
+        foldData = FOLD.filter.collapseNearbyVertices(foldData, 3);
+        console.log(JSON.stringify(foldData.vertices_coords));
+
+        // console.log(JSON.stringify(foldData.edges_vertices));
+        // console.log(FOLD.filter.subdivideCrossingEdges_vertices(foldData, 3));
+        // console.log(JSON.stringify(foldData.edges_vertices));
+
+        mergeVertices();//
 
         var nullEdges = 0;
         nullEdges += removeNullEdges(outlines);
@@ -559,7 +611,7 @@ function initPattern(globals){
         return allCreaseParams;
     }
 
-    function mergeVertices(){
+    function mergeVertices(allEdges){
 
         vertices = verticesRaw.slice();
 
@@ -568,7 +620,6 @@ function initPattern(globals){
         var mergedVertices = [];
         var _weededVertices = vertices.slice();
         var goodVertices = [];
-        var allEdges = outlinesRaw.concat(mountainsRaw).concat(valleysRaw).concat(cutsRaw).concat(triangulationsRaw);
         var js = [];
         for (var i=0;i<vertices.length;i++){
             js.push(i);
@@ -606,12 +657,6 @@ function initPattern(globals){
             }
         }
 
-        outlines = outlinesRaw.slice();
-        mountains = mountainsRaw.slice();
-        valleys = valleysRaw.slice();
-        cuts = cutsRaw.slice();
-        triangulations = triangulationsRaw.slice();
-
         var strays = findStrayVertices();
         for (var i=0;i<strays.length;i++){
             for (var j=0;j<_weededVertices.length;j++){
@@ -630,11 +675,7 @@ function initPattern(globals){
             return true;
         }
 
-        removeCombinedFromSet(combined, outlines);
-        removeCombinedFromSet(combined, mountains);
-        removeCombinedFromSet(combined, valleys);
-        removeCombinedFromSet(combined, cuts);
-        removeCombinedFromSet(combined, triangulations);
+        removeCombinedFromSet(combined, allEdges);
 
         for (var i=0;i<goodVertices.length;i++){
             var newIndex = mergedVertices.length;
@@ -945,31 +986,13 @@ function initPattern(globals){
         }
     }
 
-    function findIntersections(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw){
-        findIntersectionsInSets(_verticesRaw, _outlinesRaw, _outlinesRaw);
-        findIntersectionsInSets(_verticesRaw, _outlinesRaw, _mountainsRaw);
-        findIntersectionsInSets(_verticesRaw, _outlinesRaw, _valleysRaw);
-        findIntersectionsInSets(_verticesRaw, _outlinesRaw, _cutsRaw);
-        findIntersectionsInSets(_verticesRaw, _outlinesRaw, _triangulationsRaw);
-        findIntersectionsInSets(_verticesRaw, _mountainsRaw, _mountainsRaw);
-        findIntersectionsInSets(_verticesRaw, _mountainsRaw, _valleysRaw);
-        findIntersectionsInSets(_verticesRaw, _mountainsRaw, _cutsRaw);
-        findIntersectionsInSets(_verticesRaw, _mountainsRaw, _triangulationsRaw);
-        findIntersectionsInSets(_verticesRaw, _valleysRaw, _valleysRaw);
-        findIntersectionsInSets(_verticesRaw, _valleysRaw, _cutsRaw);
-        findIntersectionsInSets(_verticesRaw, _valleysRaw, _triangulationsRaw);
-        findIntersectionsInSets(_verticesRaw, _cutsRaw, _cutsRaw);
-        findIntersectionsInSets(_verticesRaw, _cutsRaw, _triangulationsRaw);
-        findIntersectionsInSets(_verticesRaw, _triangulationsRaw, _triangulationsRaw);
-    }
-
-    function findIntersectionsInSets(_verticesRaw, set1, set2){
+    function findIntersectionsInSets(_verticesRaw, set1){
         for (var i=set1.length-1;i>=0;i--){
-            for (var j=set2.length-1;j>=0;j--){
+            for (var j=set1.length-1;j>=0;j--){
                 var v1 = _verticesRaw[set1[i][0]];
                 var v2 = _verticesRaw[set1[i][1]];
-                var v3 = _verticesRaw[set2[j][0]];
-                var v4 = _verticesRaw[set2[j][1]];
+                var v3 = _verticesRaw[set1[j][0]];
+                var v4 = _verticesRaw[set1[j][1]];
                 var data = line_intersect(v1, v2, v3, v4);
                 if (data) {
                     var d1 = getDistFromEnd(data.t1, v1, v2);
@@ -989,9 +1012,9 @@ function initPattern(globals){
                         i++;
                     }
                     if (seg2Int){
-                        set2.splice(j+1, 0, [vertIndex, set2[j][0], set2[j][2]]);
-                        set2.splice(j+1, 0, [vertIndex, set2[j][1], set2[j][2]]);
-                        set2.splice(j, 1);
+                        set1.splice(j+1, 0, [vertIndex, set1[j][0], set1[j][2]]);
+                        set1.splice(j+1, 0, [vertIndex, set1[j][1], set1[j][2]]);
+                        set1.splice(j, 1);
                         j ++;
                     }
                 }
@@ -1001,6 +1024,8 @@ function initPattern(globals){
 
     function getDistFromEnd(t, v1, v2){
         if (t>0.5) t = 1-t;
+        v1 = new THREE.Vector3(v1[0], 0, v1[1]);
+        v2 = new THREE.Vector3(v2[0], 0, v2[1]);
         var length = (v2.clone().sub(v1)).length();
         var dist = t*length;
         if (dist < -globals.vertTol) return null;
