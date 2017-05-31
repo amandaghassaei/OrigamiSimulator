@@ -392,8 +392,12 @@
             vec3 node3 = texture2D(u_originalPosition, node3Index).xyz + texture2D(u_lastPosition, node3Index).xyz;
             vec3 node4 = texture2D(u_originalPosition, node4Index).xyz + texture2D(u_lastPosition, node4Index).xyz;
 
+            float tol = 0.001;
+
             vec3 creaseVector = node4-node3;
             float creaseLength = length(creaseVector);
+
+            if (abs(creaseLength)<tol) creaseLength = tol;
             creaseVector /= creaseLength;
 
             vec3 vector1 = node1-node3;
@@ -401,8 +405,12 @@
 
             float proj1Length = dot(creaseVector, vector1);
             float proj2Length = dot(creaseVector, vector2);
-            float dist1 = sqrt(vector1.x*vector1.x+vector1.y*vector1.y+vector1.z*vector1.z-proj1Length*proj1Length);
-            float dist2 = sqrt(vector2.x*vector2.x+vector2.y*vector2.y+vector2.z*vector2.z-proj2Length*proj2Length);
+
+            float dist1 = sqrt(abs(vector1.x*vector1.x+vector1.y*vector1.y+vector1.z*vector1.z-proj1Length*proj1Length));
+            float dist2 = sqrt(abs(vector2.x*vector2.x+vector2.y*vector2.y+vector2.z*vector2.z-proj2Length*proj2Length));
+
+            if (abs(dist1)<tol) dist1 = tol;
+            if (abs(dist2)<tol) dist2 = tol;
 
             gl_FragColor = vec4(dist1, dist2, proj1Length/creaseLength, proj2Length/creaseLength);
         }
