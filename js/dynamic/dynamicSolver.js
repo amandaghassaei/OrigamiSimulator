@@ -174,7 +174,7 @@ function initDynamicSolver(globals){
         //     globals.gpuMath.readPixels(0, 0, textureDimCreases * vectorLength, height, pixels);
         //     var parsedPixels = new Float32Array(pixels.buffer);
         //     for (var i=0;i<parsedPixels.length;i+=2){
-        //         if (Math.abs(parsedPixels[i])>Math.PI) {
+        //         if (Math.abs(parsedPixels[i+1])>Math.PI-1) {
         //             console.log(parsedPixels[i+1]);//theta
         //         }
         //

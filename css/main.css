@@ -397,3 +397,8 @@ a.seeMore.closed>.fui-triangle-down{
 #simulationSettings, #errorInfo,  #animationsSettings, #cameraAngle, #edgeVisiblity, #virtualReality, #materialSettings{
     margin-top: 15px;
 }
+.modal-body img{
+    margin-left: auto;
+    margin-right: auto;
+        display: block;
+}

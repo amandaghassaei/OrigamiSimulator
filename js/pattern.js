@@ -43,7 +43,7 @@ function initPattern(globals){
                     if (stroke == "#ff0000" || stroke == "#f00" || stroke == "#FF0000" || stroke == "#F00" || stroke == "red"){
                         var opacity = parseFloat($(this).attr("opacity"));
                         if (isNaN(opacity)) opacity = 1;
-                        _mountainAngles.push(opacity*Math.PI);
+                        _mountainAngles.push(-opacity*Math.PI);
                         return true;
                     }
                     return false;
@@ -54,7 +54,7 @@ function initPattern(globals){
                     if (stroke == "#0000ff" || stroke == "#00f" || stroke == "#0000FF" || stroke == "#00F" || stroke == "greeen"){
                         var opacity = parseFloat($(this).attr("opacity"));
                         if (isNaN(opacity)) opacity = 1;
-                        _valleyAngles.push(-opacity*Math.PI);
+                        _valleyAngles.push(opacity*Math.PI);
                         return true;
                     }
                     return false;

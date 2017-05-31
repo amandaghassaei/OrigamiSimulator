@@ -215,6 +215,7 @@
                 vec4 thetas = texture2D(u_theta, scaledCreaseIndex);
                 vec3 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex).xyz;//[k, d, targetTheta]
                 vec4 creaseGeo = texture2D(u_creaseGeo, scaledCreaseIndex);//[h1, h2, coef1, coef2]
+                if (creaseGeo[0]< 0.0) continue;
 
                 float targetTheta = creaseMeta[2] * u_creasePercent;
                 float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
@@ -392,12 +393,15 @@
             vec3 node3 = texture2D(u_originalPosition, node3Index).xyz + texture2D(u_lastPosition, node3Index).xyz;
             vec3 node4 = texture2D(u_originalPosition, node4Index).xyz + texture2D(u_lastPosition, node4Index).xyz;
 
-            float tol = 0.001;
+            float tol = 0.01;
 
             vec3 creaseVector = node4-node3;
             float creaseLength = length(creaseVector);
 
-            if (abs(creaseLength)<tol) creaseLength = tol;
+            if (abs(creaseLength)<tol) {
+                gl_FragColor = vec4(-1);//disable crease
+                return;
+            }
             creaseVector /= creaseLength;
 
             vec3 vector1 = node1-node3;
@@ -409,8 +413,10 @@
             float dist1 = sqrt(abs(vector1.x*vector1.x+vector1.y*vector1.y+vector1.z*vector1.z-proj1Length*proj1Length));
             float dist2 = sqrt(abs(vector2.x*vector2.x+vector2.y*vector2.y+vector2.z*vector2.z-proj2Length*proj2Length));
 
-            if (abs(dist1)<tol) dist1 = tol;
-            if (abs(dist2)<tol) dist2 = tol;
+            if (dist1<tol || dist2<tol){
+                gl_FragColor = vec4(-1);//disable crease
+                return;
+            }
 
             gl_FragColor = vec4(dist1, dist2, proj1Length/creaseLength, proj2Length/creaseLength);
         }
@@ -605,15 +611,15 @@
         <a href="#" class="seeMore closed" data-id="simulationSettings"><span class="fui-triangle-down"></span><b>Simulation Settings:</b></a><a class="about" href="#" id="aboutStiffness"><span class="fui-question-circle"></span></a><br/>
         <div id="simulationSettings" class="hide">
             <div class="sliderInput paddingBottom" id="axialStiffness">
-                <span class="label-slider">Axial Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+                <span class="label-slider">Axial Strength : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
                 <input value="" placeholder="" class="form-control" type="text">
             </div>
             <div class="sliderInput" id="creaseStiffness">
-                <span class="label-slider">Fold Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+                <span class="label-slider">Fold Strength : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
                 <input value="" placeholder="" class="form-control" type="text">
             </div>
             <div class="sliderInput" id="panelStiffness">
-                <span class="label-slider">Facet Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+                <span class="label-slider">Facet Strength : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
                 <input value="" placeholder="" class="form-control" type="text">
             </div>
             <div class="sliderInput" id="percentDamping">
@@ -784,14 +790,18 @@
                     <b>Importing SVG:</b><br/><br/>
                     <ul>
                         <li>The SVG importer supports path objects and line objects (coming).  Please convert polygons to paths before importing.</li>
-                        <li>Valley folds are <span style="color:red">red</span> - rgb(255, 0, 0), hex #ff0000</li>
-                        <li>Mountain folds are <span style="color:blue">blue</span> - rgb(0, 0, 255), hex #0000ff</li>
+                        <li>Mountain folds are <span style="color:red">red</span> - rgb(255, 0, 0), hex #ff0000</li>
+                        <li>Valley folds are <span style="color:blue">blue</span> - rgb(0, 0, 255), hex #0000ff</li>
                         <li>Outline edges are <span style="color:black">black</span> - rgb(0, 0, 0), hex #000000</li>
-                        <img src="assets/examplepattern.jpg"/>
+                    </ul>
+                    <img src="assets/examplepattern.jpg"/>
+                    <ul>
                         <li>This tool will automatically triangulate regions in the pattern that form polygons with more than three sides.
                         To control the triangulations draw lines in <span style="color:#cccc00">yellow</span> - rgb(255, 255, 0), hex #ffff00<br/>
                         In general, patterns move better when their triangulation is symmetric and minimizes long, skinny triangles.</li>
-                        <img src="assets/patternwithtriangulations.jpg"/>
+                    </ul>
+                    <img src="assets/patternwithtriangulations.jpg"/>
+                    <ul>
                         <li>Stroke and line style do not matter.</li>
                         <li>The final fold angle of a mountain or valley fold is set by its opacity. For example, 1.0 = 180&deg;
                         (fully folded), 0.5 = 90&deg;, 0 = 0&deg; (flat).  Any fold angle between  0&deg; and 180&deg; may be used.</li>
@@ -1005,14 +1015,36 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <div class="modal fade" id="aboutStiffnessModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-med">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-body">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <p><b>Stiffness Settings</b><br/><br/>
-                    ....
+                <p><b>Simulation Settings</b><br/><br/>
+                    This app uses a compliant dynamic simulation method to solve for the geometry of an origami pattern
+                    at a given fold angle.  The simulation sets up several types of constraints: distance constraints prevent the
+                    sheet from stretching or compressing, and angular constraints fold or flatten the sheet.  Each of these constraints is weighted by a stiffness - the stiffer the constraint, the better it is enforced
+                    in the simulation.  <br/>
+                    <br/>
+                    <b>Axial Stiffness</b> is the stiffness of the distance constraints.  Increasing axial
+                    stiffness will decrease the strain in the simulation, but it will also slow down the solver.  <br/>
+                    <br/>
+                    Fold and facet stiffnesses correspond to two types of angular constraints.  <b>Fold Stiffness</b> is the stiffness of the mountain
+                    and valley creases in the origami pattern.  <b>Facet Stiffness</b> is the stiffness of the triangulated faces between
+                    creases in the pattern.  Increasing facet stiffness causes the faces between creases to stay very flat as the origami is folded.
+                    As facet stiffness becomes very high, this simulation approaches a <a href="http://www.tsg.ne.jp/TT/cg/TachiFreeformOrigami2010.pdf" target="_blank">
+                        rigid origami simulation</a>, and models the behavior of a rigid material (such as metal) when folded.<br/>
+                    <br/>
+                    Constraints <i>strengths</i> (units of N) are scaled by the length of a particular constraint to determine the <i>stiffness</i>.  Axial stiffness is calculated by dividing
+                    axial strength by length; angular stiffness is calculated by multiplying fold or facet strength by length.<br/>
+                    <br/>
+                    Since this is a dynamic simulation, vertices of the origami move with some notion of acceleration and velocity.  In order to
+                    keep the system stable and help it converge to a static solution, <a target="_blank" href="https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator">
+                        damping</a> is added to the distance constraints.  The <b>Damping</b> slider allows you to control the amount of damping
+                    present in the simulation, from 0 (no damping) to 1 (critical damping).  Decreasing damping makes the simulation more "springy".
+                    It may be useful to temporarily turn down damping to help the simulation more quickly converge towards its static solution - especially
+                    for patterns that take a long time to curl.
                 </p>
             </div>
         </div><!-- /.modal-content -->
