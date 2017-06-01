@@ -6,21 +6,13 @@
 
 function initModel(globals){
 
-    var geometry = new THREE.BufferGeometry();
-    geometry.dynamic = true;
+    var geometry = new THREE.Geometry();
+    var lineGeometries = [geometry, geometry, geometry, geometry, geometry];
 
     var material, material2;
     var frontside = new THREE.Mesh(geometry);//front face of mesh
     var backside = new THREE.Mesh(geometry);//back face of mesh (different color)
     backside.visible = false;
-    setMeshMaterial();
-
-    var lineGeometries = [];
-    for (var i=0;i<5;i++){
-        var lineGeometry = new THREE.BufferGeometry();
-        lineGeometry.dynamic = true;
-        lineGeometries.push(lineGeometry);
-    }
 
     var lineMaterial = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1});
     var hingeLines = new THREE.LineSegments(lineGeometries[0], lineMaterial);
@@ -28,6 +20,32 @@ function initModel(globals){
     var valleyLines = new THREE.LineSegments(lineGeometries[2], lineMaterial);
     var cutLines = new THREE.LineSegments(lineGeometries[3], lineMaterial);
     var facetLines = new THREE.LineSegments(lineGeometries[4], lineMaterial);
+
+    clearGeometries();
+    setMeshMaterial();
+
+    function clearGeometries(){
+        if (geometry) geometry.dispose();
+
+        geometry = new THREE.BufferGeometry();
+        geometry.dynamic = true;
+        frontside.geometry = geometry;
+        backside.geometry = geometry;
+
+        for (var i=0;i<lineGeometries.length;i++){
+            if (lineGeometries[i]) lineGeometries[i].dispose();
+            var lineGeometry = new THREE.BufferGeometry();
+            lineGeometry.dynamic = true;
+            lineGeometries[i] = lineGeometry;
+        }
+
+        hingeLines.geometry = lineGeometries[0];
+        mountainLines.geometry = lineGeometries[1];
+        valleyLines.geometry = lineGeometries[2];
+        cutLines.geometry = lineGeometries[3];
+        facetLines.geometry = lineGeometries[4];
+    }
+
     var allTypes;//place to store line types
     // var borderLines = new THREE.LineSegments(geometry);
 
@@ -270,6 +288,9 @@ function initModel(globals){
         }
 
         var positionsAttribute = new THREE.BufferAttribute(positions, 3);
+
+        clearGeometries();
+
         geometry.addAttribute('position', positionsAttribute);
         geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
         geometry.setIndex(new THREE.BufferAttribute(indices, 1));
