@@ -228,7 +228,7 @@ function initDynamicSolver(globals){
     }
 
     function setSolveParams(){
-        var dt = calcDt()/2;//todo factor of ten?
+        var dt = calcDt()/2;//todo factor of 2?
         $("#deltaT").html(dt);
         globals.gpuMath.setProgram("thetaCalc");
         globals.gpuMath.setUniformForProgram("thetaCalc", "u_dt", dt, "1f");
@@ -514,10 +514,21 @@ function initDynamicSolver(globals){
             faceVertexIndices[4*i+1] = face[1];
             faceVertexIndices[4*i+2] = face[2];
 
-            nominalTriangles[4*i] = 1;//todo update this
-            nominalTriangles[4*i+1] = 1;
-            nominalTriangles[4*i+2] = 1;
+            var a = nodes[face[0]].getOriginalPosition();
+            var b = nodes[face[1]].getOriginalPosition();
+            var c = nodes[face[2]].getOriginalPosition();
+            var ab = (b.clone().sub(a)).normalize();
+            var ac = (c.clone().sub(a)).normalize();
+            var bc = (c.clone().sub(b)).normalize();
+            nominalTriangles[4*i] = Math.acos(ab.dot(ac));
+            nominalTriangles[4*i+1] = Math.acos(-1*ab.dot(bc));
+            nominalTriangles[4*i+2] = Math.acos(ac.dot(bc));
+
+            if (Math.abs(nominalTriangles[4*i]+nominalTriangles[4*i+1]+nominalTriangles[4*i+2]-Math.PI)>0.1){
+                console.warn("bad angles");
+            }
         }
+
 
         for (var i=0;i<textureDim*textureDim;i++){
             mass[4*i+1] = 1;//set all fixed by default
@@ -541,7 +552,7 @@ function initDynamicSolver(globals){
             for (var j=0;j<num;j++){
                 var _index = (index+j)*4;
                 var face = faces[nodeFaces[i][j]];
-                nodeFaceMeta[_index] = nodeFaces[j];
+                nodeFaceMeta[_index] = nodeFaces[i][j];
                 nodeFaceMeta[_index+1] = face[0];
                 nodeFaceMeta[_index+2] = face[1];
                 nodeFaceMeta[_index+3] = face[2];
