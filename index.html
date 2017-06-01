@@ -153,6 +153,9 @@
         uniform sampler2D u_normals;
         uniform sampler2D u_theta;//[theta, z, normal1Index, normal2Index]
         uniform sampler2D u_creaseGeo;//[h1, h2, coef1, coef2]
+        uniform sampler2D u_meta2;//[nodesFaceIndex, numFaces]
+        uniform sampler2D u_nodeFaceMeta;//[faceIndex, a, b, c]
+        uniform sampler2D u_nominalTriangles;//[angleA, angleB, angleC]
 
         void main(){
             vec2 fragCoord = gl_FragCoord.xy;

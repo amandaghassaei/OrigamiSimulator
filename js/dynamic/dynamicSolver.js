@@ -26,7 +26,7 @@ function initDynamicSolver(globals){
 
     var normals;
     var faceVertexIndices;//[a,b,c] textureDimFaces
-    var nominalTriangles;//[oppA, oppB, oppC]
+    var nominalTriangles;//[angleA, angleB, angleC]
     var nodeFaceMeta;//[faceIndex, a, b, c] textureNodeFaces
     var creaseMeta;//[k, d, targetTheta, -] textureDimCreases
     var creaseMeta2;//[node1Index, node2Index, node3index, node4index]//nodes 1 and 2 are opposite crease, 3 and 4 are on crease, textureDimCreases
@@ -138,7 +138,8 @@ function initDynamicSolver(globals){
         gpuMath.setProgram("velocityCalc");
         gpuMath.setSize(textureDim, textureDim);
         gpuMath.step("velocityCalc", ["u_lastPosition", "u_lastVelocity", "u_originalPosition", "u_externalForces",
-            "u_mass", "u_meta", "u_beamMeta", "u_creaseMeta", "u_nodeCreaseMeta", "u_normals", "u_theta", "u_creaseGeo"], "u_velocity");
+            "u_mass", "u_meta", "u_beamMeta", "u_creaseMeta", "u_nodeCreaseMeta", "u_normals", "u_theta", "u_creaseGeo",
+            "u_meta2", "u_nodeFaceMeta", "u_nominalTriangles"], "u_velocity");
         gpuMath.step("positionCalc", ["u_velocity", "u_lastPosition", "u_mass"], "u_position");
 
         gpuMath.swapTextures("u_theta", "u_lastTheta");
@@ -296,9 +297,9 @@ function initDynamicSolver(globals){
         gpuMath.setUniformForProgram("velocityCalc", "u_normals", 9, "1i");
         gpuMath.setUniformForProgram("velocityCalc", "u_theta", 10, "1i");
         gpuMath.setUniformForProgram("velocityCalc", "u_creaseGeo", 11, "1i");
-        // gpuMath.setUniformForProgram("velocityCalc", "u_meta2", 12, "1i");
-        // gpuMath.setUniformForProgram("velocityCalc", "u_nodeFaceMeta", 13, "1i");
-        // gpuMath.setUniformForProgram("velocityCalc", "u_nominalTriangles", 14, "1i");
+        gpuMath.setUniformForProgram("velocityCalc", "u_meta2", 12, "1i");
+        gpuMath.setUniformForProgram("velocityCalc", "u_nodeFaceMeta", 13, "1i");
+        gpuMath.setUniformForProgram("velocityCalc", "u_nominalTriangles", 14, "1i");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDim", [textureDim, textureDim], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimEdges", [textureDimEdges, textureDimEdges], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimFaces", [textureDimFaces, textureDimFaces], "2f");
