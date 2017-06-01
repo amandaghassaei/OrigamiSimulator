@@ -305,19 +305,19 @@
 
                 //calc forces
                 float triangleStiffness = 0.1;
-                anglesDiff *= -triangleStiffness;
+                anglesDiff *= triangleStiffness;
                 if (faceIndex == 0){//a
-                    force -= anglesDiff[0]*(cross(ac, normal)/lengthAC - cross(ab, normal)/lengthAB);
-                    force += anglesDiff[1]*cross(-ab, normal)/lengthAB;
-                    force -= anglesDiff[2]*cross(-ac, normal)/lengthAC;
+                    force -= anglesDiff[0]*(cross(normal, ac)/lengthAC - cross(normal, ab)/lengthAB);
+                    force += anglesDiff[1]*cross(normal, -ab)/lengthAB;
+                    force -= anglesDiff[2]*cross(normal, -ac)/lengthAC;
                 } else if (faceIndex == 1){
-                    force -= anglesDiff[0]*cross(ab, normal)/lengthAB;
-                    force -= anglesDiff[1]*(cross(-ab, normal)/lengthAB - cross(bc, normal)/lengthBC);
-                    force += anglesDiff[2]*cross(-bc, normal)/lengthBC;
+                    force -= anglesDiff[0]*cross(normal, ab)/lengthAB;
+                    force -= anglesDiff[1]*(cross(normal, -ab)/lengthAB - cross(normal, bc)/lengthBC);
+                    force += anglesDiff[2]*cross(normal, -bc)/lengthBC;
                 } else if (faceIndex == 2){
-                    force += anglesDiff[0]*cross(ac, normal)/lengthAC;
-                    force -= anglesDiff[1]*cross(bc, normal)/lengthBC;
-                    force -= anglesDiff[2]*(cross(-bc, normal)/lengthBC - cross(-ac, normal)/lengthAC);
+                    force += anglesDiff[0]*cross(normal, ac)/lengthAC;
+                    force -= anglesDiff[1]*cross(normal, bc)/lengthBC;
+                    force -= anglesDiff[2]*(cross(normal, -bc)/lengthBC - cross(normal, -ac)/lengthAC);
                 }
 
             }
