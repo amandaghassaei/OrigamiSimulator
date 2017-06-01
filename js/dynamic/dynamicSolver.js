@@ -20,11 +20,14 @@ function initDynamicSolver(globals){
     var lastVelocity;
     var externalForces;
     var mass;
-    var meta;//[beamsIndex, numBeams, creasesIndex, numCreases]
+    var meta;//[beamMetaIndex, numBeams, nodeCreaseMetaIndex, numCreases]
+    var meta2;//[nodeFaceMetaIndex, numFaces]
     var beamMeta;//[K, D, length, otherNodeIndex]
 
     var normals;
-    var faceVertexIndices;//[a,b,c]
+    var faceVertexIndices;//[a,b,c] textureDimFaces
+    var nominalTriangles;//[oppA, oppB, oppC]
+    var nodeFaceMeta;//[faceIndex, a, b, c] textureNodeFaces
     var creaseMeta;//[k, d, targetTheta, -] textureDimCreases
     var creaseMeta2;//[node1Index, node2Index, node3index, node4index]//nodes 1 and 2 are opposite crease, 3 and 4 are on crease, textureDimCreases
     var nodeCreaseMeta;//[creaseIndex (thetaIndex), nodeIndex (1/2/3/4), -, -] textureDimNodeCreases
@@ -54,6 +57,7 @@ function initDynamicSolver(globals){
     var textureDimFaces = 0;
     var textureDimCreases = 0;
     var textureDimNodeCreases = 0;
+    var textureDimNodeFaces = 0;
 
     function reset(){
         globals.gpuMath.step("zeroTexture", [], "u_position");
@@ -264,8 +268,11 @@ function initDynamicSolver(globals){
         gpuMath.initFrameBufferForTexture("u_normals", true);
 
         gpuMath.initTextureFromData("u_meta", textureDim, textureDim, "FLOAT", meta, true);
+        gpuMath.initTextureFromData("u_meta2", textureDim, textureDim, "FLOAT", meta2, true);
+        gpuMath.initTextureFromData("u_nominalTrinagles", textureDimFaces, textureDimFaces, "FLOAT", nominalTriangles, true);
         gpuMath.initTextureFromData("u_nodeCreaseMeta", textureDimNodeCreases, textureDimNodeCreases, "FLOAT", nodeCreaseMeta, true);
         gpuMath.initTextureFromData("u_creaseMeta2", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta2, true);
+        gpuMath.initTextureFromData("u_nodeFaceMeta", textureDimNodeFaces, textureDimNodeFaces, "FLOAT", nodeFaceMeta, true);
         gpuMath.initTextureFromData("u_creaseGeo", textureDimCreases, textureDimCreases, "FLOAT", creaseGeo, true);
         gpuMath.initFrameBufferForTexture("u_creaseGeo", true);
         gpuMath.initTextureFromData("u_faceVertexIndices", textureDimFaces, textureDimFaces, "FLOAT", faceVertexIndices, true);
@@ -289,6 +296,9 @@ function initDynamicSolver(globals){
         gpuMath.setUniformForProgram("velocityCalc", "u_normals", 9, "1i");
         gpuMath.setUniformForProgram("velocityCalc", "u_theta", 10, "1i");
         gpuMath.setUniformForProgram("velocityCalc", "u_creaseGeo", 11, "1i");
+        // gpuMath.setUniformForProgram("velocityCalc", "u_meta2", 12, "1i");
+        // gpuMath.setUniformForProgram("velocityCalc", "u_nodeFaceMeta", 13, "1i");
+        // gpuMath.setUniformForProgram("velocityCalc", "u_nominalTriangles", 14, "1i");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDim", [textureDim, textureDim], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimEdges", [textureDimEdges, textureDimEdges], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimFaces", [textureDimFaces, textureDimFaces], "2f");
@@ -443,6 +453,19 @@ function initDynamicSolver(globals){
 
         textureDim = calcTextureSize(nodes.length);
 
+        var numNodeFaces = 0;
+        var nodeFaces = [];
+        for (var i=0;i<nodes.length;i++){
+            nodeFaces.push([]);
+            for (var j=0;j<faces.length;j++){
+                if (faces[j].indexOf(i)>=0) {
+                    nodeFaces[i].push(j);
+                    numNodeFaces++;
+                }
+            }
+        }
+        textureDimNodeFaces = calcTextureSize(numNodeFaces);
+
         var numEdges = 0;
         for (var i=0;i<nodes.length;i++){
             numEdges += nodes[i].numBeams();
@@ -470,11 +493,14 @@ function initDynamicSolver(globals){
         externalForces = new Float32Array(textureDim*textureDim*4);
         mass = new Float32Array(textureDim*textureDim*4);
         meta = new Float32Array(textureDim*textureDim*4);
+        meta2 = new Float32Array(textureDim*textureDim*4);
         beamMeta = new Float32Array(textureDimEdges*textureDimEdges*4);
 
         normals = new Float32Array(textureDimFaces*textureDimFaces*4);
         faceVertexIndices = new Float32Array(textureDimFaces*textureDimFaces*4);
         creaseMeta = new Float32Array(textureDimCreases*textureDimCreases*4);
+        nodeFaceMeta = new Float32Array(textureDimNodeFaces*textureDimNodeFaces*4);
+        nominalTriangles = new Float32Array(textureDimFaces*textureDimFaces*4);
         nodeCreaseMeta = new Float32Array(textureDimNodeCreases*textureDimNodeCreases*4);
         creaseMeta2 = new Float32Array(textureDimCreases*textureDimCreases*4);
         creaseGeo = new Float32Array(textureDimCreases*textureDimCreases*4);
@@ -487,6 +513,10 @@ function initDynamicSolver(globals){
             faceVertexIndices[4*i] = face[0];
             faceVertexIndices[4*i+1] = face[1];
             faceVertexIndices[4*i+2] = face[2];
+
+            nominalTriangles[4*i] = 1;//todo update this
+            nominalTriangles[4*i+1] = 1;
+            nominalTriangles[4*i+2] = 1;
         }
 
         for (var i=0;i<textureDim*textureDim;i++){
@@ -501,6 +531,22 @@ function initDynamicSolver(globals){
             }
             lastTheta[i*4+2] = creases[i].getNormal1Index();
             lastTheta[i*4+3] = creases[i].getNormal2Index();
+        }
+
+        var index = 0;
+        for (var i=0;i<nodes.length;i++){
+            meta2[4*i] = index;
+            var num = nodeFaces[i].length;
+            meta2[4*i+1] = num;
+            for (var j=0;j<num;j++){
+                var _index = (index+j)*4;
+                var face = faces[nodeFaces[i][j]];
+                nodeFaceMeta[_index] = nodeFaces[j];
+                nodeFaceMeta[_index+1] = face[0];
+                nodeFaceMeta[_index+2] = face[1];
+                nodeFaceMeta[_index+3] = face[2];
+            }
+            index+=num;
         }
 
         var index = 0;
