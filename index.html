@@ -288,33 +288,36 @@
                 vec3 ac = c-a;
                 vec3 bc = c-b;
 
-                float lengthABsq = length(ab);
-                float lengthACsq = length(ac);
-                float lengthBCsq = length(bc);
-                lengthABsq *= lengthABsq;
-                lengthACsq *= lengthACsq;
-                lengthBCsq *= lengthBCsq;
+                float lengthAB = length(ab);
+                float lengthAC = length(ac);
+                float lengthBC = length(bc);
 
-                vec3 angles = vec3(acos(dot(ab, ac)), acos(-1.0*dot(ab, bc)), acos(dot(ac, bc)));
+                ab /= lengthAB;
+                ac /= lengthAC;
+                bc /= lengthBC;
+
+                vec3 angles = vec3(acos(dot(ab, ac)),
+                    acos(-1.0*dot(ab, bc)),
+                    acos(dot(ac, bc)));
                 vec3 anglesDiff = nominalAngles-angles;
 
                 vec3 normal = getFromArray(faceMeta[0], u_textureDimFaces, u_normals).xyz;
 
                 //calc forces
                 float triangleStiffness = 0.1;
-                anglesDiff *= triangleStiffness;
+                anglesDiff *= -triangleStiffness;
                 if (faceIndex == 0){//a
-                    force -= anglesDiff[0]*(cross(ac, normal)/lengthACsq - cross(ab, normal)/lengthABsq);
-                    force += anglesDiff[1]*cross(-ab, normal)/lengthABsq;
-                    force -= anglesDiff[2]*cross(-ac, normal)/lengthACsq;
+                    force -= anglesDiff[0]*(cross(ac, normal)/lengthAC - cross(ab, normal)/lengthAB);
+                    force += anglesDiff[1]*cross(-ab, normal)/lengthAB;
+                    force -= anglesDiff[2]*cross(-ac, normal)/lengthAC;
                 } else if (faceIndex == 1){
-                    force -= anglesDiff[0]*cross(ab, normal)/lengthABsq;
-                    force -= anglesDiff[1]*(cross(-ab, normal)/lengthABsq - cross(bc, normal)/lengthBCsq);
-                    force += anglesDiff[2]*cross(-bc, normal)/lengthBCsq;
+                    force -= anglesDiff[0]*cross(ab, normal)/lengthAB;
+                    force -= anglesDiff[1]*(cross(-ab, normal)/lengthAB - cross(bc, normal)/lengthBC);
+                    force += anglesDiff[2]*cross(-bc, normal)/lengthBC;
                 } else if (faceIndex == 2){
-                    force += anglesDiff[0]*cross(ac, normal)/lengthACsq;
-                    force -= anglesDiff[1]*cross(bc, normal)/lengthBCsq;
-                    force -= anglesDiff[2]*(cross(-bc, normal)/lengthBCsq - cross(-ac, normal)/lengthACsq);
+                    force += anglesDiff[0]*cross(ac, normal)/lengthAC;
+                    force -= anglesDiff[1]*cross(bc, normal)/lengthBC;
+                    force -= anglesDiff[2]*(cross(-bc, normal)/lengthBC - cross(-ac, normal)/lengthAC);
                 }
 
             }
