@@ -1103,7 +1103,7 @@
                     As facet stiffness becomes very high, this simulation approaches a <a href="http://www.tsg.ne.jp/TT/cg/TachiFreeformOrigami2010.pdf" target="_blank">
                         rigid origami simulation</a>, and models the behavior of a rigid material (such as metal) when folded.<br/>
                     <br/>
-                    Internally, constraints stiffnesses are scaled by the length of a particular constraint to determine its <i>geometric stiffness</i>.  For Axial constaints, stiffness is
+                    Internally, constraints stiffnesses are scaled by the length of the edge associated with that constraint to determine its <i>geometric stiffness</i>.  For Axial constaints, stiffness is
                     divided by length and for angular constraints, stiffness is multiplied by length.<br/>
                     <br/>
                     Since this is a dynamic simulation, vertices of the origami move with some notion of acceleration and velocity.  In order to
