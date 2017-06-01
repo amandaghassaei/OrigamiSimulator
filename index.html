@@ -146,10 +146,10 @@
         uniform sampler2D u_originalPosition;
         uniform sampler2D u_externalForces;
         uniform sampler2D u_mass;
-        uniform sampler2D u_meta;//[beamsIndex, numBeam, creaseMeta2Index, numCreases]
+        uniform sampler2D u_meta;//[beamsIndex, numBeam, nodeCreaseMetaIndex, numCreases]
         uniform sampler2D u_beamMeta;//[k, d, length, otherNodeIndex]
         uniform sampler2D u_creaseMeta;//[k, d, targetTheta]
-        uniform sampler2D u_creaseMeta2;//[creaseIndex, nodeIndex, -, -]
+        uniform sampler2D u_nodeCreaseMeta;//[creaseIndex, nodeIndex, -, -]
         uniform sampler2D u_normals;
         uniform sampler2D u_theta;//[theta, z, normal1Index, normal2Index]
         uniform sampler2D u_creaseGeo;//[h1, h2, coef1, coef2]
@@ -206,9 +206,9 @@
                 float nodeCreaseIndex1D = meta[2]+float(j);
                 vec2 nodeCreaseIndex = vec2(mod(nodeCreaseIndex1D, u_textureDimNodeCreases.x)+0.5, floor(nodeCreaseIndex1D/u_textureDimNodeCreases.x)+0.5);
                 vec2 scaledNodeCreaseIndex = nodeCreaseIndex/u_textureDimNodeCreases;
-                vec4 creaseMeta2 = texture2D(u_creaseMeta2, scaledNodeCreaseIndex);//[creaseIndex, length to node, nodeType (1 or 2), isReaction]
+                vec4 nodeCreaseMeta = texture2D(u_nodeCreaseMeta, scaledNodeCreaseIndex);//[creaseIndex, length to node, nodeType (1 or 2), isReaction]
 
-                float creaseIndex1D = creaseMeta2[0];
+                float creaseIndex1D = nodeCreaseMeta[0];
                 vec2 creaseIndex = vec2(mod(creaseIndex1D, u_textureDimCreases.x)+0.5, floor(creaseIndex1D/u_textureDimCreases.x)+0.5);
                 vec2 scaledCreaseIndex = creaseIndex/u_textureDimCreases;
 
@@ -220,7 +220,7 @@
                 float targetTheta = creaseMeta[2] * u_creasePercent;
                 float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
 
-                float nodeNum = creaseMeta2[1];//1, 2, 3, 4
+                float nodeNum = nodeCreaseMeta[1];//1, 2, 3, 4
 
                 if (nodeNum > 2.0){//crease reaction, node is on a crease
 
@@ -375,13 +375,13 @@
         uniform vec2 u_textureDimCreases;
         uniform sampler2D u_lastPosition;
         uniform sampler2D u_originalPosition;
-        uniform sampler2D u_creaseMeta3;
+        uniform sampler2D u_creaseMeta2;
 
         void main(){
             vec2 fragCoord = gl_FragCoord.xy;
             vec2 scaledFragCoord = fragCoord/u_textureDimCreases;
 
-            vec4 creaseMeta = texture2D(u_creaseMeta3, scaledFragCoord);
+            vec4 creaseMeta = texture2D(u_creaseMeta2, scaledFragCoord);
 
             vec2 node1Index = vec2(mod(creaseMeta[0], u_textureDim.x)+0.5, floor(creaseMeta[0]/u_textureDim.x)+0.5)/u_textureDim;
             vec2 node2Index = vec2(mod(creaseMeta[1], u_textureDim.x)+0.5, floor(creaseMeta[1]/u_textureDim.x)+0.5)/u_textureDim;
