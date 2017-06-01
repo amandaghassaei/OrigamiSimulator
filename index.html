@@ -293,6 +293,9 @@
                 float lengthAC = length(ac);
                 float lengthBC = length(bc);
 
+                float tol = 0.0000001;
+                if (abs(lengthAB) < tol || abs(lengthBC) < tol || abs(lengthAC) < tol) continue;
+
                 ab /= lengthAB;
                 ac /= lengthAC;
                 bc /= lengthBC;
