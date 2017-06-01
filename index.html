@@ -142,6 +142,7 @@
         uniform vec2 u_textureDimNodeFaces;
         uniform float u_creasePercent;
         uniform float u_dt;
+        uniform float u_axialStiffness;
         uniform sampler2D u_lastPosition;
         uniform sampler2D u_lastVelocity;
         uniform sampler2D u_originalPosition;
@@ -304,8 +305,7 @@
                 vec3 normal = getFromArray(faceMeta[0], u_textureDimFaces, u_normals).xyz;
 
                 //calc forces
-                float triangleStiffness = 0.1;
-                anglesDiff *= triangleStiffness;
+                anglesDiff *= u_axialStiffness/100.0;
                 if (faceIndex == 0){//a
                     vec3 normalCrossAC = cross(normal, ac)/lengthAC;
                     vec3 normalCrossAB = cross(normal, ab)/lengthAB;
