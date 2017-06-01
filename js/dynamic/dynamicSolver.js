@@ -556,9 +556,9 @@ function initDynamicSolver(globals){
                 var _index = (index+j)*4;
                 var face = faces[nodeFaces[i][j]];
                 nodeFaceMeta[_index] = nodeFaces[i][j];
-                nodeFaceMeta[_index+1] = face[0];
-                nodeFaceMeta[_index+2] = face[1];
-                nodeFaceMeta[_index+3] = face[2];
+                nodeFaceMeta[_index+1] = face[0] == i ? -1 : face[0];
+                nodeFaceMeta[_index+2] = face[1] == i ? -1 : face[1];
+                nodeFaceMeta[_index+3] = face[2] == i ? -1 : face[2];
             }
             index+=num;
         }

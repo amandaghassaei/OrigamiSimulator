@@ -164,6 +164,12 @@
             return texture2D(tex, scaledIndex);
         }
 
+        vec3 getPosition(float index1D){
+            vec2 index = vec2(mod(index1D, u_textureDim.x)+0.5, floor(index1D/u_textureDim.x)+0.5);
+            vec2 scaledIndex = index/u_textureDim;
+            return texture2D(u_lastPosition, scaledIndex).xyz + texture2D(u_originalPosition, scaledIndex).xyz;
+        }
+
         void main(){
             vec2 fragCoord = gl_FragCoord.xy;
             vec2 scaledFragCoord = fragCoord/u_textureDim;
@@ -266,24 +272,50 @@
                 if (j >= int(meta2[1])) break;
 
                 vec4 faceMeta = getFromArray(meta2[0]+float(j), u_textureDimNodeFaces, u_nodeFaceMeta);//[face index, a, b, c]
-                vec3 nominalAngles = getFromArray(faceMeta.x, u_textureDimFaces, u_nominalTriangles).xyz;//[angA, angB, angC]
+                vec3 nominalAngles = getFromArray(faceMeta[0], u_textureDimFaces, u_nominalTriangles).xyz;//[angA, angB, angC]
+
+                int faceIndex = 0;
+                if (faceMeta[2] < 0.0) faceIndex = 1;
+                if (faceMeta[3] < 0.0) faceIndex = 2;
 
                 //get node positions
-                vec3 a = getFromArray(faceMeta[1], u_textureDim, u_lastPosition).xyz;
-                vec3 b = getFromArray(faceMeta[2], u_textureDim, u_lastPosition).xyz;
-                vec3 c = getFromArray(faceMeta[3], u_textureDim, u_lastPosition).xyz;
+                vec3 a = faceIndex == 0 ? lastPosition+originalPosition : getPosition(faceMeta[1]);
+                vec3 b = faceIndex == 1 ? lastPosition+originalPosition : getPosition(faceMeta[2]);
+                vec3 c = faceIndex == 2 ? lastPosition+originalPosition : getPosition(faceMeta[3]);
 
                 //calc angles
-                vec3 ab = normalize(b-a);
-                vec3 ac = normalize(c-a);
-                vec3 bc = normalize(b-b);
+                vec3 ab = b-a;
+                vec3 ac = c-a;
+                vec3 bc = c-b;
 
-                float angA = acos(dot(ab, ac));
-                float angB = acos(-1.0*dot(ab, bc));
-                float angC = acos(dot(ac, bc));
+                float lengthABsq = length(ab);
+                float lengthACsq = length(ac);
+                float lengthBCsq = length(bc);
+                lengthABsq *= lengthABsq;
+                lengthACsq *= lengthACsq;
+                lengthBCsq *= lengthBCsq;
+
+                vec3 angles = vec3(acos(dot(ab, ac)), acos(-1.0*dot(ab, bc)), acos(dot(ac, bc)));
+                vec3 anglesDiff = nominalAngles-angles;
+
+                vec3 normal = getFromArray(faceMeta[0], u_textureDimFaces, u_normals).xyz;
 
                 //calc forces
-
+                float triangleStiffness = 0.1;
+                anglesDiff *= triangleStiffness;
+                if (faceIndex == 0){//a
+                    force -= anglesDiff[0]*(cross(ac, normal)/lengthACsq - cross(ab, normal)/lengthABsq);
+                    force += anglesDiff[1]*cross(-ab, normal)/lengthABsq;
+                    force -= anglesDiff[2]*cross(-ac, normal)/lengthACsq;
+                } else if (faceIndex == 1){
+                    force -= anglesDiff[0]*cross(ab, normal)/lengthABsq;
+                    force -= anglesDiff[1]*(cross(-ab, normal)/lengthABsq - cross(bc, normal)/lengthBCsq);
+                    force += anglesDiff[2]*cross(-bc, normal)/lengthBCsq;
+                } else if (faceIndex == 2){
+                    force += anglesDiff[0]*cross(ac, normal)/lengthACsq;
+                    force -= anglesDiff[1]*cross(bc, normal)/lengthBCsq;
+                    force -= anglesDiff[2]*(cross(-bc, normal)/lengthBCsq - cross(-ac, normal)/lengthACsq);
+                }
 
             }
 
@@ -412,7 +444,7 @@
             vec3 node3 = getPosition(creaseMeta[2]);
             vec3 node4 = getPosition(creaseMeta[3]);
 
-            float tol = 0.01;
+            float tol = 0.000001;
 
             vec3 creaseVector = node4-node3;
             float creaseLength = length(creaseVector);
@@ -631,6 +663,10 @@
         <div id="simulationSettings" class="hide">
             <div class="sliderInput paddingBottom" id="axialStiffness">
                 <span class="label-slider">Axial Strength : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+                <input value="" placeholder="" class="form-control" type="text">
+            </div>
+            <div class="sliderInput paddingBottom" id="triStiffness">
+                <span class="label-slider">Triangle Strength : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
                 <input value="" placeholder="" class="form-control" type="text">
             </div>
             <div class="sliderInput" id="creaseStiffness">

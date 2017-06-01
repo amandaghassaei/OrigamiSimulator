@@ -179,6 +179,11 @@ function initControls(globals){
         globals.materialHasChanged = true;
     });
 
+    setSliderInput("#triStiffness", globals.triStiffness, 0, 10, 0.01, function(val){
+        globals.triStiffness = val;//todo update
+        // globals.materialHasChanged = true;
+    });
+
     setSliderInput("#creaseStiffness", globals.creaseStiffness, 0, 3, 0.01, function(val){
         globals.creaseStiffness = val;
         globals.creaseMaterialHasChanged = true;
