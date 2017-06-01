@@ -283,7 +283,7 @@
                 float angC = acos(dot(ac, bc));
 
                 //calc forces
-                
+
 
             }
 
@@ -305,6 +305,12 @@
         uniform sampler2D u_originalPosition;
         uniform float u_dt;
 
+        vec4 getFromArray(float index1D, vec2 dimensions, sampler2D tex){
+            vec2 index = vec2(mod(index1D, dimensions.x)+0.5, floor(index1D/dimensions.x)+0.5);
+            vec2 scaledIndex = index/dimensions;
+            return texture2D(tex, scaledIndex);
+        }
+
         void main(){
 
             vec2 fragCoord = gl_FragCoord.xy;
@@ -317,13 +323,8 @@
                 return;
             }
 
-            vec2 normal1Index = vec2(mod(lastTheta[2], u_textureDimFaces.x)+0.5, floor(lastTheta[2]/u_textureDimFaces.x)+0.5);
-            normal1Index /= u_textureDimFaces;
-            vec2 normal2Index = vec2(mod(lastTheta[3], u_textureDimFaces.x)+0.5, floor(lastTheta[3]/u_textureDimFaces.x)+0.5);
-            normal2Index /= u_textureDimFaces;
-
-            vec3 normal1 = texture2D(u_normals, normal1Index).xyz;
-            vec3 normal2 = texture2D(u_normals, normal2Index).xyz;
+            vec3 normal1 = getFromArray(lastTheta[2], u_textureDimFaces, u_normals).xyz;
+            vec3 normal2 = getFromArray(lastTheta[3], u_textureDimFaces, u_normals).xyz;
 
             float dotNormals = dot(normal1, normal2);//normals are already normalized, no need to divide by length
             if (dotNormals < -1.0) dotNormals = -1.0;
@@ -364,26 +365,21 @@
         uniform sampler2D u_lastPosition;
         uniform sampler2D u_originalPosition;
 
+        vec3 getPosition(float index1D){
+            vec2 index = vec2(mod(index1D, u_textureDim.x)+0.5, floor(index1D/u_textureDim.x)+0.5);
+            vec2 scaledIndex = index/u_textureDim;
+            return texture2D(u_lastPosition, scaledIndex).xyz + texture2D(u_originalPosition, scaledIndex).xyz;
+        }
+
         void main(){
             vec2 fragCoord = gl_FragCoord.xy;
             vec2 scaledFragCoord = fragCoord/u_textureDimFaces;
 
             vec3 indices = texture2D(u_faceVertexIndices, scaledFragCoord).xyz;
 
-            float nodeIndex1D = indices[0];
-            vec2 nodeIndex = vec2(mod(nodeIndex1D, u_textureDim.x)+0.5, floor(nodeIndex1D/u_textureDim.x)+0.5);
-            vec2 scaledNodeIndex = nodeIndex/u_textureDim;
-            vec3 a = texture2D(u_lastPosition, scaledNodeIndex).xyz + texture2D(u_originalPosition, scaledNodeIndex).xyz;
-
-            nodeIndex1D = indices[1];
-            nodeIndex = vec2(mod(nodeIndex1D, u_textureDim.x)+0.5, floor(nodeIndex1D/u_textureDim.x)+0.5);
-            scaledNodeIndex = nodeIndex/u_textureDim;
-            vec3 b = texture2D(u_lastPosition, scaledNodeIndex).xyz + texture2D(u_originalPosition, scaledNodeIndex).xyz;
-
-            nodeIndex1D = indices[2];
-            nodeIndex = vec2(mod(nodeIndex1D, u_textureDim.x)+0.5, floor(nodeIndex1D/u_textureDim.x)+0.5);
-            scaledNodeIndex = nodeIndex/u_textureDim;
-            vec3 c = texture2D(u_lastPosition, scaledNodeIndex).xyz + texture2D(u_originalPosition, scaledNodeIndex).xyz;
+            vec3 a = getPosition(indices[0]);
+            vec3 b = getPosition(indices[1]);
+            vec3 c = getPosition(indices[2]);
 
             vec3 normal = normalize(cross(b-a, c-a));
 
@@ -399,21 +395,22 @@
         uniform sampler2D u_originalPosition;
         uniform sampler2D u_creaseMeta2;
 
+        vec3 getPosition(float index1D){
+            vec2 index = vec2(mod(index1D, u_textureDim.x)+0.5, floor(index1D/u_textureDim.x)+0.5);
+            vec2 scaledIndex = index/u_textureDim;
+            return texture2D(u_lastPosition, scaledIndex).xyz + texture2D(u_originalPosition, scaledIndex).xyz;
+        }
+
         void main(){
             vec2 fragCoord = gl_FragCoord.xy;
             vec2 scaledFragCoord = fragCoord/u_textureDimCreases;
 
             vec4 creaseMeta = texture2D(u_creaseMeta2, scaledFragCoord);
 
-            vec2 node1Index = vec2(mod(creaseMeta[0], u_textureDim.x)+0.5, floor(creaseMeta[0]/u_textureDim.x)+0.5)/u_textureDim;
-            vec2 node2Index = vec2(mod(creaseMeta[1], u_textureDim.x)+0.5, floor(creaseMeta[1]/u_textureDim.x)+0.5)/u_textureDim;
-            vec2 node3Index = vec2(mod(creaseMeta[2], u_textureDim.x)+0.5, floor(creaseMeta[2]/u_textureDim.x)+0.5)/u_textureDim;
-            vec2 node4Index = vec2(mod(creaseMeta[3], u_textureDim.x)+0.5, floor(creaseMeta[3]/u_textureDim.x)+0.5)/u_textureDim;
-
-            vec3 node1 = texture2D(u_originalPosition, node1Index).xyz + texture2D(u_lastPosition, node1Index).xyz;
-            vec3 node2 = texture2D(u_originalPosition, node2Index).xyz + texture2D(u_lastPosition, node2Index).xyz;
-            vec3 node3 = texture2D(u_originalPosition, node3Index).xyz + texture2D(u_lastPosition, node3Index).xyz;
-            vec3 node4 = texture2D(u_originalPosition, node4Index).xyz + texture2D(u_lastPosition, node4Index).xyz;
+            vec3 node1 = getPosition(creaseMeta[0]);
+            vec3 node2 = getPosition(creaseMeta[1]);
+            vec3 node3 = getPosition(creaseMeta[2]);
+            vec3 node4 = getPosition(creaseMeta[3]);
 
             float tol = 0.01;
 
