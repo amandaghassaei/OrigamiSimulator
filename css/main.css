@@ -22,6 +22,10 @@ body{
                                  /*not supported by any browser *!*/
 }
 
+p{
+    margin: 15px 0 15px 0;
+}
+
 
 #controls{
     position: absolute;
@@ -213,9 +217,6 @@ input.form-control {
 }
 .modal-body{
     padding: 20px 35px;
-}
-#aboutModal .modal-body{
-    padding-top: 40px;
 }
 
 span.modal-close{

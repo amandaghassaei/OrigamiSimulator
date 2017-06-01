@@ -849,13 +849,17 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-body">
-                <b>Origami Simulator</b><br/><br/>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
                 <p>
+                <b>ORIGAMI SIMULATOR</b><br/><br/>
+
                     This app allows you to upload any origami crease pattern and simulate how it will fold.  It uses a physics-based
                     approach to iteratively solve for small displacements in the geometry of an initially flat sheet due to forces
                     exerted by creases.  This physics solver extends work from the following sources: <br/><br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="http://www2.eng.cam.ac.uk/~sdg/preprint/5OSME.pdf">Origami Folding; A Structural Engineering Approach</a> by Mark Schenk and Simon D. Guest<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="http://origami.c.u-tokyo.ac.jp/~tachi/cg/SimulationOfRigidOrigami_tachi_4OSME.pdf">Rigid Origami Simulator</a> by Tomohiro Tachi<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="http://www.tsg.ne.jp/TT/cg/TachiFreeformOrigami2010.pdf">Freeform Variations of Origami</a> by Tomohiro Tachi<br/>
                     <br/>
                     All simulation methods were written from scratch and are executed in parallel in several GPU fragment shaders for fast performance.
                 </p><br/>
@@ -896,7 +900,10 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-body">
-                <p><b>File Import Tips</b><br/><br/>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <p><b>FILE IMPORT TIPS</b><br/><br/>
                     Bad design files will throw errors and create models that explode or cannot be solved, here are some tips for
                     importing FOLD or svg files that work.<br/><br/>
                     <b>Importing FOLD:</b><br/><br/>
@@ -958,7 +965,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <p><b>Virtual Reality</b><br/><br/>
+                <p><b>VIRTUAL REALITY</b><br/><br/>
                 This tool currently supports an interactive Virtual Reality mode using the Vive headset and controllers.
                 For this to work, you must first use a <a href="https://webvr.info/" target="_blank">WebVR enabled browser</a>:
                 currently only <a href="https://webvr.rocks/firefox" target="_blank">Firefox Nightly</a> is supported by this app.
@@ -981,7 +988,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <p><b>Animation Settings</b><br/><br/>
+                <p><b>ANIMATION SETTINGS</b><br/><br/>
                 The dynamic simulation is calculated by solving for all the forces in the system, moving time forward in small <b>&Delta;t</b> steps,
                 and updating the vertices of the origami incrementally.  The time step size for this animation is calculated automatically
                 based on the material stiffnesses set in the <b>Simulation Settings</b> section: more stiff settings
@@ -1002,7 +1009,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <b>Export STL</b><br/><br/>
+                <b>EXPORT STL</b><br/><br/>
                 Filename: &nbsp;&nbsp;<input id="stlFilename" value="" placeholder="" class="bigInput text form-control" type="text"> .stl<br/><br/>
                 Scale: &nbsp;&nbsp;<input value="" placeholder="" class="float exportScale form-control" type="text"><br/><br/>
                 Dimensions: &nbsp;&nbsp;<b><span class="exportDimensions"></span></b><br/>
@@ -1025,7 +1032,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <b>Export OBJ</b><br/><br/>
+                <b>EXPORT OBJ</b><br/><br/>
                 Filename: &nbsp;&nbsp;<input id="objFilename" value="" placeholder="" class="bigInput text form-control" type="text"> .stl<br/><br/>
                 Scale: &nbsp;&nbsp;<input value="" placeholder="" class="float exportScale form-control" type="text"><br/><br/>
                 Dimensions: &nbsp;&nbsp;<b><span class="exportDimensions"></span></b><br/>
@@ -1048,7 +1055,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <b>Export FOLD</b><br/><br/>
+                <b>EXPORT FOLD</b><br/><br/>
                 Filename: &nbsp;&nbsp;<input id="foldFilename" value="" placeholder="" class="bigInput text form-control" type="text"> .fold<br/><br/>
                 Author: &nbsp;&nbsp;<input id="foldAuthor" value="Amanda Ghassaei" placeholder="" class="bigInput text form-control" type="text"><br/><br/>
                 Scale: &nbsp;&nbsp;<input value="" placeholder="" class="float exportScale form-control" type="text">&nbsp;&nbsp;&nbsp;&nbsp;
@@ -1091,7 +1098,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <b>Import FOLD</b><br/><br/>
+                <b>IMPORT FOLD</b><br/><br/>
                 <label class="bigLabel checkbox" for="foldUseAngles">
                     <input id="foldUseAngles" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
                     Use current angles as target fold angles
@@ -1123,7 +1130,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <p><b>Simulation Error</b><br/><br/>
+                <p><b>SIMULATION ERROR</b><br/><br/>
                     <b>Average vertex error</b> gives a sense of how much the distance constraints in the
                     origami pattern are being violated (i.e. how much the sheet is being stretched).  The error at each vertex is evaluated by averaging the
                     percent deviation of all its distance constraints with adjacent vertices.  This error is
@@ -1148,7 +1155,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <p><b>Simulation Settings</b><br/><br/>
+                <p><b>SIMULATION SETTINGS</b><br/><br/>
                     This app uses a compliant dynamic simulation method to solve for the geometry of an origami pattern
                     at a given fold angle.  The simulation sets up several types of constraints: distance constraints prevent the
                     sheet from stretching or compressing, and angular constraints fold or flatten the sheet.  Each of these constraints is weighted by a stiffness - the stiffer the constraint, the better it is enforced
@@ -1184,7 +1191,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <p><b>Compliant Dynamic Simulation</b><br/><br/>
+                <p><b>COMPLIANT DYNAMIC SIMULATION</b><br/><br/>
                     ....
                 </p>
             </div>
@@ -1198,7 +1205,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <p><b>Compliant Static Simulation</b><br/><br/>
+                <p><b>COMPLIANT STATIC SIMULATION</b><br/><br/>
                     ....
                 </p>
             </div>
@@ -1212,7 +1219,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <p><b>Rigid Static Simulation</b><br/><br/>
+                <p><b>RIGID STATIC SIMULATION</b><br/><br/>
                     ....
                 </p>
             </div>
@@ -1226,7 +1233,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <p><b>Strain Visualization</b><br/><br/>
+                    <p><b>STRAIN VISUALIZATION</b><br/><br/>
                     <a href="https://en.wikipedia.org/wiki/Deformation_(mechanics)#Engineering_strain" target="_blank">
                         Cauchy strain or engineering strain</a> is a unitless measurement of how much a material is being stretched or compressed under load.
                     The <b>Strain Visualization</b> illustrates the strain across an origami sheet by mapping it to a color from blue (no strain) to red (max strain).
