@@ -215,7 +215,7 @@
                 vec4 thetas = texture2D(u_theta, scaledCreaseIndex);
                 vec3 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex).xyz;//[k, d, targetTheta]
                 vec4 creaseGeo = texture2D(u_creaseGeo, scaledCreaseIndex);//[h1, h2, coef1, coef2]
-                if (creaseGeo[0]< 0.0) continue;
+                if (creaseGeo[0]< 0.0) continue;//crease disabled bc it has collapsed too much
 
                 float targetTheta = creaseMeta[2] * u_creasePercent;
                 float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
