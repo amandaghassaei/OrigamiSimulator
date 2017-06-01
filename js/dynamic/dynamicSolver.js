@@ -277,6 +277,7 @@ function initDynamicSolver(globals){
         gpuMath.initTextureFromData("u_creaseGeo", textureDimCreases, textureDimCreases, "FLOAT", creaseGeo, true);
         gpuMath.initFrameBufferForTexture("u_creaseGeo", true);
         gpuMath.initTextureFromData("u_faceVertexIndices", textureDimFaces, textureDimFaces, "FLOAT", faceVertexIndices, true);
+        gpuMath.initTextureFromData("u_nominalTriangles", textureDimFaces, textureDimFaces, "FLOAT", nominalTriangles, true);
 
         gpuMath.createProgram("positionCalc", vertexShader, document.getElementById("positionCalcShader").text);
         gpuMath.setUniformForProgram("positionCalc", "u_velocity", 0, "1i");
@@ -305,6 +306,7 @@ function initDynamicSolver(globals){
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimFaces", [textureDimFaces, textureDimFaces], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimCreases", [textureDimCreases, textureDimCreases], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimNodeCreases", [textureDimNodeCreases, textureDimNodeCreases], "2f");
+        gpuMath.setUniformForProgram("velocityCalc", "u_textureDimNodeFaces", [textureDimNodeFaces, textureDimNodeFaces], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_creasePercent", globals.creasePercent, "1f");
 
         gpuMath.createProgram("thetaCalc", vertexShader, document.getElementById("thetaCalcShader").text);
