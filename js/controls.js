@@ -112,6 +112,30 @@ function initControls(globals){
         saveFOLD();
     });
 
+    setLink("#rotateX", function(){
+        globals.threeView.resetModel();
+        globals.rotateModel = "x";
+    });
+    setLink("#rotateY", function(){
+        globals.threeView.resetModel();
+        globals.rotateModel = "y";
+    });
+    setLink("#rotateZ", function(){
+        globals.threeView.resetModel();
+        globals.rotateModel = "z";
+    });
+    setLink("#stopRotation", function(){
+        globals.rotateModel = null;
+        globals.threeView.resetModel();
+    });
+    setLink("#changeRotationSpeed", function(){
+        $("#changeRotationSpeedModal").modal("show");
+    });
+    setInput("#rotationSpeed", globals.rotationSpeed, function(val){
+        globals.rotationSpeed = val;
+    }, 0);
+
+
     setLink("#navPattern", function(){
         if (globals.noCreasePatternAvailable()){
             globals.warn("No crease pattern available for FOLD format.");

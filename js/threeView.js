@@ -104,6 +104,11 @@ function initThreeView(globals) {
     }
 
     function _loop(callback){
+        if (globals.rotateModel !== null){
+            if (globals.rotateModel == "x") modelWrapper.rotateX(globals.rotationSpeed);
+            if (globals.rotateModel == "y") modelWrapper.rotateY(globals.rotationSpeed);
+            if (globals.rotateModel == "z") modelWrapper.rotateZ(globals.rotationSpeed);
+        }
         if (globals.needsSync){
             globals.model.sync();
         }
@@ -182,6 +187,10 @@ function initThreeView(globals) {
         document.body.removeChild(downloadLink);
     }
 
+    function resetModel(){
+        modelWrapper.rotation.set(0,0,0);
+    }
+
 
     return {
         sceneAddModel: sceneAddModel,
@@ -203,6 +212,8 @@ function initThreeView(globals) {
         setCameraX:setCameraX,
         setCameraY: setCameraY,
         setCameraZ: setCameraZ,
-        setCameraOrtho: setCameraOrtho
+        setCameraOrtho: setCameraOrtho,
+
+        resetModel: resetModel//reset model orientation
     }
 }

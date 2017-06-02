@@ -620,6 +620,20 @@
                 <span class="dropdown-arrow"></span>
                 <ul class="dropdown-menu">
                     <li><a id="menuVis" href="#">Toggle Menu Visibility</a></li>
+                    <li class="divider"></li>
+                    <li><a id="rotateX" href="#">Rotate Model X</a></li>
+                    <li><a id="rotateY" href="#">Rotate Model Y</a></li>
+                    <li><a id="rotateZ" href="#">Rotate Model Z</a></li>
+                    <li><a id="stopRotation" href="#">Stop Rotation</a></li>
+                    <li><a id="changeRotationSpeed" href="#">Change Rotation Speed...</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#" id="cameraZ">View Front</a></li>
+                    <li><a href="#" id="cameraMinusZ">View Back</a></li>
+                    <li><a href="#" id="cameraX">View Right</a></li>
+                    <li><a href="#" id="cameraMinusX">View Left</a></li>
+                    <li><a href="#" id="cameraY">View Top</a></li>
+                    <li><a href="#" id="cameraMinusY">View Bottom</a></li>
+                    <li><a href="#" id="cameraOrtho">View Ortho</a></li>
                 </ul>
             </li>
             <li><a id="navPattern" href="#">Pattern</a></li>
@@ -647,7 +661,7 @@
 <div id="controls">
     <div class="sliderInput floatRight" id="creasePercent">
         <span class="label-slider">Fold Angle (-1 to 1) : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-        <input value="" placeholder="" class="form-control" type="text">
+        <input value="" placeholder="" class="float form-control" type="text">
     </div><br/><br/>
     <div id="simButtons" class="alignRight">
         <a href="#" id="start" class="paddingBottom btn btn-lg btn-success">Start Simulation</a>
@@ -655,7 +669,7 @@
         <a href="#" id="reset" class="paddingBottom btn btn-lg btn-default">Reset</a>
         <div id="stepForwardOptions" class="floatRight">
             <a href="#" id="stepForward" class="btn btn-lg btn-default">Step Forward</a>
-            <label>Num Steps:</label> &nbsp;&nbsp;<input id="numSteps" value="100" placeholder="" class="form-control" type="text">
+            <label>Num Steps:</label> &nbsp;&nbsp;<input id="numSteps" value="100" placeholder="" class="int form-control" type="text">
             <br/><br/>
         </div>
     </div>
@@ -688,23 +702,23 @@
         <div id="simulationSettings" class="hide">
             <div class="sliderInput paddingBottom" id="axialStiffness">
                 <span class="label-slider">Axial Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-                <input value="" placeholder="" class="form-control" type="text">
+                <input value="" placeholder="" class="float form-control" type="text">
             </div>
             <!--<div class="sliderInput paddingBottom" id="triStiffness">-->
                 <!--<span class="label-slider">Triangle Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>-->
-                <!--<input value="" placeholder="" class="form-control" type="text">-->
+                <!--<input value="" placeholder="" class="float form-control" type="text">-->
             <!--</div>-->
             <div class="sliderInput" id="creaseStiffness">
                 <span class="label-slider">Fold Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-                <input value="" placeholder="" class="form-control" type="text">
+                <input value="" placeholder="" class="float form-control" type="text">
             </div>
             <div class="sliderInput" id="panelStiffness">
                 <span class="label-slider">Facet Stiffness : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-                <input value="" placeholder="" class="form-control" type="text">
+                <input value="" placeholder="" class="float form-control" type="text">
             </div>
             <div class="sliderInput" id="percentDamping">
                 <span class="label-slider">Damping (0-1): </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-                <input value="" placeholder="" class="form-control" type="text">
+                <input value="" placeholder="" class="float form-control" type="text">
             </div>
         </div><br/>
     </div>
@@ -810,18 +824,6 @@
                     <a href="#" id="enterVR" class="displayBlock btn btn-lg btn-inverse"></a>
                 </div><br/><br/>
             </div><br/>
-            <div>
-                <a href="#" class="seeMore closed" data-id="cameraAngle"><span class="fui-triangle-down"></span>View Angle:</a><br/>
-            </div>
-            <div id="cameraAngle" class="hide indent ">
-                <a href="#" id="cameraZ" class="paddingBottom btn btn-sm btn-default">Front</a>
-                <a href="#" id="cameraMinusZ" class="paddingBottom btn btn-sm btn-default">Back</a>
-                <a href="#" id="cameraX" class="paddingBottom btn btn-sm btn-default">Right</a>
-                <a href="#" id="cameraMinusX" class="paddingBottom btn btn-sm btn-default">Left</a><br/>
-                <a href="#" id="cameraY" class="btn btn-sm btn-default">Top</a>
-                <a href="#" id="cameraMinusY" class="btn btn-sm btn-default">Bottom</a>
-                <a href="#" id="cameraOrtho" class="btn btn-sm btn-default">Ortho</a>
-            </div>
             <div class="extraSpace"></div>
         </div>
     </div>
@@ -960,7 +962,7 @@
                 </button>
                 <b>Export STL</b><br/><br/>
                 Filename: &nbsp;&nbsp;<input id="stlFilename" value="" placeholder="" class="bigInput text form-control" type="text"> .stl<br/><br/>
-                Scale: &nbsp;&nbsp;<input value="" placeholder="" class="exportScale form-control" type="text"><br/><br/>
+                Scale: &nbsp;&nbsp;<input value="" placeholder="" class="float exportScale form-control" type="text"><br/><br/>
                 Dimensions: &nbsp;&nbsp;<b><span class="exportDimensions"></span></b><br/>
                 <span class="smallTxt">(the STL file format is unitless, but typically assumed to be either in inches or mm)</span><br/>
                 <label class="bigLabel checkbox" for="doublesidedSTL">
@@ -983,7 +985,7 @@
                 </button>
                 <b>Export OBJ</b><br/><br/>
                 Filename: &nbsp;&nbsp;<input id="objFilename" value="" placeholder="" class="bigInput text form-control" type="text"> .stl<br/><br/>
-                Scale: &nbsp;&nbsp;<input value="" placeholder="" class="exportScale form-control" type="text"><br/><br/>
+                Scale: &nbsp;&nbsp;<input value="" placeholder="" class="float exportScale form-control" type="text"><br/><br/>
                 Dimensions: &nbsp;&nbsp;<b><span class="exportDimensions"></span></b><br/>
                 <span class="smallTxt">(the OBJ file format is unitless, but typically assumed to be either in inches or mm)</span><br/>
                 <label class="bigLabel checkbox" for="doublesidedOBJ">
@@ -1007,7 +1009,7 @@
                 <b>Export FOLD</b><br/><br/>
                 Filename: &nbsp;&nbsp;<input id="foldFilename" value="" placeholder="" class="bigInput text form-control" type="text"> .fold<br/><br/>
                 Author: &nbsp;&nbsp;<input id="foldAuthor" value="Amanda Ghassaei" placeholder="" class="bigInput text form-control" type="text"><br/><br/>
-                Scale: &nbsp;&nbsp;<input value="" placeholder="" class="exportScale form-control" type="text">&nbsp;&nbsp;&nbsp;&nbsp;
+                Scale: &nbsp;&nbsp;<input value="" placeholder="" class="float exportScale form-control" type="text">&nbsp;&nbsp;&nbsp;&nbsp;
                 Units: &nbsp;&nbsp;
                 <div class="btn-group">
                     <button data-toggle="dropdown" class="btn btn-default dropdown-toggle" type="button"><span class="unitsDisplay"></span> <span class="caret"></span></button>
@@ -1182,6 +1184,21 @@
                 <p><b>Strain Visualization</b><br/><br/>
                     ....
                 </p>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="changeRotationSpeedModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <p><b>ROTATION SPEED</b><br/><br/>
+                    Speed : &nbsp;&nbsp;<input id="rotationSpeed" value="" placeholder="" class="float form-control" type="text"> &nbsp;&nbsp;<span class="smallTxt">( radians per frame )</span>
+                </p>
+            </div>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

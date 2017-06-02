@@ -77,8 +77,10 @@ function initGlobals(){
         userInteractionEnabled: false,
         vrEnabled: false,
 
-        numSteps: 100
+        numSteps: 100,
 
+        rotateModel: null,
+        rotationSpeed: 0.01
     };
 
     function setCreasePercent(percent){

@@ -25,8 +25,29 @@ function makeSaveGEO(doublesided){
             var lastFaceIndex = 0;
             for (var j=0;j<geo.faces.length;j++){
                 face = geo.faces[j];
-                if (face.a == i || face.b == i || face.c == i) {
-                    vertexNormal.add(face.normal);
+                if (face.a == i) {
+                    var a = geo.vertices[face.a];
+                    var b = geo.vertices[face.b];
+                    var c = geo.vertices[face.c];
+                    var  weight = Math.abs(Math.acos( (b.clone().sub(a)).normalize().dot( (c.clone().sub(a)).normalize() ) ));
+                    console.log(weight);
+                    vertexNormal.add(face.normal.clone().multiplyScalar(weight));
+                    lastFaceIndex = j;
+                } else if (face.b == i) {
+                    var a = geo.vertices[face.a];
+                    var b = geo.vertices[face.b];
+                    var c = geo.vertices[face.c];
+                    var  weight = Math.abs(Math.acos( (c.clone().sub(b)).normalize().dot( (a.clone().sub(b)).normalize() ) ));
+                    console.log(weight);
+                    vertexNormal.add(face.normal.clone().multiplyScalar(weight));
+                    lastFaceIndex = j;
+                } else if (face.c == i) {
+                    var a = geo.vertices[face.a];
+                    var b = geo.vertices[face.b];
+                    var c = geo.vertices[face.c];
+                    var  weight = Math.abs(Math.acos( (b.clone().sub(c)).normalize().dot( (a.clone().sub(c)).normalize() ) ));
+                    console.log(weight);
+                    vertexNormal.add(face.normal.clone().multiplyScalar(weight));
                     lastFaceIndex = j;
                 }
                 // if (vertexNormal !== null) break;
@@ -35,24 +56,24 @@ function makeSaveGEO(doublesided){
             //     geo.vertices.push(new THREE.Vector3());
             //     continue;
             // }
+            //filter out duplicate normals
             vertexNormal.normalize();
-            console.log(vertexNormal);
             var offset = vertexNormal.clone().multiplyScalar(globals.thickenOffset/(2*vertexNormal.clone().dot(geo.faces[lastFaceIndex].normal)));
 
-            geo.vertices.push(geo.vertices[i].clone().sub(offset));
+            // geo.vertices.push(geo.vertices[i].clone().sub(offset));
             geo.vertices[i].add(offset);
         }
-        var numFaces = geo.faces.length;
-        for (var i=0;i<numFaces;i++){
-            var face = geo.faces[i].clone();
-            face.a += numVertices;
-            face.b += numVertices;
-            face.c += numVertices;
-            var b = face.b;
-            face.b = face.c;
-            face.c = b;
-            geo.faces.push(face);
-        }
+        // var numFaces = geo.faces.length;
+        // for (var i=0;i<numFaces;i++){
+        //     var face = geo.faces[i].clone();
+        //     face.a += numVertices;
+        //     face.b += numVertices;
+        //     face.c += numVertices;
+        //     var b = face.b;
+        //     face.b = face.c;
+        //     face.c = b;
+        //     geo.faces.push(face);
+        // }
         geo.computeVertexNormals();
         geo.computeFaceNormals();
 
