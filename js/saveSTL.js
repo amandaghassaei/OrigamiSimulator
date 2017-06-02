@@ -21,20 +21,24 @@ function makeSaveGEO(doublesided){
         geo.computeFaceNormals();
         for (var i=0;i<numVertices;i++){
             var face;
-            var vertexNormal = null;
+            var vertexNormal = new THREE.Vector3();
+            var lastFaceIndex = 0;
             for (var j=0;j<geo.faces.length;j++){
                 face = geo.faces[j];
-                if (face.a == i) vertexNormal = face.vertexNormals[0];
-                if (face.b == i) vertexNormal = face.vertexNormals[1];
-                if (face.c == i) vertexNormal = face.vertexNormals[2];
-                if (vertexNormal !== null) break;
+                if (face.a == i || face.b == i || face.c == i) {
+                    vertexNormal.add(face.normal);
+                    lastFaceIndex = j;
+                }
+                // if (vertexNormal !== null) break;
             }
-            if (vertexNormal === undefined) {
-                geo.vertices.push(new THREE.Vector3());
-                continue;
-            }
-            var offset = vertexNormal.clone().multiplyScalar(globals.thickenOffset/(2*vertexNormal.dot(face.normal)));
-            console.log(offset.length());
+            // if (vertexNormal === undefined) {
+            //     geo.vertices.push(new THREE.Vector3());
+            //     continue;
+            // }
+            vertexNormal.normalize();
+            console.log(vertexNormal);
+            var offset = vertexNormal.clone().multiplyScalar(globals.thickenOffset/(2*vertexNormal.clone().dot(geo.faces[lastFaceIndex].normal)));
+
             geo.vertices.push(geo.vertices[i].clone().sub(offset));
             geo.vertices[i].add(offset);
         }
