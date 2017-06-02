@@ -22,6 +22,7 @@ function initThreeView(globals) {
         container.append(renderer.domElement);
 
         scene.background = new THREE.Color(0xffffff);//new THREE.Color(0xe6e6e6);
+        setBackgroundColor();
         scene.add(modelWrapper);
         var directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
         directionalLight1.position.set(0, 100, 0);
@@ -191,6 +192,10 @@ function initThreeView(globals) {
         modelWrapper.rotation.set(0,0,0);
     }
 
+    function setBackgroundColor(){
+        scene.background.setStyle( "#" + globals.backgroundColor);
+    }
+
 
     return {
         sceneAddModel: sceneAddModel,
@@ -214,6 +219,7 @@ function initThreeView(globals) {
         setCameraZ: setCameraZ,
         setCameraOrtho: setCameraOrtho,
 
-        resetModel: resetModel//reset model orientation
+        resetModel: resetModel,//reset model orientation
+        setBackgroundColor: setBackgroundColor
     }
 }

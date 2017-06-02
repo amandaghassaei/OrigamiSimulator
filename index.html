@@ -620,11 +620,12 @@
                 <span class="dropdown-arrow"></span>
                 <ul class="dropdown-menu">
                     <li><a id="menuVis" href="#">Toggle Menu Visibility</a></li>
+                    <li><a id="changeBackground" href="#">Change Background Color...</a></li>
                     <li class="divider"></li>
+                    <li><a id="stopRotation" href="#">Stop Rotation</a></li>
                     <li><a id="rotateX" href="#">Rotate Model X</a></li>
                     <li><a id="rotateY" href="#">Rotate Model Y</a></li>
                     <li><a id="rotateZ" href="#">Rotate Model Z</a></li>
-                    <li><a id="stopRotation" href="#">Stop Rotation</a></li>
                     <li><a id="changeRotationSpeed" href="#">Change Rotation Speed...</a></li>
                     <li class="divider"></li>
                     <li><a href="#" id="cameraZ">View Front</a></li>
@@ -1197,6 +1198,21 @@
                 </button>
                 <p><b>ROTATION SPEED</b><br/><br/>
                     Speed : &nbsp;&nbsp;<input id="rotationSpeed" value="" placeholder="" class="float form-control" type="text"> &nbsp;&nbsp;<span class="smallTxt">( radians per frame )</span>
+                </p>
+            </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="changeBackgroundModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <p><b>BACKGROUND COLOR</b><br/><br/>
+                    Color (rgb hex) : &nbsp;&nbsp;<input id="backgroundColor" value="" placeholder="" class="hexVal form-control" type="text">
                 </p>
             </div>
             </div>

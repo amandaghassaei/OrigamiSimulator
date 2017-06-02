@@ -80,7 +80,9 @@ function initGlobals(){
         numSteps: 100,
 
         rotateModel: null,
-        rotationSpeed: 0.01
+        rotationSpeed: 0.01,
+
+        backgroundColor:"ffffff"
     };
 
     function setCreasePercent(percent){

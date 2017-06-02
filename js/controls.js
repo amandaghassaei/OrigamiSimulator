@@ -135,6 +135,14 @@ function initControls(globals){
         globals.rotationSpeed = val;
     }, 0);
 
+    setLink("#changeBackground", function(){
+        $("#changeBackgroundModal").modal("show");
+    });
+    setHexInput("#backgroundColor", globals.backgroundColor, function(val){
+        globals.backgroundColor = val;
+        globals.threeView.setBackgroundColor();
+    });
+
 
     setLink("#navPattern", function(){
         if (globals.noCreasePatternAvailable()){
