@@ -64,6 +64,8 @@ function initGlobals(){
         doublesidedSTL: false,
         doublesidedOBJ: false,
         exportScale: 1,
+        thickenModel: true,
+        thickenOffset: 5,
 
         //save fold settings
         foldUnits: "unit",

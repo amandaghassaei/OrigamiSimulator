@@ -10,19 +10,58 @@ function makeSaveGEO(doublesided){
         return;
     }
 
-    if (globals.exportScale != 1){
-        for (var i=0;i<geo.vertices.length;i++){
-            geo.vertices[i].multiplyScalar(globals.exportScale);
-        }
+    for (var i=0;i<geo.vertices.length;i++){
+        geo.vertices[i].multiplyScalar(globals.exportScale/globals.scale);
     }
 
-    if (doublesided){
+
+    if (globals.thickenModel){
+        var numVertices = geo.vertices.length;
+        geo.computeVertexNormals();
+        geo.computeFaceNormals();
+        for (var i=0;i<numVertices;i++){
+            var face;
+            var vertexNormal = null;
+            for (var j=0;j<geo.faces.length;j++){
+                face = geo.faces[j];
+                if (face.a == i) vertexNormal = face.vertexNormals[0];
+                if (face.b == i) vertexNormal = face.vertexNormals[1];
+                if (face.c == i) vertexNormal = face.vertexNormals[2];
+                if (vertexNormal !== null) break;
+            }
+            if (vertexNormal === undefined) {
+                geo.vertices.push(new THREE.Vector3());
+                continue;
+            }
+            var offset = vertexNormal.clone().multiplyScalar(globals.thickenOffset/(2*vertexNormal.dot(face.normal)));
+            console.log(offset.length());
+            geo.vertices.push(geo.vertices[i].clone().sub(offset));
+            geo.vertices[i].add(offset);
+        }
+        var numFaces = geo.faces.length;
+        for (var i=0;i<numFaces;i++){
+            var face = geo.faces[i].clone();
+            face.a += numVertices;
+            face.b += numVertices;
+            face.c += numVertices;
+            var b = face.b;
+            face.b = face.c;
+            face.c = b;
+            geo.faces.push(face);
+        }
+        geo.computeVertexNormals();
+        geo.computeFaceNormals();
+
+
+
+    } else if (doublesided){
         var numFaces = geo.faces.length;
         for (var i=0;i<numFaces;i++){
             var face = geo.faces[i];
             geo.faces.push(new THREE.Face3(face.a, face.c, face.b));
         }
     }
+
     return geo;
 }
 
