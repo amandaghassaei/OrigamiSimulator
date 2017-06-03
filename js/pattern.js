@@ -371,7 +371,7 @@ function initPattern(globals){
 
     function parseSVG(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw){
 
-        findIntersections(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw);
+        // findIntersections(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw);
         verticesRaw = _verticesRaw;
         outlinesRaw = _outlinesRaw;
         mountainsRaw = _mountainsRaw;
@@ -394,12 +394,12 @@ function initPattern(globals){
         _.each(_mountainsRaw, function(edge, i){
             foldData.edges_vertices.push([edge[0], edge[1]]);
             foldData.edges_assignment.push("M");
-            foldData.edges_foldAngles.push(_mountainAngles[i]);
+            foldData.edges_foldAngles.push(edge[2]);
         });
         _.each(_valleysRaw, function(edge, i){
             foldData.edges_vertices.push([edge[0], edge[1]]);
             foldData.edges_assignment.push("V");
-            foldData.edges_foldAngles.push(_valleyAngles[i]);
+            foldData.edges_foldAngles.push(edge[2]);
         });
         _.each(_triangulationsRaw, function(edge){
             foldData.edges_vertices.push([edge[0], edge[1]]);
@@ -407,21 +407,21 @@ function initPattern(globals){
             foldData.edges_foldAngles.push(0);
         });
 
-        var error = mergeVertices();
-        if (error) {
-            console.warn("aborting file import");
-            return;
-        }
-
         console.log(JSON.stringify(foldData.vertices_coords));
         foldData = FOLD.filter.collapseNearbyVertices(foldData, 3);
         console.log(JSON.stringify(foldData.vertices_coords));
 
+        // var error = mergeVertices();
+        // if (error) {
+        //     console.warn("aborting file import");
+        //     return;
+        // }
+
+
+
         // console.log(JSON.stringify(foldData.edges_vertices));
         // console.log(FOLD.filter.subdivideCrossingEdges_vertices(foldData, 3));
         // console.log(JSON.stringify(foldData.edges_vertices));
-
-        mergeVertices();//
 
         var nullEdges = 0;
         nullEdges += removeNullEdges(outlines);
