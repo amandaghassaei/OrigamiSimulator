@@ -402,3 +402,11 @@ a.seeMore.closed>.fui-triangle-down{
     margin-right: auto;
         display: block;
 }
+
+.colorSwatch{
+    display: inline-block;
+    width: 20px;
+    height: 10px;
+    margin-right: 10px;
+    margin-bottom: 2px;
+}

@@ -21,17 +21,19 @@ function initPattern(globals){
     var triangulations = [];
     var polygons = [];
 
+    var badColors = [];//store any bad colors in svg file to show user
+
     var SVGloader = new THREE.SVGLoader();
 
     //filter for svg parsing
     function outlineFilter(){
         var stroke = getStroke($(this));
-        return stroke == "#000000" || stroke == "#000" || stroke == "black" || stroke == "rgb(0, 0, 0)";
+        return typeForStroke(stroke) == "outline";
     }
     function mountainFilter(){
         var $this = $(this);
         var stroke = getStroke($this);
-        if (stroke == "#ff0000" || stroke == "#f00" || stroke == "red" || stroke == "rgb(255, 0, 0)"){
+        if (typeForStroke(stroke) == "mountain"){
             var opacity = parseFloat($this.attr("opacity"));
             if (isNaN(opacity)) opacity = 1;
             this.targetAngle = -opacity*Math.PI;
@@ -42,7 +44,7 @@ function initPattern(globals){
     function valleyFilter(){
         var $this = $(this);
         var stroke = getStroke($this);
-        if (stroke == "#0000ff" || stroke == "#00f" || stroke == "blue" || stroke == "rgb(0, 0, 255)"){
+        if (typeForStroke(stroke) == "valley"){
             var opacity = parseFloat($this.attr("opacity"));
             if (isNaN(opacity)) opacity = 1;
             this.targetAngle = opacity*Math.PI;
@@ -52,11 +54,11 @@ function initPattern(globals){
     }
     function cutFilter(){
         var stroke = getStroke($(this));
-        return stroke == "#00ff00" || stroke == "#0f0" || stroke == "green" || stroke == "rgb(0, 255, 0)";
+        return typeForStroke(stroke) == "cut";
     }
     function triangulationFilter(){
         var stroke = getStroke($(this));
-        return stroke == "#ffff00" || stroke == "#ff0" || stroke == "yellow" || stroke == "rgb(255, 255, 0)";
+        return typeForStroke(stroke) == "triangulation";
     }
 
     function getStroke(obj){
@@ -70,9 +72,21 @@ function initPattern(globals){
         return stroke.toLowerCase();
     }
 
+    function typeForStroke(stroke){
+        if (stroke == "#000000" || stroke == "#000" || stroke == "black" || stroke == "rgb(0, 0, 0)") return "outline";
+        if (stroke == "#ff0000" || stroke == "#f00" || stroke == "red" || stroke == "rgb(255, 0, 0)") return "mountain";
+        if (stroke == "#0000ff" || stroke == "#00f" || stroke == "blue" || stroke == "rgb(0, 0, 255)") return "valley";
+        if (stroke == "#00ff00" || stroke == "#0f0" || stroke == "green" || stroke == "rgb(0, 255, 0)") return "cut";
+        if (stroke == "#ffff00" || stroke == "#ff0" || stroke == "yellow" || stroke == "rgb(255, 255, 0)") return "triangulation";
+        badColors.push(stroke);
+        return null;
+    }
+
     function loadSVG(url){
         SVGloader.load(url, function(svg){
             var _$svg = $(svg);
+
+            badColors = [];
 
             //format all appropriate svg elements
             var $paths = _$svg.children("path");
@@ -98,6 +112,17 @@ function initPattern(globals){
             findType(_verticesRaw, _valleysRaw, valleyFilter, $paths, $lines, $rects, $polygons, $polylines);
             findType(_verticesRaw, _cutsRaw, cutFilter, $paths, $lines, $rects, $polygons, $polylines);
             findType(_verticesRaw, _triangulationsRaw, triangulationFilter, $paths, $lines, $rects, $polygons, $polylines);
+
+            if (badColors.length>0){
+                badColors = _.uniq(badColors);
+                var string = "<br/>Some objects found with the following stroke colors:<br/><br/>";
+                _.each(badColors, function(color){
+                    string += "<span style='background:" + color + "' class='colorSwatch'></span>" + color + "<br/>";
+                });
+                string += "<br/> These objects were ignored.<br/>  Please check that your file is set up correctly, <br/>" +
+                    "see <b>File>File Import Tips</b> for more information.<br/><br/>";
+                globals.warn(string);
+            }
 
             parseSVG(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw);
 
