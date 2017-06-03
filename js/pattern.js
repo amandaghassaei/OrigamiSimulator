@@ -79,6 +79,14 @@ function initPattern(globals){
             if (obj.attr("style") && $(obj)[0].style.opacity) {
                 opacity = $(obj)[0].style.opacity;
             }
+            if (opacity === undefined){
+                opacity = obj.attr("stroke-opacity");
+                if (opacity === undefined) {
+                    if (obj.attr("style") && $(obj)[0].style["stroke-opacity"]) {
+                        opacity = $(obj)[0].style["stroke-opacity"];
+                    }
+                }
+            }
         }
         opacity = parseFloat(opacity);
         if (isNaN(opacity)) return 1;

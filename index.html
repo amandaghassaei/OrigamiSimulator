@@ -869,7 +869,7 @@
                             and -1 is fully folded with the opposite mountain/valley assignments).</li>
                         <li>Import other patterns under the <b>Examples</b> menu.</li>
                         <li>Upload your own crease patterns in SVG or FOLD formats, following <a href="#" class="goToImportInstructions">these instructions</a>.</li>
-                        <li>Export FOLD files or 3D models ( STL or OBJ ) of the folded state of your design ( <b>File>Save Simulation as...</b> ).</li>
+                        <li>Export FOLD files or 3D models ( STL or OBJ ) of the folded state of your design ( <b>File > Save Simulation as...</b> ).</li>
                         <li>Visualize the internal strain of the origami as it folds using the <b>Strain Visualization</b> in the left menu.</li>
                         <li>If you are working from a computer connected to a Vive, follow <a href="#" id="goToViveInstructions">these instructions</a>
                             to use this app in an interactive virtual reality mode.</li>
@@ -920,11 +920,12 @@
                     <br/>
                     <b>Importing SVG:</b><br/><br/>
                     <ul>
-                        <li>The SVG importer supports path, line, rect, polygon, and polyline objects</li>
-                        <li>Mountain folds are <span style="color:red">red</span> - rgb(255, 0, 0), hex #ff0000</li>
-                        <li>Valley folds are <span style="color:blue">blue</span> - rgb(0, 0, 255), hex #0000ff</li>
-                        <li>Outline edges are <span style="color:black">black</span> - rgb(0, 0, 0), hex #000000</li>
-                        <li>Hinges (undriven creases) are <span style="color:black">black</span> - rgb(0, 0, 0), hex #000000</li>
+                        <li>The SVG importer supports path, line, rect, polygon, and polyline objects with the appropriate
+                            <a href="https://www.w3schools.com/graphics/svg_stroking.asp" target="_blank">stroke</a> color set:</li>
+                        <li>Mountain folds have <span style="color:red">red</span> stroke - rgb(255, 0, 0), hex #ff0000</li>
+                        <li>Valley folds have <span style="color:blue">blue</span> stroke - rgb(0, 0, 255), hex #0000ff</li>
+                        <li>Outline edges have <span style="color:black">black</span> stroke - rgb(0, 0, 0), hex #000000</li>
+                        <li>Hinges (undriven creases) have <span style="color:black">black</span> stroke - rgb(0, 0, 0), hex #000000</li>
                     </ul>
                     <img src="assets/examplepattern.jpg"/>
                     <ul>
@@ -934,7 +935,7 @@
                     </ul>
                     <img src="assets/patternwithtriangulations.jpg"/>
                     <ul>
-                        <li>Stroke and line style do not matter.</li>
+                        <li>Line style and stroke width do not matter.</li>
                         <li>The final fold angle of a mountain or valley fold is set by its opacity. For example, 1.0 = 180&deg;
                         (fully folded), 0.5 = 90&deg;, 0 = 0&deg; (flat).  Any fold angle between  0&deg; and 180&deg; may be used.</li>
                         <li>This tool should be able to automatically clean files of slightly misaligned vertices, stray vertices,
@@ -976,6 +977,9 @@
                 change the internal strains in the material.
                 <br/><br/>
                 If the simulation looks choppy, consider lowering the <b>Num simulation steps per render</b> setting under <b>Animation Settings</b> in the right hand menu.
+                <br/><br/>
+                    VR mode currently does not support all the UI of the regular app, so you will need someone in the "outside world" to
+                    help you load new files, change the fold angle, etc.
                 </p>
             </div>
         </div><!-- /.modal-content -->
