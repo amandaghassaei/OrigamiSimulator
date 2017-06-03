@@ -589,8 +589,8 @@
                             <li><a href="#" class="demo" data-url="Tessellations/reschBarbell.svg">Resch Barbell Tessellation</a></li>
                             <li class="divider"></li>
                             <li><a href="#" class="demo" data-url="Tessellations/langHoneycomb.svg">Lang Honeycomb Tessellation</a></li>
-                            <li><a href="#" class="demo" data-url="Tessellations/oval_tessellation_cp.svg">Lang Oval Tessellation</a></li>
-                            <li><a href="#" class="demo" data-url="Tessellations/hyperbolic_limit_cp.svg">Lang Hyperbolic Limit</a></li>
+                            <li><a href="#" class="demo" data-url="Tessellations/langOvalTessellation.svg">Lang Oval Tessellation</a></li>
+                            <li><a href="#" class="demo" data-url="Tessellations/langHyperbolicLimit.svg">Lang Hyperbolic Limit</a></li>
                         </ul>
                     </li>
                     <li class="dropdown-submenu">
@@ -612,8 +612,18 @@
                     <li class="dropdown-submenu">
                         <a tabindex="-1">Problematic Patterns<span class="pull-right fui-arrow-right"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="#" class="demo" data-url="Tessellations/wedged_double_faced.svg">Lang Wedged Double Faced Tessellation</a></li>
-                            <li><a href="#" class="demo" data-url="Tessellations/rattanweaveLang.svg">Lang Rattan Weave</a></li>
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1">Skinny Triangles<span class="pull-right fui-arrow-right"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#" class="demo" data-url="Tessellations/langRattanWeave.svg">Lang Rattan Weave</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1">Bad Files<span class="pull-right fui-arrow-right"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#" class="demo" data-url="Tessellations/langWedgeDoubleFaced.svg">Lang Wedged Double Faced Tessellation</a></li>
+                                </ul>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -902,10 +912,10 @@
                 I use Illustrator to create SVGs (though any vector editing program should be fine), here are some tips I've found for making svgs to import into this tool.<br/><br/>
                     <ul>
                         <li>If you are starting with a pre-made vector file, first ungroup any groups, release all compound paths
-                        (<b>Select all + Object>Compound Path>Release</b>), and release all clipping masks (<b>Select all + Object>Clipping Mask>Release</b>).</li>
+                        (<b>Select all + Object > Compound Path > Release</b>), and release all clipping masks (<b>Select all + Object > Clipping Mask > Release</b>).</li>
                         <li>Create geometry using the <b>Line Segment Tool</b>.</li>
                         <li>Illustrator can help you select all lines of a particular type so that you can edit their color or opacity together.  Click the line,
-                        then go to <b>Select>Same>Appearance</b> to select all similar lines in the pattern.
+                        then go to <b>Select > Same > Appearance</b> to select all similar lines in the pattern.
                         <li>Finally hit <b>Save As</b> and select <b>.svg</b> extension. I'm using the default SVG 1.1 settings, but version 1.0 will work as well.</li>
                     </ul>
                 </p>

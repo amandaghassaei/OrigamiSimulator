@@ -3,7 +3,6 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 width="700px" height="700px" viewBox="0 0 700 700" enable-background="new 0 0 700 700" xml:space="preserve">
-<rect fill="#FFFFFF" width="700" height="700"/>
 <path fill="none" stroke="#000000" stroke-linecap="round" stroke-miterlimit="10" d="M2.36,21L21,90.54 M21,90.54L2.36,160.09
 	 M2.36,160.09L21,229.64 M71.91,2.36L2.36,21 M141.46,21L71.91,2.36 M141.46,21L211,2.36 M211,2.36l18.64,69.55 M229.64,71.91
 	L211,141.46 M211,141.46L229.64,211 M229.64,211l-69.55,18.64 M160.09,229.64L90.54,211 M90.54,211L21,229.64"/>
@@ -64,5 +63,4 @@
 	 M132.37,630.21l64.57-31.84 M164.21,565.641l-31.84-64.58 M67.79,598.359l31.84,64.58 M334.22,533.28l-63.5,33.938 M363.78,630.72
 	l63.5-33.938 M363.78,503.72l33.938,63.5 M300.28,596.78l33.939,63.5 M568.82,532.82l-62.352,36 M657.53,595.18l-62.352,36
 	 M595.18,506.47l36,62.352 M568.82,657.53l-36-62.352"/>
-<rect fill="none" width="700" height="700"/>
 </svg>

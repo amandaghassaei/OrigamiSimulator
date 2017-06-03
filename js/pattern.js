@@ -34,8 +34,7 @@ function initPattern(globals){
         var $this = $(this);
         var stroke = getStroke($this);
         if (typeForStroke(stroke) == "mountain"){
-            var opacity = parseFloat($this.attr("opacity"));
-            if (isNaN(opacity)) opacity = 1;
+            var opacity = getOpacity($this);
             this.targetAngle = -opacity*Math.PI;
             return true;
         }
@@ -45,8 +44,7 @@ function initPattern(globals){
         var $this = $(this);
         var stroke = getStroke($this);
         if (typeForStroke(stroke) == "valley"){
-            var opacity = parseFloat($this.attr("opacity"));
-            if (isNaN(opacity)) opacity = 1;
+            var opacity = getOpacity($this);
             this.targetAngle = opacity*Math.PI;
             return true;
         }
@@ -59,6 +57,18 @@ function initPattern(globals){
     function triangulationFilter(){
         var stroke = getStroke($(this));
         return typeForStroke(stroke) == "triangulation";
+    }
+
+    function getOpacity(obj){
+        var opacity = obj.attr("opacity");
+        if (opacity === undefined) {
+            if (obj.attr("style") && $(obj)[0].style.opacity) {
+                opacity = $(obj)[0].style.opacity;
+            }
+        }
+        opacity = parseFloat(opacity);
+        if (isNaN(opacity)) return 1;
+        return opacity;
     }
 
     function getStroke(obj){
@@ -80,88 +90,6 @@ function initPattern(globals){
         if (stroke == "#ffff00" || stroke == "#ff0" || stroke == "yellow" || stroke == "rgb(255, 255, 0)") return "triangulation";
         badColors.push(stroke);
         return null;
-    }
-
-    function loadSVG(url){
-        SVGloader.load(url, function(svg){
-            var _$svg = $(svg);
-
-            badColors = [];
-
-            //format all appropriate svg elements
-            var $paths = _$svg.children("path");
-            $paths.css({fill:"none", 'stroke-dasharray':"none"});
-            var $lines = _$svg.children("line");
-            $lines.css({fill:"none", 'stroke-dasharray':"none"});
-            var $rects = _$svg.children("rect");
-            $rects.css({fill:"none", 'stroke-dasharray':"none"});
-            var $polygons = _$svg.children("polygon");
-            $polygons.css({fill:"none", 'stroke-dasharray':"none"});
-            var $polylines = _$svg.children("polyline");
-            $polylines.css({fill:"none", 'stroke-dasharray':"none"});
-
-            var _verticesRaw = [];
-            var _mountainsRaw = [];
-            var _valleysRaw = [];
-            var _outlinesRaw = [];
-            var _cutsRaw = [];
-            var _triangulationsRaw = [];
-
-            findType(_verticesRaw, _outlinesRaw, outlineFilter, $paths, $lines, $rects, $polygons, $polylines);
-            findType(_verticesRaw, _mountainsRaw, mountainFilter, $paths, $lines, $rects, $polygons, $polylines);
-            findType(_verticesRaw, _valleysRaw, valleyFilter, $paths, $lines, $rects, $polygons, $polylines);
-            findType(_verticesRaw, _cutsRaw, cutFilter, $paths, $lines, $rects, $polygons, $polylines);
-            findType(_verticesRaw, _triangulationsRaw, triangulationFilter, $paths, $lines, $rects, $polygons, $polylines);
-
-            if (badColors.length>0){
-                badColors = _.uniq(badColors);
-                var string = "<br/>Some objects found with the following stroke colors:<br/><br/>";
-                _.each(badColors, function(color){
-                    string += "<span style='background:" + color + "' class='colorSwatch'></span>" + color + "<br/>";
-                });
-                string += "<br/> These objects were ignored.<br/>  Please check that your file is set up correctly, <br/>" +
-                    "see <b>File>File Import Tips</b> for more information.<br/><br/>";
-                globals.warn(string);
-            }
-
-            parseSVG(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw);
-
-            //find max and min vertices
-            var max = new THREE.Vector3(0,0,0);
-            var min = new THREE.Vector3(Infinity,Infinity,Infinity);
-            for (var i=0;i<vertices.length;i++){
-                max.max(vertices[i]);
-                min.min(vertices[i]);
-            }
-            max.sub(min);
-            var border = new THREE.Vector3(0.1, 0, 0.1);
-            var scale = max.x;
-            if (max.z < scale) scale = max.z;
-
-            var strokeWidth = scale/300;
-            // $mountains.css({'stroke-dasharray': strokeWidth*6 + ', ' + strokeWidth*3 + ', ' + strokeWidth*1.5 + ', ' + strokeWidth*3});
-            // $valleys.css({'stroke-dasharray': strokeWidth*4 + ', ' + strokeWidth*3 + ', ' + strokeWidth*4 + ', ' + strokeWidth*3});
-            $paths.css({'stroke-width':strokeWidth});
-
-            border.multiplyScalar(scale);
-            min.sub(border);
-            max.add(border.multiplyScalar(2));
-            var viewBoxTxt = min.x + " " + min.z + " " + max.x + " " + max.z;
-            var $svg = $('<svg version="1.1" viewBox="' + viewBoxTxt + '" id="mySVG" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> </svg>');
-            $svg.append($paths);
-            $svg.append($lines);
-            $svg.append($rects);
-            $svg.append($polygons);
-            $svg.append($polylines);
-
-            $("#svgViewer").html($svg);
-
-            },
-            function(){},
-            function(error){
-            alert("Error loading SVG: " + url);
-            console.log(error);
-        });
     }
 
     function findType(_verticesRaw, _segmentsRaw, filter, $paths, $lines, $rects, $polygons, $polylines){
@@ -338,6 +266,94 @@ function initPattern(globals){
             }
         }
     }
+
+    function loadSVG(url){
+        SVGloader.load(url, function(svg){
+            var _$svg = $(svg);
+
+            badColors = [];
+
+            //format all appropriate svg elements
+            var $paths = _$svg.children("path");
+            $paths.css({fill:"none", 'stroke-dasharray':"none"});
+            var $lines = _$svg.children("line");
+            $lines.css({fill:"none", 'stroke-dasharray':"none"});
+            var $rects = _$svg.children("rect");
+            $rects.css({fill:"none", 'stroke-dasharray':"none"});
+            var $polygons = _$svg.children("polygon");
+            $polygons.css({fill:"none", 'stroke-dasharray':"none"});
+            var $polylines = _$svg.children("polyline");
+            $polylines.css({fill:"none", 'stroke-dasharray':"none"});
+
+            var _verticesRaw = [];
+            var _mountainsRaw = [];
+            var _valleysRaw = [];
+            var _outlinesRaw = [];
+            var _cutsRaw = [];
+            var _triangulationsRaw = [];
+
+            findType(_verticesRaw, _outlinesRaw, outlineFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(_verticesRaw, _mountainsRaw, mountainFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(_verticesRaw, _valleysRaw, valleyFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(_verticesRaw, _cutsRaw, cutFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(_verticesRaw, _triangulationsRaw, triangulationFilter, $paths, $lines, $rects, $polygons, $polylines);
+
+            if (badColors.length>0){
+                badColors = _.uniq(badColors);
+                var string = "<br/>Some objects found with the following stroke colors:<br/><br/>";
+                _.each(badColors, function(color){
+                    string += "<span style='background:" + color + "' class='colorSwatch'></span>" + color + "<br/>";
+                });
+                string += "<br/> These objects were ignored.<br/>  Please check that your file is set up correctly, <br/>" +
+                    "see <b>File > File Import Tips</b> for more information.<br/><br/>";
+                globals.warn(string);
+            }
+
+            parseSVG(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw);
+
+            //find max and min vertices
+            var max = new THREE.Vector3(0,0,0);
+            var min = new THREE.Vector3(Infinity,Infinity,Infinity);
+            for (var i=0;i<vertices.length;i++){
+                max.max(vertices[i]);
+                min.min(vertices[i]);
+            }
+            max.sub(min);
+            var border = new THREE.Vector3(0.1, 0, 0.1);
+            var scale = max.x;
+            if (max.z < scale) scale = max.z;
+
+            var strokeWidth = scale/300;
+            // $mountains.css({'stroke-dasharray': strokeWidth*6 + ', ' + strokeWidth*3 + ', ' + strokeWidth*1.5 + ', ' + strokeWidth*3});
+            // $valleys.css({'stroke-dasharray': strokeWidth*4 + ', ' + strokeWidth*3 + ', ' + strokeWidth*4 + ', ' + strokeWidth*3});
+            $paths.css({'stroke-width':strokeWidth});
+
+            border.multiplyScalar(scale);
+            min.sub(border);
+            max.add(border.multiplyScalar(2));
+            var viewBoxTxt = min.x + " " + min.z + " " + max.x + " " + max.z;
+            var $svg = $('<svg version="1.1" viewBox="' + viewBoxTxt + '" id="mySVG" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> </svg>');
+            $svg.append($paths);
+            $svg.append($lines);
+            $svg.append($rects);
+            $svg.append($polygons);
+            $svg.append($polylines);
+
+            $("#svgViewer").html($svg);
+
+            },
+            function(){},
+            function(error){
+            alert("Error loading SVG: " + url);
+            console.log(error);
+        });
+    }
+
+
+
+
+
+
 
     function parseSVG(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw){
 
