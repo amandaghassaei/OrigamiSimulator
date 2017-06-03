@@ -365,7 +365,11 @@ function initPattern(globals){
         cutsRaw = _cutsRaw;
         triangulationsRaw = _triangulationsRaw;
 
-        mergeVertices();
+        var error = mergeVertices();
+        if (error) {
+            console.warn("aborting file import");
+            return;
+        }
 
         var nullEdges = 0;
         nullEdges += removeNullEdges(outlines);
@@ -618,9 +622,11 @@ function initPattern(globals){
             }
         }
         if (_weededVertices.length > 0){
-            console.log(_weededVertices);
-            globals.warn("Some vertices are not fully connected, try increasing vertex merge tolerance");
-            return;
+            // console.log(_weededVertices);
+            if (badColors.length==0) globals.warn("Some vertices are not fully connected, try increasing vertex merge tolerance.<br/>" +
+                "Aborting file import.");
+            else $("#warningMessage").append("This error caused the file import to abort.<br/><br/>");
+            return true;
         }
 
         removeCombinedFromSet(combined, outlines);
