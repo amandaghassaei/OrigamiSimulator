@@ -324,11 +324,15 @@ function initPattern(globals){
             parseSVG(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw);
 
             //find max and min vertices
-            var max = new THREE.Vector3(0,0,0);
+            var max = new THREE.Vector3(-Infinity,-Infinity,Infinity);
             var min = new THREE.Vector3(Infinity,Infinity,Infinity);
             for (var i=0;i<vertices.length;i++){
                 max.max(vertices[i]);
                 min.min(vertices[i]);
+            }
+            if (min.x === Infinity){
+                globals.warn("no geometry found in file");
+                return;
             }
             max.sub(min);
             var border = new THREE.Vector3(0.1, 0, 0.1);
@@ -356,8 +360,8 @@ function initPattern(globals){
             },
             function(){},
             function(error){
-            alert("Error loading SVG: " + url);
-            console.log(error);
+                globals.warn("Error loading SVG: " + url);
+                console.log(error);
         });
     }
 
@@ -414,8 +418,6 @@ function initPattern(globals){
         //     console.warn("aborting file import");
         //     return;
         // }
-
-
 
         // console.log(JSON.stringify(foldData.edges_vertices));
         // console.log(FOLD.filter.subdivideCrossingEdges_vertices(foldData, 3));
