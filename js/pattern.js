@@ -28,10 +28,12 @@ function initPattern(globals){
                 var _$svg = $(svg);
 
                 //format all lines
+                console.log(_$svg.children("line"));
+                if (_$svg.children("line").length>0){
+                    console.log(_$svg.children("line")[0].x1);
+                }
                 var $paths = _$svg.children("path");
                 $paths.css({fill:"none", 'stroke-dasharray':"none"});
-                var _mountainAngles = [];
-                var _valleyAngles = [];
 
                 var $outlines = $paths.filter(function(){
                     var stroke = $(this).attr("stroke").toLowerCase();
@@ -43,7 +45,7 @@ function initPattern(globals){
                     if (stroke == "#ff0000" || stroke == "#f00" || stroke == "#FF0000" || stroke == "#F00" || stroke == "red"){
                         var opacity = parseFloat($(this).attr("opacity"));
                         if (isNaN(opacity)) opacity = 1;
-                        _mountainAngles.push(-opacity*Math.PI);
+                        this.targetAngle = -opacity*Math.PI;
                         return true;
                     }
                     return false;
@@ -54,7 +56,7 @@ function initPattern(globals){
                     if (stroke == "#0000ff" || stroke == "#00f" || stroke == "#0000FF" || stroke == "#00F" || stroke == "greeen"){
                         var opacity = parseFloat($(this).attr("opacity"));
                         if (isNaN(opacity)) opacity = 1;
-                        _valleyAngles.push(opacity*Math.PI);
+                        this.targetAngle = opacity*Math.PI;
                         return true;
                     }
                     return false;
@@ -70,7 +72,20 @@ function initPattern(globals){
                     return stroke == "#ffff00" || stroke == "#ff0" || stroke == "#FFFF00" || stroke == "#FF0" || stroke == "yellow";
                 });
 
-                parseSVG($outlines, $mountains, $valleys, $cuts, $triangulations, _mountainAngles, _valleyAngles);
+                var _verticesRaw = [];
+                var _mountainsRaw = [];
+                var _valleysRaw = [];
+                var _outlinesRaw = [];
+                var _cutsRaw = [];
+                var _triangulationsRaw = [];
+            
+                parsePath(_verticesRaw, _outlinesRaw, $outlines);
+                parsePath(_verticesRaw, _mountainsRaw, $mountains);
+                parsePath(_verticesRaw, _valleysRaw, $valleys);
+                parsePath(_verticesRaw, _cutsRaw, $cuts);
+                parsePath(_verticesRaw, _triangulationsRaw, $triangulations);
+
+                parseSVG(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw);
 
                 //find max and min vertices
                 var max = new THREE.Vector3(0,0,0);
@@ -109,9 +124,10 @@ function initPattern(globals){
         });
     }
 
-    function parsePath(_verticesRaw, _segmentsRaw, $paths, angles){
+    function parsePath(_verticesRaw, _segmentsRaw, $paths){
         for (var i=0;i<$paths.length;i++){
-            var segments = $paths[i].getPathData();
+            var $path = $paths[i];
+            var segments = $path.getPathData();
             for (var j=0;j<segments.length;j++){
                 var segment = segments[j];
                 var type = segment.type;
@@ -127,7 +143,7 @@ function initPattern(globals){
 
                     case "l"://dx, dy
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (angles && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(angles[i]);
+                        if ($path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push($path.targetAngle);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.x += segment.values[0];
                         vertex.z += segment.values[1];
@@ -136,7 +152,7 @@ function initPattern(globals){
 
                     case "v"://dy
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (angles && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(angles[i]);
+                        if ($path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push($path.targetAngle);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.z += segment.values[0];
                         _verticesRaw.push(vertex);
@@ -144,7 +160,7 @@ function initPattern(globals){
 
                     case "h"://dx
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (angles && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(angles[i]);
+                        if ($path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push($path.targetAngle);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.x += segment.values[0];
                         _verticesRaw.push(vertex);
@@ -156,13 +172,13 @@ function initPattern(globals){
 
                     case "L"://x, y
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (angles && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(angles[i]);
+                        if ($path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push($path.targetAngle);
                         _verticesRaw.push(new THREE.Vector3(segment.values[0], 0, segment.values[1]));
                         break;
 
                     case "V"://y
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (angles && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(angles[i]);
+                        if ($path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push($path.targetAngle);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.z = segment.values[0];
                         _verticesRaw.push(vertex);
@@ -170,7 +186,7 @@ function initPattern(globals){
 
                     case "H"://x
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (angles && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(angles[i]);
+                        if ($path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push($path.targetAngle);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.x = segment.values[0];
                         _verticesRaw.push(vertex);
@@ -180,20 +196,9 @@ function initPattern(globals){
         }
     }
 
-    function parseSVG($outlines, $mountains, $valleys, $cuts, $triangulations, _mountainAngles, _valleyAngles){
+    function parseSVG(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw){
 
-        var _verticesRaw = [];
-        var _mountainsRaw = [];
-        var _valleysRaw = [];
-        var _outlinesRaw = [];
-        var _cutsRaw = [];
-        var _triangulationsRaw = [];
 
-        parsePath(_verticesRaw, _outlinesRaw, $outlines);
-        parsePath(_verticesRaw, _mountainsRaw, $mountains, _mountainAngles);
-        parsePath(_verticesRaw, _valleysRaw, $valleys, _valleyAngles);
-        parsePath(_verticesRaw, _cutsRaw, $cuts);
-        parsePath(_verticesRaw, _triangulationsRaw, $triangulations);
 
         findIntersections(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw);
         verticesRaw = _verticesRaw;
