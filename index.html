@@ -550,6 +550,7 @@
                 <span class="dropdown-arrow"></span>
                 <ul class="dropdown-menu">
                     <li><a class="loadFile" href="#">Import... (SVG / FOLD)</a></li>
+                    <li><a id="importSettings" href="#">SVG Import Settings...</a></li>
                     <li><a id="tips" href="#">File Import Tips</a></li>
                     <li class="divider"></li>
                     <li><a id="exportFOLD" href="#">Save Simulation as FOLD...</a></li>
@@ -1226,6 +1227,21 @@
                 </button>
                 <p><b>BACKGROUND COLOR</b><br/><br/>
                     Color (rgb hex) : &nbsp;&nbsp;<input id="backgroundColor" value="" placeholder="" class="hexVal form-control" type="text">
+                </p>
+            </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="importSettingsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <p><b>FILE IMPORT SETTINGS</b><br/><br/>
+                    Vertex merge tolerance (px) : &nbsp;&nbsp;<input id="vertTol" value="" placeholder="" class="float form-control" type="text">
                 </p>
             </div>
             </div>

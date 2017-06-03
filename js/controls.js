@@ -143,6 +143,13 @@ function initControls(globals){
         globals.threeView.setBackgroundColor();
     });
 
+    setLink("#importSettings", function(){
+        $("#importSettingsModal").modal("show");
+    });
+    setInput("#vertTol", globals.vertTol, function(val){
+        globals.vertTol = val;
+    });
+
 
     setLink("#navPattern", function(){
         if (globals.noCreasePatternAvailable()){

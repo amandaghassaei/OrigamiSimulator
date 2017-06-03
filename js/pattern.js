@@ -623,8 +623,8 @@ function initPattern(globals){
         }
         if (_weededVertices.length > 0){
             // console.log(_weededVertices);
-            if (badColors.length==0) globals.warn("<br/>Some vertices are not fully connected,<br/>" +
-                "try increasing vertex merge tolerance.<br/>" +
+            if (badColors.length==0) globals.warn("<br/>Some vertices are not fully connected, " +
+                "try increasing vertex merge tolerance ( <b>File > SVG Import Settings...</b> ). <br/><br/>" +
                 "Aborting file import.<br/><br/>");
             else $("#warningMessage").append("This error caused the file import to abort.<br/><br/>");
             return true;
