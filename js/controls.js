@@ -387,7 +387,10 @@ function initControls(globals){
 
     setCheckbox($("#userInteractionEnabled"), globals.userInteractionEnabled, function(val){
         globals.userInteractionEnabled = val;
-        if (!val) globals.UI3D.hideHighlighters();
+        if (val) {
+            globals.rotateModel = null;
+            globals.threeView.resetModel();
+        } else globals.UI3D.hideHighlighters();
     });
 
     setCheckbox($("#foldUseAngles"), globals.foldUseAngles, function(val){
