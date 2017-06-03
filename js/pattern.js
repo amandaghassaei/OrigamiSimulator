@@ -119,14 +119,10 @@ function initPattern(globals){
         transformations = transformations.baseVal;
         for (var i=0;i<transformations.length;i++){
             var t = transformations[i];
-            // if (t.type == 1){//matrix
-                var M = [[t.matrix.a, t.matrix.c, t.matrix.e], [t.matrix.b, t.matrix.d, t.matrix.f], [0,0,1]];
-                var out = numeric.dot(M, [vertex.x, vertex.z, 1]);
-                vertex.x = out[0];
-                vertex.z = out[1];
-            // } else {
-            //     console.log(t);
-            // }
+            var M = [[t.matrix.a, t.matrix.c, t.matrix.e], [t.matrix.b, t.matrix.d, t.matrix.f], [0,0,1]];
+            var out = numeric.dot(M, [vertex.x, vertex.z, 1]);
+            vertex.x = out[0];
+            vertex.z = out[1];
         }
     }
 
@@ -241,16 +237,10 @@ function initPattern(globals){
             _segmentsRaw.push([_verticesRaw.length-3, _verticesRaw.length-2]);
             _segmentsRaw.push([_verticesRaw.length-2, _verticesRaw.length-1]);
             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-4]);
-            if (element.targetAngle) {
-                _segmentsRaw[_segmentsRaw.length-4].push(element.targetAngle);
-                _segmentsRaw[_segmentsRaw.length-3].push(element.targetAngle);
-                _segmentsRaw[_segmentsRaw.length-2].push(element.targetAngle);
-                _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
+            for (var j=1;j<=4;j++){
+                if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle);
+                applyTransformation(_verticesRaw[_verticesRaw.length-j], element.transform);
             }
-            applyTransformation(_verticesRaw[_verticesRaw.length-4], element.transform);
-            applyTransformation(_verticesRaw[_verticesRaw.length-3], element.transform);
-            applyTransformation(_verticesRaw[_verticesRaw.length-2], element.transform);
-            applyTransformation(_verticesRaw[_verticesRaw.length-1], element.transform);
         }
     }
 
