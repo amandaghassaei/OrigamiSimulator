@@ -637,20 +637,28 @@
                 <ul class="dropdown-menu">
                     <li><a id="menuVis" href="#">Toggle Menu Visibility</a></li>
                     <li><a id="changeBackground" href="#">Change Background Color...</a></li>
-                    <li class="divider"></li>
-                    <li><a id="stopRotation" href="#">Stop Rotation</a></li>
-                    <li><a id="rotateX" href="#">Rotate Model X</a></li>
-                    <li><a id="rotateY" href="#">Rotate Model Y</a></li>
-                    <li><a id="rotateZ" href="#">Rotate Model Z</a></li>
-                    <li><a id="changeRotationSpeed" href="#">Change Rotation Speed...</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#" id="cameraZ">View Front</a></li>
-                    <li><a href="#" id="cameraMinusZ">View Back</a></li>
-                    <li><a href="#" id="cameraX">View Right</a></li>
-                    <li><a href="#" id="cameraMinusX">View Left</a></li>
-                    <li><a href="#" id="cameraY">View Top</a></li>
-                    <li><a href="#" id="cameraMinusY">View Bottom</a></li>
-                    <li><a href="#" id="cameraOrtho">View Ortho</a></li>
+                    <li class="dropdown-submenu">
+                        <a tabindex="-1">Rotate Model<span class="pull-right fui-arrow-right"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a id="stopRotation" href="#">Stop Rotation</a></li>
+                            <li><a id="rotateX" href="#">Rotate Around X</a></li>
+                            <li><a id="rotateY" href="#">Rotate Around Y</a></li>
+                            <li><a id="rotateZ" href="#">Rotate Around Z</a></li>
+                            <li><a id="changeRotationSpeed" href="#">Change Rotation Speed...</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown-submenu">
+                        <a tabindex="-1">View Angle<span class="pull-right fui-arrow-right"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" id="cameraZ">View Front</a></li>
+                            <li><a href="#" id="cameraMinusZ">View Back</a></li>
+                            <li><a href="#" id="cameraX">View Right</a></li>
+                            <li><a href="#" id="cameraMinusX">View Left</a></li>
+                            <li><a href="#" id="cameraY">View Top</a></li>
+                            <li><a href="#" id="cameraMinusY">View Bottom</a></li>
+                            <li><a href="#" id="cameraOrtho">View Ortho</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </li>
             <li><a id="navPattern" href="#">Pattern</a></li>
@@ -867,6 +875,7 @@
                     <ul>
                         <li>Slide the <b>Fold Angle</b> slider to control the degree of folding of the pattern (1 is fully folded, 0 is unfolded,
                             and -1 is fully folded with the opposite mountain/valley assignments).</li>
+                        <li>Drag to rotate the model, scroll to zoom.</li>
                         <li>Import other patterns under the <b>Examples</b> menu.</li>
                         <li>Upload your own crease patterns in SVG or FOLD formats, following <a href="#" class="goToImportInstructions">these instructions</a>.</li>
                         <li>Export FOLD files or 3D models ( STL or OBJ ) of the folded state of your design ( <b>File > Save Simulation as...</b> ).</li>

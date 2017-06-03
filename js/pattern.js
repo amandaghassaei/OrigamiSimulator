@@ -331,7 +331,7 @@ function initPattern(globals){
                 min.min(vertices[i]);
             }
             if (min.x === Infinity){
-                globals.warn("no geometry found in file");
+                if (badColors.length == 0) globals.warn("no geometry found in file");
                 return;
             }
             max.sub(min);
