@@ -26,12 +26,12 @@ function initPattern(globals){
     //filter for svg parsing
     function outlineFilter(){
         var stroke = getStroke($(this));
-        return stroke == "#000000" || stroke == "#000" || stroke == "black";
+        return stroke == "#000000" || stroke == "#000" || stroke == "black" || stroke == "rgb(0, 0, 0)";
     }
     function mountainFilter(){
         var $this = $(this);
         var stroke = getStroke($this);
-        if (stroke == "#ff0000" || stroke == "#f00" || stroke == "red"){
+        if (stroke == "#ff0000" || stroke == "#f00" || stroke == "red" || stroke == "rgb(255, 0, 0)"){
             var opacity = parseFloat($this.attr("opacity"));
             if (isNaN(opacity)) opacity = 1;
             this.targetAngle = -opacity*Math.PI;
@@ -42,7 +42,7 @@ function initPattern(globals){
     function valleyFilter(){
         var $this = $(this);
         var stroke = getStroke($this);
-        if (stroke == "#0000ff" || stroke == "#00f" || stroke == "greeen"){
+        if (stroke == "#0000ff" || stroke == "#00f" || stroke == "blue" || stroke == "rgb(0, 0, 255)"){
             var opacity = parseFloat($this.attr("opacity"));
             if (isNaN(opacity)) opacity = 1;
             this.targetAngle = opacity*Math.PI;
@@ -52,16 +52,21 @@ function initPattern(globals){
     }
     function cutFilter(){
         var stroke = getStroke($(this));
-        return stroke == "#00ff00" || stroke == "#0f0" || stroke == "green";
+        return stroke == "#00ff00" || stroke == "#0f0" || stroke == "green" || stroke == "rgb(0, 255, 0)";
     }
     function triangulationFilter(){
         var stroke = getStroke($(this));
-        return stroke == "#ffff00" || stroke == "#ff0" || stroke == "yellow";
+        return stroke == "#ffff00" || stroke == "#ff0" || stroke == "yellow" || stroke == "rgb(255, 255, 0)";
     }
 
     function getStroke(obj){
         var stroke = obj.attr("stroke");
-        if (stroke === undefined) return null;
+        if (stroke === undefined) {
+            if (obj.attr("style") && $(obj)[0].style.stroke) {
+                return $(obj)[0].style.stroke;
+            }
+            return null;
+        }
         return stroke.toLowerCase();
     }
 
@@ -140,7 +145,6 @@ function initPattern(globals){
         for (var i=0;i<transformations.length;i++){
             var t = transformations[i];
             // if (t.type == 1){//matrix
-                console.log(t);
                 var M = [[t.matrix.a, t.matrix.c, t.matrix.e], [t.matrix.b, t.matrix.d, t.matrix.f], [0,0,1]];
                 var out = numeric.dot(M, [vertex.x, vertex.z, 1]);
                 vertex.x = out[0];
