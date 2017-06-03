@@ -83,6 +83,8 @@ function initPattern(globals){
             $rects.css({fill:"none", 'stroke-dasharray':"none"});
             var $polygons = _$svg.children("polygon");
             $polygons.css({fill:"none", 'stroke-dasharray':"none"});
+            var $polylines = _$svg.children("polyline");
+            $polylines.css({fill:"none", 'stroke-dasharray':"none"});
 
             var _verticesRaw = [];
             var _mountainsRaw = [];
@@ -91,11 +93,11 @@ function initPattern(globals){
             var _cutsRaw = [];
             var _triangulationsRaw = [];
 
-            findType(_verticesRaw, _outlinesRaw, outlineFilter, $paths, $lines, $rects, $polygons);
-            findType(_verticesRaw, _mountainsRaw, mountainFilter, $paths, $lines, $rects, $polygons);
-            findType(_verticesRaw, _valleysRaw, valleyFilter, $paths, $lines, $rects, $polygons);
-            findType(_verticesRaw, _cutsRaw, cutFilter, $paths, $lines, $rects, $polygons);
-            findType(_verticesRaw, _triangulationsRaw, triangulationFilter, $paths, $lines, $rects, $polygons);
+            findType(_verticesRaw, _outlinesRaw, outlineFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(_verticesRaw, _mountainsRaw, mountainFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(_verticesRaw, _valleysRaw, valleyFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(_verticesRaw, _cutsRaw, cutFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(_verticesRaw, _triangulationsRaw, triangulationFilter, $paths, $lines, $rects, $polygons, $polylines);
 
             parseSVG(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw);
 
@@ -125,6 +127,7 @@ function initPattern(globals){
             $svg.append($lines);
             $svg.append($rects);
             $svg.append($polygons);
+            $svg.append($polylines);
 
             $("#svgViewer").html($svg);
 
@@ -136,11 +139,12 @@ function initPattern(globals){
         });
     }
 
-    function findType(_verticesRaw, _segmentsRaw, filter, $paths, $lines, $rects, $polygons){
+    function findType(_verticesRaw, _segmentsRaw, filter, $paths, $lines, $rects, $polygons, $polylines){
         parsePath(_verticesRaw, _segmentsRaw, $paths.filter(filter));
         parseLine(_verticesRaw, _segmentsRaw, $lines.filter(filter));
         parseRect(_verticesRaw, _segmentsRaw, $rects.filter(filter));
         parsePolygon(_verticesRaw, _segmentsRaw, $polygons.filter(filter));
+        parsePolyline(_verticesRaw, _segmentsRaw, $polylines.filter(filter));
     }
 
     function applyTransformation(vertex, transformations){
@@ -293,6 +297,18 @@ function initPattern(globals){
                 if (j<element.points.length-1) _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
                 else _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-element.points.length]);
 
+                if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
+            }
+        }
+    }
+
+    function parsePolyline(_verticesRaw, _segmentsRaw, $elements){
+        for (var i=0;i<$elements.length;i++){
+            var element = $elements[i];
+            for (var j=0;j<element.points.length;j++){
+                _verticesRaw.push(new THREE.Vector3(element.points[j].x, 0, element.points[j].y));
+                applyTransformation(_verticesRaw[_verticesRaw.length-1], element.transform);
+                if (j>0) _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-2]);
                 if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
             }
         }
