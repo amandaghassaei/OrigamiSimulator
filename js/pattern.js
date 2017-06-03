@@ -81,6 +81,8 @@ function initPattern(globals){
             $lines.css({fill:"none", 'stroke-dasharray':"none"});
             var $rects = _$svg.children("rect");
             $rects.css({fill:"none", 'stroke-dasharray':"none"});
+            var $polygons = _$svg.children("polygon");
+            $polygons.css({fill:"none", 'stroke-dasharray':"none"});
 
             var _verticesRaw = [];
             var _mountainsRaw = [];
@@ -89,11 +91,11 @@ function initPattern(globals){
             var _cutsRaw = [];
             var _triangulationsRaw = [];
 
-            findType(_verticesRaw, _outlinesRaw, outlineFilter, $paths, $lines, $rects);
-            findType(_verticesRaw, _mountainsRaw, mountainFilter, $paths, $lines, $rects);
-            findType(_verticesRaw, _valleysRaw, valleyFilter, $paths, $lines, $rects);
-            findType(_verticesRaw, _cutsRaw, cutFilter, $paths, $lines, $rects);
-            findType(_verticesRaw, _triangulationsRaw, triangulationFilter, $paths, $lines, $rects);
+            findType(_verticesRaw, _outlinesRaw, outlineFilter, $paths, $lines, $rects, $polygons);
+            findType(_verticesRaw, _mountainsRaw, mountainFilter, $paths, $lines, $rects, $polygons);
+            findType(_verticesRaw, _valleysRaw, valleyFilter, $paths, $lines, $rects, $polygons);
+            findType(_verticesRaw, _cutsRaw, cutFilter, $paths, $lines, $rects, $polygons);
+            findType(_verticesRaw, _triangulationsRaw, triangulationFilter, $paths, $lines, $rects, $polygons);
 
             parseSVG(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw);
 
@@ -122,6 +124,7 @@ function initPattern(globals){
             $svg.append($paths);
             $svg.append($lines);
             $svg.append($rects);
+            $svg.append($polygons);
 
             $("#svgViewer").html($svg);
 
@@ -133,10 +136,11 @@ function initPattern(globals){
         });
     }
 
-    function findType(_verticesRaw, _segmentsRaw, filter, $paths, $lines, $rects){
+    function findType(_verticesRaw, _segmentsRaw, filter, $paths, $lines, $rects, $polygons){
         parsePath(_verticesRaw, _segmentsRaw, $paths.filter(filter));
         parseLine(_verticesRaw, _segmentsRaw, $lines.filter(filter));
         parseRect(_verticesRaw, _segmentsRaw, $rects.filter(filter));
+        parsePolygon(_verticesRaw, _segmentsRaw, $polygons.filter(filter));
     }
 
     function applyTransformation(vertex, transformations){
@@ -279,9 +283,22 @@ function initPattern(globals){
         }
     }
 
+    function parsePolygon(_verticesRaw, _segmentsRaw, $elements){
+        for (var i=0;i<$elements.length;i++){
+            var element = $elements[i];
+            for (var j=0;j<element.points.length;j++){
+                _verticesRaw.push(new THREE.Vector3(element.points[j].x, 0, element.points[j].y));
+                applyTransformation(_verticesRaw[_verticesRaw.length-1], element.transform);
+
+                if (j<element.points.length-1) _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
+                else _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-element.points.length]);
+
+                if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
+            }
+        }
+    }
+
     function parseSVG(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw){
-
-
 
         findIntersections(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw);
         verticesRaw = _verticesRaw;
