@@ -28,14 +28,14 @@
 <line fill="none" stroke="#FF0000" stroke-miterlimit="10" x1="1742.4" y1="2001.6" x2="1440" y2="1296"/>
 <line fill="none" stroke="#FF0000" stroke-miterlimit="10" x1="2145.6" y1="1598.4" x2="1440" y2="1296"/>
 <line fill="none" stroke="#FF0000" stroke-miterlimit="10" x1="2145.6" y1="993.6" x2="1440" y2="1296"/>
-<line fill="none" stroke="#0000FF" stroke-miterlimit="10" enable-background="new    " x1="432" y1="288" x2="2448" y2="2304"/>
+<line fill="none" stroke="#0000FF" stroke-miterlimit="10" x1="432" y1="288" x2="2448" y2="2304"/>
 <line opacity="0.5" fill="none" stroke="#0000FF" stroke-miterlimit="10" enable-background="new    " x1="864" y1="1296" x2="2016" y2="1296"/>
 <line opacity="0.5" fill="none" stroke="#0000FF" stroke-miterlimit="10" enable-background="new    " x1="1440" y1="720" x2="1440" y2="1872"/>
 <line opacity="0.5" fill="none" stroke="#0000FF" stroke-miterlimit="10" enable-background="new    " x1="864" y1="1296" x2="432" y2="1296"/>
 <line opacity="0.5" fill="none" stroke="#0000FF" stroke-miterlimit="10" enable-background="new    " x1="2016" y1="1296" x2="2448" y2="1296"/>
 <line opacity="0.5" fill="none" stroke="#0000FF" stroke-miterlimit="10" enable-background="new    " x1="1440" y1="720" x2="1440" y2="288"/>
 <line opacity="0.5" fill="none" stroke="#0000FF" stroke-miterlimit="10" enable-background="new    " x1="1440" y1="1872" x2="1440" y2="2304"/>
-<line fill="none" stroke="#0000FF" stroke-miterlimit="10" enable-background="new    " x1="432" y1="2304" x2="2448" y2="288"/>
+<line fill="none" stroke="#0000FF" stroke-miterlimit="10" x1="432" y1="2304" x2="2448" y2="288"/>
 <line fill="none" stroke="#0000FF" stroke-miterlimit="10" x1="1137.6" y1="590.4" x2="1137.6" y2="288"/>
 <line fill="none" stroke="#0000FF" stroke-miterlimit="10" x1="1742.4" y1="590.4" x2="1742.4" y2="288"/>
 <line fill="none" stroke="#0000FF" stroke-miterlimit="10" x1="2145.6" y1="993.6" x2="2448" y2="993.6"/>

@@ -123,7 +123,7 @@ function initGlobals(){
             return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
         }
     };
-    if(isMobile.any()) _globals.dynamicSimVisible = false;
+    // if(isMobile.any()) _globals.dynamicSimVisible = false;//todo throw error
 
     _globals.threeView = initThreeView(_globals);
     _globals.controls = initControls(_globals);

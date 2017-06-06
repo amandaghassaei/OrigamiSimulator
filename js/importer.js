@@ -5,6 +5,8 @@
 
 function initImporter(globals){
 
+    var reader = new FileReader();
+
     function importDemoFile(url){
         var extension = url.split(".");
         var name = extension[extension.length-2].split("/");
@@ -35,7 +37,7 @@ function initImporter(globals){
         var extension = file.name.split(".");
         var name = extension[0];
         extension = extension[extension.length - 1];
-        var reader = new FileReader();
+
         $(e.target).val("");
 
         if (extension == "txt") {
