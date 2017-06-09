@@ -229,7 +229,7 @@ function initDynamicSolver(globals){
     }
 
     function setSolveParams(){
-        var dt = calcDt()/2;//todo factor of 2?
+        var dt = calcDt();
         $("#deltaT").html(dt);
         globals.gpuMath.setProgram("thetaCalc");
         globals.gpuMath.setUniformForProgram("thetaCalc", "u_dt", dt, "1f");
