@@ -429,8 +429,8 @@ RepeatedPointsDS = (function() {
   RepeatedPointsDS.prototype.key = function(coord) {
     var key, x, xr, y, yr;
     x = coord[0], y = coord[1];
-    xr = Math.round(x * this.epsilon);
-    yr = Math.round(y * this.epsilon);
+    xr = Math.round(x / this.epsilon);
+    yr = Math.round(y / this.epsilon);
     return key = xr + "," + yr;
   };
 
