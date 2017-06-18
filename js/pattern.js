@@ -409,6 +409,7 @@ function initPattern(globals){
             foldData.edges_foldAngles.push(0);
         });
 
+        console.log(foldData);
         console.log(JSON.stringify(foldData.vertices_coords));
         foldData = FOLD.filter.collapseNearbyVertices(foldData, 3);
         console.log(JSON.stringify(foldData.vertices_coords));
