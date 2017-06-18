@@ -25,8 +25,9 @@ function initPattern(globals){
     var outlinesRaw = [];
     var cutsRaw = [];
     var triangulationsRaw = [];
+    var hingesRaw = [];
 
-    var vertices = [];//list of vertex3's (after merging)
+    var vertices = [];//list of vertex3's (after processing)
     //refs to vertex indices
     var mountains = [];
     var valleys = [];
@@ -72,6 +73,10 @@ function initPattern(globals){
         var stroke = getStroke($(this));
         return typeForStroke(stroke) == "triangulation";
     }
+    function hingeFilter(){
+        var stroke = getStroke($(this));
+        return typeForStroke(stroke) == "hinge";
+    }
 
     function getOpacity(obj){
         var opacity = obj.attr("opacity");
@@ -110,6 +115,7 @@ function initPattern(globals){
         if (stroke == "#0000ff" || stroke == "#00f" || stroke == "blue" || stroke == "rgb(0, 0, 255)") return "valley";
         if (stroke == "#00ff00" || stroke == "#0f0" || stroke == "green" || stroke == "rgb(0, 255, 0)") return "cut";
         if (stroke == "#ffff00" || stroke == "#ff0" || stroke == "yellow" || stroke == "rgb(255, 255, 0)") return "triangulation";
+        if (stroke == "#ff00ff" || stroke == "#f0f" || stroke == "magenta" || stroke == "rgb(255, 0, 255)") return "hinge";
         badColors.push(stroke);
         return null;
     }
@@ -297,18 +303,20 @@ function initPattern(globals){
             var $polylines = _$svg.children("polyline");
             $polylines.css({fill:"none", 'stroke-dasharray':"none"});
 
-            var _verticesRaw = [];
-            var _mountainsRaw = [];
-            var _valleysRaw = [];
-            var _outlinesRaw = [];
-            var _cutsRaw = [];
-            var _triangulationsRaw = [];
+            verticesRaw = [];
+            outlinesRaw = [];
+            mountainsRaw = [];
+            valleysRaw = [];
+            cutsRaw = [];
+            triangulationsRaw = [];
+            hingesRaw = [];
 
-            findType(_verticesRaw, _outlinesRaw, outlineFilter, $paths, $lines, $rects, $polygons, $polylines);
-            findType(_verticesRaw, _mountainsRaw, mountainFilter, $paths, $lines, $rects, $polygons, $polylines);
-            findType(_verticesRaw, _valleysRaw, valleyFilter, $paths, $lines, $rects, $polygons, $polylines);
-            findType(_verticesRaw, _cutsRaw, cutFilter, $paths, $lines, $rects, $polygons, $polylines);
-            findType(_verticesRaw, _triangulationsRaw, triangulationFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(verticesRaw, outlinesRaw, outlineFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(verticesRaw, mountainsRaw, mountainFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(verticesRaw, valleysRaw, valleyFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(verticesRaw, cutsRaw, cutFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(verticesRaw, triangulationsRaw, triangulationFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(verticesRaw, hingesRaw, hingeFilter, $paths, $lines, $rects, $polygons, $polylines);
 
             if (badColors.length>0){
                 badColors = _.uniq(badColors);
@@ -321,7 +329,7 @@ function initPattern(globals){
                 globals.warn(string);
             }
 
-            parseSVG(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw);
+            parseSVG(verticesRaw, outlinesRaw, mountainsRaw, valleysRaw, cutsRaw, triangulationsRaw);
 
             //find max and min vertices
             var max = new THREE.Vector3(-Infinity,-Infinity,Infinity);
@@ -366,20 +374,10 @@ function initPattern(globals){
     }
 
 
-
-
-
-
-
     function parseSVG(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw){
 
         // findIntersections(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw);
-        verticesRaw = _verticesRaw;
-        outlinesRaw = _outlinesRaw;
-        mountainsRaw = _mountainsRaw;
-        valleysRaw = _valleysRaw;
-        cutsRaw = _cutsRaw;
-        triangulationsRaw = _triangulationsRaw;
+
 
 		//FOLD.convert.edges_vertices_to_faces_vertices(fold)
 
