@@ -11,8 +11,8 @@ function initPattern(globals){
 
     function clearFold(){
         foldData.vertices_coords = [];
-        foldData.edges_vertices = edges_vertices = [];
-        foldData.edges_assignment = edges_assignment = [];//B = boundary, M = mountain, V = valley, C = cut, F = facet, H/U = hinge
+        foldData.edges_vertices = [];
+        foldData.edges_assignment = [];//B = boundary, M = mountain, V = valley, C = cut, F = facet, H/U = hinge
         foldData.edges_foldAngles = [];//target angles
         foldData.faces_vertices = [];
     }
@@ -357,7 +357,8 @@ function initPattern(globals){
             max.add(border.multiplyScalar(2));
             var viewBoxTxt = min.x + " " + min.z + " " + max.x + " " + max.z;
             var $svg = $('<svg version="1.1" viewBox="' + viewBoxTxt + '" id="mySVG" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> </svg>');
-            $svg.append($paths);
+            //todo only show montains, valleys, hinges, triangulations, etc
+                $svg.append($paths);
             $svg.append($lines);
             $svg.append($rects);
             $svg.append($polygons);
@@ -373,8 +374,7 @@ function initPattern(globals){
         });
     }
 
-
-    function parseSVG(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw){
+    function parseSVG(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw, _hingesRaw){
 
         // findIntersections(_verticesRaw, _outlinesRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw);
 
@@ -391,12 +391,12 @@ function initPattern(globals){
             foldData.edges_assignment.push("B");
             foldData.edges_foldAngles.push(null);
         });
-        _.each(_mountainsRaw, function(edge, i){
+        _.each(_mountainsRaw, function(edge){
             foldData.edges_vertices.push([edge[0], edge[1]]);
             foldData.edges_assignment.push("M");
             foldData.edges_foldAngles.push(edge[2]);
         });
-        _.each(_valleysRaw, function(edge, i){
+        _.each(_valleysRaw, function(edge){
             foldData.edges_vertices.push([edge[0], edge[1]]);
             foldData.edges_assignment.push("V");
             foldData.edges_foldAngles.push(edge[2]);
@@ -406,161 +406,34 @@ function initPattern(globals){
             foldData.edges_assignment.push("F");
             foldData.edges_foldAngles.push(0);
         });
+        _.each(_hingesRaw, function(edge){
+            foldData.edges_vertices.push([edge[0], edge[1]]);
+            foldData.edges_assignment.push("U");
+            foldData.edges_foldAngles.push(0);
+        });
+        //todo cuts
 
-        console.log(foldData);
-        console.log(JSON.stringify(foldData.vertices_coords));
-        foldData = FOLD.filter.collapseNearbyVertices(foldData, 3);
-        console.log(JSON.stringify(foldData.vertices_coords));
-
-        // var error = mergeVertices();
-        // if (error) {
-        //     console.warn("aborting file import");
-        //     return;
-        // }
-
-        // console.log(JSON.stringify(foldData.edges_vertices));
-        // console.log(FOLD.filter.subdivideCrossingEdges_vertices(foldData, 3));
-        // console.log(JSON.stringify(foldData.edges_vertices));
-
-        var nullEdges = 0;
-        nullEdges += removeNullEdges(outlines);
-        nullEdges += removeNullEdges(mountains);
-        nullEdges += removeNullEdges(valleys);
-        nullEdges += removeNullEdges(cuts);
-        nullEdges += removeNullEdges(triangulations);
-        if (nullEdges>0) console.warn(nullEdges + " null edges removed");
-
-        //remove duplicates for each set of edges
-        var duplicates = 0;
-        duplicates += removeDuplicates(outlines, outlines);
-        duplicates += removeDuplicates(mountains, mountains);
-        duplicates += removeDuplicates(valleys, valleys);
-        duplicates += removeDuplicates(cuts, cuts);
-        duplicates += removeDuplicates(triangulations, triangulations);
-        //todo remove duplicates between sets?
-        if (duplicates>0) console.warn(duplicates + " duplicate edges removed");
-
-        //remove vertices that are not useful
-        removeRedundantVertices(outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulations));
-
-        var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulations);
-        var preTriLength = allEdges.length;
+        foldData = FOLD.filter.collapseNearbyVertices(foldData, globals.vertTol);
+        foldData = FOLD.filter.removeLoopEdges(foldData);//remove edges that points to same vertex
+        foldData = FOLD.filter.subdivideCrossingEdges_vertices(foldData, globals.vertTol);//find intersections ad add vertices/edges
+        foldData = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(foldData);
+        foldData = removeStrayVertices(foldData);//delete stray anchors
+        removeRedundantVertices(foldData, 0.01);//remove vertices that split edge
 
         polygons = findPolygons(allEdges);
         var faces = triangulatePolys(polygons, allEdges);
 
-        $("#numMtns").html("(" + mountains.length + ")");
-        $("#numValleys").html("(" + valleys.length + ")");
-        $("#numFacets").html("(" + (triangulations.length+allEdges.length-preTriLength) + ")");
-        $("#numPassive").html("(" + outlines.length + ")");
+        $("#numMtns").html("(" + FOLD.filter.mountainEdges(foldData).length + ")");
+        $("#numValleys").html("(" + FOLD.filter.valleyEdges(foldData).length + ")");
+        $("#numFacets").html("(" + FOLD.filter.flatEdges(foldData) + ")");
+        $("#numBoundary").html("(" + FOLD.filter.boundaryEdges(foldData).length + ")");
+        $("#numPassive").html("(" + FOLD.filter.unassignedEdges(foldData).length + ")");
 
         var allCreaseParams = getFacesAndVerticesForEdges(faces, allEdges);
 
         var allTypes = [outlines.length, mountains.length, valleys.length, cuts.length];
 
         globals.model.buildModel(faces, vertices, allEdges, allCreaseParams, allTypes);
-    }
-
-    function removeNullEdges(allEdges){
-        var num = 0;
-        for (var i=allEdges.length-1;i>=0;i--){
-            var edge = allEdges[i];
-            if (edge[0]==edge[1]){
-                allEdges.splice(i, 1);
-                num++;
-            }
-        }
-        return num;
-    }
-
-    function removeRedundantVertices(set){
-        // console.log(JSON.stringify(set));
-        var badVertices = [];
-        for (var i=0;i<vertices.length;i++){
-            var vertexEdges = [];
-            for (var j=0;j<set.length;j++){
-                if (set[j][0] == i || set[j][1] == i) vertexEdges.push(j);
-            }
-            if (vertexEdges.length == 2){
-                var edge1 = set[vertexEdges[0]];
-                var edge2 = set[vertexEdges[1]];
-                var angle1 = Math.atan2(vertices[edge1[0]].z-vertices[edge1[1]].z, vertices[edge1[0]].x-vertices[edge1[1]].x);
-                var angle2 = Math.atan2(vertices[edge2[0]].z-vertices[edge2[1]].z, vertices[edge2[0]].x-vertices[edge2[1]].x);
-                var diff = Math.abs(angle1-angle2);
-                if (diff < 0.01 || Math.abs(diff-Math.PI) < 0.01 || Math.abs(diff-2*Math.PI) < 0.01){
-                    badVertices.push(i);
-                    var v1 = edge1[0];
-                    if (v1 == i) v1 = edge1[1];
-                    var v2 = edge2[0];
-                    if (v2 == i) v2 = edge2[1];
-                    var angle = set[vertexEdges[0]][2];
-                    if (set[vertexEdges[1]][2] != angle) console.warn("different types of edges being joined");
-
-                    var set1 = getSetForIndex(vertexEdges[0]);
-                    var set2 = getSetForIndex(vertexEdges[1]);
-
-                    set1[getIndexInSet(vertexEdges[0])] = [v1, v2, angle];//favor outlines over mtn valleys
-                    set2.splice(getIndexInSet(vertexEdges[1]), 1);//delete extra
-                }
-            }
-        }
-        if (badVertices.length>0){
-
-            console.warn(badVertices.length + " extra vertices found on line segments and removed");
-
-            //bad vertices in ascending order
-            for (var i=badVertices.length-1;i>=0;i--){
-                var index = badVertices[i];
-                vertices.splice(index, 1);
-                for (var j=0;j<set.length;j++){
-                    var edge = set[j];
-                    if (edge[0]>=index) edge[0]--;
-                    if (edge[1]>=index) edge[1]--;
-                }
-            }
-
-            var duplicates = 0;
-            duplicates += removeDuplicates(outlines, outlines);
-            duplicates += removeDuplicates(mountains, mountains);
-            duplicates += removeDuplicates(valleys, valleys);
-            duplicates += removeDuplicates(cuts, cuts);
-            duplicates += removeDuplicates(triangulations, triangulations);
-            if (duplicates>0) console.warn(duplicates + " duplicate edges removed");
-            removeRedundantVertices(set);
-        }
-    }
-
-    function getSetForIndex(i){
-        if (i<outlines.length) return outlines;
-        if (i<mountains.length+outlines.length) return mountains;
-        if (i<valleys.length+mountains.length+outlines.length) return valleys;
-        if (i<cuts.length+valleys.length+mountains.length+outlines.length) return cuts;
-        return triangulations;
-    }
-    function getIndexInSet(i){
-        if (i<outlines.length) return i;
-        if (i<mountains.length+outlines.length) return i-outlines.length;
-        if (i<valleys.length+mountains.length+outlines.length) return i-outlines.length-mountains.length;
-        if (i<cuts.length+valleys.length+mountains.length+outlines.length) return i-outlines.length-mountains.length-valleys.length;
-        return i-outlines.length-mountains.length-valleys.length-cuts.length;
-    }
-
-    function removeDuplicates(set1, set2){
-        //todo need to change some stuff to make this work with two different sets
-        var num = 0;
-        for (var i=set1.length-1;i>=1;i--){
-            for (var j=i-1;j>=0;j--){
-                var edge1 = set1[i];
-                var edge2 = set2[j];
-                if ((edge2[0] == edge1[0] || edge2[0] == edge1[1]) && (edge2[1] == edge1[0] || edge2[1] == edge1[1])){
-                    set2.splice(j, 1);
-                    if (set2 == set1) i--;
-                    j--;
-                    num++;
-                }
-            }
-        }
-        return num;
     }
 
     function getFacesAndVerticesForEdges(faces, allEdges){
@@ -610,100 +483,58 @@ function initPattern(globals){
         return allCreaseParams;
     }
 
-    function mergeVertices(allEdges){
+    function removeRedundantVertices(fold, epsilon){
 
-        vertices = verticesRaw.slice();
-
-        var tolSq = globals.vertTol*globals.vertTol;
-        var combined = [];
-        var mergedVertices = [];
-        var _weededVertices = vertices.slice();
-        var goodVertices = [];
-        var js = [];
-        for (var i=0;i<vertices.length;i++){
-            js.push(i);
-        }
-        for (var i=vertices.length-1;i>=0;i--){
-            var _combined = [];
-            var indicesToRemove = [];
-            for (var j=i-1;j>=0;j--){
-                if ((_weededVertices[i].clone().sub(_weededVertices[j])).lengthSq()<tolSq){
-                    _combined.push(js[j]);
-                    indicesToRemove.push(j);
-                }
+        var old2new = [];
+        var numRedundant = 0;
+        var newIndex = 0;
+        for (var i=0;i<fold.vertices_vertices.length;i++){
+            var vertex_vertices = fold.vertices_vertices[i];
+            if (vertex_vertices.length != 2) continue;
+            var vertex_coord = fold.vertices_coords[i];
+            var neighbor0 = fold.vertices_coords[vertex_vertices[0]];
+            var neighbor1 = fold.vertices_coords[vertex_vertices[1]];
+            var threeD = vertex_coord.length == 3;
+            var vec0 = [neighbor0[0]-vertex_coord[0], neighbor0[1]-vertex_coord[1]];
+            var vec1 = [neighbor1[0]-vertex_coord[0], neighbor1[1]-vertex_coord[1]];
+            var magSqVec0 = vec0[0]*vec0[0]+vec0[1]*vec0[1];
+            var magSqVec1 = vec1[0]*vec1[0]+vec1[1]*vec1[1];
+            if (threeD){
+                vec0.push(neighbor0[2]-vertex_coord[2]);
+                vec1.push(neighbor1[2]-vertex_coord[2]);
+                magSqVec0 += vec0[2]*vec0[2];
+                magSqVec1 += vec1[2]*vec1[2];
             }
-            var numCombined = _combined.length;
-            if (numCombined>0){
-                _combined.push(js[i]);
-                mergedVertices.push(_weededVertices[i]);
-                combined.push(_combined);
-                _weededVertices.splice(i, 1);
-                js.splice(i, 1);
-                for (var k=0;k<numCombined;k++){
-                    _weededVertices.splice(indicesToRemove[k], 1);
-                    js.splice(indicesToRemove[k], 1);
-                }
-                i -= numCombined;
-            } else {
-                var vertexEdges = [];
-                for (k=0;k<allEdges.length;k++){
-                    if (allEdges[k][0] == js[i] || allEdges[k][1] == js[i]) vertexEdges.push(k);
-                }
-                if (vertexEdges.length>1){
-                    goodVertices.push([vertices[js[i]], js[i]].concat(vertexEdges));
-                    _weededVertices.splice(i, 1);
-                }
-            }
+            var dot = vec0[0]*vec1[0]+vec0[1]*vec1[1];
+            if (threeD) dot += vec0[2]*vec1[2];
+            dot /= Math.sqrt(magSqVec0*magSqVec1);
+            if (Math.abs(dot + 1.0)<epsilon){
+                numRedundant++;
+                old2new.push(null);
+            } else old2new.push(newIndex++);
         }
-
-        var strays = findStrayVertices();
-        for (var i=0;i<strays.length;i++){
-            for (var j=0;j<_weededVertices.length;j++){
-                if (vertices[strays[i]].equals(_weededVertices[j])){
-                    _weededVertices.splice(j,1);
-                    break;
-                }
-            }
-        }
-        if (_weededVertices.length > 0){
-            // console.log(_weededVertices);
-            if (badColors.length==0) globals.warn("<br/>Some vertices are not fully connected, " +
-                "try increasing vertex merge tolerance ( <b>File > SVG Import Settings...</b> ). <br/><br/>" +
-                "Aborting file import.<br/><br/>");
-            else $("#warningMessage").append("This error caused the file import to abort.<br/><br/>");
-            return true;
-        }
-
-        removeCombinedFromSet(combined, allEdges);
-
-        for (var i=0;i<goodVertices.length;i++){
-            var newIndex = mergedVertices.length;
-            var oldIndex = goodVertices[i][1];
-            mergedVertices.push(goodVertices[i][0]);
-            for (var j=2;j<goodVertices[i].length;j++){
-                var edge = allEdges[goodVertices[i][j]];
-                edge[edge.indexOf(oldIndex)] = newIndex;
-            }
-        }
-        vertices = mergedVertices;
+        if (numRedundant == 0) return fold;
+        console.warn(numRedundant + " redundant vertices found");
+        return FOLD.filter.remapField(fold, 'vertices', old2new);
     }
 
-    function findStrayVertices(){
-        var connected = [];
-        for (var i=0;i<vertices.length;i++){
-            connected.push(false);
+    function removeStrayVertices(fold){
+        if (!fold.vertices_vertices) {
+            console.warn("compute vertices_vertices first");
+            fold = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(fold);
         }
-        var allEdges = outlines.concat(mountains).concat(valleys).concat(cuts).concat(triangulations);
-        for (var i=0;i<allEdges.length;i++){
-            var edge = allEdges[i];
-            connected[edge[0]]= true;
-            connected[edge[1]]= true;
+        var numStrays = 0;
+        var old2new = [];
+        var newIndex = 0;
+        for (var i=0;i<fold.vertices_vertices.length;i++){
+            if (fold.vertices_vertices[i] === undefined || fold.vertices_vertices[i].length==0) {
+                numStrays++;
+                old2new.push(null);
+            } else old2new.push(newIndex++);
         }
-        var strays = [];
-        for (var i=0;i<vertices.length;i++){
-            if (!connected[i]) strays.push(i);
-        }
-        return strays;
+        if (numStrays == 0) return fold;
+        console.warn(numStrays+ " stray vertices found");
+        return FOLD.filter.remapField(fold, 'vertices', old2new);
     }
 
     function triangulatePolys(polygonData, allEdges, _vertices, shouldRotateFace){
@@ -812,248 +643,6 @@ function initPattern(globals){
             }
         }
         return faces;
-    }
-
-    function findPolygons(allEdges, _vertices){
-        //collect all edges connected to vertices
-        if (_vertices === undefined) _vertices = vertices;
-        var vertEdges = [];
-        for (var i=0;i<_vertices.length;i++){
-            vertEdges.push([]);
-            for (var j=0;j<allEdges.length;j++){
-                if (allEdges[j][0] == i) vertEdges[i].push(j);
-                if (allEdges[j][1] == i) vertEdges[i].push(j);
-            }
-            if (vertEdges[i].length < 2){//check that all vertices have at least two edges
-                console.log(vertEdges[i].length);
-                // alert("Some vertices are not fully connected, try increasing vertex merge tolerance");
-                return;
-            }
-        }
-
-        //order edges ccw
-        for (var i=0;i<vertEdges.length;i++){
-            var vertex = _vertices[i];
-            var thetas = [];
-            for (var j=0;j<vertEdges[i].length;j++){
-                var edgeIndex = vertEdges[i][j];
-                var edge;
-                if (allEdges[edgeIndex][0] != i) edge = _vertices[allEdges[edgeIndex][0]].clone();
-                else edge = _vertices[allEdges[edgeIndex][1]].clone();
-                edge.sub(vertex);
-
-                //find angle of each edge
-                thetas.push({theta: Math.atan2(edge.z, edge.x), edgeIndex:edgeIndex});//-PI to PI
-            }
-            thetas = _.sortBy(thetas, "theta");
-            var sortedEdges = [];
-            for (var j=0;j<vertEdges[i].length;j++) {
-                sortedEdges.push(thetas[j].edgeIndex);
-            }
-            vertEdges[i] = sortedEdges;
-        }
-
-
-        var edgesDir1 = [];//vert lower index to vert higher index
-        var edgesDir2 = [];//vert higher index to vert lower index
-        for (var i=0;i<allEdges.length;i++){
-            edgesDir1.push(false);
-            edgesDir2.push(false);
-        }
-        var polygons = [];
-        var polygonEdges = [];
-        for (var i=0;i<_vertices.length;i++){
-            var edges = vertEdges[i];
-            for (var j=0;j<edges.length;j++){
-
-                var _poly = [i];
-                var _polyEdges = [];
-
-                var edgeIndex = edges[j];
-                var edgeVertices = allEdges[edgeIndex];
-                var otherVertex = edgeVertices[0];
-                if (otherVertex == i) otherVertex = edgeVertices[1];
-
-                if (otherVertex>i) {
-                    if (!edgesDir1[edgeIndex]){
-                        _poly.push(otherVertex);
-                        _polyEdges.push(edgeIndex);
-                        _poly = findNextPolyVert(_poly, _polyEdges, edgeIndex, otherVertex, vertEdges, allEdges, edgesDir1, edgesDir2);
-                        if (_poly) {
-                            for (var k=0;k<_polyEdges.length;k++){
-                                var index = _polyEdges[k];
-                                if (index<0) {
-                                    index = -index-1;
-                                    edgesDir2[index] = true;
-                                } else {
-                                    edgesDir1[index] = true;
-                                }
-                            }
-                            polygons.push(_poly);
-                            polygonEdges.push(_polyEdges);
-                        }
-                    }
-                } else {
-                    if (!edgesDir2[edgeIndex]){
-                        _poly.push(otherVertex);
-                        _polyEdges.push(-edgeIndex-1);
-                        _poly = findNextPolyVert(_poly, _polyEdges, edgeIndex, otherVertex, vertEdges, allEdges, edgesDir1, edgesDir2);
-                        if (_poly) {
-                            for (var k=0;k<_polyEdges.length;k++){
-                                var index = _polyEdges[k];
-                                if (index<0) {
-                                    index = -index-1;
-                                    edgesDir2[index] = true;
-                                } else {
-                                    edgesDir1[index] = true;
-                                }
-                            }
-                            polygons.push(_poly);
-                            polygonEdges.push(_polyEdges);
-                        }
-                    }
-                }
-            }
-        }
-        //remove boundary
-        for (var i=polygonEdges.length-1;i>=0;i--){
-            var containsInnerCrease = false;
-            for (var j=0;j<polygonEdges[i].length;j++){
-                var edgeIndex = polygonEdges[i][j];
-                if (edgeIndex < 0) edgeIndex = -edgeIndex-1;
-                if (edgeIndex>=outlines.length){
-                    containsInnerCrease = true;
-                    break;
-                }
-            }
-            if (!containsInnerCrease) {
-                polygons.splice(i,1);
-                polygonEdges.splice(i,1);
-                // break;//todo only remove once
-            }
-        }
-
-        return [polygons, polygonEdges];
-    }
-
-    function findNextPolyVert(_poly, _polyEdges, fromEdge, vertIndex, vertEdges, allEdges, edgesDir1, edgesDir2){
-        var edges = vertEdges[vertIndex];
-        var index = edges.indexOf(fromEdge);
-        if (index<0) console.warn("bad from index");
-        index++;
-        if (index>=edges.length) index = 0;
-
-        var edgeIndex = edges[index];
-        if (_polyEdges.indexOf(edgeIndex)>=0) return null;//cant traverse same edge twice in one poly
-        var edgeVertices = allEdges[edgeIndex];
-        var otherVertex = edgeVertices[0];
-        if (otherVertex == vertIndex) otherVertex = edgeVertices[1];
-
-        if (otherVertex>vertIndex) {
-            if (!edgesDir1[edgeIndex]) {
-                _poly.push(otherVertex);
-                _polyEdges.push(edgeIndex);
-                if (otherVertex == _poly[0]) return _poly;
-                else return findNextPolyVert(_poly, _polyEdges, edgeIndex, otherVertex, vertEdges, allEdges, edgesDir1, edgesDir2);
-            } else return null;
-        }
-
-        if (!edgesDir2[edgeIndex]){
-            _poly.push(otherVertex);
-            _polyEdges.push(-edgeIndex-1);
-            if (otherVertex == _poly[0]) return _poly;
-            else return findNextPolyVert(_poly, _polyEdges, edgeIndex, otherVertex, vertEdges, allEdges, edgesDir1, edgesDir2);
-        }
-        return null;
-    }
-
-
-    function removeCombinedFromSet(combined, set){
-        for (var j=0;j<set.length;j++){
-            for (var i=0;i<combined.length;i++){
-                if (combined[i].indexOf(set[j][0]) >= 0) {
-                    set[j][0] = i;
-                    break;//ensures that we replace only once
-                }
-            }
-            for (var i=0;i<combined.length;i++) {
-                if (combined[i].indexOf(set[j][1]) >= 0) {
-                    set[j][1] = i;
-                    break;
-                }
-            }
-        }
-    }
-
-    function findIntersectionsInSets(_verticesRaw, set1){
-        for (var i=set1.length-1;i>=0;i--){
-            for (var j=set1.length-1;j>=0;j--){
-                var v1 = _verticesRaw[set1[i][0]];
-                var v2 = _verticesRaw[set1[i][1]];
-                var v3 = _verticesRaw[set1[j][0]];
-                var v4 = _verticesRaw[set1[j][1]];
-                var data = line_intersect(v1, v2, v3, v4);
-                if (data) {
-                    var d1 = getDistFromEnd(data.t1, v1, v2);
-                    var d2 = getDistFromEnd(data.t2, v3, v4);
-                    if (d1 === null || d2 === null) continue;
-                    var seg1Int = d1>globals.vertTol;
-                    var seg2Int = d2>globals.vertTol;
-                    if (!seg1Int && !seg2Int) continue;
-
-                    var vertIndex = _verticesRaw.length;
-                    _verticesRaw.push(data.intersection);
-
-                    if (seg1Int){
-                        set1.splice(i+1, 0, [vertIndex, set1[i][0], set1[i][2]]);
-                        set1.splice(i+1, 0, [vertIndex, set1[i][1], set1[i][2]]);
-                        set1.splice(i, 1);
-                        i++;
-                    }
-                    if (seg2Int){
-                        set1.splice(j+1, 0, [vertIndex, set1[j][0], set1[j][2]]);
-                        set1.splice(j+1, 0, [vertIndex, set1[j][1], set1[j][2]]);
-                        set1.splice(j, 1);
-                        j ++;
-                    }
-                }
-            }
-        }
-    }
-
-    function getDistFromEnd(t, v1, v2){
-        if (t>0.5) t = 1-t;
-        v1 = new THREE.Vector3(v1[0], 0, v1[1]);
-        v2 = new THREE.Vector3(v2[0], 0, v2[1]);
-        var length = (v2.clone().sub(v1)).length();
-        var dist = t*length;
-        if (dist < -globals.vertTol) return null;
-        if (dist > length+globals.vertTol) return null;
-        return dist;
-    }
-
-    //http://paulbourke.net/geometry/pointlineplane/
-    function line_intersect(v1, v2, v3, v4) {
-        var x1 = v1.x;
-        var y1 = v1.z;
-        var x2 = v2.x;
-        var y2 = v2.z;
-        var x3 = v3.x;
-        var y3 = v3.z;
-        var x4 = v4.x;
-        var y4 = v4.z;
-
-        var ua, ub, denom = (y4 - y3)*(x2 - x1) - (x4 - x3)*(y2 - y1);
-        if (denom == 0) {
-            return null;
-        }
-        ua = ((x4 - x3)*(y1 - y3) - (y4 - y3)*(x1 - x3))/denom;
-        ub = ((x2 - x1)*(y1 - y3) - (y2 - y1)*(x1 - x3))/denom;
-        return {
-            intersection: new THREE.Vector3(x1 + ua*(x2 - x1), 0, y1 + ua*(y2 - y1)),
-            t1: ua,
-            t2: ub
-        };
     }
 
     function saveSVG(){
