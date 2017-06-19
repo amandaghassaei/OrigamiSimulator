@@ -251,7 +251,7 @@ filter.boundaryEdges = function(fold) {
 };
 
 filter.unassignedEdges = function(fold) {
-  return assignment.edgesAssigned(fold, 'F');
+  return assignment.edgesAssigned(fold, 'U');
 };
 
 filter.keysStartingWith = function(fold, prefix) {
@@ -302,6 +302,7 @@ filter.remapField = function(fold, field, old2new) {
       return results;
     })();
   }
+
   ref1 = filter.keysEndingWith(fold, '_' + field);
   for (m = 0, len2 = ref1.length; m < len2; m++) {
     key = ref1[m];
@@ -514,6 +515,8 @@ filter.subdivideCrossingEdges_vertices = function(fold, epsilon) {
       })();
       if (geom.pointStrictlyInSegment(p, s)) {
         fold.edges_vertices.push([v, e[1]]);
+        fold.edges_assignment.push(fold.edges_assignment[i]);
+        fold.edges_foldAngles.push(fold.edges_foldAngles[i]);
         e[1] = v;
       }
     }
@@ -551,10 +554,14 @@ filter.subdivideCrossingEdges_vertices = function(fold, epsilon) {
         if (!(indexOf.call(e1, crossI) >= 0 && indexOf.call(e2, crossI) >= 0)) {
           if (indexOf.call(e1, crossI) < 0) {
             fold.edges_vertices.push([crossI, e1[1]]);
+            fold.edges_assignment.push(fold.edges_assignment[i1]);
+            fold.edges_foldAngles.push(fold.edges_foldAngles[i1]);
             e1[1] = crossI;
           }
           if (indexOf.call(e2, crossI) < 0) {
             fold.edges_vertices.push([crossI, e2[1]]);
+            fold.edges_assignment.push(fold.edges_assignment[i2]);
+            fold.edges_foldAngles.push(fold.edges_foldAngles[i2]);
             e2[1] = crossI;
           }
         }
@@ -572,16 +579,13 @@ filter.edges_vertices_to_vertices_vertices = function(fold) {
    */
   var edge, k, len, ref, v, vertices_vertices, w;
   vertices_vertices = [];
+  for (var i=0;i<fold.vertices_coords.length;i++){
+    vertices_vertices.push([]);
+  }
   ref = fold.edges_vertices;
   for (k = 0, len = ref.length; k < len; k++) {
     edge = ref[k];
     v = edge[0], w = edge[1];
-    while (v >= vertices_vertices.length) {
-      vertices_vertices.push([]);
-    }
-    while (w >= vertices_vertices.length) {
-      vertices_vertices.push([]);
-    }
     vertices_vertices[v].push(w);
     vertices_vertices[w].push(v);
   }
