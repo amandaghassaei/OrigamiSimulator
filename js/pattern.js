@@ -121,6 +121,20 @@ function initPattern(globals){
         return null;
     }
 
+    function colorForAssignment(assignment){
+        if (assignment == "B") return "#000";
+        if (assignment == "M") return "#f00";
+        if (assignment == "V") return "#00f";
+        if (assignment == "C") return "#0f0";
+        if (assignment == "F") return "#ff0";
+        if (assignment == "U") return "#f0f";
+        return "#0ff"
+    }
+    function opacityForAngle(angle){
+        if (angle === null) return 1;
+        return Math.abs(angle)/Math.PI;
+    }
+
     function findType(_verticesRaw, _segmentsRaw, filter, $paths, $lines, $rects, $polygons, $polylines){
         parsePath(_verticesRaw, _segmentsRaw, $paths.filter(filter));
         parseLine(_verticesRaw, _segmentsRaw, $lines.filter(filter));
@@ -333,7 +347,7 @@ function initPattern(globals){
             parseSVG(verticesRaw, bordersRaw, mountainsRaw, valleysRaw, cutsRaw, triangulationsRaw);
 
             //find max and min vertices
-            var max = new THREE.Vector3(-Infinity,-Infinity,Infinity);
+            var max = new THREE.Vector3(-Infinity,-Infinity,-Infinity);
             var min = new THREE.Vector3(Infinity,Infinity,Infinity);
             for (var i=0;i<vertices.length;i++){
                 max.max(vertices[i]);
@@ -357,32 +371,34 @@ function initPattern(globals){
             min.sub(border);
             max.add(border.multiplyScalar(2));
             var viewBoxTxt = min.x + " " + min.z + " " + max.x + " " + max.z;
-            var $svg = $('<svg version="1.1" viewBox="' + viewBoxTxt + '" id="mySVG" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> </svg>');
-            //todo only show montains, valleys, hinges, triangulations, etc
-                $svg.append($paths);
-            $svg.append($lines);
-            $svg.append($rects);
-            $svg.append($polygons);
-            $svg.append($polylines);
-
-            $("#svgViewer").html($svg);
+            var ns = 'http://www.w3.org/2000/svg';
+            var svg = document.createElementNS(ns, 'svg');
+            svg.setAttribute('viewBox', viewBoxTxt);
+            for (var i=0;i<foldData.edges_vertices.length;i++){
+                var line = document.createElementNS(ns, 'line');
+                var vertex = vertices[foldData.edges_vertices[i][0]];
+                line.setAttribute('stroke', colorForAssignment(foldData.edges_assignment[i]));
+                line.setAttribute('opacity', opacityForAngle(foldData.edges_foldAngles[i]));
+                line.setAttribute('x1', vertex.x);
+                line.setAttribute('y1', vertex.z);
+                vertex = vertices[foldData.edges_vertices[i][1]];
+                line.setAttribute('x2', vertex.x);
+                line.setAttribute('y2', vertex.z);
+                line.setAttribute('stroke-width', strokeWidth);
+                svg.appendChild(line);
+            }
+            document.getElementById("svgViewer").appendChild(svg);
 
             },
             function(){},
             function(error){
-                globals.warn("Error loading SVG: " + url);
-                console.log(error);
+                globals.warn("Error loading SVG " + url + " : " + error);
+                console.warn(error);
         });
     }
 
     function parseSVG(_verticesRaw, _bordersRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw, _hingesRaw){
 
-        // findIntersections(_verticesRaw, _bordersRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw);
-
-
-		//FOLD.convert.edges_vertices_to_faces_vertices(fold)
-
-		//FOLD.filter.removeLoopEdges
         clearFold();
         _.each(_verticesRaw, function(vertex){
             foldData.vertices_coords.push([vertex.x, vertex.z]);
@@ -418,15 +434,22 @@ function initPattern(globals){
         foldData = FOLD.filter.removeLoopEdges(foldData);//remove edges that points to same vertex
         foldData = FOLD.filter.subdivideCrossingEdges_vertices(foldData, globals.vertTol);//find intersections ad add vertices/edges
         foldData = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(foldData);
+        console.log(JSON.stringify(foldData));
         foldData = removeStrayVertices(foldData);//delete stray anchors
         removeRedundantVertices(foldData, 0.01);//remove vertices that split edge
-        // foldData = FOLD.convert.sort_vertices_vertices(foldData);//todo need this?
+        console.log(JSON.stringify(foldData));
+        FOLD.convert.sort_vertices_vertices(foldData);
         console.log(JSON.stringify(foldData));
         foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
+        console.log(JSON.stringify(foldData));
 
-        polygons = findPolygons(allEdges);
-        var faces = triangulatePolys(polygons, allEdges);
+        // var faces = triangulatePolys(polygons, allEdges);
 
+        vertices = [];
+        for (var i=0;i<foldData.vertices_coords.length;i++){
+            var vertex = foldData.vertices_coords[i];
+            vertices.push(new THREE.Vector3(vertex[0], 0, vertex[1]));
+        }
         mountains = FOLD.filter.mountainEdges(foldData);
         valleys = FOLD.filter.valleyEdges(foldData);
         borders = FOLD.filter.boundaryEdges(foldData);
@@ -439,11 +462,11 @@ function initPattern(globals){
         $("#numBoundary").html("(" + borders.length + ")");
         $("#numPassive").html("(" + hinges.length + ")");
 
-        var allCreaseParams = getFacesAndVerticesForEdges(faces, allEdges);
-
-        var allTypes = [borders.length, mountains.length, valleys.length, cuts.length];
-
-        globals.model.buildModel(faces, vertices, allEdges, allCreaseParams, allTypes);
+        // var allCreaseParams = getFacesAndVerticesForEdges(faces, allEdges);
+        //
+        // var allTypes = [borders.length, mountains.length, valleys.length, cuts.length];
+        //
+        // globals.model.buildModel(faces, vertices, allEdges, allCreaseParams, allTypes);
     }
 
     function getFacesAndVerticesForEdges(faces, allEdges){

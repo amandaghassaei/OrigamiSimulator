@@ -235,23 +235,23 @@ filter.edgesAssigned = function(fold, target) {
 };
 
 filter.mountainEdges = function(fold) {
-  return assignment.edgesAssigned(fold, 'M');
+  return filter.edgesAssigned(fold, 'M');
 };
 
 filter.valleyEdges = function(fold) {
-  return assignment.edgesAssigned(fold, 'V');
+  return filter.edgesAssigned(fold, 'V');
 };
 
 filter.flatEdges = function(fold) {
-  return assignment.edgesAssigned(fold, 'F');
+  return filter.edgesAssigned(fold, 'F');
 };
 
 filter.boundaryEdges = function(fold) {
-  return assignment.edgesAssigned(fold, 'B');
+  return filter.edgesAssigned(fold, 'B');
 };
 
 filter.unassignedEdges = function(fold) {
-  return assignment.edgesAssigned(fold, 'U');
+  return filter.edgesAssigned(fold, 'U');
 };
 
 filter.keysStartingWith = function(fold, prefix) {
