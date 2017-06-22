@@ -337,6 +337,10 @@ function initControls(globals){
         globals.passiveEdgesVisible = val;
         globals.model.updateEdgeVisibility();
     });
+    setCheckbox("#boundaryEdgesVisible", globals.boundaryEdgesVisible, function(val){
+        globals.boundaryEdgesVisible = val;
+        globals.model.updateEdgeVisibility();
+    });
 
     setCheckbox("#meshVisible", globals.meshVisible, function(val){
         globals.meshVisible = val;

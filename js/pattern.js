@@ -363,14 +363,11 @@ function initPattern(globals){
             if (max.z < scale) scale = max.z;
 
             var strokeWidth = scale/300;
-            // $mountains.css({'stroke-dasharray': strokeWidth*6 + ', ' + strokeWidth*3 + ', ' + strokeWidth*1.5 + ', ' + strokeWidth*3});
-            // $valleys.css({'stroke-dasharray': strokeWidth*4 + ', ' + strokeWidth*3 + ', ' + strokeWidth*4 + ', ' + strokeWidth*3});
-            $paths.css({'stroke-width':strokeWidth});
-
             border.multiplyScalar(scale);
             min.sub(border);
             max.add(border.multiplyScalar(2));
             var viewBoxTxt = min.x + " " + min.z + " " + max.x + " " + max.z;
+
             var ns = 'http://www.w3.org/2000/svg';
             var svg = document.createElementNS(ns, 'svg');
             svg.setAttribute('viewBox', viewBoxTxt);
@@ -443,7 +440,7 @@ function initPattern(globals){
         foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
         console.log(JSON.stringify(foldData));
 
-        // var faces = triangulatePolys(polygons, allEdges);
+        // var foldData = triangulatePolys(foldData);
 
         vertices = [];
         for (var i=0;i<foldData.vertices_coords.length;i++){
@@ -462,20 +459,19 @@ function initPattern(globals){
         $("#numBoundary").html("(" + borders.length + ")");
         $("#numPassive").html("(" + hinges.length + ")");
 
-        // var allCreaseParams = getFacesAndVerticesForEdges(faces, allEdges);
-        //
-        // var allTypes = [borders.length, mountains.length, valleys.length, cuts.length];
-        //
-        // globals.model.buildModel(faces, vertices, allEdges, allCreaseParams, allTypes);
+        var allCreaseParams = getFacesAndVerticesForEdges(foldData);
+        globals.model.buildModel(foldData.faces_vertices, vertices, foldData.edges_vertices, allCreaseParams, getAllEdges());
     }
 
-    function getFacesAndVerticesForEdges(faces, allEdges){
+    function getFacesAndVerticesForEdges(fold){
         var allCreaseParams = [];//face1Ind, vertInd, face2Ind, ver2Ind, edgeInd, angle
-        for (var i=borders.length;i<allEdges.length;i++){
-            if (i>=borders.length+mountains.length+valleys.length &&
-                i<borders.length+mountains.length+valleys.length+cuts.length) continue;
-            var v1 = allEdges[i][0];
-            var v2 = allEdges[i][1];
+        var faces = fold.faces_vertices;
+        for (var i=0;i<fold.edges_vertices.length;i++){
+            var assignment = fold.edges_assignment[i];
+            if (assignment == "B" || assignment == "U" || assignment == "C") continue;
+            var edge = fold.edges_vertices[i];
+            var v1 = edge[0];
+            var v2 = edge[1];
             var creaseParams = [];
             for (var j=0;j<faces.length;j++){
                 var face = faces[j];
@@ -500,12 +496,12 @@ function initPattern(globals){
                             }
 
                             creaseParams.push(i);
-                            if (i<(borders.length+mountains.length+valleys.length)){
-                                var angle = allEdges[i][2];
-                                creaseParams.push(angle);
-                            } else {
-                                creaseParams.push(0);
+                            var angle = fold.edges_foldAngles[i];
+                            if (angle === null) {
+                                console.warn("shouldn't be here");
+                                continue;
                             }
+                            creaseParams.push(angle);
                             allCreaseParams.push(creaseParams);
                             break;
                         }

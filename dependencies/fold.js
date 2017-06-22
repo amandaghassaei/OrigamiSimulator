@@ -228,7 +228,7 @@ filter.edgesAssigned = function(fold, target) {
   for (i = k = 0, len = ref.length; k < len; i = ++k) {
     assignment = ref[i];
     if (assignment === target) {
-      results.push(i);
+      results.push(fold.edges_vertices[i]);
     }
   }
   return results;
