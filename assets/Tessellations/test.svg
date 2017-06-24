@@ -3,8 +3,8 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 width="3456px" height="6912px" viewBox="0 0 3456 6912" enable-background="new 0 0 3456 6912" xml:space="preserve">
-<path fill="none" stroke="#000000" stroke-miterlimit="10" d="M775.294,1121.176l582.353-764.706 M1840,1185.882L1357.646,356.47
-	 M1840,1185.882l-1064.706-64.706"/>
-<path fill="none" stroke="#FF0000" stroke-miterlimit="10" d="M1064.715,741.129L1840,1185.882"/>
-<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="1840" y1="1184.875" x2="1840" y2="1186.382"/>
+<rect x="765.766" y="680" fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" width="1747.059" height="1541.176"/>
+<line fill="none" stroke="#0000FF" stroke-miterlimit="10" x1="765.766" y1="680" x2="2512.823" y2="2221.177"/>
+<line fill="none" stroke="#0000FF" stroke-miterlimit="10" x1="765.766" y1="2221.177" x2="1639.294" y2="1450.589"/>
+<line fill="none" stroke="#FF0000" stroke-miterlimit="10" x1="1639.294" y1="1450.589" x2="2512.823" y2="680"/>
 </svg>

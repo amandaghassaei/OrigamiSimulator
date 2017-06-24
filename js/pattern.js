@@ -27,8 +27,6 @@ function initPattern(globals){
     var triangulationsRaw = [];
     var hingesRaw = [];
 
-    var vertices = [];//list of vertex3's (after processing)
-    //refs to vertex indices
     var mountains = [];
     var valleys = [];
     var borders = [];
@@ -103,7 +101,7 @@ function initPattern(globals){
         var stroke = obj.attr("stroke");
         if (stroke === undefined) {
             if (obj.attr("style") && $(obj)[0].style.stroke) {
-                return $(obj)[0].style.stroke;
+                return ($(obj)[0].style.stroke).toLowerCase();
             }
             return null;
         }
@@ -349,9 +347,10 @@ function initPattern(globals){
             //find max and min vertices
             var max = new THREE.Vector3(-Infinity,-Infinity,-Infinity);
             var min = new THREE.Vector3(Infinity,Infinity,Infinity);
-            for (var i=0;i<vertices.length;i++){
-                max.max(vertices[i]);
-                min.min(vertices[i]);
+            for (var i=0;i<foldData.vertices_coords.length;i++){
+                var vertex = new THREE.Vector3(foldData.vertices_coords[i][0], foldData.vertices_coords[i][1], foldData.vertices_coords[i][2]);
+                max.max(vertex);
+                min.min(vertex);
             }
             if (min.x === Infinity){
                 if (badColors.length == 0) globals.warn("no geometry found in file");
@@ -373,14 +372,15 @@ function initPattern(globals){
             svg.setAttribute('viewBox', viewBoxTxt);
             for (var i=0;i<foldData.edges_vertices.length;i++){
                 var line = document.createElementNS(ns, 'line');
-                var vertex = vertices[foldData.edges_vertices[i][0]];
+                var edge = foldData.edges_vertices[i];
+                var vertex = foldData.vertices_coords[edge[0]];
                 line.setAttribute('stroke', colorForAssignment(foldData.edges_assignment[i]));
                 line.setAttribute('opacity', opacityForAngle(foldData.edges_foldAngles[i]));
-                line.setAttribute('x1', vertex.x);
-                line.setAttribute('y1', vertex.z);
-                vertex = vertices[foldData.edges_vertices[i][1]];
-                line.setAttribute('x2', vertex.x);
-                line.setAttribute('y2', vertex.z);
+                line.setAttribute('x1', vertex[0]);
+                line.setAttribute('y1', vertex[2]);
+                vertex = foldData.vertices_coords[edge[1]];
+                line.setAttribute('x2', vertex[0]);
+                line.setAttribute('y2', vertex[2]);
                 line.setAttribute('stroke-width', strokeWidth);
                 svg.appendChild(line);
             }
@@ -430,23 +430,21 @@ function initPattern(globals){
         foldData = FOLD.filter.collapseNearbyVertices(foldData, globals.vertTol);
         foldData = FOLD.filter.removeLoopEdges(foldData);//remove edges that points to same vertex
         foldData = FOLD.filter.subdivideCrossingEdges_vertices(foldData, globals.vertTol);//find intersections ad add vertices/edges
+
         foldData = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(foldData);
-        console.log(JSON.stringify(foldData));
         foldData = removeStrayVertices(foldData);//delete stray anchors
         removeRedundantVertices(foldData, 0.01);//remove vertices that split edge
         console.log(JSON.stringify(foldData));
-        FOLD.convert.sort_vertices_vertices(foldData);
+        foldData.vertices_vertices = FOLD.convert.sort_vertices_vertices(foldData);
         console.log(JSON.stringify(foldData));
         foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
-        console.log(JSON.stringify(foldData));
+        foldData = reverseFaceOrder(foldData);//set faces to counter clockwise
 
         // var foldData = triangulatePolys(foldData);
 
-        vertices = [];//todo need this?
         for (var i=0;i<foldData.vertices_coords.length;i++){
             var vertex = foldData.vertices_coords[i];
-            foldData.vertices_coords[i] = [vertex[0], 0, vertex[1]];
-            vertices.push(new THREE.Vector3(vertex[0], 0, vertex[1]));
+            foldData.vertices_coords[i] = [vertex[0], 0, vertex[1]];//make vertices_coords 3d
         }
         mountains = FOLD.filter.mountainEdges(foldData);
         valleys = FOLD.filter.valleyEdges(foldData);
@@ -463,6 +461,13 @@ function initPattern(globals){
         var allCreaseParams = getFacesAndVerticesForEdges(foldData);//todo precompute vertices_faces
 
         globals.model.buildModel(foldData, allCreaseParams, getAllEdges());
+    }
+
+    function reverseFaceOrder(fold){
+        for (var i=0;i<fold.faces_vertices.length;i++){
+            fold.faces_vertices[i].reverse()
+        }
+        return fold;
     }
 
     function getFacesAndVerticesForEdges(fold){
@@ -550,7 +555,16 @@ function initPattern(globals){
         }
         if (numRedundant == 0) return fold;
         console.warn(numRedundant + " redundant vertices found");
-        return FOLD.filter.remapField(fold, 'vertices', old2new);
+        fold = FOLD.filter.remapField(fold, 'vertices', old2new);
+        // _.each(fold.vertices_vertices, function(vertex_vertices){
+        //     for (var i=vertex_vertices.length-1;i>=0;i--){
+        //         if (vertex_vertices[i] === null) vertex_vertices.splice(i,1);
+        //     }
+        // });
+        //todo fix vertices_vertices w/o recompute
+        fold.vertices_vertices = null;
+        fold = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(fold);
+        return fold;
     }
 
     function mergeEdge(fold, v1, v2, v3){
@@ -727,8 +741,8 @@ function initPattern(globals){
         }
     }
 
-    function getPolygons(){
-        return polygons[0];
+    function getPolygons(){//todo export fold complete
+        return foldData.faces_vertices;
     }
 
     return {

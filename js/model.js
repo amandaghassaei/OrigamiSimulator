@@ -115,7 +115,7 @@ function initModel(globals){
         valleyLines.visible = globals.edgesVisible && globals.valleysVisible;
         facetLines.visible = globals.edgesVisible && globals.panelsVisible;
         hingeLines.visible = globals.edgesVisible && globals.passiveEdgesVisible;
-        borderLines = globals.edgesVisible && globals.boundaryEdgesVisible;
+        borderLines.visible = globals.edgesVisible && globals.boundaryEdgesVisible;
         cutLines.visible = false;
     }
 
