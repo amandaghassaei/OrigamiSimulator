@@ -203,7 +203,7 @@ function initImporter(globals){
                 }
             }
         }
-        globals.model.buildModel(foldData, faces, json.vertices_coords, json.edges_vertices, allCreaseParams);
+        globals.model.buildModel(foldData, allCreaseParams);
     }
 
     return {

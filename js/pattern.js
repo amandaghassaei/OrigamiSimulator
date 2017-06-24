@@ -442,9 +442,10 @@ function initPattern(globals){
 
         // var foldData = triangulatePolys(foldData);
 
-        vertices = [];
+        vertices = [];//todo need this?
         for (var i=0;i<foldData.vertices_coords.length;i++){
             var vertex = foldData.vertices_coords[i];
+            foldData.vertices_coords[i] = [vertex[0], 0, vertex[1]];
             vertices.push(new THREE.Vector3(vertex[0], 0, vertex[1]));
         }
         mountains = FOLD.filter.mountainEdges(foldData);
@@ -460,7 +461,8 @@ function initPattern(globals){
         $("#numPassive").html("(" + hinges.length + ")");
 
         var allCreaseParams = getFacesAndVerticesForEdges(foldData);//todo precompute vertices_faces
-        globals.model.buildModel(foldData, foldData.faces_vertices, vertices, foldData.edges_vertices, allCreaseParams, getAllEdges());
+
+        globals.model.buildModel(foldData, allCreaseParams, getAllEdges());
     }
 
     function getFacesAndVerticesForEdges(fold){

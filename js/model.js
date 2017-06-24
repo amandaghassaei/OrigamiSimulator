@@ -61,9 +61,9 @@ function initModel(globals){
     var edges = [];
     var creases = [];
     var vertices = [];//indexed vertices array
-    var fold;
+    var fold, creaseParams;
 
-    var nextNodes, nextEdges, nextCreases, nextFaces, nextFold;//todo only nextFold, nextCreases?
+    var nextCreaseParams, nextFold;//todo only nextFold, nextCreases?
 
     var inited = false;
 
@@ -139,7 +139,7 @@ function initModel(globals){
     function getPositionsArray(){
         return positions;
     }
-    
+
     function getColorsArray(){
         return colors;
     }
@@ -181,45 +181,23 @@ function initModel(globals){
 
 
 
-    function buildModel(fold, _faces, _vertices, _allEdges, allCreaseParams){
+    function buildModel(fold, creaseParams){
 
-        if (_vertices.length == 0) {
+        if (fold.vertices_coords.length == 0) {
             console.warn("no vertices");
             return;
         }
-        if (_faces.length == 0) {
+        if (fold.faces_vertices.length == 0) {
             console.warn("no faces");
             return;
         }
-        if (_allEdges.length == 0) {
+        if (fold.edges_vertices.length == 0) {
             console.warn("no edges");
             return;
         }
 
         nextFold = fold;
-
-        nextNodes = [];
-        for (var i=0;i<_vertices.length;i++){
-            nextNodes.push(new Node(_vertices[i].clone(), nextNodes.length));
-        }
-        // _nodes[_faces[0][0]].setFixed(true);
-        // _nodes[_faces[0][1]].setFixed(true);
-        // _nodes[_faces[0][2]].setFixed(true);
-
-        nextEdges = [];
-        for (var i=0;i<_allEdges.length;i++) {
-            nextEdges.push(new Beam([nextNodes[_allEdges[i][0]], nextNodes[_allEdges[i][1]]]));
-        }
-
-        nextCreases = [];
-        for (var i=0;i<allCreaseParams.length;i++) {//allCreaseParams.length
-            var creaseParams = allCreaseParams[i];//face1Ind, vert1Ind, face2Ind, ver2Ind, edgeInd, angle
-            var type = creaseParams[5]!=0 ? 1:0;
-            //edge, face1Index, face2Index, targetTheta, type, node1, node2, index
-            nextCreases.push(new Crease(nextEdges[creaseParams[4]], creaseParams[0], creaseParams[2], creaseParams[5], type, nextNodes[creaseParams[1]], nextNodes[creaseParams[3]], nextCreases.length));
-        }
-
-        nextFaces = _faces;
+        nextCreaseParams = creaseParams;
 
         globals.needsSync = true;
         globals.simNeedsSync = true;
@@ -246,12 +224,37 @@ function initModel(globals){
             creases[i].destroy();
         }
 
-        //todo make nodes, edges, faces, here
-        nodes = nextNodes;
-        edges = nextEdges;
-        faces = nextFaces;
-        creases = nextCreases;
         fold = nextFold;
+        nodes = [];
+        edges = [];
+        faces = fold.faces_vertices;
+        creases = [];
+        creaseParams = nextCreaseParams;
+        var _edges = fold.edges_vertices;
+
+        var _vertices = [];
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            var vertex = fold.vertices_coords[i];
+            _vertices.push(new THREE.Vector3(vertex[0], vertex[1], vertex[2]));
+        }
+
+        for (var i=0;i<_vertices.length;i++){
+            nodes.push(new Node(_vertices[i].clone(), nodes.length));
+        }
+        // _nodes[_faces[0][0]].setFixed(true);
+        // _nodes[_faces[0][1]].setFixed(true);
+        // _nodes[_faces[0][2]].setFixed(true);
+
+        for (var i=0;i<_edges.length;i++) {
+            edges.push(new Beam([nodes[_edges[i][0]], nodes[_edges[i][1]]]));
+        }
+
+        for (var i=0;i<creaseParams.length;i++) {//allCreaseParams.length
+            var _creaseParams = creaseParams[i];//face1Ind, vert1Ind, face2Ind, ver2Ind, edgeInd, angle
+            var type = _creaseParams[5]!=0 ? 1:0;
+            //edge, face1Index, face2Index, targetTheta, type, node1, node2, index
+            creases.push(new Crease(edges[_creaseParams[4]], _creaseParams[0], _creaseParams[2], _creaseParams[5], type, nodes[_creaseParams[1]], nodes[_creaseParams[3]], creases.length));
+        }
 
         vertices = [];
         for (var i=0;i<nodes.length;i++){
