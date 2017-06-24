@@ -122,12 +122,12 @@ function initPattern(globals){
     }
 
     function colorForAssignment(assignment){
-        if (assignment == "B") return "#000";
-        if (assignment == "M") return "#f00";
-        if (assignment == "V") return "#00f";
-        if (assignment == "C") return "#0f0";
-        if (assignment == "F") return "#ff0";
-        if (assignment == "U") return "#f0f";
+        if (assignment == "B") return "#000";//border
+        if (assignment == "M") return "#f00";//mountain
+        if (assignment == "V") return "#00f";//valley
+        if (assignment == "C") return "#0f0";//cut
+        if (assignment == "F") return "#ff0";//facet
+        if (assignment == "U") return "#f0f";//hinge
         return "#0ff"
     }
     function opacityForAngle(angle){
@@ -459,8 +459,8 @@ function initPattern(globals){
         $("#numBoundary").html("(" + borders.length + ")");
         $("#numPassive").html("(" + hinges.length + ")");
 
-        var allCreaseParams = getFacesAndVerticesForEdges(foldData);
-        globals.model.buildModel(foldData.faces_vertices, vertices, foldData.edges_vertices, allCreaseParams, getAllEdges());
+        var allCreaseParams = getFacesAndVerticesForEdges(foldData);//todo precompute vertices_faces
+        globals.model.buildModel(foldData, foldData.faces_vertices, vertices, foldData.edges_vertices, allCreaseParams, getAllEdges());
     }
 
     function getFacesAndVerticesForEdges(fold){

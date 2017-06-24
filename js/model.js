@@ -6,20 +6,27 @@
 
 function initModel(globals){
 
-    var geometry = new THREE.Geometry();
-    var lineGeometries = [geometry, geometry, geometry, geometry, geometry];
-
-    var material, material2;
-    var frontside = new THREE.Mesh(geometry);//front face of mesh
-    var backside = new THREE.Mesh(geometry);//back face of mesh (different color)
+    var material, material2, geometry;
+    var frontside = new THREE.Mesh();//front face of mesh
+    var backside = new THREE.Mesh();//back face of mesh (different color)
     backside.visible = false;
 
     var lineMaterial = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1});
-    var hingeLines = new THREE.LineSegments(lineGeometries[0], lineMaterial);
-    var mountainLines = new THREE.LineSegments(lineGeometries[1], lineMaterial);
-    var valleyLines = new THREE.LineSegments(lineGeometries[2], lineMaterial);
-    var cutLines = new THREE.LineSegments(lineGeometries[3], lineMaterial);
-    var facetLines = new THREE.LineSegments(lineGeometries[4], lineMaterial);
+    var hingeLines = new THREE.LineSegments(null, lineMaterial);
+    var mountainLines = new THREE.LineSegments(null, lineMaterial);
+    var valleyLines = new THREE.LineSegments(null, lineMaterial);
+    var cutLines = new THREE.LineSegments(null, lineMaterial);
+    var facetLines = new THREE.LineSegments(null, lineMaterial);
+    var borderLines = new THREE.LineSegments(null, lineMaterial);
+
+    var lines = {
+        U: hingeLines,
+        M: mountainLines,
+        V: valleyLines,
+        C: cutLines,
+        F: facetLines,
+        B: borderLines
+    };
 
     clearGeometries();
     setMeshMaterial();
@@ -32,41 +39,31 @@ function initModel(globals){
         frontside.geometry = geometry;
         backside.geometry = geometry;
 
-        for (var i=0;i<lineGeometries.length;i++){
-            if (lineGeometries[i]) lineGeometries[i].dispose();
+        _.each(lines, function(line){
+            if (line.geometry) line.geometry.dispose();
             var lineGeometry = new THREE.BufferGeometry();
             lineGeometry.dynamic = true;
-            lineGeometries[i] = lineGeometry;
-        }
-
-        hingeLines.geometry = lineGeometries[0];
-        mountainLines.geometry = lineGeometries[1];
-        valleyLines.geometry = lineGeometries[2];
-        cutLines.geometry = lineGeometries[3];
-        facetLines.geometry = lineGeometries[4];
+            line.geometry = lineGeometry;
+        });
     }
-
-    var allTypes;//place to store line types
-    // var borderLines = new THREE.LineSegments(geometry);
 
     globals.threeView.sceneAddModel(frontside);
     globals.threeView.sceneAddModel(backside);
-    globals.threeView.sceneAddModel(mountainLines);
-    globals.threeView.sceneAddModel(valleyLines);
-    globals.threeView.sceneAddModel(facetLines);
-    globals.threeView.sceneAddModel(hingeLines);
-    globals.threeView.sceneAddModel(cutLines);
+    _.each(lines, function(line){
+        globals.threeView.sceneAddModel(line);
+    });
 
     var positions;//place to store buffer geo vertex data
     var colors;//place to store buffer geo vertex colors
-    var indices, lineIndices;
+    var indices;
     var nodes = [];
     var faces = [];
     var edges = [];
     var creases = [];
     var vertices = [];//indexed vertices array
+    var fold;
 
-    var nextNodes, nextEdges, nextCreases, nextFaces;
+    var nextNodes, nextEdges, nextCreases, nextFaces, nextFold;//todo only nextFold, nextCreases?
 
     var inited = false;
 
@@ -118,6 +115,7 @@ function initModel(globals){
         valleyLines.visible = globals.edgesVisible && globals.valleysVisible;
         facetLines.visible = globals.edgesVisible && globals.panelsVisible;
         hingeLines.visible = globals.edgesVisible && globals.passiveEdgesVisible;
+        borderLines = globals.edgesVisible && globals.boundaryEdgesVisible;
         cutLines.visible = false;
     }
 
@@ -133,6 +131,7 @@ function initModel(globals){
     function getMesh(){
         return [frontside, backside];
     }
+
     function getVertices(){
         return vertices;
     }
@@ -140,6 +139,7 @@ function initModel(globals){
     function getPositionsArray(){
         return positions;
     }
+    
     function getColorsArray(){
         return colors;
     }
@@ -181,10 +181,7 @@ function initModel(globals){
 
 
 
-
-    function buildModel(_faces, _vertices, _allEdges, allCreaseParams, _allTypes){
-
-        allTypes = _allTypes;
+    function buildModel(fold, _faces, _vertices, _allEdges, allCreaseParams){
 
         if (_vertices.length == 0) {
             console.warn("no vertices");
@@ -198,6 +195,8 @@ function initModel(globals){
             console.warn("no edges");
             return;
         }
+
+        nextFold = fold;
 
         nextNodes = [];
         for (var i=0;i<_vertices.length;i++){
@@ -247,10 +246,12 @@ function initModel(globals){
             creases[i].destroy();
         }
 
+        //todo make nodes, edges, faces, here
         nodes = nextNodes;
         edges = nextEdges;
         faces = nextFaces;
         creases = nextCreases;
+        fold = nextFold;
 
         vertices = [];
         for (var i=0;i<nodes.length;i++){
@@ -268,7 +269,6 @@ function initModel(globals){
         positions = new Float32Array(vertices.length*3);
         colors = new Float32Array(vertices.length*3);
         indices = new Uint16Array(faces.length*3);
-        lineIndices = new Uint16Array(edges.length*2);
 
         for (var i=0;i<vertices.length;i++){
             positions[3*i] = vertices[i].x;
@@ -281,33 +281,48 @@ function initModel(globals){
             indices[3*i+1] = face[1];
             indices[3*i+2] = face[2];
         }
-        for (var i=0;i<edges.length;i++){
-            var edge = edges[i];
-            lineIndices[2*i] = edge.nodes[0].getIndex();
-            lineIndices[2*i+1] = edge.nodes[1].getIndex();
-        }
+
+        clearGeometries();
 
         var positionsAttribute = new THREE.BufferAttribute(positions, 3);
 
-        clearGeometries();
+        var lineIndices = {
+            U: [],
+            V: [],
+            M: [],
+            B: [],
+            F: [],
+            C: []
+        };
+        for (var i=0;i<fold.edges_assignment.length;i++){
+            var edge = fold.edges_vertices[i];
+            var assignment = fold.edges_assignment[i];
+            lineIndices[assignment].push(edge[0]);
+            lineIndices[assignment].push(edge[1]);
+        }
+        _.each(lines, function(line, key){
+            var indicesArray = lineIndices[key];
+            var indices = new Uint16Array(indicesArray.length);
+            for (var i=0;i<indicesArray.length;i++){
+                indices[i] = indicesArray[i];
+            }
+            lines[key].geometry.addAttribute('position', positionsAttribute);
+            lines[key].geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+            lines[key].geometry.attributes.position.needsUpdate = true;
+            lines[key].geometry.index.needsUpdate = true;
+            lines[key].geometry.computeBoundingBox();
+            lines[key].geometry.computeBoundingSphere();
+            lines[key].geometry.center();
+        });
 
         geometry.addAttribute('position', positionsAttribute);
         geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
         geometry.setIndex(new THREE.BufferAttribute(indices, 1));
 
-
         geometry.computeVertexNormals();
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
         geometry.center();
-
-        _.each(lineGeometries, function(lineGeometry){
-            lineGeometry.addAttribute('position', positionsAttribute);
-            lineGeometry.setIndex(new THREE.BufferAttribute(lineIndices, 1));
-        //     lineGeometry.computeBoundingBox();
-        //     lineGeometry.computeBoundingSphere();
-        //     lineGeometry.center();
-        });
 
         var scale = 1/geometry.boundingSphere.radius;
         globals.scale = scale;
@@ -327,12 +342,6 @@ function initModel(globals){
         for (var i=0;i<edges.length;i++){
             edges[i].recalcOriginalLength();
         }
-
-        hingeLines.geometry.setDrawRange(0, allTypes[0]*2);
-        mountainLines.geometry.setDrawRange(allTypes[0]*2, allTypes[1]*2);
-        valleyLines.geometry.setDrawRange((allTypes[0]+allTypes[1])*2, allTypes[2]*2);
-        cutLines.geometry.setDrawRange((allTypes[0]+allTypes[1]+allTypes[2])*2, allTypes[3]*2);
-        facetLines.geometry.setDrawRange((allTypes[0]+allTypes[1]+allTypes[2]+allTypes[3])*2, Infinity);
 
         updateEdgeVisibility();
         updateMeshVisibility();
