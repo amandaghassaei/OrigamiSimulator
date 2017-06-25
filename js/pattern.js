@@ -14,7 +14,8 @@ function initPattern(globals){
         foldData.edges_vertices = [];
         foldData.edges_assignment = [];//B = boundary, M = mountain, V = valley, C = cut, F = facet, H/U = hinge
         foldData.edges_foldAngles = [];//target angles
-        foldData.faces_vertices = [];
+        delete foldData.vertices_vertices;
+        delete foldData.faces_vertices;
     }
 
 
@@ -429,14 +430,12 @@ function initPattern(globals){
 
         foldData = FOLD.filter.collapseNearbyVertices(foldData, globals.vertTol);
         foldData = FOLD.filter.removeLoopEdges(foldData);//remove edges that points to same vertex
-        foldData = FOLD.filter.subdivideCrossingEdges_vertices(foldData, globals.vertTol);//find intersections ad add vertices/edges
-
+        // foldData = FOLD.filter.subdivideCrossingEdges_vertices(foldData, globals.vertTol);//find intersections and add vertices/edges
+        foldData = findIntersections(foldData, globals.vertTol);
         foldData = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(foldData);
         foldData = removeStrayVertices(foldData);//delete stray anchors
         removeRedundantVertices(foldData, 0.01);//remove vertices that split edge
-        console.log(JSON.stringify(foldData));
         foldData.vertices_vertices = FOLD.convert.sort_vertices_vertices(foldData);
-        console.log(JSON.stringify(foldData));
         foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
         foldData = reverseFaceOrder(foldData);//set faces to counter clockwise
 
@@ -729,6 +728,101 @@ function initPattern(globals){
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
+    }
+
+    function findIntersections(fold, tol){
+        var vertices = fold.vertices_coords;
+        var edges = fold.edges_vertices;
+        var foldAngles = fold.edges_foldAngles;
+        var assignments = fold.edges_assignment;
+        for (var i=edges.length-1;i>=0;i--){
+            for (var j=i-1;j>=0;j--){
+                var v1 = makeVector2(vertices[edges[i][0]]);
+                var v2 = makeVector2(vertices[edges[i][1]]);
+                var v3 = makeVector2(vertices[edges[j][0]]);
+                var v4 = makeVector2(vertices[edges[j][1]]);
+                var data = line_intersect(v1, v2, v3, v4);
+                if (data) {
+                    var length1 = (v2.clone().sub(v1)).length();
+                    var length2 = (v4.clone().sub(v3)).length();
+                    var d1 = getDistFromEnd(data.t1, length1, tol);
+                    var d2 = getDistFromEnd(data.t2, length2, tol);
+                    if (d1 === null || d2 === null) continue;//no crossing
+
+                    var seg1Int = d1>tol && d1<length1-tol;
+                    var seg2Int = d2>tol && d2<length2-tol;
+                    if (!seg1Int && !seg2Int) continue;//intersects at endpoints only
+
+                    var vertIndex;
+                    if (seg1Int && seg2Int){
+                        vertIndex = vertices.length;
+                        vertices.push([data.intersection.x,  data.intersection.y]);
+                    } else if (seg1Int){
+                        if (d2<=tol) vertIndex = edges[j][0];
+                        else vertIndex = edges[j][1];
+                    } else {
+                        if (d1<=tol) vertIndex = edges[i][0];
+                        else vertIndex = edges[i][1];
+                    }
+
+                    if (seg1Int){
+                        var foldAngle = foldAngles[i];
+                        var assignment = assignments[i];
+                        edges.splice(i, 1, [vertIndex, edges[i][0]], [vertIndex, edges[i][1]]);
+                        foldAngles.splice(i, 1, foldAngle, foldAngle);
+                        assignments.splice(i, 1, assignment, assignment);
+                        i++;
+                    }
+                    if (seg2Int){
+                        var foldAngle = foldAngles[j];
+                        var assignment = assignments[j];
+                        edges.splice(j, 1, [vertIndex, edges[j][0]], [vertIndex, edges[j][1]]);
+                        foldAngles.splice(j, 1, foldAngle, foldAngle);
+                        assignments.splice(j, 1, assignment, assignment);
+                        j++;
+                        i++;
+                    }
+                }
+            }
+        }
+        fold = FOLD.filter.collapseNearbyVertices(fold, tol);
+        fold = FOLD.filter.removeLoopEdges(fold);//remove edges that points to same vertex
+        return fold;
+    }
+
+    function makeVector2(v){
+        return new THREE.Vector2(v[0], v[1]);
+    }
+
+    function getDistFromEnd(t, length, tol){
+        var dist = t*length;
+        if (dist < -tol) return null;
+        if (dist > length+tol) return null;
+        return dist;
+    }
+
+    //http://paulbourke.net/geometry/pointlineplane/
+    function line_intersect(v1, v2, v3, v4) {
+        var x1 = v1.x;
+        var y1 = v1.y;
+        var x2 = v2.x;
+        var y2 = v2.y;
+        var x3 = v3.x;
+        var y3 = v3.y;
+        var x4 = v4.x;
+        var y4 = v4.y;
+
+        var ua, ub, denom = (y4 - y3)*(x2 - x1) - (x4 - x3)*(y2 - y1);
+        if (denom == 0) {
+            return null;
+        }
+        ua = ((x4 - x3)*(y1 - y3) - (y4 - y3)*(x1 - x3))/denom;
+        ub = ((x2 - x1)*(y1 - y3) - (y2 - y1)*(x1 - x3))/denom;
+        return {
+            intersection: new THREE.Vector2(x1 + ua*(x2 - x1), y1 + ua*(y2 - y1)),
+            t1: ua,
+            t2: ub
+        };
     }
 
     function getAllEdges(){
