@@ -249,13 +249,13 @@ function initControls(globals){
     });
 
     var creasePercentNavSlider, creasePercentSlider;
-    creasePercentSlider = setSliderInput("#creasePercent", globals.creasePercent, -1, 1, 0.01, function(val){
-        globals.creasePercent = val;
+    creasePercentSlider = setSliderInput("#creasePercent", globals.creasePercent*100, -100, 100, 1, function(val){
+        globals.creasePercent = val/100;
         globals.shouldChangeCreasePercent = true;
         creasePercentNavSlider.slider('value', val);
     });
-    creasePercentNavSlider = setSlider("#creasePercentNav>div", globals.creasePercent, -1, 1, 0.01, function(val){
-        globals.creasePercent = val;
+    creasePercentNavSlider = setSlider("#creasePercentNav>div", globals.creasePercent*100, -100, 100, 1, function(val){
+        globals.creasePercent = val/100;
         globals.shouldChangeCreasePercent = true;
         creasePercentSlider.slider('value', val);
         $('#creasePercent>input').val(val);
