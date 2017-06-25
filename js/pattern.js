@@ -12,7 +12,7 @@ function initPattern(globals){
     function clearFold(){
         foldData.vertices_coords = [];
         foldData.edges_vertices = [];
-        foldData.edges_assignment = [];//B = boundary, M = mountain, V = valley, C = cut, F = facet, H/U = hinge
+        foldData.edges_assignment = [];//B = boundary, M = mountain, V = valley, C = cut, F = facet, U = hinge
         foldData.edges_foldAngles = [];//target angles
         delete foldData.vertices_vertices;
         delete foldData.faces_vertices;
@@ -27,6 +27,7 @@ function initPattern(globals){
     var cutsRaw = [];
     var triangulationsRaw = [];
     var hingesRaw = [];
+    var rawFold;
 
     var mountains = [];
     var valleys = [];
@@ -129,8 +130,8 @@ function initPattern(globals){
         if (assignment == "U") return "#f0f";//hinge
         return "#0ff"
     }
-    function opacityForAngle(angle){
-        if (angle === null) return 1;
+    function opacityForAngle(angle, assignment){
+        if (angle === null || assignment == "F") return 1;
         return Math.abs(angle)/Math.PI;
     }
 
@@ -343,7 +344,7 @@ function initPattern(globals){
                 globals.warn(string);
             }
 
-            parseSVG(verticesRaw, bordersRaw, mountainsRaw, valleysRaw, cutsRaw, triangulationsRaw);
+            foldData = parseSVG(verticesRaw, bordersRaw, mountainsRaw, valleysRaw, cutsRaw, triangulationsRaw, hingesRaw);
 
             //find max and min vertices
             var max = new THREE.Vector3(-Infinity,-Infinity,-Infinity);
@@ -376,7 +377,7 @@ function initPattern(globals){
                 var edge = foldData.edges_vertices[i];
                 var vertex = foldData.vertices_coords[edge[0]];
                 line.setAttribute('stroke', colorForAssignment(foldData.edges_assignment[i]));
-                line.setAttribute('opacity', opacityForAngle(foldData.edges_foldAngles[i]));
+                line.setAttribute('opacity', opacityForAngle(foldData.edges_foldAngles[i], foldData.edges_assignment[i]));
                 line.setAttribute('x1', vertex[0]);
                 line.setAttribute('y1', vertex[2]);
                 vertex = foldData.vertices_coords[edge[1]];
@@ -385,7 +386,7 @@ function initPattern(globals){
                 line.setAttribute('stroke-width', strokeWidth);
                 svg.appendChild(line);
             }
-            document.getElementById("svgViewer").appendChild(svg);
+            $("#svgViewer").html(svg);
 
             },
             function(){},
@@ -424,22 +425,31 @@ function initPattern(globals){
         _.each(_hingesRaw, function(edge){
             foldData.edges_vertices.push([edge[0], edge[1]]);
             foldData.edges_assignment.push("U");
-            foldData.edges_foldAngles.push(0);
+            foldData.edges_foldAngles.push(null);
         });
         //todo cuts
 
         foldData = FOLD.filter.collapseNearbyVertices(foldData, globals.vertTol);
         foldData = FOLD.filter.removeLoopEdges(foldData);//remove edges that points to same vertex
+        foldData = FOLD.filter.removeDuplicateEdges_vertices(foldData);//remove duplicate edges
         // foldData = FOLD.filter.subdivideCrossingEdges_vertices(foldData, globals.vertTol);//find intersections and add vertices/edges
         foldData = findIntersections(foldData, globals.vertTol);
+        //cleanup after intersection operation
+        foldData = FOLD.filter.collapseNearbyVertices(foldData, globals.vertTol);
+        foldData = FOLD.filter.removeLoopEdges(foldData);//remove edges that points to same vertex
+        foldData = FOLD.filter.removeDuplicateEdges_vertices(foldData);//remove duplicate edges
+
         foldData = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(foldData);
         foldData = removeStrayVertices(foldData);//delete stray anchors
         removeRedundantVertices(foldData, 0.01);//remove vertices that split edge
         foldData.vertices_vertices = FOLD.convert.sort_vertices_vertices(foldData);
         foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
         foldData = reverseFaceOrder(foldData);//set faces to counter clockwise
+        console.log(JSON.stringify(foldData));
 
-        // var foldData = triangulatePolys(foldData);
+        rawFold = JSON.parse(JSON.stringify(foldData));//save pre-triangulated for for save later
+
+        foldData = triangulatePolys(foldData, true);
 
         for (var i=0;i<foldData.vertices_coords.length;i++){
             var vertex = foldData.vertices_coords[i];
@@ -460,6 +470,8 @@ function initPattern(globals){
         var allCreaseParams = getFacesAndVerticesForEdges(foldData);//todo precompute vertices_faces
 
         globals.model.buildModel(foldData, allCreaseParams, getAllEdges());
+
+        return foldData;
     }
 
     function reverseFaceOrder(fold){
@@ -547,9 +559,14 @@ function initPattern(globals){
             if (threeD) dot += vec0[2]*vec1[2];
             dot /= Math.sqrt(magSqVec0*magSqVec1);
             if (Math.abs(dot + 1.0)<epsilon){
-                numRedundant++;
-                old2new.push(null);
-                mergeEdge(fold, vertex_vertices[0], i, vertex_vertices[1])
+                var merged = mergeEdge(fold, vertex_vertices[0], i, vertex_vertices[1])
+                if (merged){
+                    numRedundant++;
+                    old2new.push(null);
+                } else {
+                    old2new.push(newIndex++);
+                    continue;
+                }
             } else old2new.push(newIndex++);
         }
         if (numRedundant == 0) return fold;
@@ -561,7 +578,7 @@ function initPattern(globals){
         //     }
         // });
         //todo fix vertices_vertices w/o recompute
-        fold.vertices_vertices = null;
+        delete fold.vertices_vertices;
         fold = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(fold);
         return fold;
     }
@@ -573,7 +590,10 @@ function initPattern(globals){
             var edge = fold.edges_vertices[i];
             if (edge.indexOf(v2)>=0 && (edge.indexOf(v1) >= 0 || edge.indexOf(v3) >= 0)){
                 if (edgeAssignment === null) edgeAssignment = fold.edges_assignment[i];
-                else if (edgeAssignment != fold.edges_assignment[i]) console.warn("different edge assignments");
+                else if (edgeAssignment != fold.edges_assignment[i]) {
+                    console.warn("different edge assignments");
+                    return false;
+                }
                 angleAvg += fold.edges_foldAngles[i];
                 fold.edges_vertices.splice(i, 1);
                 fold.edges_assignment.splice(i, 1);
@@ -583,6 +603,7 @@ function initPattern(globals){
         fold.edges_vertices.push([v1, v3]);
         fold.edges_assignment.push(edgeAssignment);
         fold.edges_foldAngles.push(angleAvg/2);
+        return true;
     }
 
     function removeStrayVertices(fold){
@@ -604,75 +625,74 @@ function initPattern(globals){
         return FOLD.filter.remapField(fold, 'vertices', old2new);
     }
 
-    function triangulatePolys(polygonData, allEdges, _vertices, shouldRotateFace){
-        if (_vertices === undefined) _vertices = vertices;
-        var polygons = polygonData[0];
-        var polygonEdges = polygonData[1];
-        var faces = [];
-        for (var i=0;i<polygons.length;i++){
+    function triangulatePolys(fold, is2d){
+        var vertices = fold.vertices_coords;
+        var faces = fold.faces_vertices;
+        var edges = fold.edges_vertices;
+        var foldAngles = fold.edges_foldAngles;
+        var assignments = fold.edges_assignment;
+        var triangulatedFaces = [];
+        for (var i=0;i<faces.length;i++){
 
-            var polygon = polygons[i];
+            var face = faces[i];
 
-            if (polygon.length == 4){
-                faces.push([polygon[0], polygon[1], polygon[2]]);
+            if (face.length == 3){
+                triangulatedFaces.push(face);
                 continue;
             }
 
             //check for quad and solve manually
-            if (polygon.length == 5){
-                var polyVert1 = _vertices[polygon[0]];
-                var polyVert2 = _vertices[polygon[1]];
-                var polyVert3 = _vertices[polygon[2]];
-                var polyVert4 = _vertices[polygon[3]];
-                var dist1 = (polyVert1.clone().sub(polyVert3)).lengthSq();
-                var dist2 = (polyVert2.clone().sub(polyVert4)).lengthSq();
+            if (face.length == 4){
+                var faceV1 = makeVector(vertices[face[0]]);
+                var faceV2 = makeVector(vertices[face[1]]);
+                var faceV3 = makeVector(vertices[face[2]]);
+                var faceV4 = makeVector(vertices[face[3]]);
+                var dist1 = (faceV1.clone().sub(faceV3)).lengthSq();
+                var dist2 = (faceV2.clone().sub(faceV4)).lengthSq();
                 if (dist2<dist1) {
-                    allEdges.push([polygon[1], polygon[3]]);
-                    faces.push([polygon[0], polygon[1], polygon[3]]);
-                    faces.push([polygon[1], polygon[2], polygon[3]]);
+                    edges.push([face[1], face[3]]);
+                    foldAngles.push(0);
+                    assignments.push("F");
+                    triangulatedFaces.push([face[0], face[1], face[3]]);
+                    triangulatedFaces.push([face[1], face[2], face[3]]);
                 } else {
-                    allEdges.push([polygon[0], polygon[2]]);
-                    faces.push([polygon[0], polygon[1], polygon[2]]);
-                    faces.push([polygon[0], polygon[2], polygon[3]]);
+                    edges.push([face[0], face[2]]);
+                    foldAngles.push(0);
+                    assignments.push("F");
+                    triangulatedFaces.push([face[0], face[1], face[2]]);
+                    triangulatedFaces.push([face[0], face[2], face[3]]);
                 }
                 continue;
             }
 
-            var polyVerts = [];
-            if (shouldRotateFace){
-                var vecA = _vertices[polygon[1]].clone().sub(_vertices[polygon[0]]);
-                var vecB = _vertices[polygon[polygon.length-2]].clone().sub(_vertices[polygon[0]]);
-                var translation = _vertices[polygon[0]];
-                var normal = (vecA.cross(vecB)).normalize();
-                var axis = ((new THREE.Vector3(0,1,0)).cross(normal)).normalize();
-                var angle = -Math.acos((new THREE.Vector3(0,1,0)).dot(normal));
-                for (var j=0;j<polygon.length-1;j++){
-                    var vertex = _vertices[polygon[j]];
-                    vertex = (vertex.clone().sub(translation)).applyAxisAngle(axis, angle);
-                    polyVerts.push(vertex.x);
-                    polyVerts.push(vertex.z);
-                }
-            } else {
-                for (var j=0;j<polygon.length-1;j++){
-                    var vertex = _vertices[polygon[j]];
-                    polyVerts.push(vertex.x);
-                    polyVerts.push(vertex.z);
+            var faceEdges = [];
+            for (var j=0;j<edges.length;j++){
+                var edge = edges[j];
+                if (face.indexOf(edge[0]) >= 0 && face.indexOf(edge[1]) >= 0){
+                    faceEdges.push(j);
                 }
             }
 
-            var triangles = earcut(polyVerts);
+            var faceVert = [];
+            for (var j=0;j<face.length;j++){
+                var vertex = vertices[face[j]];
+                faceVert.push(vertex[0]);
+                faceVert.push(vertex[1]);
+                if (!is2d) faceVert.push(vertex[2]);
+            }
+
+            var triangles = earcut(faceVert, null, is2d? 2:3);
+
             for (var j=0;j<triangles.length;j+=3){
-                var face = [polygon[triangles[j+2]], polygon[triangles[j+1]], polygon[triangles[j]]];
+                var tri = [face[triangles[j+2]], face[triangles[j+1]], face[triangles[j]]];
                 var foundEdges = [false, false, false];//ab, bc, ca
 
-                for (var k=0;k<polygonEdges[i].length;k++){
-                    var edgeIndex = polygonEdges[i][k];
-                    if (edgeIndex<0) edgeIndex = -edgeIndex-1;
-                    var _edgeVertices = allEdges[edgeIndex];
+                for (var k=0;k<faceEdges.length;k++){
+                    var edge = edges[faceEdges[k]];
 
-                    var aIndex = _edgeVertices.indexOf(face[0]);
-                    var bIndex = _edgeVertices.indexOf(face[1]);
-                    var cIndex = _edgeVertices.indexOf(face[2]);
+                    var aIndex = edge.indexOf(tri[0]);
+                    var bIndex = edge.indexOf(tri[1]);
+                    var cIndex = edge.indexOf(tri[2]);
 
                     if (aIndex >= 0){
                         if (bIndex >= 0) {
@@ -695,21 +715,28 @@ function initPattern(globals){
                 for (var k=0;k<3;k++){
                     if (foundEdges[k]) continue;
                     if (k==0){
-                        polygonEdges[i].push(allEdges.length);
-                        allEdges.push([face[0], face[1]]);
+                        faceEdges.push(edges.length);
+                        edges.push([tri[0], tri[1]]);
+                        foldAngles.push(0);
+                        assignments.push("F");
                     } else if (k==1){
-                        polygonEdges[i].push(allEdges.length);
-                        allEdges.push([face[2], face[1]]);
+                        faceEdges.push(edges.length);
+                        edges.push([tri[2], tri[1]]);
+                        foldAngles.push(0);
+                        assignments.push("F");
                     } else if (k==2){
-                        polygonEdges[i].push(allEdges.length);
-                        allEdges.push([face[2], face[0]]);
+                        faceEdges.push(edges.length);
+                        edges.push([tri[2], tri[0]]);
+                        foldAngles.push(0);
+                        assignments.push("F");
                     }
                 }
 
-                faces.push(face);
+                triangulatedFaces.push(tri);
             }
         }
-        return faces;
+        fold.faces_vertices = triangulatedFaces;
+        return fold;
     }
 
     function saveSVG(){
@@ -785,13 +812,18 @@ function initPattern(globals){
                 }
             }
         }
-        fold = FOLD.filter.collapseNearbyVertices(fold, tol);
-        fold = FOLD.filter.removeLoopEdges(fold);//remove edges that points to same vertex
         return fold;
     }
 
+    function makeVector(v){
+        if (v.length == 2) return makeVector2(v);
+        return makeVector3(v);
+    }
     function makeVector2(v){
         return new THREE.Vector2(v[0], v[1]);
+    }
+    function makeVector3(v){
+        return new THREE.Vector3(v[0], v[1], v[2]);
     }
 
     function getDistFromEnd(t, length, tol){
