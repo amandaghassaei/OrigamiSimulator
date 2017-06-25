@@ -445,7 +445,7 @@ function initPattern(globals){
         foldData.vertices_vertices = FOLD.convert.sort_vertices_vertices(foldData);
         foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
         foldData = reverseFaceOrder(foldData);//set faces to counter clockwise
-        console.log(JSON.stringify(foldData));
+        // console.log(JSON.stringify(foldData));
 
         rawFold = JSON.parse(JSON.stringify(foldData));//save pre-triangulated for for save later
 
