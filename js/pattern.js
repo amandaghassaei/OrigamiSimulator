@@ -358,13 +358,13 @@ function initPattern(globals){
                 globals.warn(string);
             }
 
-            foldData = parseSVG(verticesRaw, bordersRaw, mountainsRaw, valleysRaw, cutsRaw, triangulationsRaw, hingesRaw);
+            parseSVG(verticesRaw, bordersRaw, mountainsRaw, valleysRaw, cutsRaw, triangulationsRaw, hingesRaw);
 
             //find max and min vertices
             var max = new THREE.Vector3(-Infinity,-Infinity,-Infinity);
             var min = new THREE.Vector3(Infinity,Infinity,Infinity);
-            for (var i=0;i<foldData.vertices_coords.length;i++){
-                var vertex = new THREE.Vector3(foldData.vertices_coords[i][0], foldData.vertices_coords[i][1], foldData.vertices_coords[i][2]);
+            for (var i=0;i<rawFold.vertices_coords.length;i++){
+                var vertex = new THREE.Vector3(rawFold.vertices_coords[i][0], rawFold.vertices_coords[i][1], rawFold.vertices_coords[i][2]);
                 max.max(vertex);
                 min.min(vertex);
             }
@@ -376,6 +376,7 @@ function initPattern(globals){
             var border = new THREE.Vector3(0.1, 0, 0.1);
             var scale = max.x;
             if (max.z < scale) scale = max.z;
+            if (scale == 0) return;
 
             var strokeWidth = scale/300;
             border.multiplyScalar(scale);
@@ -386,15 +387,15 @@ function initPattern(globals){
             var ns = 'http://www.w3.org/2000/svg';
             var svg = document.createElementNS(ns, 'svg');
             svg.setAttribute('viewBox', viewBoxTxt);
-            for (var i=0;i<foldData.edges_vertices.length;i++){
+            for (var i=0;i<rawFold.edges_vertices.length;i++){
                 var line = document.createElementNS(ns, 'line');
-                var edge = foldData.edges_vertices[i];
-                var vertex = foldData.vertices_coords[edge[0]];
-                line.setAttribute('stroke', colorForAssignment(foldData.edges_assignment[i]));
-                line.setAttribute('opacity', opacityForAngle(foldData.edges_foldAngles[i], foldData.edges_assignment[i]));
+                var edge = rawFold.edges_vertices[i];
+                var vertex = rawFold.vertices_coords[edge[0]];
+                line.setAttribute('stroke', colorForAssignment(rawFold.edges_assignment[i]));
+                line.setAttribute('opacity', opacityForAngle(rawFold.edges_foldAngles[i], rawFold.edges_assignment[i]));
                 line.setAttribute('x1', vertex[0]);
                 line.setAttribute('y1', vertex[2]);
-                vertex = foldData.vertices_coords[edge[1]];
+                vertex = rawFold.vertices_coords[edge[1]];
                 line.setAttribute('x2', vertex[0]);
                 line.setAttribute('y2', vertex[2]);
                 line.setAttribute('stroke-width', strokeWidth);
@@ -472,8 +473,12 @@ function initPattern(globals){
 
         for (var i=0;i<foldData.vertices_coords.length;i++){
             var vertex = foldData.vertices_coords[i];
-            if (vertex.length === 2) foldData.vertices_coords[i] = [vertex[0], 0, vertex[1]];//make vertices_coords 3d
+            if (vertex.length === 2) {//make vertices_coords 3d
+                foldData.vertices_coords[i] = [vertex[0], 0, vertex[1]];
+                rawFold.vertices_coords[i] = [vertex[0], 0, vertex[1]];
+            }
         }
+
         mountains = FOLD.filter.mountainEdges(foldData);
         valleys = FOLD.filter.valleyEdges(foldData);
         borders = FOLD.filter.boundaryEdges(foldData);
@@ -761,7 +766,7 @@ function initPattern(globals){
             return;
         }
         var serializer = new XMLSerializer();
-        var source = serializer.serializeToString(document.getElementById("mySVG"));
+        var source = serializer.serializeToString($("#svgViewer>svg").get(0));
         var svgBlob = new Blob([source], {type:"image/svg+xml;charset=utf-8"});
         var svgUrl = URL.createObjectURL(svgBlob);
         var downloadLink = document.createElement("a");
