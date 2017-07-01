@@ -894,8 +894,6 @@ function initPattern(globals){
     return {
         loadSVG: loadSVG,
         saveSVG: saveSVG,
-        getFacesAndVerticesForEdges: getFacesAndVerticesForEdges,
-        triangulatePolys: triangulatePolys,
         getFoldData: getFoldData,
         getTriangulatedFaces: getTriangulatedFaces,
         setFoldData: setFoldData
