@@ -375,7 +375,7 @@ function initDynamicSolver(globals){
             for (var j=0;j<nodes[i].beams.length;j++){
                 var beam = nodes[i].beams[j];
                 beamMeta[4*index] = beam.getK();
-                beamMeta[4*index+1] = beam.getD();
+                beamMeta[4*index+1] = beam.getD()*0.95;
                 if (initing) {
                     beamMeta[4*index+2] = beam.getLength();
                     beamMeta[4*index+3] = beam.getOtherNode(nodes[i]).getIndex();
@@ -435,7 +435,7 @@ function initDynamicSolver(globals){
         for (var i=0;i<creases.length;i++){
             var crease = creases[i];
             creaseMeta[i*4] = crease.getK();
-            creaseMeta[i*4+1] = crease.getD();//todo not using this
+            // creaseMeta[i*4+1] = crease.getD();
             if (initing) creaseMeta[i*4+2] = crease.getTargetTheta();
         }
         globals.gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true);
