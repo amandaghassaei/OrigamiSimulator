@@ -14,6 +14,41 @@ function initControls(globals){
         $("#activeLogo").hide();
     });
 
+    $(".author").hover(function(e){
+        var $target = $(e.target);
+        var $moreInfo = $("#authorMoreInfo");
+        if (!$target.hasClass("demo")) {
+            $moreInfo.hide();
+            return;
+        }
+        var offset = $target.position();
+        var width = $target.outerWidth();
+        if (width == 0) {
+            $moreInfo.hide();
+            return;
+        }
+
+        var author = $target.data("author");
+        $("#authorContent").children().hide();
+        $("#authorContent>#" + author).show();
+
+        $moreInfo.css({top:offset.top-13+"px", left:width+"px"});
+        $moreInfo.show();
+        $target.parent().append($moreInfo);
+    });
+    $(".author").mouseout(function(e){
+        var $moreInfo = $("#authorMoreInfo");
+        if ($(e.target).parent().is(":hover")) return;
+        if ($moreInfo.is(":hover")) return;
+        $moreInfo.hide();
+    });
+    $("#authorMoreInfo").mouseout(function(e){
+        var $moreInfo = $("#authorMoreInfo");
+        if ($moreInfo.is(":hover")) return;
+        if ($moreInfo.find("#element:hover").length>0) return;
+        $moreInfo.hide();
+    });
+
     setLink("#menuVis", function(){
         if (globals.menusVisible){
             $("#controls").fadeOut();

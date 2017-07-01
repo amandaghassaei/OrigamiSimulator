@@ -411,3 +411,42 @@ a.seeMore.closed>.fui-triangle-down{
     margin-right: 10px;
     margin-bottom: 2px;
 }
+
+#authorMoreInfo{
+    display: none;
+    position: absolute;
+    top:0px;
+    left:100px;
+    z-index: 5;
+}
+#authorMoreInfo>#authorContent{
+    font-size: 14px;
+    background: #f5f5f5;
+    padding: 15px 25px;
+    margin-left: 20px;
+    color:#34495e;
+    white-space: normal;
+    width: 300px;
+    border: 2px solid #a8a6ae;
+}
+
+#authorMoreInfo a, #authorMoreInfo a:hover,#authorMoreInfo a:visited,#authorMoreInfo a:focus{
+    color: #ec008b !important;
+}
+
+#authorMoreInfo:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 20px;
+    left:10px;
+    width: 20px;
+    height: 20px;
+    background: #f5f5f5;
+    border-left:2px solid #a8a6ae;
+    border-bottom:2px solid #a8a6ae;
+    -ms-transform: rotate(45deg); /* IE 9 */
+     -moz-transform:rotate(45deg);
+      -webkit-transform:rotate(45deg);
+    transform: rotate(45deg);
+}
