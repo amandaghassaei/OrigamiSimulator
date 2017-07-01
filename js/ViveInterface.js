@@ -13,7 +13,6 @@ function initViveInterface(globals){
         return;
     }
     $status.html("No device connected.");
-    $("#VRoptions").show();
 
     var geo = new THREE.CylinderGeometry(0, 0.05, 0.25, 4);
     geo.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
@@ -60,6 +59,7 @@ function initViveInterface(globals){
         WEBVR.getVRDisplay( function ( display ) {
             if (!display) return;
             $status.html("VR device detected.");
+            $("#VRoptions").show();
             var button = WEBVR.getButton( display, globals.threeView.renderer.domElement );
             var $link = $("#enterVR");
             $link.html(button.textContent);
