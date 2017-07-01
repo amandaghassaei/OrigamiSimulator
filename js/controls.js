@@ -136,6 +136,9 @@ function initControls(globals){
     setCheckbox("#triangulateFOLDexport", globals.triangulateFOLDexport, function(val){
         globals.triangulateFOLDexport = val;
     });
+    setCheckbox("#exportFoldAngle", globals.exportFoldAngle, function(val){
+        globals.exportFoldAngle = val;
+    });
 
     setLink("#doSTLsave", function(){
         saveSTL();

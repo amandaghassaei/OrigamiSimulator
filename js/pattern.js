@@ -7,6 +7,7 @@ function initPattern(globals){
     var FOLD = require('fold');
 
     var foldData = {};
+    var rawFold = {};
     clearFold();
 
     function clearFold(){
@@ -16,6 +17,7 @@ function initPattern(globals){
         foldData.edges_foldAngles = [];//target angles
         delete foldData.vertices_vertices;
         delete foldData.faces_vertices;
+        rawFold = {};
     }
 
 
@@ -27,7 +29,6 @@ function initPattern(globals){
     var cutsRaw = [];
     var triangulationsRaw = [];
     var hingesRaw = [];
-    var rawFold;
 
     var mountains = [];
     var valleys = [];
@@ -114,7 +115,7 @@ function initPattern(globals){
         if (stroke == "#000000" || stroke == "#000" || stroke == "black" || stroke == "rgb(0, 0, 0)") return "border";
         if (stroke == "#ff0000" || stroke == "#f00" || stroke == "red" || stroke == "rgb(255, 0, 0)") return "mountain";
         if (stroke == "#0000ff" || stroke == "#00f" || stroke == "blue" || stroke == "rgb(0, 0, 255)") return "valley";
-        if (stroke == "#00ff00" || stroke == "#0f0" || stroke == "green" || stroke == "rgb(0, 255, 0)") return "cut";
+        // if (stroke == "#00ff00" || stroke == "#0f0" || stroke == "green" || stroke == "rgb(0, 255, 0)") return "cut";
         if (stroke == "#ffff00" || stroke == "#ff0" || stroke == "yellow" || stroke == "rgb(255, 255, 0)") return "triangulation";
         if (stroke == "#ff00ff" || stroke == "#f0f" || stroke == "magenta" || stroke == "rgb(255, 0, 255)") return "hinge";
         badColors.push(stroke);
@@ -446,7 +447,7 @@ function initPattern(globals){
         foldData.vertices_vertices = FOLD.convert.sort_vertices_vertices(foldData);
         foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
         foldData = reverseFaceOrder(foldData);//set faces to counter clockwise
-        console.log(JSON.stringify(foldData));
+        // console.log(JSON.stringify(foldData));
 
         rawFold = JSON.parse(JSON.stringify(foldData));//save pre-triangulated for for save later
 
@@ -595,7 +596,7 @@ function initPattern(globals){
                     console.warn("different edge assignments");
                     return false;
                 }
-                angleAvg += fold.edges_foldAngles[i];
+                if (fold.edges_foldAngles[i]) angleAvg += fold.edges_foldAngles[i];
                 fold.edges_vertices.splice(i, 1);
                 fold.edges_assignment.splice(i, 1);
                 fold.edges_foldAngles.splice(i, 1);
@@ -858,18 +859,9 @@ function initPattern(globals){
         };
     }
 
-    function getAllEdges(){
-        return {
-            mountains: mountains,
-            valleys: valleys,
-            borders: borders,
-            cuts: cuts,
-            triangulations: triangulations
-        }
-    }
-
-    function getPolygons(){//todo export fold complete
-        return foldData.faces_vertices;
+    function getFoldData(raw){
+        if (raw) return rawFold;
+        return foldData;
     }
 
     return {
@@ -877,7 +869,6 @@ function initPattern(globals){
         saveSVG: saveSVG,
         getFacesAndVerticesForEdges: getFacesAndVerticesForEdges,
         triangulatePolys: triangulatePolys,
-        getAllEdges: getAllEdges,
-        getPolygons: getPolygons
+        getFoldData: getFoldData
     }
 }

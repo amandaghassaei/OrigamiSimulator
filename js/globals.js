@@ -71,7 +71,7 @@ function initGlobals(){
         //save fold settings
         foldUnits: "unit",
         triangulateFOLDexport: false,
-        exportFoldAngle: false,
+        exportFoldAngle: true,
 
         pausedForPatternView: false,
 
