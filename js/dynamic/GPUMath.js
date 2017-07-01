@@ -11,12 +11,19 @@ function initGPUMath(){
     var gl = canvas.getContext("webgl", {antialias:false}) || canvas.getContext("experimental-webgl", {antialias:false});
     var floatTextures = gl.getExtension('OES_texture_float');
     if (!floatTextures) {
-        console.warn('no floating point texture support');
+        notSupported();
     }
     gl.disable(gl.DEPTH_TEST);
 
     var maxTexturesInFragmentShader = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
     console.log(maxTexturesInFragmentShader + " textures max");
+
+    function notSupported(){
+        //todo get gif
+        $("#noSupportModal").modal("show");
+       console.warn("floating point textures are not supported on your system");
+    }
+
 
 
     function GPUMath(){
@@ -66,6 +73,12 @@ function initGPUMath(){
         framebuffer = gl.createFramebuffer();
         gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+
+        var check = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+        if(check != gl.FRAMEBUFFER_COMPLETE){
+            notSupported();
+        }
+
         this.frameBuffers[textureName] = framebuffer;
     };
 
