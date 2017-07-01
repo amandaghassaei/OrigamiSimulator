@@ -8,7 +8,6 @@ function initPattern(globals){
 
     var foldData = {};
     var rawFold = {};
-    clearFold();
 
     function clearFold(){
         foldData.vertices_coords = [];
@@ -20,8 +19,7 @@ function initPattern(globals){
         rawFold = {};
     }
 
-
-    var verticesRaw = [];//list of vertex3's
+    var verticesRaw = [];
     //refs to vertex indices
     var mountainsRaw = [];
     var valleysRaw = [];
@@ -36,9 +34,32 @@ function initPattern(globals){
     var cuts = [];
     var hinges = [];
     var triangulations = [];
-    var polygons = [];
 
     var badColors = [];//store any bad colors in svg file to show user
+
+    function clearAll(){
+
+        clearFold();
+        verticesRaw = [];
+
+        mountainsRaw = [];
+        valleysRaw = [];
+        bordersRaw = [];
+        cutsRaw = [];
+        triangulationsRaw = [];
+        hingesRaw = [];
+
+        mountains = [];
+        valleys = [];
+        borders = [];
+        cuts = [];
+        hinges = [];
+        triangulations = [];
+
+        badColors = [];
+    }
+
+    clearAll();
 
     var SVGloader = new THREE.SVGLoader();
 
@@ -305,7 +326,7 @@ function initPattern(globals){
         SVGloader.load(url, function(svg){
             var _$svg = $(svg);
 
-            badColors = [];
+            clearAll();
 
             //format all appropriate svg elements
             var $paths = _$svg.children("path");
@@ -318,14 +339,6 @@ function initPattern(globals){
             $polygons.css({fill:"none", 'stroke-dasharray':"none"});
             var $polylines = _$svg.children("polyline");
             $polylines.css({fill:"none", 'stroke-dasharray':"none"});
-
-            verticesRaw = [];
-            bordersRaw = [];
-            mountainsRaw = [];
-            valleysRaw = [];
-            cutsRaw = [];
-            triangulationsRaw = [];
-            hingesRaw = [];
 
             findType(verticesRaw, bordersRaw, borderFilter, $paths, $lines, $rects, $polygons, $polylines);
             findType(verticesRaw, mountainsRaw, mountainFilter, $paths, $lines, $rects, $polygons, $polylines);
@@ -399,7 +412,6 @@ function initPattern(globals){
 
     function parseSVG(_verticesRaw, _bordersRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw, _hingesRaw){
 
-        clearFold();
         _.each(_verticesRaw, function(vertex){
             foldData.vertices_coords.push([vertex.x, vertex.z]);
         });
@@ -449,13 +461,18 @@ function initPattern(globals){
         foldData = reverseFaceOrder(foldData);//set faces to counter clockwise
         // console.log(JSON.stringify(foldData));
 
-        rawFold = JSON.parse(JSON.stringify(foldData));//save pre-triangulated for for save later
+        return processFold(foldData);
+    }
 
-        foldData = triangulatePolys(foldData, true);
+    function processFold(fold, returnCreaseParams){
+
+        rawFold = JSON.parse(JSON.stringify(fold));//save pre-triangulated for for save later
+
+        foldData = triangulatePolys(fold, true);
 
         for (var i=0;i<foldData.vertices_coords.length;i++){
             var vertex = foldData.vertices_coords[i];
-            foldData.vertices_coords[i] = [vertex[0], 0, vertex[1]];//make vertices_coords 3d
+            if (vertex.length === 2) foldData.vertices_coords[i] = [vertex[0], 0, vertex[1]];//make vertices_coords 3d
         }
         mountains = FOLD.filter.mountainEdges(foldData);
         valleys = FOLD.filter.valleyEdges(foldData);
@@ -470,9 +487,9 @@ function initPattern(globals){
         $("#numPassive").html("(" + hinges.length + ")");
 
         var allCreaseParams = getFacesAndVerticesForEdges(foldData);//todo precompute vertices_faces
+        if (returnCreaseParams) return allCreaseParams;
 
         globals.model.buildModel(foldData, allCreaseParams);
-
         return foldData;
     }
 
@@ -488,7 +505,7 @@ function initPattern(globals){
         var faces = fold.faces_vertices;
         for (var i=0;i<fold.edges_vertices.length;i++){
             var assignment = fold.edges_assignment[i];
-            if (assignment == "B" || assignment == "U" || assignment == "C") continue;
+            if (assignment !== "M" && assignment !== "V" && assignment !== "F") continue;
             var edge = fold.edges_vertices[i];
             var v1 = edge[0];
             var v2 = edge[1];
@@ -517,10 +534,6 @@ function initPattern(globals){
 
                             creaseParams.push(i);
                             var angle = fold.edges_foldAngles[i];
-                            if (angle === null) {
-                                console.warn("shouldn't be here");
-                                continue;
-                            }
                             creaseParams.push(angle);
                             allCreaseParams.push(creaseParams);
                             break;
@@ -864,11 +877,22 @@ function initPattern(globals){
         return foldData;
     }
 
+    function setFoldData(fold, returnCreaseParams){
+        clearAll();
+        return processFold(fold, returnCreaseParams);
+    }
+
+    function getTriangulatedFaces(){
+        return foldData.faces_vertices;
+    }
+
     return {
         loadSVG: loadSVG,
         saveSVG: saveSVG,
         getFacesAndVerticesForEdges: getFacesAndVerticesForEdges,
         triangulatePolys: triangulatePolys,
-        getFoldData: getFoldData
+        getFoldData: getFoldData,
+        getTriangulatedFaces: getTriangulatedFaces,
+        setFoldData: setFoldData
     }
 }

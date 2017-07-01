@@ -88,8 +88,10 @@ function initGlobals(){
 
     function setCreasePercent(percent){
         _globals.creasePercent = percent;
+        percent *= 100;
         $("#creasePercent>div").slider({value:percent});
         $("#creasePercent>input").val(percent);
+        $("#creasePercentNav>div").slider({value:percent});
     }
     _globals.setCreasePercent = setCreasePercent;
 
@@ -103,28 +105,6 @@ function initGlobals(){
         return _globals.extension == "fold";
     }
     _globals.noCreasePatternAvailable = noCreasePatternAvailable;
-
-    var isMobile = {
-        Android: function() {
-            return navigator.userAgent.match(/Android/i);
-        },
-        BlackBerry: function() {
-            return navigator.userAgent.match(/BlackBerry/i);
-        },
-        iOS: function() {
-            return navigator.userAgent.match(/iPhone|iPad|iPod/i);
-        },
-        Opera: function() {
-            return navigator.userAgent.match(/Opera Mini/i);
-        },
-        Windows: function() {
-            return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
-        },
-        any: function() {
-            return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
-        }
-    };
-    // if(isMobile.any()) _globals.dynamicSimVisible = false;//todo throw error
 
     _globals.threeView = initThreeView(_globals);
     _globals.controls = initControls(_globals);

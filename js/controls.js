@@ -267,7 +267,7 @@ function initControls(globals){
     });
 
     // setSliderInput("#triStiffness", globals.triStiffness, 0, 10, 0.01, function(val){
-    //     globals.triStiffness = val;//todo update
+    //     globals.triStiffness = val;
     //     // globals.materialHasChanged = true;
     // });
 
