@@ -438,7 +438,7 @@ a.seeMore.closed>.fui-triangle-down{
     content: '';
     display: block;
     position: absolute;
-    top: 20px;
+    top: 19px;
     left:10px;
     width: 20px;
     height: 20px;
