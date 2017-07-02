@@ -48,7 +48,6 @@ function saveFOLD(){
     if (globals.exportFoldAngle){
         json.edges_foldAngles = fold.edges_foldAngles;
     }
-    console.log(json);
 
     var blob = new Blob([JSON.stringify(json, null, 4)], {type: 'application/octet-binary'});
     saveAs(blob, filename + ".fold");

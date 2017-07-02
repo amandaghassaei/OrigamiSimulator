@@ -1171,7 +1171,7 @@
                     <br/><br/>
                     This measurement is equivalent to <a href="https://en.wikipedia.org/wiki/Deformation_(mechanics)#Engineering_strain" target="_blank">
                         Cauchy strain or engineering strain</a> of the distance constraints on this system.
-                    Increasing the <b>Axial Strength</b> will tighten these constraints and
+                    Increasing the <b>Axial Stiffness</b> will tighten these constraints and
                     lower the error in the simulation.<br/>
                     <br/>
                     To visualize the error of each vertex graphically, select <b>Strain Visualization</b> under <b>Mesh Material</b>
@@ -1195,7 +1195,7 @@
                     in the simulation.  <br/>
                     <br/>
                     <b>Axial Stiffness</b> is the stiffness of the distance constraints.  Increasing axial
-                    stiffness will decrease the strain in the simulation, but it will also slow down the solver.  <br/>
+                    stiffness will decrease the stretching/compression (strain) in the simulation, but it will also slow down the solver.  <br/>
                     <br/>
                     Fold and facet stiffnesses correspond to two types of angular constraints.  <b>Fold Stiffness</b> is the stiffness of the mountain
                     and valley creases in the origami pattern.  <b>Facet Stiffness</b> is the stiffness of the triangulated faces between
@@ -1203,12 +1203,12 @@
                     As facet stiffness becomes very high, this simulation approaches a <a href="http://www.tsg.ne.jp/TT/cg/TachiFreeformOrigami2010.pdf" target="_blank">
                         rigid origami simulation</a>, and models the behavior of a rigid material (such as metal) when folded.<br/>
                     <br/>
-                    Internally, constraints stiffnesses are scaled by the length of the edge associated with that constraint to determine its <i>geometric stiffness</i>.  For Axial constaints, stiffness is
+                    Internally, constraint stiffnesses are scaled by the length of the edge associated with that constraint to determine its <i>geometric stiffness</i>.  For Axial constaints, stiffness is
                     divided by length and for angular constraints, stiffness is multiplied by length.<br/>
                     <br/>
                     Since this is a dynamic simulation, vertices of the origami move with some notion of acceleration and velocity.  In order to
                     keep the system stable and help it converge to a static solution, <a target="_blank" href="https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator">
-                        damping</a> is added to the distance constraints.  The <b>Damping</b> slider allows you to control the amount of damping
+                        damping</a> is applied to slow the motion of the vertices.  The <b>Damping</b> slider allows you to control the amount of damping
                     present in the simulation, from 0 (no damping) to 1 (critical damping).  Decreasing damping makes the simulation more "springy".
                     It may be useful to temporarily turn down damping to help the simulation more quickly converge towards its static solution - especially
                     for patterns that take a long time to curl.
