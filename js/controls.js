@@ -248,6 +248,7 @@ function initControls(globals){
             quality: globals.capturerQuality
         });
         globals.currentFPS = globals.capturerFPS;
+        globals.isGif = false;
         $("#recordStatus").show();
         globals.shouldScaleCanvas = false;
         globals.capturer.start();
@@ -261,6 +262,7 @@ function initControls(globals){
             workersPath:'dependencies/'
         });
         globals.currentFPS = globals.gifFPS;
+        globals.isGif = true;
         $("#recordStatus").show();
         globals.shouldScaleCanvas = false;
         globals.capturer.start();
@@ -268,6 +270,7 @@ function initControls(globals){
 
     setLink("#stopRecord", function(){
         if (!globals.capturer) return;
+        if (globals.isGif) globals.warn("Processing GIF, may take a minute...");
         globals.capturer.stop();
         globals.capturer.save();
         globals.capturer = null;

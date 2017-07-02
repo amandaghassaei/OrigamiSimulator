@@ -92,7 +92,8 @@ function initGlobals(){
         currentFPS: null,
         capturerScale: 1,
         capturerFrames: 0,
-        shouldScaleCanvas: false
+        shouldScaleCanvas: false,
+        isGif: false
     };
 
     function setCreasePercent(percent){
