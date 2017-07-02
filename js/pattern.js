@@ -727,8 +727,6 @@ function initPattern(globals){
         if (numRedundant == 0) return fold;
         console.warn(numRedundant + " redundant vertices found");
         fold = FOLD.filter.remapField(fold, 'vertices', old2new);
-        // delete fold.vertices_vertices;
-        // fold = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(fold);
         return fold;
     }
 
