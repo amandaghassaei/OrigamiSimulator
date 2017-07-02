@@ -184,15 +184,15 @@ function initModel(globals){
     function buildModel(fold, creaseParams){
 
         if (fold.vertices_coords.length == 0) {
-            console.warn("no vertices");
+            globals.warn("No geometry found.");
             return;
         }
         if (fold.faces_vertices.length == 0) {
-            console.warn("no faces");
+            globals.warn("No faces found, try adjusting import vertex merge tolerance.");
             return;
         }
         if (fold.edges_vertices.length == 0) {
-            console.warn("no edges");
+            globals.warn("No edges found.");
             return;
         }
 

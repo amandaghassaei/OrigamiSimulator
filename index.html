@@ -551,7 +551,7 @@
                 <span class="dropdown-arrow"></span>
                 <ul class="dropdown-menu">
                     <li><a class="loadFile" href="#">Import... (SVG / FOLD)</a></li>
-                    <li><a id="importSettings" href="#">SVG Import Settings...</a></li>
+                    <!--<li><a id="importSettings" href="#">SVG Import Settings...</a></li>-->
                     <li><a id="tips" href="#">File Import Tips</a></li>
                     <li class="divider"></li>
                     <li><a id="exportFOLD" href="#">Save Simulation as FOLD...</a></li>
@@ -1311,9 +1311,13 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <p><b>FILE IMPORT SETTINGS</b><br/><br/>
+                <p><b>SVG IMPORT SETTINGS</b><br/><br/>
                     Vertex merge tolerance (px) : &nbsp;&nbsp;<input id="vertTol" value="" placeholder="" class="float form-control" type="text">
+                    <div class="smallTxt">Vertices within this px tolerance in the SVG will be merged into one.</div>
                 </p>
+            </div>
+            <div class="modal-footer">
+                <button id="doSVGImport" type="button" class="actionButton btn btn-success" data-dismiss="modal">Import SVG</button>
             </div>
             </div>
         </div><!-- /.modal-content -->

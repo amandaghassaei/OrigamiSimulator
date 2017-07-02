@@ -96,6 +96,10 @@ function initGlobals(){
     _globals.setCreasePercent = setCreasePercent;
 
     function warn(msg){
+        if (($("#warningMessage").data('bs.modal') || {}).isShown){
+            $("#warningMessage").append("<br/><br/>" + msg);
+            return;
+        }
         $("#warningMessage").html(msg);
         $("#warningModal").modal("show");
     }

@@ -42,10 +42,15 @@ function initImporter(globals){
                         warnUnableToLoad();
                         return;
                     }
-                    globals.filename = name;
-                    globals.extension = extension;
-                    // globals.setCreasePercent(0);
-                    globals.pattern.loadSVG(reader.result);
+                    $("#vertTol").val(globals.vertTol);
+                    $("#importSettingsModal").modal("show");
+                    $('#doSVGImport').click(function (e) {
+                        e.preventDefault();
+                        $('#doSVGImport').unbind("click");
+                        globals.filename = name;
+                        globals.extension = extension;
+                        globals.pattern.loadSVG(reader.result);
+                    });
                 }
             }(file);
             reader.readAsDataURL(file);

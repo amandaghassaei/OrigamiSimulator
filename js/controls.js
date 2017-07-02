@@ -182,6 +182,7 @@ function initControls(globals){
     });
 
     setLink("#importSettings", function(){
+        $("#vertTol").val(globals.vertTol);
         $("#importSettingsModal").modal("show");
     });
     setInput("#vertTol", globals.vertTol, function(val){
@@ -315,6 +316,7 @@ function initControls(globals){
     setLink(".demo", function(e){
         var url = $(e.target).data("url");
         if (url) {
+            globals.vertTol = 3;
             globals.importer.importDemoFile(url);
         }
     });
