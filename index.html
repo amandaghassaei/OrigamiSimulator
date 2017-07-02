@@ -676,7 +676,7 @@
                             <li><a href="#" id="cameraMinusX">View Left</a></li>
                             <li><a href="#" id="cameraY">View Top</a></li>
                             <li><a href="#" id="cameraMinusY">View Bottom</a></li>
-                            <li><a href="#" id="cameraOrtho">View Ortho</a></li>
+                            <li><a href="#" id="cameraIso">View Iso</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -1415,9 +1415,10 @@
                 <span class="gif">
                     FrameRate ( 1-60 fps ): &nbsp;&nbsp;<input id="gifFPS" value="" placeholder="" class="float int form-control" type="text"><br/><br/>
                 </span>
-                <span class="smallTxt">Notes: Do not resize window while recording.  You can increase the
+                <span class="smallTxt">Notes: This feature records the output of the canvas only - no UI or cursor
+                    will be included.  Do not resize window while recording.  You can increase the
                 amount of motion per frame by increasing the "Num simulation steps per render"
-                in <b>Animation Settings</b>.</span><br/>
+                in <b>Animation Settings</b> (right).  Check the <b>View</b> menu (above) for more rendering options.</span><br/>
             </div>
             <div class="modal-footer">
                 <button id="doGifRecord" type="button" class="gif actionButton btn btn-success" data-dismiss="modal">Start</button>

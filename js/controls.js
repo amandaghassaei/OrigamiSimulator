@@ -90,8 +90,8 @@ function initControls(globals){
     setLink("#cameraMinusZ", function(){
         globals.threeView.setCameraZ(-1);
     });
-    setLink("#cameraOrtho", function(){
-        globals.threeView.setCameraOrtho();
+    setLink("#cameraIso", function(){
+        globals.threeView.setCameraIso();
     });
 
     setLink("#exportFOLD", function(){

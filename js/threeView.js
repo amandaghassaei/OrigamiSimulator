@@ -76,7 +76,7 @@ function initThreeView(globals) {
     function setCameraZ(sign){
         controls.reset(new THREE.Vector3(0,0,sign));
     }
-    function setCameraOrtho(){
+    function setCameraIso(){
         controls.reset(new THREE.Vector3(1,1,1));
     }
 
@@ -223,7 +223,7 @@ function initThreeView(globals) {
         setCameraX:setCameraX,
         setCameraY: setCameraY,
         setCameraZ: setCameraZ,
-        setCameraOrtho: setCameraOrtho,
+        setCameraIso: setCameraIso,
 
         resetModel: resetModel,//reset model orientation
         setBackgroundColor: setBackgroundColor
