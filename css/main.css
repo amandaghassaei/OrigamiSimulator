@@ -455,9 +455,15 @@ a.seeMore.closed>.fui-triangle-down{
 #recordStatus{
     position: absolute;
     bottom:20px;
-    width:50px;
-    left:50%;
-    margin-left:-25px;
+    width:350px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
     z-index: 2;
     display: none;
+}
+#stopRecord{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }

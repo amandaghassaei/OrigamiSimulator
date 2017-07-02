@@ -104,7 +104,7 @@ function initThreeView(globals) {
         }
         renderer.render(scene, camera);
         if (globals.capturer) {
-            captureStats.html("( " + ++globals.capturerFrames + " frames )");
+            captureStats.html("( " + ++globals.capturerFrames + " frames  at " + globals.capturerFPS  + "fps )");
             globals.capturer.capture(renderer.domElement);
         }
     }
