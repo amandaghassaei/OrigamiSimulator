@@ -189,6 +189,60 @@ function initControls(globals){
         globals.vertTol = val;
     });
 
+    setLink("#createGif", function(){
+        globals.capturer = new CCapture({format:'gif', name:globals.filename, framerate:60, display:true, verbose:true, workersPath:'js/'});
+        globals.capturer.start();
+    });
+    setLink("#createVideo", function(){
+        //quality 0-63
+        //timeLimit: 30
+        $("#screenCaptureModal").modal("show");
+        $("#screenRecordFilename").val(globals.filename);
+        globals.screenRecordFilename = globals.filename;
+        updateCanvasDimensions();
+    });
+    setInput("#capturerFPS", globals.capturerFPS, function(val){
+        globals.capturerFPS = val;
+    }, 0, 60);
+    setInput("#capturerQuality", globals.capturerQuality, function(val){
+        globals.capturerQuality = val;
+    }, 0, 63);
+    setInput("#capturerScale", globals.capturerScale, function(val){
+        globals.capturerScale = val;
+        updateCanvasDimensions();
+    }, 1);
+    function updateCanvasDimensions(){
+        var $body = $("body");
+        var dim = (new THREE.Vector2($body.innerWidth(), $body.innerHeight())).multiplyScalar(globals.capturerScale);
+        $("#canvasDimensions").html(dim.x + " x " + dim.y + " px");
+    }
+    setInput("#screenRecordFilename", "OrigamiSimulator", function(val){
+        globals.screenRecordFilename = val;
+    });
+
+    setLink("#doScreenRecord", function(){
+        globals.capturerFrames = 0;
+        globals.capturer = new CCapture({
+            format:'webm',
+            name:globals.screenRecordFilename,
+            framerate:globals.capturerFPS,
+            // display:true,
+            // verbose:true,
+            workersPath:'js/',
+            quality: globals.capturerQuality
+        });
+        $("#recordStatus").show();
+        globals.capturer.start();
+    });
+
+    setLink("#stopRecord", function(){
+        if (!globals.capturer) return;
+        globals.capturer.stop();
+        globals.capturer.save();
+        globals.capturer = null;
+        $("#recordStatus").hide();
+    });
+
 
     setLink("#navPattern", function(){
         if (globals.noCreasePatternAvailable()){

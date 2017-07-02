@@ -96,12 +96,17 @@ function initThreeView(globals) {
         globals.simulationRunning = true;
     }
 
+    var captureStats = $("#stopRecord>span");
     function _render(){
         if (globals.vrEnabled){
             globals.vive.render();
             return;
         }
         renderer.render(scene, camera);
+        if (globals.capturer) {
+            captureStats.html("( " + ++globals.capturerFrames + " frames )");
+            globals.capturer.capture(renderer.domElement);
+        }
     }
 
     function _loop(callback){

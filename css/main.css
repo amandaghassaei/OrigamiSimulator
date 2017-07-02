@@ -353,7 +353,8 @@ input.form-control.bigInput{
 }
 
 .actionButton{
-    width: 110px;
+    min-width: 110px;
+    font-size: 16px;
 }
 
 #unitsDropdown{
@@ -449,4 +450,14 @@ a.seeMore.closed>.fui-triangle-down{
      -moz-transform:rotate(45deg);
       -webkit-transform:rotate(45deg);
     transform: rotate(45deg);
+}
+
+#recordStatus{
+    position: absolute;
+    bottom:20px;
+    width:50px;
+    left:50%;
+    margin-left:-25px;
+    z-index: 2;
+    display: none;
 }

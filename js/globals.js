@@ -83,7 +83,13 @@ function initGlobals(){
         rotateModel: null,
         rotationSpeed: 0.01,
 
-        backgroundColor:"ffffff"
+        backgroundColor:"ffffff",
+
+        capturer: null,
+        capturerQuality: 63,
+        capturerFPS: 60,
+        capturerScale: 1,
+        capturerFrames: 0
     };
 
     function setCreasePercent(percent){
