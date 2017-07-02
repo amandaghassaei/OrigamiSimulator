@@ -16,6 +16,7 @@ function initPattern(globals){
         foldData.edges_foldAngles = [];//target angles
         delete foldData.vertices_vertices;
         delete foldData.faces_vertices;
+        delete foldData.vertices_edges;
         rawFold = {};
     }
 
@@ -457,6 +458,7 @@ function initPattern(globals){
         foldData = removeStrayVertices(foldData);//delete stray anchors
         removeRedundantVertices(foldData, 0.01);//remove vertices that split edge
 
+        foldData = edgesVerticesToVerticesEdges(foldData);
         foldData.vertices_vertices = FOLD.convert.sort_vertices_vertices(foldData);
         foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
         foldData = removeBorderFaces(foldData);
@@ -506,6 +508,20 @@ function initPattern(globals){
         return fold;
     }
 
+    function edgesVerticesToVerticesEdges(fold){
+        var verticesEdges = [];
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            verticesEdges.push([]);
+        }
+        for (var i=0;i<fold.edges_vertices.length;i++){
+            var edge = fold.edges_vertices[i];
+            verticesEdges[edge[0]].push(i);
+            verticesEdges[edge[1]].push(i);
+        }
+        fold.vertices_edges = verticesEdges;
+        return fold;
+    }
+
     function splitCuts(fold){
         //todo split cuts
         // var cutVertices = [];
@@ -534,27 +550,34 @@ function initPattern(globals){
     }
 
     function removeBorderFaces(fold){
-        // var borderVertices = [];
-        // for (var i=0;i<fold.edges_vertices.length;i++){
-        //     var assignment = fold.edges_assignment[i];
-        //     if (assignment == "B" || assignment == "C"){//border or cut
-        //         var edge = fold.edges_vertices[i];
-        //         borderVertices.push(edge[0]);
-        //         borderVertices.push(edge[1]);
-        //     }
-        // }
-        // borderVertices = _.uniq(borderVertices);
-        // for (var i=fold.faces_vertices.length-1;i>=0;i--){
-        //     var face = fold.faces_vertices[i];
-        //     var allBorder = true;
-        //     for (var j=0;j<face.length;j++){
-        //         if (borderVertices.indexOf(face[j])<0) {
-        //             allBorder = false;
-        //             break;
-        //         }
-        //     }
-        //     if (allBorder) fold.faces_vertices.splice(i,1);
-        // }
+        for (var i=fold.faces_vertices.length-1;i>=0;i--){
+            var face = fold.faces_vertices[i];
+            var allBorder = true;
+
+            for (var j=0;j<face.length;j++){
+                var vertexIndex = face[j];
+                var nextIndex = j+1;
+                if (nextIndex >= face.length) nextIndex = 0;
+                var nextVertexIndex = face[nextIndex];
+                var connectingEdgeFound = false;
+                for (var k=0;k<fold.vertices_edges[vertexIndex].length;k++){
+                    var edgeIndex = fold.vertices_edges[vertexIndex][k];
+                    var edge = fold.edges_vertices[edgeIndex];
+                    if ((edge[0] == vertexIndex && edge[1] == nextVertexIndex) ||
+                        (edge[1] == vertexIndex && edge[0] == nextVertexIndex)){
+                        connectingEdgeFound = true;
+                        var assignment = fold.edges_assignment[edgeIndex];
+                        if (assignment != "B" && assignment != "C"){
+                            allBorder = false;
+                            break;
+                        }
+                    }
+                }
+                if (!connectingEdgeFound) console.warn("no connecting edge found on face");
+                if (!allBorder) break;
+            }
+            if (allBorder) fold.faces_vertices.splice(i,1);
+        }
         return fold;
     }
 
