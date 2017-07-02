@@ -915,6 +915,7 @@
                         <li><a href="https://www.npmjs.com/package/path-data-polyfill" target="_blank">path-data-polyfill</a> helps with SVG parsing</li>
                         <li><a href="https://github.com/edemaine/fold" target="_blank">FOLD</a> is used as the internal data structure, and methods from the FOLD api are used for SVG parsing</li>
                         <li>Arbitrary polygonal faces of imported geometry are triangulated using the <a target="_blank" href="https://github.com/mapbox/earcut">Earcut Library</a></li>
+                        <li>GIF and WebM video export uses <a target="_blank" href="https://github.com/spite/ccapture.js/">CCapture</a></li>
                         <li><a target="_blank" href="https://jquery.com/">jQuery</a>, <a target="_blank" href="http://getbootstrap.com/">Bootstrap</a>, and the
                             <a target="_blank" href="http://designmodo.github.io/Flat-UI/">Flat UI theme</a> used to build the GUI</li>
                     </ul>
@@ -1318,7 +1319,7 @@
                 </button>
                 <p><b>SVG IMPORT SETTINGS</b><br/><br/>
                     Vertex merge tolerance (px) : &nbsp;&nbsp;<input id="vertTol" value="" placeholder="" class="float form-control" type="text">
-                    <div class="smallTxt">Vertices within this px tolerance in the SVG will be merged into one.</div>
+                    <div class="smallTxt">Vertices within this px tolerance in the SVG will be merged into one.  It is recommended to keep this number above zero.</div>
                 </p>
             </div>
             <div class="modal-footer">

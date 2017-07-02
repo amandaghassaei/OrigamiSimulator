@@ -200,15 +200,34 @@ function initControls(globals){
         updateCanvasDimensions();
     });
     setLink("#createVideo", function(){
-        //timeLimit: s of video to limit
-        globals.shouldScaleCanvas = true;
-        $("#screenCaptureModal .gif").hide();
-        $("#screenCaptureModal .video").show();
-        $("#screenCaptureModal").modal("show");
-        $("#screenRecordFilename").val(globals.filename);
-        globals.screenRecordFilename = globals.filename;
-        globals.threeView.onWindowResize();
-        updateCanvasDimensions();
+
+        var hasWebP = false;
+        (function() {
+          var img = new Image();
+          img.onload = function() {
+            hasWebP = !!(img.height > 0 && img.width > 0);
+              if (hasWebP){
+                  //timeLimit: s of video to limit
+                globals.shouldScaleCanvas = true;
+                $("#screenCaptureModal .gif").hide();
+                $("#screenCaptureModal .video").show();
+                $("#screenCaptureModal").modal("show");
+                $("#screenRecordFilename").val(globals.filename);
+                globals.screenRecordFilename = globals.filename;
+                globals.threeView.onWindowResize();
+                updateCanvasDimensions();
+              } else {
+                  globals.warn("Video export not supported by this browser, please try again " +
+                "with the latest version of Google Chrome.");
+              }
+          };
+          img.onerror = function() {
+             globals.warn("Video export not supported by this browser, please try again " +
+                "with the latest version of Google Chrome.");
+          };
+          img.src = 'http://www.gstatic.com/webp/gallery/1.webp';
+        })();
+
     });
     $("#screenCaptureModal").on('hidden.bs.modal', function (){
         if (globals.capturer) return;
