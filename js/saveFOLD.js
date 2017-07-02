@@ -42,7 +42,12 @@ function saveFOLD(){
     var useTriangulated = globals.triangulateFOLDexport;
     var fold = globals.pattern.getFoldData(!useTriangulated);
     json.edges_vertices = fold.edges_vertices;
-    json.edges_assignment = fold.edges_assignment;
+    var assignment = [];
+    for (var i=0;i<fold.edges_assignment.length;i++){
+        if (fold.edges_assignment[i] == "C") assignment.push("B");
+        else assignment.push(fold.edges_assignment[i]);
+    }
+    json.edges_assignment = assignment;
     json.faces_vertices = fold.faces_vertices;
 
     if (globals.exportFoldAngle){

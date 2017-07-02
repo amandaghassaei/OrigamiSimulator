@@ -441,7 +441,6 @@ function initPattern(globals){
             foldData.edges_assignment.push("U");
             foldData.edges_foldAngles.push(null);
         });
-        //todo cuts
 
         foldData = FOLD.filter.collapseNearbyVertices(foldData, globals.vertTol);
         foldData = FOLD.filter.removeLoopEdges(foldData);//remove edges that points to same vertex
@@ -457,9 +456,12 @@ function initPattern(globals){
         foldData = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(foldData);
         foldData = removeStrayVertices(foldData);//delete stray anchors
         removeRedundantVertices(foldData, 0.01);//remove vertices that split edge
+
         foldData.vertices_vertices = FOLD.convert.sort_vertices_vertices(foldData);
         foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
+        foldData = removeBorderFaces(foldData);
         foldData = reverseFaceOrder(foldData);//set faces to counter clockwise
+        if (_cutsRaw.length>0) foldData = splitCuts(foldData);
 
         return processFold(foldData);
     }
@@ -500,6 +502,37 @@ function initPattern(globals){
     function reverseFaceOrder(fold){
         for (var i=0;i<fold.faces_vertices.length;i++){
             fold.faces_vertices[i].reverse()
+        }
+        return fold;
+    }
+
+    function splitCuts(fold){
+        //todo split cuts
+        //go around each vertex and split cut in order
+        return fold;
+    }
+
+    function removeBorderFaces(fold){
+        var borderVertices = [];
+        for (var i=0;i<fold.edges_vertices.length;i++){
+            var assignment = fold.edges_assignment[i];
+            if (assignment == "B" || assignment == "C"){//border or cut
+                var edge = fold.edges_vertices[i];
+                borderVertices.push(edge[0]);
+                borderVertices.push(edge[1]);
+            }
+        }
+        borderVertices = _.uniq(borderVertices);
+        for (var i=fold.faces_vertices.length-1;i>=0;i--){
+            var face = fold.faces_vertices[i];
+            var allBorder = true;
+            for (var j=0;j<face.length;j++){
+                if (borderVertices.indexOf(face[j])<0) {
+                    allBorder = false;
+                    break;
+                }
+            }
+            if (allBorder) fold.faces_vertices.splice(i,1);
         }
         return fold;
     }
@@ -592,7 +625,6 @@ function initPattern(globals){
         console.warn(numRedundant + " redundant vertices found");
         fold = FOLD.filter.remapField(fold, 'vertices', old2new);
         // delete fold.vertices_vertices;
-        // console.log(JSON.stringify(foldData));
         // fold = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(fold);
         return fold;
     }
