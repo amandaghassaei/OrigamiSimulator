@@ -152,7 +152,9 @@ function initThreeView(globals) {
         // camera.bottom = -window.innerHeight / 2;
         camera.updateProjectionMatrix();
 
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        var scale = 1;
+        if (globals.shouldScaleCanvas) scale = globals.capturerScale;
+        renderer.setSize(scale*window.innerWidth, scale*window.innerHeight);
         controls.handleResize();
     }
 
@@ -200,7 +202,6 @@ function initThreeView(globals) {
     function setBackgroundColor(){
         scene.background.setStyle( "#" + globals.backgroundColor);
     }
-
 
     return {
         sceneAddModel: sceneAddModel,

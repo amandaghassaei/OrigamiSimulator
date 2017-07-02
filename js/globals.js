@@ -89,7 +89,8 @@ function initGlobals(){
         capturerQuality: 63,
         capturerFPS: 60,
         capturerScale: 1,
-        capturerFrames: 0
+        capturerFrames: 0,
+        shouldScaleCanvas: false
     };
 
     function setCreasePercent(percent){

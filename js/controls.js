@@ -196,10 +196,16 @@ function initControls(globals){
     setLink("#createVideo", function(){
         //quality 0-63
         //timeLimit: 30
+        globals.shouldScaleCanvas = true;
         $("#screenCaptureModal").modal("show");
         $("#screenRecordFilename").val(globals.filename);
         globals.screenRecordFilename = globals.filename;
+        globals.threeView.onWindowResize();
         updateCanvasDimensions();
+    });
+    $("#screenCaptureModal").on('hidden.bs.modal', function (){
+        globals.shouldScaleCanvas = false;
+        globals.threeView.onWindowResize();
     });
     setInput("#capturerFPS", globals.capturerFPS, function(val){
         globals.capturerFPS = val;
@@ -209,6 +215,7 @@ function initControls(globals){
     }, 0, 63);
     setInput("#capturerScale", globals.capturerScale, function(val){
         globals.capturerScale = val;
+        globals.threeView.onWindowResize();
         updateCanvasDimensions();
     }, 1);
     function updateCanvasDimensions(){
@@ -232,6 +239,7 @@ function initControls(globals){
             quality: globals.capturerQuality
         });
         $("#recordStatus").show();
+        globals.shouldScaleCanvas = false;
         globals.capturer.start();
     });
 
@@ -240,6 +248,8 @@ function initControls(globals){
         globals.capturer.stop();
         globals.capturer.save();
         globals.capturer = null;
+        globals.shouldScaleCanvas = false;
+        globals.threeView.onWindowResize();
         $("#recordStatus").hide();
     });
 

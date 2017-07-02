@@ -452,6 +452,10 @@ a.seeMore.closed>.fui-triangle-down{
     transform: rotate(45deg);
 }
 
+#screenCaptureModal .modal-content{
+    background: rgba(255,255,255,0.9);
+}
+
 #recordStatus{
     position: absolute;
     bottom:20px;
