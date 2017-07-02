@@ -568,17 +568,17 @@ function initPattern(globals){
             var vec1 = [neighbor1[0]-vertex_coord[0], neighbor1[1]-vertex_coord[1]];
             var magSqVec0 = vec0[0]*vec0[0]+vec0[1]*vec0[1];
             var magSqVec1 = vec1[0]*vec1[0]+vec1[1]*vec1[1];
+            var dot = vec0[0]*vec1[0]+vec0[1]*vec1[1];
             if (threeD){
                 vec0.push(neighbor0[2]-vertex_coord[2]);
                 vec1.push(neighbor1[2]-vertex_coord[2]);
                 magSqVec0 += vec0[2]*vec0[2];
                 magSqVec1 += vec1[2]*vec1[2];
+                dot += vec0[2]*vec1[2];
             }
-            var dot = vec0[0]*vec1[0]+vec0[1]*vec1[1];
-            if (threeD) dot += vec0[2]*vec1[2];
             dot /= Math.sqrt(magSqVec0*magSqVec1);
             if (Math.abs(dot + 1.0)<epsilon){
-                var merged = mergeEdge(fold, vertex_vertices[0], i, vertex_vertices[1])
+                var merged = mergeEdge(fold, vertex_vertices[0], i, vertex_vertices[1]);
                 if (merged){
                     numRedundant++;
                     old2new.push(null);
@@ -591,20 +591,17 @@ function initPattern(globals){
         if (numRedundant == 0) return fold;
         console.warn(numRedundant + " redundant vertices found");
         fold = FOLD.filter.remapField(fold, 'vertices', old2new);
-        // _.each(fold.vertices_vertices, function(vertex_vertices){
-        //     for (var i=vertex_vertices.length-1;i>=0;i--){
-        //         if (vertex_vertices[i] === null) vertex_vertices.splice(i,1);
-        //     }
-        // });
-        //todo fix vertices_vertices w/o recompute
-        delete fold.vertices_vertices;
-        fold = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(fold);
+        // delete fold.vertices_vertices;
+        // console.log(JSON.stringify(foldData));
+        // fold = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(fold);
         return fold;
     }
 
-    function mergeEdge(fold, v1, v2, v3){
+    function mergeEdge(fold, v1, v2, v3){//v2 is center vertex
         var angleAvg = 0;
+        var avgSum = 0;
         var edgeAssignment = null;
+        var edgeIndices = [];
         for (var i=fold.edges_vertices.length-1;i>=0;i--){
             var edge = fold.edges_vertices[i];
             if (edge.indexOf(v2)>=0 && (edge.indexOf(v1) >= 0 || edge.indexOf(v3) >= 0)){
@@ -613,15 +610,28 @@ function initPattern(globals){
                     console.warn("different edge assignments");
                     return false;
                 }
-                if (fold.edges_foldAngles[i]) angleAvg += fold.edges_foldAngles[i];
-                fold.edges_vertices.splice(i, 1);
-                fold.edges_assignment.splice(i, 1);
-                fold.edges_foldAngles.splice(i, 1);
+                if (fold.edges_foldAngles[i]) {
+                    angleAvg += fold.edges_foldAngles[i];
+                    avgSum++;
+                }
+                edgeIndices.push(i);//larger index in front
             }
+        }
+        for (var i=0;i<edgeIndices.length;i++){
+            var index = edgeIndices[i];
+            fold.edges_vertices.splice(index, 1);
+            fold.edges_assignment.splice(index, 1);
+            fold.edges_foldAngles.splice(index, 1);
         }
         fold.edges_vertices.push([v1, v3]);
         fold.edges_assignment.push(edgeAssignment);
-        fold.edges_foldAngles.push(angleAvg/2);
+        fold.edges_foldAngles.push(angleAvg/avgSum);
+        var index = fold.vertices_vertices[v1].indexOf(v2);
+        fold.vertices_vertices[v1].splice(index, 1);
+        fold.vertices_vertices[v1].push(v3);
+        index = fold.vertices_vertices[v3].indexOf(v2);
+        fold.vertices_vertices[v3].splice(index, 1);
+        fold.vertices_vertices[v3].push(v1);
         return true;
     }
 
