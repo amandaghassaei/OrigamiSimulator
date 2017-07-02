@@ -27,13 +27,13 @@
     border-radius: 0;
     padding:0;
     margin:0;
-    padding-bottom: 3px;
+    /*padding-bottom: 3px;*/
 }
 .navbar-inverse .navbar-nav>.open>.dropdown-menu>li>a{
     -webkit-border-radius: 0!important;
     -moz-border-radius: 0!important;
     border-radius: 0!important;
-    padding: 7px 20px;
+    padding: 6px 20px 8px 20px
 }
 .navbar-inverse .navbar-nav>.open>.dropdown-menu>li>a:hover, .navbar-inverse .navbar-nav>.open>.dropdown-menu>li>a:focus{
     background-color: #bbb;
@@ -84,6 +84,10 @@ img{
     height: 32px;
 }
 
+.dropdown-menu>li>a {
+    padding: 6px 20px 8px 20px
+}
+
 .dropdown-submenu a{
     height: 32px;
     padding-bottom: 18px;
@@ -116,9 +120,9 @@ img{
     top: 0;
     left: 100%;
     margin-top: 0;
-    margin-left: -1px;
+    margin-left: 0px;
     border-radius: 0;
-    padding-bottom: 3px;
+    /*padding-bottom: 3px;*/
     /*-webkit-border-radius: 0 6px 6px 6px;*/
     /*-moz-border-radius: 0 6px 6px;*/
     /*border-radius: 0 6px 6px 6px;*/
