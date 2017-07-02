@@ -270,7 +270,7 @@ function initControls(globals){
 
     setLink("#stopRecord", function(){
         if (!globals.capturer) return;
-        if (globals.isGif) globals.warn("Processing GIF, may take a minute...");
+        if (globals.isGif) globals.warn("Processing GIF, may take a few minutes...");
         globals.capturer.stop();
         globals.capturer.save();
         globals.capturer = null;
