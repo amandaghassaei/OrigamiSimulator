@@ -190,13 +190,20 @@ function initControls(globals){
     });
 
     setLink("#createGif", function(){
-        globals.capturer = new CCapture({format:'gif', name:globals.filename, framerate:60, display:true, verbose:true, workersPath:'js/'});
-        globals.capturer.start();
+        globals.shouldScaleCanvas = true;
+        $("#screenCaptureModal .gif").show();
+        $("#screenCaptureModal .video").hide();
+        $("#screenCaptureModal").modal("show");
+        $("#screenRecordFilename").val(globals.filename);
+        globals.screenRecordFilename = globals.filename;
+        globals.threeView.onWindowResize();
+        updateCanvasDimensions();
     });
     setLink("#createVideo", function(){
-        //quality 0-63
-        //timeLimit: 30
+        //timeLimit: s of video to limit
         globals.shouldScaleCanvas = true;
+        $("#screenCaptureModal .gif").hide();
+        $("#screenCaptureModal .video").show();
         $("#screenCaptureModal").modal("show");
         $("#screenRecordFilename").val(globals.filename);
         globals.screenRecordFilename = globals.filename;
@@ -204,11 +211,15 @@ function initControls(globals){
         updateCanvasDimensions();
     });
     $("#screenCaptureModal").on('hidden.bs.modal', function (){
+        if (globals.capturer) return;
         globals.shouldScaleCanvas = false;
         globals.threeView.onWindowResize();
     });
     setInput("#capturerFPS", globals.capturerFPS, function(val){
         globals.capturerFPS = val;
+    }, 0, 60);
+    setInput("#gifFPS", globals.gifFPS, function(val){
+        globals.gifFPS = val;
     }, 0, 60);
     setInput("#capturerQuality", globals.capturerQuality, function(val){
         globals.capturerQuality = val;
@@ -233,11 +244,23 @@ function initControls(globals){
             format:'webm',
             name:globals.screenRecordFilename,
             framerate:globals.capturerFPS,
-            // display:true,
-            // verbose:true,
-            workersPath:'js/',
+            workersPath:'dependencies/',
             quality: globals.capturerQuality
         });
+        globals.currentFPS = globals.capturerFPS;
+        $("#recordStatus").show();
+        globals.shouldScaleCanvas = false;
+        globals.capturer.start();
+    });
+    setLink("#doGifRecord", function(){
+        globals.capturerFrames = 0;
+        globals.capturer = new CCapture({
+            format:'gif',
+            name:globals.screenRecordFilename,
+            framerate:globals.gifFPS,
+            workersPath:'dependencies/'
+        });
+        globals.currentFPS = globals.gifFPS;
         $("#recordStatus").show();
         globals.shouldScaleCanvas = false;
         globals.capturer.start();

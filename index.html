@@ -1407,11 +1407,17 @@
                 Scale: &nbsp;&nbsp;<input id="capturerScale" value="" placeholder="" class="float form-control" type="text"><br/><br/>
                 Dimensions: &nbsp;&nbsp;<b><span id="canvasDimensions"></span></b><br/>
                 <span class="smallTxt">( resize browser window to change aspect ratio )</span><br/><br/>
-                Quality ( 0-63 ): &nbsp;&nbsp;<input id="capturerQuality" value="" placeholder="" class="float int form-control" type="text"><br/><br/>
-                FrameRate ( 1-60 fps ): &nbsp;&nbsp;<input id="capturerFPS" value="" placeholder="" class="float int form-control" type="text"><br/><br/>
+                <span class="video">
+                    Quality ( 0-63 ): &nbsp;&nbsp;<input id="capturerQuality" value="" placeholder="" class="float int form-control" type="text"><br/><br/>
+                    FrameRate ( 1-60 fps ): &nbsp;&nbsp;<input id="capturerFPS" value="" placeholder="" class="float int form-control" type="text"><br/>
+                </span>
+                <span class="gif">
+                    FrameRate ( 1-60 fps ): &nbsp;&nbsp;<input id="gifFPS" value="" placeholder="" class="float int form-control" type="text"><br/>
+                </span>
             </div>
             <div class="modal-footer">
-                <button id="doScreenRecord" type="button" class="actionButton btn btn-success" data-dismiss="modal">Start</button>
+                <button id="doGifRecord" type="button" class="gif actionButton btn btn-success" data-dismiss="modal">Start</button>
+                <button id="doScreenRecord" type="button" class="video actionButton btn btn-success" data-dismiss="modal">Start</button>
             </div>
         </div>
     </div>

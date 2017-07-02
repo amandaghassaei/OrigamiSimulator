@@ -88,6 +88,8 @@ function initGlobals(){
         capturer: null,
         capturerQuality: 63,
         capturerFPS: 60,
+        gifFPS: 20,
+        currentFPS: null,
         capturerScale: 1,
         capturerFrames: 0,
         shouldScaleCanvas: false
