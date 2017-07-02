@@ -534,27 +534,27 @@ function initPattern(globals){
     }
 
     function removeBorderFaces(fold){
-        var borderVertices = [];
-        for (var i=0;i<fold.edges_vertices.length;i++){
-            var assignment = fold.edges_assignment[i];
-            if (assignment == "B" || assignment == "C"){//border or cut
-                var edge = fold.edges_vertices[i];
-                borderVertices.push(edge[0]);
-                borderVertices.push(edge[1]);
-            }
-        }
-        borderVertices = _.uniq(borderVertices);
-        for (var i=fold.faces_vertices.length-1;i>=0;i--){
-            var face = fold.faces_vertices[i];
-            var allBorder = true;
-            for (var j=0;j<face.length;j++){
-                if (borderVertices.indexOf(face[j])<0) {
-                    allBorder = false;
-                    break;
-                }
-            }
-            if (allBorder) fold.faces_vertices.splice(i,1);
-        }
+        // var borderVertices = [];
+        // for (var i=0;i<fold.edges_vertices.length;i++){
+        //     var assignment = fold.edges_assignment[i];
+        //     if (assignment == "B" || assignment == "C"){//border or cut
+        //         var edge = fold.edges_vertices[i];
+        //         borderVertices.push(edge[0]);
+        //         borderVertices.push(edge[1]);
+        //     }
+        // }
+        // borderVertices = _.uniq(borderVertices);
+        // for (var i=fold.faces_vertices.length-1;i>=0;i--){
+        //     var face = fold.faces_vertices[i];
+        //     var allBorder = true;
+        //     for (var j=0;j<face.length;j++){
+        //         if (borderVertices.indexOf(face[j])<0) {
+        //             allBorder = false;
+        //             break;
+        //         }
+        //     }
+        //     if (allBorder) fold.faces_vertices.splice(i,1);
+        // }
         return fold;
     }
 

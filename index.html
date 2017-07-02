@@ -913,8 +913,8 @@
                     <ul>
                         <li>All rendering and 3D interaction done with <a target="_blank" href="https://threejs.org/">three.js</a></li>
                         <li><a href="https://www.npmjs.com/package/path-data-polyfill" target="_blank">path-data-polyfill</a> helps with SVG parsing</li>
-                        <li><a href="https://github.com/edemaine/fold" target="_blank">FOLD</a> is used as the internal data structure, and methods from the
-                            <a href="https://github.com/edemaine/fold/blob/master/doc/api.md" target="_blank">FOLD API</a> are used for SVG parsing</li>
+                        <li><a href="https://github.com/edemaine/fold" target="_blank">FOLD</a> is used as the internal data structure, methods from the
+                            <a href="https://github.com/edemaine/fold/blob/master/doc/api.md" target="_blank">FOLD API</a> used for SVG parsing</li>
                         <li>Arbitrary polygonal faces of imported geometry are triangulated using the <a target="_blank" href="https://github.com/mapbox/earcut">Earcut Library</a></li>
                         <li>GIF and WebM video export uses <a target="_blank" href="https://github.com/spite/ccapture.js/">CCapture</a></li>
                         <li><a target="_blank" href="https://jquery.com/">jQuery</a>, <a target="_blank" href="http://getbootstrap.com/">Bootstrap</a>, and the
@@ -973,6 +973,7 @@
                     <img src="assets/patternwithtriangulations.jpg"/>
                     <ul>
                         <li>Line style and stroke width do not matter.</li>
+                        <li>Remove all groups and clipping masks from your file before importing.</li>
                         <li>The final fold angle of a mountain or valley fold is set by its opacity. For example, 1.0 = 180&deg;
                         (fully folded), 0.5 = 90&deg;, 0 = 0&deg; (flat).  Any fold angle between  0&deg; and 180&deg; may be used.</li>
                         <li>This tool should be able to automatically clean files of slightly misaligned vertices, stray vertices,
