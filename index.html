@@ -583,7 +583,7 @@
                     <li class="dropdown-submenu">
                         <a tabindex="-1">Tessellations<span class="pull-right fui-arrow-right"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="#" class="demo" data-url="Tessellations/miura-ori.svg">Miura-Ori</a></li>
+                            <li><a href="#" class="demo author" data-author="miuraOri" data-url="Tessellations/miura-ori.svg">Miura-Ori</a></li>
                             <li><a href="#" class="demo" data-url="Tessellations/waterbomb.svg">Waterbomb</a></li>
                             <li class="divider"></li>
                             <li><a href="#" class="demo author" data-author="huffmanTessellations" data-url="Tessellations/huffmanExtrudedBoxes.svg">Huffman Extruded Boxes</a></li>
@@ -805,10 +805,6 @@
                         <label>Color 2 (rgb hex): &nbsp;&nbsp;</label><input id="color2" value="" placeholder="" class="hexVal form-control" type="text"><br/>
                     </div>
                     <label class="radio">
-                        <input name="colorMode" value="normal" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
-                        Face Normals Material
-                    </label>
-                    <label class="radio">
                         <input name="colorMode" value="axialStrain" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
                         Strain Visualization<a class="about floatRight" href="#" id="aboutAxialStrain"><span class="fui-question-circle"></span></a>
                     </label>
@@ -816,6 +812,10 @@
                         <label>Max Strain: &nbsp;&nbsp;</label>
                         <input id="strainClip" value="" placeholder="" class="float form-control" type="text"> %<br/>
                     </div>
+                    <label class="radio">
+                        <input name="colorMode" value="normal" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                        Face Normals Material
+                    </label>
                 </div>
                 <br/>
             </div><br/>
@@ -886,7 +886,7 @@
 
                     This app allows you to upload any origami crease pattern and simulate how it will fold.  It uses a physics-based
                     approach to iteratively solve for small displacements in the geometry of an initially flat sheet due to forces
-                    exerted by creases.  This physics solver extends work from the following sources: <br/><br/>
+                    exerted by creases.  This solver extends work from the following sources: <br/><br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="http://www2.eng.cam.ac.uk/~sdg/preprint/5OSME.pdf">Origami Folding; A Structural Engineering Approach</a> by Mark Schenk and Simon D. Guest<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="http://www.tsg.ne.jp/TT/cg/TachiFreeformOrigami2010.pdf">Freeform Variations of Origami</a> by Tomohiro Tachi<br/>
                     <br/>
@@ -945,23 +945,24 @@
                         <li>edges_assignment</li>
                         <li>faces_vertices</li>
                     </ul>
+                    You may specify the target fold angle of each crease using the edges_foldAngles field.<br/><br/>
                     If you are unsure whether your FOLD file is valid, you can inspect it using the
                     <a target="_blank" href="https://edemaine.github.io/fold/examples/foldviewer.html">FOLD Viewer</a>.<br/>
                     <br/>
                     <b>Importing SVG:</b><br/><br/>
                     <ul>
                         <li>The SVG importer supports path, line, rect, polygon, and polyline objects with the appropriate
-                            <a href="https://www.w3schools.com/graphics/svg_stroking.asp" target="_blank">stroke</a> color set:</li>
+                            <a href="https://www.w3schools.com/graphics/svg_stroking.asp" target="_blank">stroke</a> color:</li>
                         <li>Mountain folds have <span style="color:red">red</span> stroke - rgb(255, 0, 0), hex #ff0000</li>
                         <li>Valley folds have <span style="color:blue">blue</span> stroke - rgb(0, 0, 255), hex #0000ff</li>
                         <li>Outline edges have <span style="color:black">black</span> stroke - rgb(0, 0, 0), hex #000000</li>
-                        <li>Hinges (undriven creases) have <span style="color:black">black</span> stroke - rgb(0, 0, 0), hex #000000</li>
+                        <li>Hinges (undriven creases) have <span style="color:magenta">magenta</span> stroke - rgb(255, 0, 255), hex #ff00ff</li>
                     </ul>
                     <img src="assets/examplepattern.jpg"/>
                     <ul>
                         <li>This tool will automatically triangulate regions in the pattern that form polygons with more than three sides.
                         To control the triangulations draw lines in <span style="color:#cccc00">yellow</span> - rgb(255, 255, 0), hex #ffff00<br/>
-                        In general, patterns move better when their triangulation is symmetric and minimizes long, skinny triangles.</li>
+                        In general, patterns are more stable when their triangulation is symmetric and minimizes long, skinny triangles.</li>
                     </ul>
                     <img src="assets/patternwithtriangulations.jpg"/>
                     <ul>
@@ -977,8 +978,7 @@
                 <b>For Adobe Illustrator users:</b><br/><br/>
                 I use Illustrator to create SVGs (though any vector editing program should be fine), here are some tips I've found for making svgs to import into this tool.<br/><br/>
                     <ul>
-                        <li>If you are starting with a pre-made vector file, first ungroup any groups, release all compound paths
-                        (<b>Select all + Object > Compound Path > Release</b>), and release all clipping masks (<b>Select all + Object > Clipping Mask > Release</b>).</li>
+                        <li>If you are starting with a pre-made vector file, first ungroup any groups (<b>Select all + Object > Ungroup All</b>) and release all clipping masks (<b>Select all + Object > Clipping Mask > Release</b>).</li>
                         <li>Create geometry using the <b>Line Segment Tool</b>.</li>
                         <li>Illustrator can help you select all lines of a particular type so that you can edit their color or opacity together.  Click the line,
                         then go to <b>Select > Same > Appearance</b> to select all similar lines in the pattern.
@@ -1378,7 +1378,12 @@
         </div>
         <div id="squareTwist">
             Comparison of square twist bistability, inspired by the paper
-            <a href="http://cohengroup.lassp.cornell.edu/projects/bistable-origami-and-hidden-degrees-freedom" target="_blank">Origami structures with a critical transition to bistability arising from hidden degrees of freedom</a>.
+            <a href="http://cohengroup.lassp.cornell.edu/projects/bistable-origami-and-hidden-degrees-freedom" target="_blank">
+                Origami structures with a critical transition to bistability arising from hidden degrees of freedom</a>.
+            Switch to strain visualization to compare patterns.
+        </div>
+        <div id="miuraOri">
+            Designed by <a href="https://en.wikipedia.org/wiki/Miura_fold" target="_blank">Koryo Miura</a>.
         </div>
     </div>
 </div>

@@ -50,7 +50,7 @@ function initGlobals(){
         triStiffness: 1,
 
         //dynamic sim settings
-        percentDamping: 0.75,
+        percentDamping: 0.85,
         density: 1,
 
         strainClip: 5.0,//for strain visualization, % strain that is drawn red
