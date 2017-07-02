@@ -521,10 +521,14 @@ function initPattern(globals){
         // for (var i=0;i<fold.vertices_vertices.length;i++){
         //     if (cutVertices.indexOf(i)<0) continue;
         //     var vertices = fold.vertices_vertices[i];
+        //     var cutEdgesVertices = [];
         //     for (var j=0;j<vertices.length;j++){
-        //         if (cutVertices.indexOf(j)<0) continue;
-        //
+        //         //todo this doesn't work
+        //         // if (cutVertices.indexOf(vertices[j])<0) continue;
+        //         // else cutEdgesVertices.push(j);
         //     }
+        //     if (cutEdgesVertices.length == 1) continue;
+        //
         // }
         return fold;
     }
