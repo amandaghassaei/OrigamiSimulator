@@ -570,14 +570,14 @@
                         <a tabindex="-1">Origami<span class="pull-right fui-arrow-right"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="#" class="demo" data-url="Origami/flappingBird.svg">Flapping Bird</a></li>
-                            <li><a href="#" class="demo" data-url="Origami/randlettflappingbird.svg">Randlett Flapping Bird</a></li>
+                            <li><a href="#" class="demo author" data-author="randlett" data-url="Origami/randlettflappingbird.svg">Randlett Flapping Bird</a></li>
                             <li><a href="#" class="demo" data-url="Origami/traditionalCrane.svg">Crane</a></li>
-                            <li><a href="#" class="demo" data-url="Origami/hypar.svg">Hypar</a></li>
+                            <li><a href="#" class="demo author" data-author="hypar" data-url="Origami/hypar.svg">Hypar</a></li>
                             <li><a href="#" class="demo author" data-author="langTreemaker" data-url="Origami/langCardinal.svg">Lang Cardinal</a></li>
                             <li><a href="#" class="demo author" data-author="langTreemaker" data-url="Origami/langOrchid.svg">Lang Orchid</a></li>
                             <li><a href="#" class="demo author" data-author="langTreemaker" data-url="Origami/langKnlDragon.svg">Lang KNL Dragon</a></li>
                             <li><a href="#" class="demo" data-url="Origami/singlesquaretwist.svg">Square Twist (single)</a></li>
-                            <li><a href="#" class="demo" data-url="Origami/squaretwistManyAngles.svg">Square Twist (many angles)</a></li>
+                            <li><a href="#" class="demo author" data-author="squareTwist" data-url="Origami/squaretwistManyAngles.svg">Square Twist (many angles)</a></li>
                         </ul>
                     </li>
                     <li class="dropdown-submenu">
@@ -642,12 +642,7 @@
                     <li class="dropdown-submenu">
                         <a tabindex="-1">Problematic Patterns<span class="pull-right fui-arrow-right"></span></a>
                         <ul class="dropdown-menu">
-                            <li class="dropdown-submenu">
-                                <a tabindex="-1">Skinny Triangles<span class="pull-right fui-arrow-right"></span></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#" class="demo" data-url="Tessellations/langRattanWeave.svg">Lang Rattan Weave</a></li>
-                                </ul>
-                            </li>
+                            <li><a href="#" class="demo author" data-author="skinnyTriangles" data-url="Tessellations/langRattanWeave.svg">Lang Rattan Weave</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -1341,11 +1336,11 @@
             an app by <a href="http://erikdemaine.org/" target="_blank">Erik Demaine</a>,
             <a href="http://martindemaine.org/" target="_blank">Martin Demaine</a>,
             and <a href="http://jasonku.mit.edu/" target="_blank">Jason Ku</a> that creates crease patterns for any raised maze on a square grid.
-            It is based on the paper <a href="http://erikdemaine.org/papers/MazeFolding_Origami5/paper.pdf" target="_blank">Folding Any
+            Based on the paper <a href="http://erikdemaine.org/papers/MazeFolding_Origami5/paper.pdf" target="_blank">Folding Any
             Orthogonal Maze</a> by the same authors.
         </div>
         <div id="huffmanTessellations">
-            Designed by <a href="https://en.wikipedia.org/wiki/David_A._Huffman" target="_blank">David Huffman</a>.  The crease patterns were adapted from
+            Designed by <a href="https://en.wikipedia.org/wiki/David_A._Huffman" target="_blank">David Huffman</a>.  Crease pattern adapted from
             the paper <a href="http://erikdemaine.org/papers/HuffmanTess_JMD2013/paper.pdf" target="_blank">Reconstructing David Huffman's Origami Tessellations</a>.
         </div>
         <div id="huffmanCurved">
@@ -1369,6 +1364,21 @@
         </div>
         <div id="moveSlowly">
             Move <b>Fold Percent</b> slowly for this pattern to fold correctly!
+        </div>
+        <div id="skinnyTriangles">
+            When this pattern is triangulated (during the setup of the simulation) it forms many skinny triangles,
+            these triangles are very unstable as the pattern folds.
+        </div>
+        <div id="hypar">
+            Alternating asymmetric hinge triangulation of hypar from <a href="http://erikdemaine.org/papers/Hypar_GC/paper.pdf" target="_blank">(Non)existence of Pleated Folds:
+            How Paper Folds Between Creases</a>.
+        </div>
+        <div id="randlett">
+            Designed by <a href="https://en.wikipedia.org/wiki/Samuel_Randlett" target="_blank">Samuel Randlett</a>.
+        </div>
+        <div id="squareTwist">
+            Comparison of square twist bistability, inspired by the paper
+            <a href="http://cohengroup.lassp.cornell.edu/projects/bistable-origami-and-hidden-degrees-freedom" target="_blank">Origami structures with a critical transition to bistability arising from hidden degrees of freedom</a>.
         </div>
     </div>
 </div>
