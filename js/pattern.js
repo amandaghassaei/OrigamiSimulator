@@ -460,6 +460,7 @@ function initPattern(globals){
 
         foldData = edgesVerticesToVerticesEdges(foldData);
         foldData.vertices_vertices = FOLD.convert.sort_vertices_vertices(foldData);
+        foldData = sortVerticesEdges(foldData);
         foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
         foldData = removeBorderFaces(foldData);
         foldData = reverseFaceOrder(foldData);//set faces to counter clockwise
@@ -522,28 +523,33 @@ function initPattern(globals){
         return fold;
     }
 
+    function sortVerticesEdges(fold){
+        for (var i=0;i<fold.vertices_vertices.length;i++){
+            var verticesVertices = fold.vertices_vertices[i];
+            var verticesEdges = fold.vertices_edges[i];
+            var sortedVerticesEdges = [];
+            for (var j=0;j<verticesVertices.length;j++){
+                var index = -1;
+                for (var k=0;k<verticesEdges.length;k++){
+                    var edgeIndex = verticesEdges[k];
+                    var edge = fold.edges_vertices[edgeIndex];
+                    if (edge.indexOf(verticesVertices[j])>=0){
+                        index = edgeIndex;
+                        break;
+                    }
+                }
+                if (index<0) console.warn("no matching edge found, fix this");
+                sortedVerticesEdges.push(index);
+            }
+            fold.vertices_edges[i] = sortedVerticesEdges;
+        }
+        return fold;
+    }
+
     function splitCuts(fold){
         //todo split cuts
-        // var cutVertices = [];
-        // for (var i=0;i<fold.edges_vertices.length;i++){
-        //     if (fold.edges_assignment[i] == "C"){//border or cut
-        //         var edge = fold.edges_vertices[i];
-        //         cutVertices.push(edge[0]);
-        //         cutVertices.push(edge[1]);
-        //     }
-        // }
-        // cutVertices = _.uniq(cutVertices);
-        // //go around each vertex and split cut in counter-clockwise order
+        //go around each vertex and split cut in counter-clockwise order
         // for (var i=0;i<fold.vertices_vertices.length;i++){
-        //     if (cutVertices.indexOf(i)<0) continue;
-        //     var vertices = fold.vertices_vertices[i];
-        //     var cutEdgesVertices = [];
-        //     for (var j=0;j<vertices.length;j++){
-        //         //todo this doesn't work
-        //         // if (cutVertices.indexOf(vertices[j])<0) continue;
-        //         // else cutEdgesVertices.push(j);
-        //     }
-        //     if (cutEdgesVertices.length == 1) continue;
         //
         // }
         return fold;
