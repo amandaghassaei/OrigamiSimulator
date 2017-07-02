@@ -137,7 +137,7 @@ function initPattern(globals){
         if (stroke == "#000000" || stroke == "#000" || stroke == "black" || stroke == "rgb(0, 0, 0)") return "border";
         if (stroke == "#ff0000" || stroke == "#f00" || stroke == "red" || stroke == "rgb(255, 0, 0)") return "mountain";
         if (stroke == "#0000ff" || stroke == "#00f" || stroke == "blue" || stroke == "rgb(0, 0, 255)") return "valley";
-        // if (stroke == "#00ff00" || stroke == "#0f0" || stroke == "green" || stroke == "rgb(0, 255, 0)") return "cut";
+        if (stroke == "#00ff00" || stroke == "#0f0" || stroke == "green" || stroke == "rgb(0, 255, 0)") return "cut";
         if (stroke == "#ffff00" || stroke == "#ff0" || stroke == "yellow" || stroke == "rgb(255, 255, 0)") return "triangulation";
         if (stroke == "#ff00ff" || stroke == "#f0f" || stroke == "magenta" || stroke == "rgb(255, 0, 255)") return "hinge";
         badColors.push(stroke);
@@ -344,7 +344,7 @@ function initPattern(globals){
             findType(verticesRaw, bordersRaw, borderFilter, $paths, $lines, $rects, $polygons, $polylines);
             findType(verticesRaw, mountainsRaw, mountainFilter, $paths, $lines, $rects, $polygons, $polylines);
             findType(verticesRaw, valleysRaw, valleyFilter, $paths, $lines, $rects, $polygons, $polylines);
-            // findType(verticesRaw, cutsRaw, cutFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(verticesRaw, cutsRaw, cutFilter, $paths, $lines, $rects, $polygons, $polylines);
             findType(verticesRaw, triangulationsRaw, triangulationFilter, $paths, $lines, $rects, $polygons, $polylines);
             findType(verticesRaw, hingesRaw, hingeFilter, $paths, $lines, $rects, $polygons, $polylines);
 
@@ -442,6 +442,11 @@ function initPattern(globals){
             foldData.edges_assignment.push("U");
             foldData.edges_foldAngles.push(null);
         });
+        _.each(_cutsRaw, function(edge){
+            foldData.edges_vertices.push([edge[0], edge[1]]);
+            foldData.edges_assignment.push("C");
+            foldData.edges_foldAngles.push(null);
+        });
 
         foldData = FOLD.filter.collapseNearbyVertices(foldData, globals.vertTol);
         foldData = FOLD.filter.removeLoopEdges(foldData);//remove edges that points to same vertex
@@ -458,13 +463,19 @@ function initPattern(globals){
         foldData = removeStrayVertices(foldData);//delete stray anchors
         removeRedundantVertices(foldData, 0.01);//remove vertices that split edge
 
-        foldData = edgesVerticesToVerticesEdges(foldData);
         foldData.vertices_vertices = FOLD.convert.sort_vertices_vertices(foldData);
-        foldData = sortVerticesEdges(foldData);
         foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
-        foldData = removeBorderFaces(foldData);
+
+        foldData = edgesVerticesToVerticesEdges(foldData);
+        foldData = removeBorderFaces(foldData);//expose holes surrounded by all border edges
+
         foldData = reverseFaceOrder(foldData);//set faces to counter clockwise
-        if (_cutsRaw.length>0) foldData = splitCuts(foldData);
+
+        if (_cutsRaw.length>0) {
+            foldData = sortVerticesEdges(foldData);
+            foldData = facesVerticesToVerticesFaces(foldData);
+            foldData = splitCuts(foldData);
+        }
 
         return processFold(foldData);
     }
@@ -523,6 +534,21 @@ function initPattern(globals){
         return fold;
     }
 
+    function facesVerticesToVerticesFaces(fold){
+        var verticesFaces = [];
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            verticesFaces.push([]);
+        }
+        for (var i=0;i<fold.faces_vertices.length;i++){
+            var face = fold.faces_vertices[i];
+            for (var j=0;j<face.length;j++){
+                verticesFaces[face[j]].push(i);
+            }
+        }
+        fold.verticesFaces = verticesFaces;
+        return fold;
+    }
+
     function sortVerticesEdges(fold){
         for (var i=0;i<fold.vertices_vertices.length;i++){
             var verticesVertices = fold.vertices_vertices[i];
@@ -549,9 +575,36 @@ function initPattern(globals){
     function splitCuts(fold){
         //todo split cuts
         //go around each vertex and split cut in counter-clockwise order
-        // for (var i=0;i<fold.vertices_vertices.length;i++){
-        //
-        // }
+        for (var i=0;i<fold.vertices_vertices.length;i++){
+            var cutIndices = [];
+            var verticesEdges = fold.vertices_edges[i];
+            for (var j=0;j<verticesEdges.length;j++){
+                var edgeIndex = verticesEdges[j];
+                if (fold.edges_assignment[edgeIndex] == "C"){
+                    cutIndices.push(j);
+                }
+            }
+            if (cutIndices.length == 0) continue;
+
+            var groups = [];
+            var completeLoop = false;
+            var firstPass = true;
+            for (var j=cutIndices[0];!completeLoop;j++){
+                if (j>=verticesEdges.length) j-=verticesEdges.length;
+                if (groups.length>0) groups[groups.length-1].push(j);
+                if (cutIndices.indexOf(j)>=0){
+                    groups.push([]);
+                    groups[groups.length-1].push(j);
+                }
+                if (!firstPass && j==cutIndices[0]) completeLoop = true;
+                firstPass = false;
+            }
+            console.log(groups);
+        }
+        //update faces_vertices, edges_vertices, delete vertices_edges, vertices_vertices, vertices_faces
+        for (var i=0;i<fold.edges_assignment.length;i++){//todo do this inline eventually
+            if (fold.edges_assignment[i] == "C") fold.edges_assignment[i] = "B";
+        }
         return fold;
     }
 
@@ -859,7 +912,7 @@ function initPattern(globals){
     function saveSVG(){
         if (globals.extension == "fold"){
             //todo solve for crease pattern
-            globals.warn("No crease pattern available for FOLD format.");
+            globals.warn("No crease pattern available for files imported from FOLD format.");
             return;
         }
         var serializer = new XMLSerializer();

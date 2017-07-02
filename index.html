@@ -912,7 +912,7 @@
                     <b>External Libraries:</b><br/><br/>
                     <ul>
                         <li>All rendering and 3D interaction done with <a target="_blank" href="https://threejs.org/">three.js</a></li>
-                        <li><a href="https://www.npmjs.com/package/path-data-polyfill" target="_blank">path-data-polyfill</a> helps with SVG parsing</li>
+                        <li><a href="https://www.npmjs.com/package/path-data-polyfill" target="_blank">path-data-polyfill</a> helps with SVG path parsing</li>
                         <li><a href="https://github.com/edemaine/fold" target="_blank">FOLD</a> is used as the internal data structure, methods from the
                             <a href="https://github.com/edemaine/fold/blob/master/doc/api.md" target="_blank">FOLD API</a> used for SVG parsing</li>
                         <li>Arbitrary polygonal faces of imported geometry are triangulated using the <a target="_blank" href="https://github.com/mapbox/earcut">Earcut Library</a></li>
@@ -959,15 +959,18 @@
                     <ul>
                         <li>The SVG importer supports path, line, rect, polygon, and polyline objects with the appropriate
                             <a href="https://www.w3schools.com/graphics/svg_stroking.asp" target="_blank">stroke</a> color:</li>
-                        <li>Mountain folds have <span style="color:red">red</span> stroke - rgb(255, 0, 0), hex #ff0000</li>
-                        <li>Valley folds have <span style="color:blue">blue</span> stroke - rgb(0, 0, 255), hex #0000ff</li>
-                        <li>Outline edges have <span style="color:black">black</span> stroke - rgb(0, 0, 0), hex #000000</li>
-                        <li>Hinges (undriven creases) have <span style="color:magenta">magenta</span> stroke - rgb(255, 0, 255), hex #ff00ff</li>
+                        <li>Mountain folds have <b style="color:red">red</b> stroke - rgb(255, 0, 0), hex #ff0000</li>
+                        <li>Valley folds have <b style="color:blue">blue</b> stroke - rgb(0, 0, 255), hex #0000ff</li>
+                        <li>Outline edges have <b style="color:black">black</b> stroke - rgb(0, 0, 0), hex #000000 - use
+                        this edge type for both the border of the pattern, and any internal holes.</li>
+                        <li>Cuts have <b style="color:#00ff00">green</b> stroke - rgb(0, 255, 0), hex #00ff00- use this edge type
+                        to form thin slits.</li>
+                        <li>Hinges (undriven creases) have <b style="color:magenta">magenta</b> stroke - rgb(255, 0, 255), hex #ff00ff</li>
                     </ul>
                     <img src="assets/examplepattern.jpg"/>
                     <ul>
                         <li>This tool will automatically triangulate regions in the pattern that form polygons with more than three sides.
-                        To control the triangulations draw lines in <span style="color:#cccc00">yellow</span> - rgb(255, 255, 0), hex #ffff00<br/>
+                        To control the triangulations draw lines in <b style="color:#cccc00">yellow</b> - rgb(255, 255, 0), hex #ffff00<br/>
                         In general, patterns are more stable when their triangulation is symmetric and minimizes long, skinny triangles.</li>
                     </ul>
                     <img src="assets/patternwithtriangulations.jpg"/>
