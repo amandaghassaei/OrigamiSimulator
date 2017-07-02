@@ -501,14 +501,31 @@ function initPattern(globals){
 
     function reverseFaceOrder(fold){
         for (var i=0;i<fold.faces_vertices.length;i++){
-            fold.faces_vertices[i].reverse()
+            fold.faces_vertices[i].reverse();
         }
         return fold;
     }
 
     function splitCuts(fold){
         //todo split cuts
-        //go around each vertex and split cut in order
+        // var cutVertices = [];
+        // for (var i=0;i<fold.edges_vertices.length;i++){
+        //     if (fold.edges_assignment[i] == "C"){//border or cut
+        //         var edge = fold.edges_vertices[i];
+        //         cutVertices.push(edge[0]);
+        //         cutVertices.push(edge[1]);
+        //     }
+        // }
+        // cutVertices = _.uniq(cutVertices);
+        // //go around each vertex and split cut in counter-clockwise order
+        // for (var i=0;i<fold.vertices_vertices.length;i++){
+        //     if (cutVertices.indexOf(i)<0) continue;
+        //     var vertices = fold.vertices_vertices[i];
+        //     for (var j=0;j<vertices.length;j++){
+        //         if (cutVertices.indexOf(j)<0) continue;
+        //
+        //     }
+        // }
         return fold;
     }
 
@@ -632,6 +649,7 @@ function initPattern(globals){
     function mergeEdge(fold, v1, v2, v3){//v2 is center vertex
         var angleAvg = 0;
         var avgSum = 0;
+        var angles = [];
         var edgeAssignment = null;
         var edgeIndices = [];
         for (var i=fold.edges_vertices.length-1;i>=0;i--){
@@ -642,12 +660,17 @@ function initPattern(globals){
                     console.warn("different edge assignments");
                     return false;
                 }
-                if (fold.edges_foldAngles[i]) {
-                    angleAvg += fold.edges_foldAngles[i];
+                var angle = fold.edges_foldAngles[i];
+                angles.push(angle);
+                if (angle) {
+                    angleAvg += angle;
                     avgSum++;
                 }
                 edgeIndices.push(i);//larger index in front
             }
+        }
+        if (angles[0] != angles[1]){
+            console.warn("incompatible angles: " + JSON.stringify(angles));
         }
         for (var i=0;i<edgeIndices.length;i++){
             var index = edgeIndices[i];
