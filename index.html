@@ -913,7 +913,8 @@
                     <ul>
                         <li>All rendering and 3D interaction done with <a target="_blank" href="https://threejs.org/">three.js</a></li>
                         <li><a href="https://www.npmjs.com/package/path-data-polyfill" target="_blank">path-data-polyfill</a> helps with SVG parsing</li>
-                        <li><a href="https://github.com/edemaine/fold" target="_blank">FOLD</a> is used as the internal data structure, and methods from the FOLD api are used for SVG parsing</li>
+                        <li><a href="https://github.com/edemaine/fold" target="_blank">FOLD</a> is used as the internal data structure, and methods from the
+                            <a href="https://github.com/edemaine/fold/blob/master/doc/api.md" target="_blank">FOLD API</a> are used for SVG parsing</li>
                         <li>Arbitrary polygonal faces of imported geometry are triangulated using the <a target="_blank" href="https://github.com/mapbox/earcut">Earcut Library</a></li>
                         <li>GIF and WebM video export uses <a target="_blank" href="https://github.com/spite/ccapture.js/">CCapture</a></li>
                         <li><a target="_blank" href="https://jquery.com/">jQuery</a>, <a target="_blank" href="http://getbootstrap.com/">Bootstrap</a>, and the
@@ -925,7 +926,7 @@
                     Code available on <a href="https://github.com/amandaghassaei/OrigamiSimulator" target="_blank">Github</a>.  If you have interesting crease patterns that would
                     make good demo files, please send them to me (Amanda) so I can add them to the <b>Examples</b> menu.  My email address is on my website.  Thanks!<br/>
                     <br/>
-                    More documentation coming soon.
+                    More documentation coming soon.<br/>
                 </p>
             </div>
         </div><!-- /.modal-content -->
@@ -977,7 +978,9 @@
                         <li>This tool should be able to automatically clean files of slightly misaligned vertices, stray vertices,
                         duplicate lines, and extra vertices falling in the middle of an edge,
                         but it is recommended to remove these errors yourself in order to avoid problems.</li>
-                        <li>If your simulation is not working, check that the pattern looks correct by clicking on the "Pattern" view in the top nav bar.</li>
+                        <li>If your simulation is not working, check that the imported pattern looks correct by clicking on the <b>Pattern</b> view in the top nav bar.
+                        You can also download a copy of the imported pattern ( <b>File > Save Pattern as SVG</b> ) and view it in a vector
+                        editing program of your choice.</li>
                     </ul><br/>
 
                 <b>For Adobe Illustrator users:</b><br/><br/>
@@ -1122,7 +1125,8 @@
                     <input id="exportFoldAngle" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
                     Save with vertices_foldAngles
                 </label>
-                <span class="smallTxt">For more information about the FOLD file format, see the <a target="_blank" href="https://github.com/edemaine/fold">offical docs</a></span>.
+                <span class="smallTxt">For more information about the FOLD file format, see the <a target="_blank" href="https://github.com/edemaine/fold">offical docs</a>.
+                Use the <a href="https://edemaine.github.io/fold/examples/foldviewer.html" target="_blank">FOLD viewer</a> to check that your file has been exported correctly.</span>
             </div>
             <div class="modal-footer">
                 <button id="doFOLDsave" type="button" class="actionButton btn btn-success" data-dismiss="modal">Save</button>

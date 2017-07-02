@@ -6,6 +6,7 @@
 function initControls(globals){
 
     window.addEventListener('resize', function(){
+        if (globals.capturer) return;
         globals.threeView.onWindowResize();
         updateCanvasDimensions();
     }, false);
@@ -254,8 +255,7 @@ function initControls(globals){
         updateCanvasDimensions();
     }, 1);
     function updateCanvasDimensions(){
-        var $body = $("body");
-        var dim = (new THREE.Vector2($body.innerWidth(), $body.innerHeight())).multiplyScalar(globals.capturerScale);
+        var dim = (new THREE.Vector2(window.innerWidth, window.innerHeight)).multiplyScalar(globals.capturerScale);
         $("#canvasDimensions").html(dim.x + " x " + dim.y + " px");
     }
     setInput("#screenRecordFilename", "OrigamiSimulator", function(val){
@@ -309,6 +309,7 @@ function initControls(globals){
             globals.warn("No crease pattern available for FOLD format.");
             return;
         }
+        if (globals.navMode == "pattern") return;
         globals.pausedForPatternView = globals.simulationRunning;
         globals.model.pause();
         globals.navMode = "pattern";
@@ -319,6 +320,7 @@ function initControls(globals){
     $("#navSimulation").parent().addClass("open");
     $("#navPattern").parent().removeClass("open");
     setLink("#navSimulation", function(){
+        if (globals.navMode == "simulation") return;
         globals.navMode = "simulation";
         if (globals.pausedForPatternView) globals.model.resume();
         $("#navSimulation").parent().addClass("open");
