@@ -5,6 +5,11 @@
 
 function initControls(globals){
 
+    window.addEventListener('resize', function(){
+        globals.threeView.onWindowResize();
+        updateCanvasDimensions();
+    }, false);
+
     $("#logo").mouseenter(function(){
         $("#activeLogo").show();
         $("#inactiveLogo").hide();

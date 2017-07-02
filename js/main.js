@@ -6,10 +6,6 @@ globals = {};
 
 $(function() {
 
-    window.addEventListener('resize', function(){
-        globals.threeView.onWindowResize();
-    }, false);
-
     globals = initGlobals();
     globals.UI3D = init3DUI(globals);
     globals.importer = initImporter(globals);
