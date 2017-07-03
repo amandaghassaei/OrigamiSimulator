@@ -534,6 +534,7 @@
     <script type="text/javascript" src="js/saveFOLD.js"></script>
     <script type="text/javascript" src="js/importer.js"></script>
     <script type="text/javascript" src="js/ViveInterface.js"></script>
+    <script type="text/javascript" src="js/videoAnimator.js"></script>
 
     <script type="text/javascript" src="js/main.js"></script>
 </head>
@@ -963,8 +964,8 @@
                             <a href="https://www.w3schools.com/graphics/svg_stroking.asp" target="_blank">stroke</a> color:</li>
                         <li>Mountain folds have <b style="color:red">red</b> stroke - rgb(255, 0, 0), hex #ff0000</li>
                         <li>Valley folds have <b style="color:blue">blue</b> stroke - rgb(0, 0, 255), hex #0000ff</li>
-                        <li>Outline edges have <b style="color:black">black</b> stroke - rgb(0, 0, 0), hex #000000 - use
-                        this edge type for both the border of the pattern, and any internal holes.</li>
+                        <li>Boundary edges have <b style="color:black">black</b> stroke - rgb(0, 0, 0), hex #000000 - use
+                        this edge type for both the outline of the pattern, and any internal holes.</li>
                         <li>Cuts have <b style="color:#00ff00">green</b> stroke - rgb(0, 255, 0), hex #00ff00- use this edge type
                         to form thin slits in the pattern.</li>
                         <li>Hinges (undriven creases) have <b style="color:magenta">magenta</b> stroke - rgb(255, 0, 255), hex #ff00ff</li>
@@ -1343,7 +1344,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-body">
-                This app uses GPU functions which are not supported by this device/browser, please try again on desktop with Chrome/Firefox.<br/><br/>
+                This app uses GPU functions that are not supported by this device/browser, please try again on desktop with Chrome/Firefox.<br/><br/>
             </div>
         </div>
     </div>
@@ -1414,6 +1415,7 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
                 <b>SCREEN RECORDING</b><br/><br/>
+                <a href="#" id="setupAnimation" class="displayBlock btn btn-lg btn-default">Animate Fold Percent</a><br/><br/>
                 Filename: &nbsp;&nbsp;<input id="screenRecordFilename" value="" placeholder="" class="bigInput text form-control" type="text"> .webm<br/><br/>
                 Scale: &nbsp;&nbsp;<input id="capturerScale" value="" placeholder="" class="float form-control" type="text"><br/><br/>
                 Dimensions: &nbsp;&nbsp;<b><span id="canvasDimensions"></span></b><br/>
@@ -1433,6 +1435,28 @@
             <div class="modal-footer">
                 <button id="doGifRecord" type="button" class="gif actionButton btn btn-success" data-dismiss="modal">Start</button>
                 <button id="doScreenRecord" type="button" class="video actionButton btn btn-success" data-dismiss="modal">Start</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="animationSetupModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+    <div class="modal-dialog modal-med">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <b>FOLD PERCENT ANIMATION SETUP</b><br/>
+                <p>
+                    Current Fold Percent: &nbsp;&nbsp;<input value="" placeholder="" id="currentFoldPercent" class="float form-control" type="text">&nbsp;&nbsp;%<br/><br/>
+                    <span id="animationSetupHelp"></span>
+                    <ul id="animationHTML"></ul>
+                    <a href="#" id="addDelay" class="displayBlock btn btn-lg btn-warning">Add Delay</a>&nbsp;&nbsp;&nbsp;
+                    <a href="#" id="addAnimationItem" class="displayBlock btn btn-lg btn-success">Add Animation</a><br/>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button id="finishAnimationSetup" type="button" class="actionButton btn btn-success" data-dismiss="modal">Done</button>
             </div>
         </div>
     </div>

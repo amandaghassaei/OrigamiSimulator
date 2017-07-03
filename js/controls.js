@@ -408,13 +408,22 @@ function initControls(globals){
         globals.creasePercent = val/100;
         globals.shouldChangeCreasePercent = true;
         creasePercentNavSlider.slider('value', val);
+        $('#currentFoldPercent').val(val);
     });
     creasePercentNavSlider = setSlider("#creasePercentNav>div", globals.creasePercent*100, -100, 100, 1, function(val){
         globals.creasePercent = val/100;
         globals.shouldChangeCreasePercent = true;
         creasePercentSlider.slider('value', val);
         $('#creasePercent>input').val(val);
+        $('#currentFoldPercent').val(val);
     });
+    setInput("#currentFoldPercent", globals.creasePercent*100, function(val){
+        globals.creasePercent = val/100;
+        globals.shouldChangeCreasePercent = true;
+        creasePercentSlider.slider('value', val);
+        creasePercentNavSlider.slider('value', val);
+        $('#creasePercent>input').val(val);
+    }, -100, 100);
 
     function setDeltaT(val){
         $("#deltaT").html(val.toFixed(4));
@@ -437,12 +446,26 @@ function initControls(globals){
         }
     });
 
+    setLink("#setupAnimation", function(){
+        $("#screenCaptureModal").modal("hide");
+        $("#animationSetupModal").modal("show");
+    });
+
     setLink("#saveSVGScreenshot", function(){
         globals.threeView.saveSVG();
     });
 
     setLink("#saveSVG", function(){
         globals.pattern.saveSVG();
+    });
+    setLink("#addAnimationItem", function(){
+        globals.videoAnimator.addItem();
+    });
+    setLink("#addDelay", function(){
+        globals.videoAnimator.addDelay();
+    });
+    $("#animationSetupModal").on('hidden.bs.modal', function (){
+        $("#screenCaptureModal").modal("show");
     });
 
     setCheckbox("#ambientOcclusion", globals.ambientOcclusion, function(val){

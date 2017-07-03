@@ -452,7 +452,7 @@ a.seeMore.closed>.fui-triangle-down{
     transform: rotate(45deg);
 }
 
-#screenCaptureModal .modal-content{
+#screenCaptureModal .modal-content, #animationSetupModal .modal-content{
     background: rgba(255,255,255,0.9);
 }
 
@@ -470,4 +470,15 @@ a.seeMore.closed>.fui-triangle-down{
     display: block;
     margin-left: auto;
     margin-right: auto;
+}
+
+.animationStep{
+    margin: 7px 0;
+    display: inline-block;
+    padding: 5px 15px;
+    background: #fff;
+}
+#animationSetupModal p, #animationSetupModal ul{
+    text-align: center;
+    padding: 0;
 }

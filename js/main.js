@@ -26,5 +26,6 @@ $(function() {
     globals.rigidSolver = initRigidSolver(globals);
     globals.pattern = initPattern(globals);
     globals.vive = initViveInterface(globals);
+    globals.videoAnimator = initVideoAnimator(globals);
     $(".demo[data-url='Tessellations/huffmanWaterbomb.svg']").click();//load demo models
 });
