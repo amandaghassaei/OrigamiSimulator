@@ -435,7 +435,7 @@ function initControls(globals){
     }, -100, 100);
 
     function updateCreasePercent(){
-        var val = globals.creasePercent*100;
+        var val = (globals.creasePercent*100).toFixed(2);
         creasePercentSlider.slider('value', val);
         creasePercentNavSlider.slider('value', val);
         $('#currentFoldPercent').val(val);
