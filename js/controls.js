@@ -276,6 +276,10 @@ function initControls(globals){
         $("#recordStatus").show();
         globals.shouldScaleCanvas = false;
         globals.capturer.start();
+        if (globals.videoAnimator.isValid()) {
+            globals.shouldAnimateFoldPercent = true;
+            globals.videoAnimator.compile();
+        }
     });
     setLink("#doGifRecord", function(){
         globals.capturerFrames = 0;
@@ -290,6 +294,10 @@ function initControls(globals){
         $("#recordStatus").show();
         globals.shouldScaleCanvas = false;
         globals.capturer.start();
+        if (globals.videoAnimator.isValid()) {
+            globals.shouldAnimateFoldPercent = true;
+            globals.videoAnimator.compile();
+        }
     });
 
     setLink("#stopRecord", function(){
@@ -299,6 +307,7 @@ function initControls(globals){
         globals.capturer.save();
         globals.capturer = null;
         globals.shouldScaleCanvas = false;
+        globals.shouldAnimateFoldPercent = false;
         globals.threeView.onWindowResize();
         $("#recordStatus").hide();
     });
@@ -424,6 +433,14 @@ function initControls(globals){
         creasePercentNavSlider.slider('value', val);
         $('#creasePercent>input').val(val);
     }, -100, 100);
+
+    function updateCreasePercent(){
+        var val = globals.creasePercent*100;
+        creasePercentSlider.slider('value', val);
+        creasePercentNavSlider.slider('value', val);
+        $('#currentFoldPercent').val(val);
+        $('#creasePercent>input').val(val);
+    }
 
     function setDeltaT(val){
         $("#deltaT").html(val.toFixed(4));
@@ -774,7 +791,8 @@ function initControls(globals){
     }
 
     return {
-        setDeltaT: setDeltaT
+        setDeltaT: setDeltaT,
+        updateCreasePercent: updateCreasePercent
     }
 }
 

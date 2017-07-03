@@ -482,3 +482,10 @@ a.seeMore.closed>.fui-triangle-down{
     text-align: center;
     padding: 0;
 }
+.warning{
+    color: #f1970f;
+}
+
+.red{
+    color:red!important;
+}

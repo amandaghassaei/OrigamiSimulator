@@ -71,6 +71,13 @@ function initDynamicSolver(globals){
 
     function solve(_numSteps){
 
+        if (globals.shouldAnimateFoldPercent){
+            globals.creasePercent = globals.videoAnimator.nextFoldAngle(0);
+            globals.controls.updateCreasePercent();
+            setCreasePercent(globals.creasePercent);
+            globals.shouldChangeCreasePercent = true;
+        }
+
         if (globals.forceHasChanged) {
             updateExternalForces();
             globals.forceHasChanged = false;

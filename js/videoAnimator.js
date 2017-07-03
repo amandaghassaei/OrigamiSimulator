@@ -7,9 +7,41 @@ function initVideoAnimator(globals){
 
     var foldAngleSequence = [];
 
-    function clear(){
-        foldAngleSequence = [];
-        render();
+    function compile(){
+        var lastAngle = globals.creasePercent*100;
+        var t = 0;
+        for (var i=0;i<foldAngleSequence.length;i++){
+            var item = foldAngleSequence[i];
+            item.t = t;
+            item.from = lastAngle;
+            if (item.type == "delay") item.to = lastAngle;
+            lastAngle = item.to;
+            t += item.dur;
+        }
+    }
+
+    function nextFoldAngle(stepNum){
+        var fps = globals.currentFPS;
+        var frame = globals.capturerFrames + stepNum/globals.numSteps;
+        var t = frame/fps;
+        var item = getItemForT(t);
+        if (item === null) {
+            globals.shouldAnimateFoldPercent = false;
+            return globals.creasePercent;
+        }
+        if (item.dur == 0) return item.to/100;
+        t -= item.t;
+        t /= item.dur;
+        var angle = item.from*(1-t) + item.to*t;
+        return angle/100;
+    }
+
+    function getItemForT(t){
+        for (var i=0;i<foldAngleSequence.length;i++){
+            var item = foldAngleSequence[i];
+            if (t <= item.t + item.dur) return item;
+        }
+        return null;
     }
 
     function addItem(){
@@ -23,26 +55,37 @@ function initVideoAnimator(globals){
     }
 
     function addDelay(){
-        foldAngleSequence.push({type:"delay", dur:null});
+        foldAngleSequence.push({
+            type:"delay",
+            dur:null,
+            from: null,
+            to: null
+        });
         render();
     }
 
-    function setAnimationStatus(){
-        if (foldAngleSequence.length == 0) {
-            $("#foldPercentAnimationStatus").html("no animation configured");
-            return;
-        }
-        var complete = true;
+    function isValid(){
+        if (foldAngleSequence.length == 0) return false;
         for (var i=0;i<foldAngleSequence.length;i++){
             var item = foldAngleSequence[i];
             if (item.type == "delay" && item.dur !== null) continue;
             if (item.type == "animation" && item.dur !== null && item.to != null) continue;
-            complete = false;
-            break;
+            return false
         }
-        if (complete) {
+        return true;
+    }
+
+    function setAnimationStatus(){
+        if (foldAngleSequence.length == 0) {
+            $("#foldPercentAnimationStatus").removeClass("warning");
+            $("#foldPercentAnimationStatus").html("no animation configured");
+            return;
+        }
+        if (isValid()) {
+            $("#foldPercentAnimationStatus").removeClass("warning");
             $("#foldPercentAnimationStatus").html("animation configured");
         } else {
+            $("#foldPercentAnimationStatus").addClass("warning");
             $("#foldPercentAnimationStatus").html("incomplete config, will be ignored");
         }
     }
@@ -124,6 +167,9 @@ function initVideoAnimator(globals){
 
     return {
         addItem: addItem,
-        addDelay: addDelay
+        addDelay: addDelay,
+        isValid: isValid,
+        compile: compile,
+        nextFoldAngle: nextFoldAngle
     }
 }
