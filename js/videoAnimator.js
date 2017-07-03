@@ -12,22 +12,43 @@ function initVideoAnimator(globals){
         render();
     }
 
-    function addItem(from, to, dur){
+    function addItem(){
         foldAngleSequence.push({
             type:"animation",
-            dur: dur,
-            from: from,
-            to: to
+            dur: null,
+            from: null,
+            to: null
         });
         render();
     }
 
-    function addDelay(dur){
-        foldAngleSequence.push({type:"delay", dur:dur});
+    function addDelay(){
+        foldAngleSequence.push({type:"delay", dur:null});
         render();
     }
 
+    function setAnimationStatus(){
+        if (foldAngleSequence.length == 0) {
+            $("#foldPercentAnimationStatus").html("no animation configured");
+            return;
+        }
+        var complete = true;
+        for (var i=0;i<foldAngleSequence.length;i++){
+            var item = foldAngleSequence[i];
+            if (item.type == "delay" && item.dur !== null) continue;
+            if (item.type == "animation" && item.dur !== null && item.to != null) continue;
+            complete = false;
+            break;
+        }
+        if (complete) {
+            $("#foldPercentAnimationStatus").html("animation configured");
+        } else {
+            $("#foldPercentAnimationStatus").html("incomplete config, will be ignored");
+        }
+    }
+
     function render(){
+        setAnimationStatus();
         var html = "";
         if (foldAngleSequence.length == 0){
             $("#animationSetupHelp").html("No animation items in sequence.");
@@ -40,6 +61,8 @@ function initVideoAnimator(globals){
         }
         $("#animationSetupHelp").html("Configure automatic <b>Fold Percent</b> control:");
         $("#animationHTML").html(html);
+
+        //bind events
         $(".deleteItem").click(function(e){
             e.preventDefault();
             var $target = $(e.target);
@@ -75,9 +98,9 @@ function initVideoAnimator(globals){
 
     function renderItem(item, index){
         var dur = "";
-        if (item.dur !== null && item.dur !== undefined) dur = item.dur;
+        if (item.dur !== null) dur = item.dur;
         var to = "";
-        if (item.to !== null && item.to !== undefined) to = item.to;
+        if (item.to !== null) to = item.to;
         return '<li class="animationStep">Animate to &nbsp;' +
             '<input value="' + to + '" placeholder="Target" data-index="'+index+'" class="toVal float form-control" type="text">' +
             ' % for &nbsp;' +
@@ -89,7 +112,7 @@ function initVideoAnimator(globals){
 
     function renderDelay(delay, index){
         var dur = "";
-        if (delay.dur !== null && delay.dur !== undefined) dur = delay.dur;
+        if (delay.dur !== null) dur = delay.dur;
         return '<li class="animationStep">Wait for &nbsp;' +
             '<input value="' + dur + '" placeholder="Duration" data-index="'+index+'" class="durVal float form-control" type="text">' +
             '&nbsp; seconds &nbsp;&nbsp;&nbsp;' +

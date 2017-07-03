@@ -478,7 +478,7 @@ a.seeMore.closed>.fui-triangle-down{
     padding: 5px 15px;
     background: #fff;
 }
-#animationSetupModal p, #animationSetupModal ul{
+#animationSetupModal p, #animationSetupModal ul, #animationSetupModal div.btns{
     text-align: center;
     padding: 0;
 }
