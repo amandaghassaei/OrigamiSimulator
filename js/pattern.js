@@ -358,8 +358,8 @@ function initPattern(globals){
             }
 
             //todo revert back to old pattern if bad import
-            var error = parseSVG(verticesRaw, bordersRaw, mountainsRaw, valleysRaw, cutsRaw, triangulationsRaw, hingesRaw);
-            if (error) return;
+            var success = parseSVG(verticesRaw, bordersRaw, mountainsRaw, valleysRaw, cutsRaw, triangulationsRaw, hingesRaw);
+            if (!success) return;
 
             //find max and min vertices
             var max = new THREE.Vector3(-Infinity,-Infinity,-Infinity);
@@ -450,7 +450,7 @@ function initPattern(globals){
 
         if (foldData.vertices_coords.length == 0 || foldData.edges_vertices.length == 0){
             globals.warn("No valid geometry found in SVG, be sure to ungroup all and remove all clipping masks.");
-            return true;
+            return false;
         }
 
         foldData = FOLD.filter.collapseNearbyVertices(foldData, globals.vertTol);
@@ -579,11 +579,8 @@ function initPattern(globals){
     }
 
     function splitCuts(fold){
-        //todo split cuts
         fold = sortVerticesEdges(fold);
         fold = facesVerticesToVerticesFaces(fold);
-        // console.log(JSON.stringify(fold));
-
         //go around each vertex and split cut in counter-clockwise order
         for (var i=0;i<fold.vertices_edges.length;i++){
             var groups = [[]];
@@ -671,7 +668,6 @@ function initPattern(globals){
         delete fold.vertices_faces;
         delete fold.vertices_edges;
         delete fold.vertices_vertices;
-        // console.log(JSON.stringify(fold));
         return fold;
     }
 
