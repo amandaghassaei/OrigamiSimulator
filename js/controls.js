@@ -206,7 +206,6 @@ function initControls(globals){
         updateCanvasDimensions();
     });
     setLink("#createVideo", function(){
-
         var hasWebP = false;
         (function() {
           var img = new Image();
@@ -214,14 +213,11 @@ function initControls(globals){
             hasWebP = !!(img.height > 0 && img.width > 0);
               if (hasWebP){
                   //timeLimit: s of video to limit
-                globals.shouldScaleCanvas = true;
                 $("#screenCaptureModal .gif").hide();
                 $("#screenCaptureModal .video").show();
                 $("#screenCaptureModal").modal("show");
                 $("#screenRecordFilename").val(globals.filename);
                 globals.screenRecordFilename = globals.filename;
-                globals.threeView.onWindowResize();
-                updateCanvasDimensions();
               } else {
                   globals.warn("Video export not supported by this browser, please try again " +
                 "with the latest version of Google Chrome.");
@@ -239,6 +235,11 @@ function initControls(globals){
         if (globals.capturer) return;
         globals.shouldScaleCanvas = false;
         globals.threeView.onWindowResize();
+    });
+    $("#screenCaptureModal").on('shown.bs.modal', function (){
+        globals.shouldScaleCanvas = true;//fixes problem of setting animation turning off shouldScaleCanvas
+        globals.threeView.onWindowResize();
+        updateCanvasDimensions();
     });
     setInput("#capturerFPS", globals.capturerFPS, function(val){
         globals.capturerFPS = val;
