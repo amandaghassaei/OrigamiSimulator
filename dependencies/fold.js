@@ -254,6 +254,10 @@ filter.unassignedEdges = function(fold) {
   return filter.edgesAssigned(fold, 'U');
 };
 
+filter.cutEdges = function(fold) {
+  return filter.edgesAssigned(fold, 'C');
+};
+
 filter.keysStartingWith = function(fold, prefix) {
   var key, results;
   results = [];

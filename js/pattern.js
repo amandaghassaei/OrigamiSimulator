@@ -32,7 +32,6 @@ function initPattern(globals){
     var mountains = [];
     var valleys = [];
     var borders = [];
-    var cuts = [];
     var hinges = [];
     var triangulations = [];
 
@@ -53,7 +52,6 @@ function initPattern(globals){
         mountains = [];
         valleys = [];
         borders = [];
-        cuts = [];
         hinges = [];
         triangulations = [];
 
@@ -359,7 +357,9 @@ function initPattern(globals){
                 globals.warn(string);
             }
 
-            parseSVG(verticesRaw, bordersRaw, mountainsRaw, valleysRaw, cutsRaw, triangulationsRaw, hingesRaw);
+            //todo revert back to old pattern if bad import
+            var error = parseSVG(verticesRaw, bordersRaw, mountainsRaw, valleysRaw, cutsRaw, triangulationsRaw, hingesRaw);
+            if (error) return;
 
             //find max and min vertices
             var max = new THREE.Vector3(-Infinity,-Infinity,-Infinity);
@@ -448,6 +448,11 @@ function initPattern(globals){
             foldData.edges_foldAngles.push(null);
         });
 
+        if (foldData.vertices_coords.length == 0 || foldData.edges_vertices.length == 0){
+            globals.warn("No valid geometry found in SVG, be sure to ungroup all and remove all clipping masks.");
+            return true;
+        }
+
         foldData = FOLD.filter.collapseNearbyVertices(foldData, globals.vertTol);
         foldData = FOLD.filter.removeLoopEdges(foldData);//remove edges that points to same vertex
         foldData = FOLD.filter.removeDuplicateEdges_vertices(foldData);//remove duplicate edges
@@ -471,18 +476,19 @@ function initPattern(globals){
 
         foldData = reverseFaceOrder(foldData);//set faces to counter clockwise
 
-        if (_cutsRaw.length>0) {
-            foldData = sortVerticesEdges(foldData);
-            foldData = facesVerticesToVerticesFaces(foldData);
-            foldData = splitCuts(foldData);
-        }
-
         return processFold(foldData);
     }
 
     function processFold(fold, returnCreaseParams){
 
         rawFold = JSON.parse(JSON.stringify(fold));//save pre-triangulated for for save later
+
+        var cuts = FOLD.filter.cutEdges(fold);
+        if (cuts.length>0) {
+            fold = splitCuts(fold);
+        }
+        delete fold.vertices_vertices;
+        delete fold.vertices_edges;
 
         foldData = triangulatePolys(fold, true);
 
@@ -545,7 +551,7 @@ function initPattern(globals){
                 verticesFaces[face[j]].push(i);
             }
         }
-        fold.verticesFaces = verticesFaces;
+        fold.vertices_faces = verticesFaces;
         return fold;
     }
 
@@ -574,37 +580,98 @@ function initPattern(globals){
 
     function splitCuts(fold){
         //todo split cuts
+        fold = sortVerticesEdges(fold);
+        fold = facesVerticesToVerticesFaces(fold);
+        // console.log(JSON.stringify(fold));
+
         //go around each vertex and split cut in counter-clockwise order
-        for (var i=0;i<fold.vertices_vertices.length;i++){
-            var cutIndices = [];
+        for (var i=0;i<fold.vertices_edges.length;i++){
+            var groups = [[]];
+            var groupIndex = 0;
             var verticesEdges = fold.vertices_edges[i];
+            var verticesFaces = fold.vertices_faces[i];
             for (var j=0;j<verticesEdges.length;j++){
                 var edgeIndex = verticesEdges[j];
-                if (fold.edges_assignment[edgeIndex] == "C"){
-                    cutIndices.push(j);
+                var assignment = fold.edges_assignment[edgeIndex];
+                groups[groupIndex].push(edgeIndex);
+                if (assignment == "C"){
+                    //split cut edge into two boundary edges
+                    groups.push([fold.edges_vertices.length]);
+                    groupIndex++;
+                    var newEdgeIndex = fold.edges_vertices.length;
+                    var edge = fold.edges_vertices[edgeIndex];
+                    fold.edges_vertices.push([edge[0], edge[1]]);
+                    fold.edges_assignment[edgeIndex] = "B";
+                    fold.edges_foldAngles.push(null);
+                    fold.edges_assignment.push("B");
+                    //add new boundary edge to other vertex
+                    var otherVertex = edge[0];
+                    if (otherVertex == i) otherVertex = edge[1];
+                    var otherVertexEdges = fold.vertices_edges[otherVertex];
+                    var otherVertexEdgeIndex = otherVertexEdges.indexOf(edgeIndex);
+                    otherVertexEdges.splice(otherVertexEdgeIndex, 0, newEdgeIndex);
+                } else if (assignment == "B"){
+                    if (j==0 && verticesEdges.length>1){
+                        //check if next edge is also boundary
+                        var nextEdgeIndex = verticesEdges[1];
+                        if (fold.edges_assignment[nextEdgeIndex] == "B"){
+                            groups.push([]);
+                            groupIndex++;
+                        }
+                    } else if (groups[groupIndex].length>1) {
+                        groups.push([]);
+                        groupIndex++;
+                    }
                 }
             }
-            if (cutIndices.length == 0) continue;
-
-            var groups = [];
-            var completeLoop = false;
-            var firstPass = true;
-            for (var j=cutIndices[0];!completeLoop;j++){
-                if (j>=verticesEdges.length) j-=verticesEdges.length;
-                if (groups.length>0) groups[groups.length-1].push(j);
-                if (cutIndices.indexOf(j)>=0){
-                    groups.push([]);
-                    groups[groups.length-1].push(j);
-                }
-                if (!firstPass && j==cutIndices[0]) completeLoop = true;
-                firstPass = false;
+            if (groups.length <= 1) continue;
+            for (var k=groups[groupIndex].length-1;k>=0;k--){//put remainder of last group in first group
+                groups[0].unshift(groups[groupIndex][k]);
             }
-            console.log(groups);
+            groups.pop();
+            for (var j=1;j<groups.length;j++){//for each extra group, assign new vertex
+                var currentVertex = fold.vertices_coords[i];
+                var vertIndex = fold.vertices_coords.length;
+                fold.vertices_coords.push(currentVertex.slice());
+                var connectingIndices = [];
+                for (var k=0;k<groups[j].length;k++){//update edges_vertices
+                    var edgeIndex = groups[j][k];
+                    var edge = fold.edges_vertices[edgeIndex];
+                    var otherIndex = edge[0];
+                    if (edge[0] == i) {
+                        edge[0] = vertIndex;
+                        otherIndex = edge[1];
+                    } else edge[1] = vertIndex;
+                    connectingIndices.push(otherIndex);
+                }
+                if (connectingIndices.length<2) {
+                    console.warn("problem here");
+                } else {
+                    for (var k=1;k<connectingIndices.length;k++){//update faces_vertices
+                        //i, k-1, k
+                        var thisConnectingVertIndex = connectingIndices[k];
+                        var previousConnectingVertIndex = connectingIndices[k-1];
+                        var found = false;
+                        for (var a=0;a<verticesFaces.length;a++){
+                            var face = fold.faces_vertices[verticesFaces[a]];
+                            if (face.indexOf(thisConnectingVertIndex) >= 0 && face.indexOf(previousConnectingVertIndex) >= 0){
+                                found = true;
+                                var b = face.indexOf(i);
+                                if (b<0) console.warn("problem here");
+                                else face[b] = vertIndex
+                                break;
+                            }
+                        }
+                        if (!found) console.warn("problem here");
+                    }
+                }
+            }
         }
-        //update faces_vertices, edges_vertices, delete vertices_edges, vertices_vertices, vertices_faces
-        for (var i=0;i<fold.edges_assignment.length;i++){//todo do this inline eventually
-            if (fold.edges_assignment[i] == "C") fold.edges_assignment[i] = "B";
-        }
+        //these are all incorrect now
+        delete fold.vertices_faces;
+        delete fold.vertices_edges;
+        delete fold.vertices_vertices;
+        // console.log(JSON.stringify(fold));
         return fold;
     }
 
