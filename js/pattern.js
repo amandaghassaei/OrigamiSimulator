@@ -466,7 +466,7 @@ function initPattern(globals){
 
         foldData = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(foldData);
         foldData = removeStrayVertices(foldData);//delete stray anchors
-        removeRedundantVertices(foldData, 0.01);//remove vertices that split edge
+        foldData = removeRedundantVertices(foldData, 0.01);//remove vertices that split edge
 
         foldData.vertices_vertices = FOLD.convert.sort_vertices_vertices(foldData);
         foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
@@ -485,7 +485,10 @@ function initPattern(globals){
 
         var cuts = FOLD.filter.cutEdges(fold);
         if (cuts.length>0) {
+            console.log("cut");
             fold = splitCuts(fold);
+            fold = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(fold);
+            fold = removeRedundantVertices(fold, 0.01);//remove vertices that split edge
         }
         delete fold.vertices_vertices;
         delete fold.vertices_edges;
@@ -790,6 +793,14 @@ function initPattern(globals){
         if (numRedundant == 0) return fold;
         console.warn(numRedundant + " redundant vertices found");
         fold = FOLD.filter.remapField(fold, 'vertices', old2new);
+        if (fold.faces_vertices){
+            for (var i=0;i<fold.faces_vertices.length;i++){
+                var face = fold.faces_vertices[i];
+                for (var j=face.length-1;j>=0;j--){
+                    if (face[j] === null) face.splice(j, 1);
+                }
+            }
+        }
         return fold;
     }
 
