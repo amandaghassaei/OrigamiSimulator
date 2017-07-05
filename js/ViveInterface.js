@@ -58,7 +58,7 @@ function initViveInterface(globals){
 
         WEBVR.getVRDisplay( function ( display ) {
             if (!display) return;
-            $status.html("VR device detected.");
+            $status.html("VR device detected.  Check that you are connected to Steam VR and your Vive has the latest firmware updates.");
             $("#VRoptions").show();
             var button = WEBVR.getButton( display, globals.threeView.renderer.domElement );
             var $link = $("#enterVR");
