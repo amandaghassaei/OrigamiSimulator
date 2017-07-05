@@ -1,6 +1,6 @@
 # OrigamiSimulator
 
-Live demo at <a href="git.amandaghassaei.com/OrigamiSimulator">git.amandaghassaei.com/OrigamiSimulator</a><br/>
+Live demo at <a href="http://git.amandaghassaei.com/OrigamiSimulator">git.amandaghassaei.com/OrigamiSimulator</a><br/>
 
 <img src="crane.gif" />
 
