@@ -303,7 +303,13 @@ function initControls(globals){
 
     setLink("#stopRecord", function(){
         if (!globals.capturer) return;
-        if (globals.isGif) globals.warn("Processing GIF, may take a few minutes...");
+        if (globals.isGif) globals.warn("Processing GIF, may take a few minutes...  (you can close this window in the meantime)<br/><br/> GIFs exported from this app are not highly compressed, " +
+            "you can decrease their file size using a GIF editor.  " +
+            "I like <a href=https://ezgif.com/video-to-gif' target='blank'>EZGif</a>");
+        else {
+            globals.warn("Compiling WebM video.  If you have trouble playing videos exported from this app, try using " +
+                "<a href='http://www.videolan.org/vlc/index.html' target='blank'>VLC Player</a>.");
+        }
         globals.capturer.stop();
         globals.capturer.save();
         globals.capturer = null;
