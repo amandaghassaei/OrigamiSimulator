@@ -180,6 +180,10 @@ function initPattern(globals){
         for (var i=0;i<$elements.length;i++){
             var path = $elements[i];
             var pathVertices = [];
+            if (path === undefined || path.getPathData === undefined){//mobile problem
+                $("#noSupportModal").modal("show");
+                console.warn("path parser not supported");
+            }
             var segments = path.getPathData();
             for (var j=0;j<segments.length;j++){
                 var segment = segments[j];
