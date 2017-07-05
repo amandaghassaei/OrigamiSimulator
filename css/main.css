@@ -489,3 +489,12 @@ a.seeMore.closed>.fui-triangle-down{
 .red{
     color:red!important;
 }
+
+#coverImg{
+    z-index: 5;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}

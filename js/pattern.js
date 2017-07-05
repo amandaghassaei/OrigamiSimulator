@@ -181,6 +181,14 @@ function initPattern(globals){
             var path = $elements[i];
             var pathVertices = [];
             if (path === undefined || path.getPathData === undefined){//mobile problem
+                var elm = '<div id="coverImg" ' +
+                  'style="background: url(crane.gif) no-repeat center center fixed;' +
+                    '-webkit-background-size: cover;' +
+                    '-moz-background-size: cover;' +
+                    '-o-background-size: cover;' +
+                    'background-size: cover;">'+
+                  '</div>';
+                $(elm).appendTo($("body"));
                 $("#noSupportModal").modal("show");
                 console.warn("path parser not supported");
                 return;

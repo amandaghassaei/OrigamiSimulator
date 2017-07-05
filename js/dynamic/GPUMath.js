@@ -19,7 +19,14 @@ function initGPUMath(){
     console.log(maxTexturesInFragmentShader + " textures max");
 
     function notSupported(){
-        //todo get gif
+        var elm = '<div id="coverImg" ' +
+                  'style="background: url(crane.gif) no-repeat center center fixed;' +
+                    '-webkit-background-size: cover;' +
+                    '-moz-background-size: cover;' +
+                    '-o-background-size: cover;' +
+                    'background-size: cover;">'+
+                  '</div>';
+                $(elm).appendTo($("body"));
         $("#noSupportModal").modal("show");
        console.warn("floating point textures are not supported on your system");
     }
