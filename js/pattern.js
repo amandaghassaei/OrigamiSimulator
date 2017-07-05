@@ -183,6 +183,7 @@ function initPattern(globals){
             if (path === undefined || path.getPathData === undefined){//mobile problem
                 $("#noSupportModal").modal("show");
                 console.warn("path parser not supported");
+                return;
             }
             var segments = path.getPathData();
             for (var j=0;j<segments.length;j++){
