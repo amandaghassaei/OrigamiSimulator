@@ -856,6 +856,7 @@ function initPattern(globals){
             if (edge.indexOf(v2)>=0 && (edge.indexOf(v1) >= 0 || edge.indexOf(v3) >= 0)){
                 if (edgeAssignment === null) edgeAssignment = fold.edges_assignment[i];
                 else if (edgeAssignment != fold.edges_assignment[i]) {
+                    console.log(edgeAssignment, fold.edges_assignment[i]);
                     console.warn("different edge assignments");
                     return false;
                 }
