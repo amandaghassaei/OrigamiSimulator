@@ -3,13 +3,10 @@
  */
 
 var nodeMaterial = new THREE.MeshBasicMaterial({color: 0x000000, side:THREE.DoubleSide});
-var nodeMaterialFixed = new THREE.MeshBasicMaterial({color: 0x000000, side:THREE.DoubleSide});
-var nodeMaterialHighlight = new THREE.MeshBasicMaterial({color: 0xffffff, side:THREE.DoubleSide});
 var transparentMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, opacity:0.5, transparent:true});
 var transparentVRMaterial = new THREE.MeshBasicMaterial({color: 0xeeeeee, opacity:0.8, transparent:true});
 
 var nodeGeo = new THREE.SphereGeometry(0.02,20);
-var nodeFixedGeo = new THREE.CubeGeometry(1, 1, 1);
 
 function Node(position, index){
 
