@@ -19,7 +19,7 @@ All simulation methods were written from scratch and are executed in parallel in
         and -100% is fully folded with the opposite mountain/valley assignments).</li>
     <li>Drag to rotate the model, scroll to zoom.</li>
     <li>Import other patterns under the <b>Examples</b> menu.</li>
-    <li>Upload your own crease patterns in SVG or FOLD formats, following the instructions under <b>File > File Import Tips</b>.</li>
+    <li>Upload your own crease patterns in SVG or <a href="https://github.com/edemaine/fold" target="_blank">FOLD</a> formats, following the instructions under <b>File > File Import Tips</b>.</li>
     <li>Export FOLD files or 3D models ( STL or OBJ ) of the folded state of your design ( <b>File > Save Simulation as...</b> ).</li>
     <li>Visualize the internal strain of the origami as it folds using the <b>Strain Visualization</b> in the left menu.</li>
     <li>If you are working from a computer connected to a Vive, follow the instructions near the <b>VR</b> menu
