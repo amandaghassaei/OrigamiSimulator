@@ -276,6 +276,7 @@ function initControls(globals){
         globals.isGif = false;
         $("#recordStatus").show();
         globals.shouldScaleCanvas = false;
+        globals.threeView.resetModel();
         globals.capturer.start();
         if (globals.videoAnimator.isValid()) {
             globals.shouldAnimateFoldPercent = true;
@@ -294,6 +295,7 @@ function initControls(globals){
         globals.isGif = true;
         $("#recordStatus").show();
         globals.shouldScaleCanvas = false;
+        globals.threeView.resetModel();
         globals.capturer.start();
         if (globals.videoAnimator.isValid()) {
             globals.shouldAnimateFoldPercent = true;
