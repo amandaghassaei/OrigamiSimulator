@@ -25,6 +25,8 @@ All simulation methods were written from scratch and are executed in parallel in
     <li>If you are working from a computer connected to a Vive, follow the instructions near the <b>VR</b> menu
         to use this app in an interactive virtual reality mode.</li>
 </ul>
+
+<img src="strain.jpg" />
 <br/>
 
 <b>External Libraries:</b><br/><br/>
