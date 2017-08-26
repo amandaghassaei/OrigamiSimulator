@@ -7,7 +7,7 @@ function initThreeView(globals) {
     var scene = new THREE.Scene();
     var modelWrapper = new THREE.Object3D();
 
-    var camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, 0.1, 500);
+    var camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 500);
     // var camera = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, -10000, 10000);//-40, 40);
     var renderer = new THREE.WebGLRenderer({antialias: true});
     var svgRenderer = new THREE.SVGRenderer();
@@ -49,11 +49,11 @@ function initThreeView(globals) {
 
         scene.add(camera);
 
-        camera.zoom = 15;
+        camera.zoom = 7;
         camera.updateProjectionMatrix();
-        camera.position.x = 10;
-        camera.position.y = 10;
-        camera.position.z = 10;
+        camera.position.x = 5;
+        camera.position.y = 5;
+        camera.position.z = 5;
 
         controls = new THREE.TrackballControls(camera, renderer.domElement);
         controls.rotateSpeed = 4.0;
