@@ -390,6 +390,10 @@ function initControls(globals){
         $("#aboutVRmodal").modal("show");
     });
 
+    setRadio("integrationType", globals.integrationType, function(val){
+        globals.integrationType = val;
+    });
+
 
     setRadio("simType", globals.simType, function(val){
         globals.simType = val;

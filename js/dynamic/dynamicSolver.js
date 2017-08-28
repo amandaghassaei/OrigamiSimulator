@@ -16,6 +16,7 @@ function initDynamicSolver(globals){
     var originalPosition;
     var position;
     var lastPosition;
+    var lastLastPosition;//for verlet integration
     var velocity;
     var lastVelocity;
     var externalForces;
@@ -62,6 +63,7 @@ function initDynamicSolver(globals){
     function reset(){
         globals.gpuMath.step("zeroTexture", [], "u_position");
         globals.gpuMath.step("zeroTexture", [], "u_lastPosition");
+        if (globals.integrationType == "verlet") globals.gpuMath.step("zeroTexture", [], "u_lastLastPosition");
         globals.gpuMath.step("zeroTexture", [], "u_velocity");
         globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
         globals.gpuMath.step("zeroThetaTexture", ["u_lastTheta"], "u_theta");
@@ -112,6 +114,7 @@ function initDynamicSolver(globals){
             globals.gpuMath.setProgram("centerTexture");
             globals.gpuMath.setUniformForProgram("centerTexture", "u_center", [avgPosition.x, avgPosition.y, avgPosition.z], "3f");
             globals.gpuMath.step("centerTexture", ["u_lastPosition"], "u_position");
+            if (globals.integrationType == "verlet") globals.gpuMath.step("copyTexture", ["u_position"], "u_lastLastPosition");
             globals.gpuMath.swapTextures("u_position", "u_lastPosition");
             globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
             globals.gpuMath.step("zeroTexture", [], "u_velocity");
@@ -142,12 +145,22 @@ function initDynamicSolver(globals){
         //already at textureDimCreasesxtextureDimCreases
         gpuMath.step("updateCreaseGeo", ["u_lastPosition", "u_originalPosition", "u_creaseMeta2"], "u_creaseGeo");
 
-        gpuMath.setProgram("velocityCalc");
-        gpuMath.setSize(textureDim, textureDim);
-        gpuMath.step("velocityCalc", ["u_lastPosition", "u_lastVelocity", "u_originalPosition", "u_externalForces",
-            "u_mass", "u_meta", "u_beamMeta", "u_creaseMeta", "u_nodeCreaseMeta", "u_normals", "u_theta", "u_creaseGeo",
-            "u_meta2", "u_nodeFaceMeta", "u_nominalTriangles"], "u_velocity");
-        gpuMath.step("positionCalc", ["u_velocity", "u_lastPosition", "u_mass"], "u_position");
+        if (globals.integrationType == "verlet"){
+            gpuMath.setProgram("positionCalcVerlet");
+            gpuMath.setSize(textureDim, textureDim);
+            gpuMath.step("positionCalcVerlet", ["u_lastPosition", "u_lastLastPosition", "u_lastVelocity", "u_originalPosition", "u_externalForces",
+                "u_mass", "u_meta", "u_beamMeta", "u_creaseMeta", "u_nodeCreaseMeta", "u_normals", "u_theta", "u_creaseGeo",
+                "u_meta2", "u_nodeFaceMeta", "u_nominalTriangles"], "u_position");
+            gpuMath.step("velocityCalcVerlet", ["u_position", "u_lastPosition", "u_mass"], "u_velocity");
+            gpuMath.swapTextures("u_lastPosition", "u_lastLastPosition");
+        } else {//euler
+            gpuMath.setProgram("velocityCalc");
+            gpuMath.setSize(textureDim, textureDim);
+            gpuMath.step("velocityCalc", ["u_lastPosition", "u_lastVelocity", "u_originalPosition", "u_externalForces",
+                "u_mass", "u_meta", "u_beamMeta", "u_creaseMeta", "u_nodeCreaseMeta", "u_normals", "u_theta", "u_creaseGeo",
+                "u_meta2", "u_nodeFaceMeta", "u_nominalTriangles"], "u_velocity");
+            gpuMath.step("positionCalc", ["u_velocity", "u_lastPosition", "u_mass"], "u_position");
+        }
 
         gpuMath.swapTextures("u_theta", "u_lastTheta");
         gpuMath.swapTextures("u_velocity", "u_lastVelocity");
@@ -261,6 +274,7 @@ function initDynamicSolver(globals){
 
         gpuMath.initTextureFromData("u_position", textureDim, textureDim, "FLOAT", position, true);
         gpuMath.initTextureFromData("u_lastPosition", textureDim, textureDim, "FLOAT", lastPosition, true);
+        gpuMath.initTextureFromData("u_lastLastPosition", textureDim, textureDim, "FLOAT", lastLastPosition, true);
         gpuMath.initTextureFromData("u_velocity", textureDim, textureDim, "FLOAT", velocity, true);
         gpuMath.initTextureFromData("u_lastVelocity", textureDim, textureDim, "FLOAT", lastVelocity, true);
         gpuMath.initTextureFromData("u_theta", textureDimCreases, textureDimCreases, "FLOAT", theta, true);
@@ -269,6 +283,7 @@ function initDynamicSolver(globals){
 
         gpuMath.initFrameBufferForTexture("u_position", true);
         gpuMath.initFrameBufferForTexture("u_lastPosition", true);
+        gpuMath.initFrameBufferForTexture("u_lastLastPosition", true);
         gpuMath.initFrameBufferForTexture("u_velocity", true);
         gpuMath.initFrameBufferForTexture("u_lastVelocity", true);
         gpuMath.initFrameBufferForTexture("u_theta", true);
@@ -291,6 +306,12 @@ function initDynamicSolver(globals){
         gpuMath.setUniformForProgram("positionCalc", "u_lastPosition", 1, "1i");
         gpuMath.setUniformForProgram("positionCalc", "u_mass", 2, "1i");
         gpuMath.setUniformForProgram("positionCalc", "u_textureDim", [textureDim, textureDim], "2f");
+
+        gpuMath.createProgram("velocityCalcVerlet", vertexShader, document.getElementById("velocityCalcVerletShader").text);
+        gpuMath.setUniformForProgram("velocityCalcVerlet", "u_position", 0, "1i");
+        gpuMath.setUniformForProgram("velocityCalcVerlet", "u_lastPosition", 1, "1i");
+        gpuMath.setUniformForProgram("velocityCalcVerlet", "u_mass", 2, "1i");
+        gpuMath.setUniformForProgram("velocityCalcVerlet", "u_textureDim", [textureDim, textureDim], "2f");
 
         gpuMath.createProgram("velocityCalc", vertexShader, document.getElementById("velocityCalcShader").text);
         gpuMath.setUniformForProgram("velocityCalc", "u_lastPosition", 0, "1i");
@@ -316,6 +337,32 @@ function initDynamicSolver(globals){
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimNodeFaces", [textureDimNodeFaces, textureDimNodeFaces], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_creasePercent", globals.creasePercent, "1f");
         gpuMath.setUniformForProgram("velocityCalc", "u_axialStiffness", globals.axialStiffness, "1f");
+
+        gpuMath.createProgram("positionCalcVerlet", vertexShader, document.getElementById("positionCalcVerletShader").text);
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_lastPosition", 0, "1i");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_lastLastPosition", 1, "1i");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_lastVelocity", 2, "1i");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_originalPosition", 3, "1i");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_externalForces", 4, "1i");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_mass", 5, "1i");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_meta", 6, "1i");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_beamMeta", 7, "1i");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_creaseMeta", 8, "1i");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_nodeCreaseMeta", 9, "1i");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_normals", 10, "1i");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_theta", 11, "1i");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_creaseGeo", 12, "1i");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_meta2", 13, "1i");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_nodeFaceMeta", 14, "1i");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_nominalTriangles", 15, "1i");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_textureDim", [textureDim, textureDim], "2f");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_textureDimEdges", [textureDimEdges, textureDimEdges], "2f");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_textureDimFaces", [textureDimFaces, textureDimFaces], "2f");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_textureDimCreases", [textureDimCreases, textureDimCreases], "2f");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_textureDimNodeCreases", [textureDimNodeCreases, textureDimNodeCreases], "2f");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_textureDimNodeFaces", [textureDimNodeFaces, textureDimNodeFaces], "2f");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_creasePercent", globals.creasePercent, "1f");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_axialStiffness", globals.axialStiffness, "1f");
 
         gpuMath.createProgram("thetaCalc", vertexShader, document.getElementById("thetaCalcShader").text);
         gpuMath.setUniformForProgram("thetaCalc", "u_normals", 0, "1i");
@@ -348,6 +395,10 @@ function initDynamicSolver(globals){
         gpuMath.createProgram("centerTexture", vertexShader, document.getElementById("centerTexture").text);
         gpuMath.setUniformForProgram("centerTexture", "u_lastPosition", 0, "1i");
         gpuMath.setUniformForProgram("centerTexture", "u_textureDim", [textureDim, textureDim], "2f");
+
+        gpuMath.createProgram("copyTexture", vertexShader, document.getElementById("copyTexture").text);
+        gpuMath.setUniformForProgram("copyTexture", "u_orig", 0, "1i");
+        gpuMath.setUniformForProgram("copyTexture", "u_textureDim", [textureDim, textureDim], "2f");
 
         gpuMath.createProgram("updateCreaseGeo", vertexShader, document.getElementById("updateCreaseGeo").text);
         gpuMath.setUniformForProgram("updateCreaseGeo", "u_lastPosition", 0, "1i");
@@ -457,6 +508,7 @@ function initDynamicSolver(globals){
         }
         globals.gpuMath.initTextureFromData("u_lastPosition", textureDim, textureDim, "FLOAT", lastPosition, true);
         globals.gpuMath.initFrameBufferForTexture("u_lastPosition", true);
+        if (globals.integrationType == "verlet") globals.gpuMath.step("copyTexture", ["u_lastPosition"], "u_lastLastPosition");
     }
 
     function setCreasePercent(percent){
@@ -504,6 +556,7 @@ function initDynamicSolver(globals){
         originalPosition = new Float32Array(textureDim*textureDim*4);
         position = new Float32Array(textureDim*textureDim*4);
         lastPosition = new Float32Array(textureDim*textureDim*4);
+        lastLastPosition = new Float32Array(textureDim*textureDim*4);
         velocity = new Float32Array(textureDim*textureDim*4);
         lastVelocity = new Float32Array(textureDim*textureDim*4);
         externalForces = new Float32Array(textureDim*textureDim*4);
