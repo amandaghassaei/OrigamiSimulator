@@ -255,8 +255,12 @@ function initDynamicSolver(globals){
         globals.gpuMath.setUniformForProgram("thetaCalc", "u_dt", dt, "1f");
         globals.gpuMath.setProgram("velocityCalc");
         globals.gpuMath.setUniformForProgram("velocityCalc", "u_dt", dt, "1f");
+        globals.gpuMath.setProgram("positionCalcVerlet");
+        globals.gpuMath.setUniformForProgram("positionCalcVerlet", "u_dt", dt, "1f");
         globals.gpuMath.setProgram("positionCalc");
         globals.gpuMath.setUniformForProgram("positionCalc", "u_dt", dt, "1f");
+        globals.gpuMath.setProgram("velocityCalcVerlet");
+        globals.gpuMath.setUniformForProgram("velocityCalcVerlet", "u_dt", dt, "1f");
         globals.controls.setDeltaT(dt);
     }
 
@@ -447,6 +451,8 @@ function initDynamicSolver(globals){
         if (programsInited) {
             globals.gpuMath.setProgram("velocityCalc");
             globals.gpuMath.setUniformForProgram("velocityCalc", "u_axialStiffness", globals.axialStiffness, "1f");
+            globals.gpuMath.setProgram("positionCalcVerlet");
+            globals.gpuMath.setUniformForProgram("positionCalcVerlet", "u_axialStiffness", globals.axialStiffness, "1f");
             setSolveParams();//recalc dt
         }
     }
@@ -515,6 +521,8 @@ function initDynamicSolver(globals){
         if (!programsInited) return;
         globals.gpuMath.setProgram("velocityCalc");
         globals.gpuMath.setUniformForProgram("velocityCalc", "u_creasePercent", percent, "1f");
+        globals.gpuMath.setProgram("positionCalcVerlet");
+        globals.gpuMath.setUniformForProgram("positionCalcVerlet", "u_creasePercent", percent, "1f");
     }
 
     function initTypedArrays(){
