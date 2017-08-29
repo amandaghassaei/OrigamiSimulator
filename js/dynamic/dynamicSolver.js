@@ -514,7 +514,7 @@ function initDynamicSolver(globals){
         }
         globals.gpuMath.initTextureFromData("u_lastPosition", textureDim, textureDim, "FLOAT", lastPosition, true);
         globals.gpuMath.initFrameBufferForTexture("u_lastPosition", true);
-        if (globals.integrationType == "verlet") globals.gpuMath.step("copyTexture", ["u_lastPosition"], "u_lastLastPosition");
+
     }
 
     function setCreasePercent(percent){

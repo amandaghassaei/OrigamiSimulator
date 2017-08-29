@@ -412,13 +412,14 @@
             vec2 fragCoord = gl_FragCoord.xy;
             vec2 scaledFragCoord = fragCoord/u_textureDim;
 
+            vec3 lastPosition = texture2D(u_lastPosition, scaledFragCoord).xyz;
+
             vec2 mass = texture2D(u_mass, scaledFragCoord).xy;
             if (mass[1] == 1.0){//fixed
-                gl_FragColor = vec4(0.0);
+                gl_FragColor = vec4(lastPosition, 0.0);
                 return;
             }
             vec3 force = texture2D(u_externalForces, scaledFragCoord).xyz;
-            vec3 lastPosition = texture2D(u_lastPosition, scaledFragCoord).xyz;
             vec3 lastLastPosition = texture2D(u_lastLastPosition, scaledFragCoord).xyz;
             vec3 lastVelocity = texture2D(u_lastVelocity, scaledFragCoord).xyz;
             vec3 originalPosition = texture2D(u_originalPosition, scaledFragCoord).xyz;
