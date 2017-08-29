@@ -29,7 +29,7 @@ function initGlobals(){
         forceHasChanged: false,
         materialHasChanged: false,
         creaseMaterialHasChanged: false,
-        shouldResetDynamicSim: false,
+        shouldResetDynamicSim: false,//not used
         shouldChangeCreasePercent: false,
         nodePositionHasChanged: false,
         shouldZeroDynamicVelocity: false,

@@ -63,7 +63,7 @@ function initDynamicSolver(globals){
     function reset(){
         globals.gpuMath.step("zeroTexture", [], "u_position");
         globals.gpuMath.step("zeroTexture", [], "u_lastPosition");
-        if (globals.integrationType == "verlet") globals.gpuMath.step("zeroTexture", [], "u_lastLastPosition");
+        globals.gpuMath.step("zeroTexture", [], "u_lastLastPosition");
         globals.gpuMath.step("zeroTexture", [], "u_velocity");
         globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
         globals.gpuMath.step("zeroThetaTexture", ["u_lastTheta"], "u_theta");

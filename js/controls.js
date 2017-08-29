@@ -391,6 +391,7 @@ function initControls(globals){
     });
 
     setRadio("integrationType", globals.integrationType, function(val){
+        globals.dynamicSolver.reset();
         globals.integrationType = val;
     });
 
@@ -458,10 +459,6 @@ function initControls(globals){
     function setDeltaT(val){
         $("#deltaT").html(val.toFixed(4));
     }
-
-    setLink("#resetDynamicSim", function(){
-        globals.shouldResetDynamicSim = true;
-    });
 
     setLink(".loadFile", function(e){
         $("#fileSelector").click();
