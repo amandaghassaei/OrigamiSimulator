@@ -1063,15 +1063,15 @@
     <div class="fullWidth">
         <a href="#" class="seeMore closed" data-id="simulationSettings"><span class="fui-triangle-down"></span><b>Simulation Settings:</b></a><a class="about" href="#" id="aboutStiffness"><span class="fui-question-circle"></span></a><br/>
         <div id="simulationSettings" class="hide">
-            <div class="indent">Integration:
+            <div class="indent">Numerical Integration:
             <div class="doubleIndent">
                 <label class="radio">
                     <input name="integrationType" value="euler" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
-                    Euler (first order error)
+                    Euler (first order)
                 </label>
                 <label class="radio">
                     <input name="integrationType" value="verlet" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
-                    Verlet (second order error)
+                    Verlet (second order)
                 </label>
             </div></div><br/>
             <div class="sliderInput paddingBottom" id="axialStiffness">
@@ -1501,7 +1501,14 @@
                         damping</a> is applied to slow the motion of the vertices.  The <b>Damping</b> slider allows you to control the amount of damping
                     present in the simulation, from 0 (no damping) to 1 (critical damping).  Decreasing damping makes the simulation more "springy".
                     It may be useful to temporarily turn down damping to help the simulation more quickly converge towards its static solution - especially
-                    for patterns that take a long time to curl.
+                    for patterns that take a long time to curl.<br/>
+                    <br/>
+                    A <b>Numerical Integration</b> technique is used to integrate acceleration into velocity and position for each time step of the simulation.
+                    Different integration techniques have different associated computational cost, error, and stability.  This app allows you to choose
+                    between two different integration techniques: <a href="https://en.wikipedia.org/wiki/Euler_method" target="_blank">Euler Integration</a>
+                    is the simplest type of numerical integration (first order) with large associated error, and
+                    <a href="https://en.wikipedia.org/wiki/Verlet_integration" target="_blank">Verlet Integration</a> is a second order integration technique
+                    with lower error and better stability than Euler.
                 </p>
             </div>
         </div><!-- /.modal-content -->
