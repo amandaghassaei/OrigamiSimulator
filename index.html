@@ -159,7 +159,7 @@
             }
 
             vec3 position = texture2D(u_position, scaledFragCoord).xyz;
-            vec3 lastPosition = texture2D(u_position, scaledFragCoord).xyz;
+            vec3 lastPosition = texture2D(u_lastPosition, scaledFragCoord).xyz;
             gl_FragColor = vec4((position-lastPosition)/u_dt,0.0);
         }
     </script>
@@ -1063,14 +1063,14 @@
         <a href="#" class="seeMore closed" data-id="simulationSettings"><span class="fui-triangle-down"></span><b>Simulation Settings:</b></a><a class="about" href="#" id="aboutStiffness"><span class="fui-question-circle"></span></a><br/>
         <div id="simulationSettings" class="hide">
             <div class="indent">Integration:
-            <div class="indent">
-                <label class="radio">
-                    <input name="integrationType" value="verlet" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
-                    Verlet (second order)
-                </label>
+            <div class="doubleIndent">
                 <label class="radio">
                     <input name="integrationType" value="euler" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
-                    Euler (first order)
+                    Euler (first order error)
+                </label>
+                <label class="radio">
+                    <input name="integrationType" value="verlet" data-toggle="radio" class="custom-radio" type="radio"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                    Verlet (second order error)
                 </label>
             </div></div><br/>
             <div class="sliderInput paddingBottom" id="axialStiffness">

@@ -52,7 +52,7 @@ function initGlobals(){
         //dynamic sim settings
         percentDamping: 0.85,
         density: 1,
-        integrationType: "verlet",
+        integrationType: "euler",
 
         strainClip: 5.0,//for strain visualization, % strain that is drawn red
 
