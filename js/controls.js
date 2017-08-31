@@ -628,7 +628,7 @@ function initControls(globals){
         globals.shouldCenterGeo = true;
     });
 
-    setInput("#numStepsPerRender", globals.numSteps, function(val){
+    setInput(".numStepsPerRender", globals.numSteps, function(val){
         globals.numSteps = val;
     }, 1);
 
@@ -662,11 +662,13 @@ function initControls(globals){
     function setInput(id, val, callback, min, max){
         var $input = $(id);
         $input.change(function(){
-            var val = $input.val();
-            if ($input.hasClass("int")){
+            var $this = $(this);
+            if ($input.length == 1) $this = $input;//probably not necessary
+            var val = $this.val();
+            if ($this.hasClass("int")){
                 if (isNaN(parseInt(val))) return;
                 val = parseInt(val);
-            } else if ($input.hasClass("text")){
+            } else if ($this.hasClass("text")){
             } else {
                 if (isNaN(parseFloat(val))) return;
                 val = parseFloat(val);

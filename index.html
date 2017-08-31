@@ -1101,7 +1101,7 @@
         <div id="animationsSettings" class="fullWidth hide">
             <div class="doubleIndent">
                 <span class="smallTxt">&Delta;t = <span id="deltaT"></span> seconds</span><br/>
-                <span class="smallTxt">Num simulation steps per render: &nbsp;&nbsp;<input id="numStepsPerRender" value="" placeholder="" class="int form-control" type="text"></span>
+                <span class="smallTxt">Num simulation steps per frame: &nbsp;&nbsp;<input value="" placeholder="" class="numStepsPerRender int form-control" type="text"></span>
             </div>
         </div>
     </div><br/>
@@ -1294,10 +1294,11 @@
                 This is especially interesting if you set the <b>Mesh Material</b> to <b>Strain Visualization</b> so you can see how your interactions
                 change the internal strains in the material.
                 <br/><br/>
-                If the simulation looks choppy, consider lowering the <b>Num simulation steps per render</b> setting under <b>Animation Settings</b> in the right hand menu.
+                If the simulation looks choppy, consider lowering the <b>Num simulation steps per frame</b> setting under <b>Animation Settings</b> in the right hand menu.
+                  WebVR is changing rapidly, if you cannot connect be sure you have the latest browser version and install any firmware updates on headset, controllers, and trackers.
                 <br/><br/>
-                    VR mode currently does not support all the UI of the regular app, so you will need someone in the "outside world" to
-                    help you load new files, change the fold percent, etc.
+                VR mode currently does not support all the UI of the regular app, so you will need someone in the "outside world" to
+                help you load new files, change the fold percent, etc.
                 </p>
             </div>
         </div><!-- /.modal-content -->
@@ -1316,9 +1317,9 @@
                 based on the material stiffnesses set in the <b>Simulation Settings</b> section: more stiff settings
                 require shorter time steps to solve and will slow down the simulation.<br/>
                 <br/>
-                <b>Num simulation steps per render</b> allows you to control the number of tiny time steps forward to take on each
+                <b>Num simulation steps per frame</b> allows you to control the number of tiny time steps forward to take on each
                 render cycle.  If the simulation looks choppy to you, you might consider lowering this setting.
-                Lowering the number of steps per render will slow down the simulation, but will result in a more smooth animation.
+                Lowering the number of steps per frame will slow down the simulation, but will result in a more smooth animation.
                 </p>
             </div>
         </div><!-- /.modal-content -->
@@ -1717,15 +1718,15 @@
                 <span class="smallTxt">( resize browser window to change aspect ratio )</span><br/><br/>
                 <span class="video">
                     Quality ( 0-63 ): &nbsp;&nbsp;<input id="capturerQuality" value="" placeholder="" class="float int form-control" type="text"><br/><br/>
-                    FrameRate ( 1-60 fps ): &nbsp;&nbsp;<input id="capturerFPS" value="" placeholder="" class="float int form-control" type="text"><br/><br/>
+                    Framerate ( 1-60 fps ): &nbsp;&nbsp;<input id="capturerFPS" value="" placeholder="" class="float int form-control" type="text"><br/><br/>
                 </span>
                 <span class="gif">
-                    FrameRate ( 1-60 fps ): &nbsp;&nbsp;<input id="gifFPS" value="" placeholder="" class="float int form-control" type="text"><br/><br/>
+                    Framerate ( 1-60 fps ): &nbsp;&nbsp;<input id="gifFPS" value="" placeholder="" class="float int form-control" type="text"><br/><br/>
                 </span>
+                Num simulation steps per frame: &nbsp;&nbsp;<input value="" placeholder="" class="numStepsPerRender int form-control" type="text"><br/><br/>
                 <span class="smallTxt">Notes: This feature records the output of the canvas only - no UI or cursor
                     will be included.  Do not resize window while recording.  You can increase the
-                amount of motion per frame by increasing the "Num simulation steps per render"
-                in <b>Animation Settings</b> (right).  Check the <b>View</b> menu (above) for more rendering options.</span><br/>
+                amount of motion per frame by increasing the "Num simulation steps per frame".  Check the <b>View</b> menu (above) for more rendering options.</span><br/>
             </div>
             <div class="modal-footer">
                 <button id="doGifRecord" type="button" class="gif actionButton btn btn-success" data-dismiss="modal">Start</button>
