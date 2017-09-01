@@ -1052,7 +1052,8 @@
         <!--&lt;!&ndash;</label>&ndash;&gt;-->
     <!--</div><br/>-->
     <div class="inlineBlock fullWidth">
-        <label class="checkbox floatRight" for="userInteractionEnabled">
+        <a class="about" href="#" id="aboutUserInteraction"><span class="fui-question-circle"></span></a>
+        <label style="margin-right:40px" class="checkbox floatRight" for="userInteractionEnabled">
             <input id="userInteractionEnabled" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
             Allow User Interaction
         </label>
@@ -1569,6 +1570,24 @@
                         Cauchy strain or engineering strain</a> is a unitless measurement of how much a material is being stretched or compressed under load.
                     The <b>Strain Visualization</b> illustrates the strain across an origami sheet by mapping it to a color from blue (no strain) to red (max strain).
                 </p>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="aboutUserInteractionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                    <p><b>USER INTERACTION</b><br/><br/>
+                    Toggle this control to enable/disable mouse interaction with the origami model.  When enabled,
+                        mousing over the model will display a highlighter; clicking and dragging allows you to
+                        interact with the model in real time.  Very vigorous interactions with the model may cause it
+                        to pop into a strange configuration that it can't escape - use the <b>Reset</b> button to start
+                        the simulation again from a flat state.
+                    </p>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

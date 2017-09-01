@@ -632,6 +632,10 @@ function initControls(globals){
         globals.numSteps = val;
     }, 1);
 
+    setLink("#aboutUserInteraction", function(){
+        $('#aboutUserInteractionModal').modal('show');
+    });
+
     function setButtonGroup(id, callback){
         $(id+" a").click(function(e){
             e.preventDefault();

@@ -319,6 +319,11 @@ svg{
     line-height: 28px;
 }
 
+#aboutUserInteraction{
+    margin-top: 10px!important;
+    line-height: 21px!important;
+}
+
 #start, #stepForwardOptions{
     display: none;
 }
