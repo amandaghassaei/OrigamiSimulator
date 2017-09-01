@@ -324,6 +324,14 @@ svg{
     line-height: 21px!important;
 }
 
+#aboutVR{
+        float: none;
+    margin-left: 40px;
+    position: absolute;
+    line-height: 1.7;
+    margin-top: 2px;
+}
+
 #start, #stepForwardOptions{
     display: none;
 }
