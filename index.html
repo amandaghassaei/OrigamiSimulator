@@ -442,11 +442,11 @@
                 vec3 neighborLastVelocity = texture2D(u_lastVelocity, scaledNeighborIndex).xyz;
                 vec3 neighborOriginalPosition = texture2D(u_originalPosition, scaledNeighborIndex).xyz;
 
-                vec3 nominalDist = neighborOriginalPosition-originalPosition;
-                vec3 deltaP = neighborLastPosition-lastPosition+nominalDist;
+                vec3 deltaP = neighborLastPosition+neighborOriginalPosition-lastPosition-originalPosition;
                 float deltaPLength = length(deltaP);
-                deltaP -= deltaP*(beamMeta[2]/deltaPLength);
-                nodeError += abs(deltaPLength/length(nominalDist) - 1.0);
+                float nominalLength = beamMeta[2];
+                deltaP *= (1.0-nominalLength/deltaPLength);
+                nodeError += abs(deltaPLength/nominalLength - 1.0);
                 vec3 deltaV = neighborLastVelocity-lastVelocity;
 
                 vec3 _force = deltaP*beamMeta[0] + deltaV*beamMeta[1];
@@ -889,6 +889,7 @@
                         <a tabindex="-1">Tessellations<span class="pull-right fui-arrow-right"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="#" class="demo author" data-author="miuraOri" data-url="Tessellations/miura-ori.svg">Miura-Ori</a></li>
+                            <li><a href="#" class="demo author" data-author="miuraOri" data-url="Tessellations/miura_sharpangle.svg">Miura-Ori (sharp angle)</a></li>
                             <li><a href="#" class="demo" data-url="Tessellations/waterbomb.svg">Waterbomb</a></li>
                             <li class="divider"></li>
                             <li><a href="#" class="demo author" data-author="huffmanTessellations" data-url="Tessellations/huffmanExtrudedBoxes.svg">Huffman Extruded Boxes</a></li>
