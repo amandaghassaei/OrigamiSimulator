@@ -39,9 +39,10 @@ function initGPUMath(){
 
     GPUMath.prototype.createProgram = function(programName, vertexShader, fragmentShader){
         var programs = this.programs;
-        var program = programs[name];
+        var program = programs[programName];
         if (program) {
-            console.warn("already a program with the name " + programName);
+            gl.useProgram(program.program);
+            // console.warn("already a program with the name " + programName);
             return;
         }
         program = glBoilerplate.createProgramFromSource(gl, vertexShader, fragmentShader);
@@ -55,9 +56,13 @@ function initGPUMath(){
 
     GPUMath.prototype.initTextureFromData = function(name, width, height, typeName, data, shouldReplace){
         var texture = this.textures[name];
-        if (!shouldReplace && texture) {
-            console.warn("already a texture with the name " + name);
-            return;
+
+        if (texture){
+            if (!shouldReplace) {
+                console.warn("already a texture with the name " + name);
+                return;
+            }
+            gl.deleteTexture(texture);
         }
         texture = glBoilerplate.makeTexture(gl, width, height, gl[typeName], data);
         this.textures[name] = texture;
@@ -67,9 +72,12 @@ function initGPUMath(){
 
     GPUMath.prototype.initFrameBufferForTexture = function(textureName, shouldReplace){
         var framebuffer = this.frameBuffers[textureName];
-        if (framebuffer && (shouldReplace === undefined || !shouldReplace)) {
-            console.warn("framebuffer already exists for texture " + textureName);
-            return;
+        if (framebuffer){
+            if (!shouldReplace) {
+                console.warn("framebuffer already exists for texture " + textureName);
+                return;
+            }
+            gl.deleteFramebuffer(framebuffer);
         }
         var texture = this.textures[textureName];
         if (!texture){

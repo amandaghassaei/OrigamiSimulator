@@ -32,16 +32,23 @@ function initModel(globals){
     setMeshMaterial();
 
     function clearGeometries(){
-        if (geometry) geometry.dispose();
 
-        geometry = new THREE.BufferGeometry();
+        if (geometry) {
+            // geometry.dispose();
+        } else geometry = new THREE.BufferGeometry();
+        geometry.verticesNeedUpdate = true;
         geometry.dynamic = true;
+
+
         frontside.geometry = geometry;
         backside.geometry = geometry;
 
         _.each(lines, function(line){
-            if (line.geometry) line.geometry.dispose();
-            var lineGeometry = new THREE.BufferGeometry();
+            var lineGeometry = line.geometry;
+            if (lineGeometry) {
+                // line.geometry.dispose();
+            } else lineGeometry = new THREE.BufferGeometry();
+            lineGeometry.verticesNeedUpdate = true;
             lineGeometry.dynamic = true;
             line.geometry = lineGeometry;
         });

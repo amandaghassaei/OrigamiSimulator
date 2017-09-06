@@ -121,7 +121,7 @@ function initDynamicSolver(globals){
             globals.shouldCenterGeo = false;
         }
 
-        if (_numSteps == undefined) _numSteps = globals.numSteps;
+        if (_numSteps === undefined) _numSteps = globals.numSteps;
         for (var j=0;j<_numSteps;j++){
             solveStep();
         }

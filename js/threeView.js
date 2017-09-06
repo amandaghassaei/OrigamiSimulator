@@ -141,7 +141,9 @@ function initThreeView(globals) {
     }
 
     function sceneClearModel(){
-        modelWrapper.children = [];
+        for (var i=0;i<modelWrapper.children.length;i++){
+            modelWrapper.remove(modelWrapper.children[i]);
+        }
     }
 
     function onWindowResize() {
