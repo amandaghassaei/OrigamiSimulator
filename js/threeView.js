@@ -49,11 +49,7 @@ function initThreeView(globals) {
 
         scene.add(camera);
 
-        camera.zoom = 7;
-        camera.updateProjectionMatrix();
-        camera.position.x = 5;
-        camera.position.y = 5;
-        camera.position.z = 5;
+        resetCamera();
 
         controls = new THREE.TrackballControls(camera, renderer.domElement);
         controls.rotateSpeed = 4.0;
@@ -65,6 +61,15 @@ function initThreeView(globals) {
 
         _render();//render before model loads
 
+    }
+
+    function resetCamera(){
+        camera.zoom = 7;
+        camera.updateProjectionMatrix();
+        camera.position.x = 5;
+        camera.position.y = 5;
+        camera.position.z = 5;
+        if (controls) setCameraIso();
     }
 
     function setCameraX(sign){
@@ -228,6 +233,7 @@ function initThreeView(globals) {
         setCameraIso: setCameraIso,
 
         resetModel: resetModel,//reset model orientation
+        resetCamera:resetCamera,
         setBackgroundColor: setBackgroundColor
     }
 }

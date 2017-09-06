@@ -8,7 +8,7 @@ function initViveInterface(globals){
     var $status = $("#VRstatus");
 
     if ( WEBVR.isAvailable() === false ) {
-        $status.html("WebVR not supported by this browser<br/>see <a href='https://webvr.info/' target='_blank'>webvr.info</a> for more info.");
+        $status.html("WebVR not supported by this browser<br/>see <a href='https://webvr.info/' target='_blank'>webvr.info</a> for more information.");
         $("#VRoptions").hide();
         return;
     }
@@ -34,6 +34,7 @@ function initViveInterface(globals){
 
     controller1.add(mesh.clone());
     controller2.add(mesh.clone());
+    var controllersConnected = false;
 
     var controllers = [controller1, controller2];
     var controllerStates = [false, false];
@@ -57,27 +58,43 @@ function initViveInterface(globals){
     function connect(){
 
         WEBVR.getVRDisplay( function ( display ) {
-            if (!display) return;
-            $status.html("VR device detected.  Check that you are connected to Steam VR and your Vive has the latest firmware updates.");
+            var $link = $("#enterVR");
+            if (!display) {
+                $status.html("No VR device detected.  Check that you are connected to Steam VR and your HMD has the latest firmware updates, then refresh this page.");
+                $link.hide();
+                return;
+            }
+            $status.html("VR device detected.  Hit the button below to enter VR.  If you have problems, check that you are connected to Steam VR and your HMD has the latest firmware updates.");
             $("#VRoptions").show();
             var button = WEBVR.getButton( display, globals.threeView.renderer.domElement );
-            var $link = $("#enterVR");
-            $link.html(button.textContent);
+            $link.show();
+            $link.html("ENTER VR");
             var callback = button.onclick;
             $link.click(function(e){
                 e.preventDefault();
                 globals.vrEnabled = !display.isPresenting;
                 var y = 0;
-                if (globals.vrEnabled) y = yOffset;
-                globals.threeView.modelWrapper.scale.set(scale, scale, scale);
+                var vrScale = 1;
+                if (globals.vrEnabled) {
+                    y = yOffset;
+                    vrScale = scale;
+                    $link.html("EXIT VR");
+                } else {
+                    globals.threeView.resetCamera();
+                    $link.html("ENTER VR");
+                }
+                globals.threeView.modelWrapper.scale.set(vrScale, vrScale, vrScale);
                 globals.threeView.modelWrapper.position.set(0,y,0);
                 _.each(controller1.children, function(child){
-                    child.visible = true;
+                    child.visible = globals.vrEnabled;
                 });
                 _.each(controller2.children, function(child){
-                    child.visible = true;
+                    child.visible = globals.vrEnabled;
                 });
-                setControllerEvents();
+                if (!controllersConnected && globals.vrEnabled) {
+                    setControllerEvents();
+                    controllersConnected = true;
+                }
                 if (callback) callback();
             });
         } );
