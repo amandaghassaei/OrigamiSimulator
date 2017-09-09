@@ -129,7 +129,7 @@ function initThreeView(globals) {
         }
         if (globals.simulationRunning) callback();
         if (globals.vrEnabled){
-            globals.vive.effect.requestAnimationFrame(function(){
+            requestAnimationFrame(function(){
                 _loop(callback);
             });
             _render();

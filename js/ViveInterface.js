@@ -20,26 +20,25 @@ function initViveInterface(globals){
     mesh.position.set(0,0,0.125);
     mesh.visible = false;
 
-    var controls = new THREE.VRControls(globals.threeView.camera);
-    controls.standing = true;
+    // var controls = new THREE.VRControls(globals.threeView.camera);
+    // controls.standing = true;
 
     // controllers
-    var controller1 = new THREE.ViveController( 0 );
-    controller1.standingMatrix = controls.getStandingMatrix();
-    controller1.head = globals.threeView.camera;
-    globals.threeView.scene.add( controller1 );
+    // var controller1 = new THREE.ViveController( 0 );
+    // controller1.standingMatrix = controls.getStandingMatrix();
+    // controller1.head = globals.threeView.camera;
+    // globals.threeView.scene.add( controller1 );
+    //
+    // var controller2 = new THREE.ViveController( 1 );
+    // controller2.standingMatrix = controls.getStandingMatrix();
+    // controller2.head = globals.threeView.camera;
+    // globals.threeView.scene.add( controller2 );
+    //
+    // controller1.add(mesh.clone());
+    // controller2.add(mesh.clone());
 
-    var controller2 = new THREE.ViveController( 1 );
-    controller2.standingMatrix = controls.getStandingMatrix();
-    controller2.head = globals.threeView.camera;
-    globals.threeView.scene.add( controller2 );
-
-    controller1.add(mesh.clone());
-    controller2.add(mesh.clone());
-    var controllersConnected = false;
-
-    var controllers = [controller1, controller2];
-    var controllerStates = [false, false];
+    var controllers = [];
+    // var controllerStates = [false, false];
 
     //vis
     var highlighters = [new Node(new THREE.Vector3()), new Node(new THREE.Vector3())];
@@ -50,12 +49,64 @@ function initViveInterface(globals){
 
     var nodes = [null, null];
     var releaseEvent = [false, false];
-    var effect = new THREE.VREffect(globals.threeView.renderer);
+    // var effect = new THREE.VREffect(globals.threeView.renderer);
 
     connect();
 
     var yOffset = 1.6;
     var scale = 0.5;
+
+
+    window.addEventListener( 'vr controller connected', function( event ){
+
+        var controller = event.detail;
+        globals.threeView.scene.add( controller );
+
+        controller.standingMatrix = globals.threeView.renderer.vr.getStandingMatrix();
+        controller.head = globals.threeView.camera;
+
+        var
+        meshColorOff = 0xFF4040,
+        meshColorOn  = 0xFFFF00,
+        controllerMaterial = new THREE.MeshStandardMaterial({
+            color: meshColorOff
+        }),
+        controllerMesh = new THREE.Mesh(
+            new THREE.CylinderGeometry( 0.005, 0.05, 0.1, 6 ),
+            controllerMaterial
+        ),
+        handleMesh = new THREE.Mesh(
+            new THREE.BoxGeometry( 0.03, 0.1, 0.03 ),
+            controllerMaterial
+        );
+
+        controllerMaterial.flatShading = true;
+        controllerMesh.rotation.x = -Math.PI / 2;
+        handleMesh.position.y = -0.05;
+        controllerMesh.add( handleMesh );
+        controller.userData.mesh = controllerMesh;
+        controller.add( controllerMesh );
+
+
+        // var guiInputHelper = dat.GUIVR.addInputObject( controller )
+        // scene.add( guiInputHelper )
+        //
+
+        controller.addEventListener( 'primary press began', function( event ){
+            event.target.userData.mesh.material.color.setHex( meshColorOn );
+            // guiInputHelper.pressed( true );
+        });
+        controller.addEventListener( 'primary press ended', function( event ){
+            event.target.userData.mesh.material.color.setHex( meshColorOff );
+            // guiInputHelper.pressed( false );
+        });
+
+        controller.addEventListener( 'disconnected', function( event ){
+            controller.parent.remove( controller )
+        });
+
+        controllers.push(controller);
+    });
 
     function connect(){
 
@@ -75,6 +126,9 @@ function initViveInterface(globals){
             $link.click(function(e){
                 e.preventDefault();
                 globals.vrEnabled = !display.isPresenting;
+                // globals.threeView.renderer.setSize( window.innerWidth, window.innerHeight );
+                globals.threeView.renderer.vr.enabled = globals.vrEnabled;
+                globals.threeView.renderer.vr.standing = true;
                 var y = 0;
                 var vrScale = 1;
                 if (globals.vrEnabled) {
@@ -88,121 +142,100 @@ function initViveInterface(globals){
                 }
                 globals.threeView.modelWrapper.scale.set(vrScale, vrScale, vrScale);
                 globals.threeView.modelWrapper.position.set(0,y,0);
-                _.each(controller1.children, function(child){
-                    child.visible = globals.vrEnabled;
-                });
-                _.each(controller2.children, function(child){
-                    child.visible = globals.vrEnabled;
-                });
-                if (!controllersConnected && globals.vrEnabled) {
-                    setControllerEvents();
-                    controllersConnected = true;
-                }
+                // _.each(controller1.children, function(child){
+                //     child.visible = globals.vrEnabled;
+                // });
+                // _.each(controller2.children, function(child){
+                //     child.visible = globals.vrEnabled;
+                // });
                 if (callback) callback();
             });
         } );
     }
 
-    function setControllerEvents(){
-        controller1.addEventListener('triggerdown', function() {
-            controllerStates[0] = true;
-        });
-        controller2.addEventListener('triggerdown', function() {
-            controllerStates[1] = true;
-        });
-        controller1.addEventListener('triggerup', function() {
-            controllerStates[0] = false;
-            releaseEvent[0] = true;
-        });
-        controller2.addEventListener('triggerup', function() {
-            controllerStates[1] = false;
-            releaseEvent[1] = true;
-        });
-    }
-
     function render(){
-        controller1.update();
-        controller2.update();
-        checkForIntersections();
-        controls.update();
-        effect.render( globals.threeView.scene, globals.threeView.camera );
+        THREE.VRController.update();
+        // checkForIntersections();
+        // controls.update();
+        globals.threeView.renderer.render( globals.threeView.scene, globals.threeView.camera );
+        // effect.render( globals.threeView.scene, globals.threeView.camera );
     }
 
-    function checkForIntersections(){
-        for (var i=0;i<2;i++){
-            var object3D = highlighters[i].object3D;
-            var controller = controllers[i];
-            object3D.visible = false;
-            var position = controller.position.clone();
-            position.applyMatrix4(controller.standingMatrix);
-
-            if (controllerStates[i] && nodes[i]){
-                //drag node
-                if (!nodes[i].isFixed()) {
-                    nodes[i].setFixed(true);
-                    globals.fixedHasChanged = true;
-                }
-                position.y -= yOffset;
-                position.multiplyScalar(1/scale);
-                nodes[i].moveManually(position);
-                globals.nodePositionHasChanged = true;
-                continue;
-            }
-
-            if (releaseEvent[i]){
-                if (nodes[i]) nodes[i].setFixed(false);
-                globals.fixedHasChanged = true;
-            }
-
-            releaseEvent[i] = false;
-
-            var direction = new THREE.Vector3(0,0,-1);
-            direction.applyQuaternion(controller.quaternion);
-            position.add(direction.clone().multiplyScalar(-0.05));
-
-            var cast = new THREE.Raycaster(position, direction, -0.1, 10);
-            var intersects = cast.intersectObjects(globals.model.getMesh(), false);
-            if (intersects.length>0){
-                var intersection = intersects[0];
-                var face = intersection.face;
-                var point = intersection.point;
-
-                if (point.clone().sub(position).length() > 0.2) {
-                    nodes[i] = null;
-                    continue;
-                }
-
-                var verticesArray = globals.model.getVertices();
-                var vertices = [];
-                vertices.push(verticesArray[face.a]);
-                vertices.push(verticesArray[face.b]);
-                vertices.push(verticesArray[face.c]);
-                var dist = transformToGlobalCoords(vertices[0].clone()).sub(point).lengthSq();
-                var nodeIndex = face.a;
-                for (var j=1;j<3;j++){
-                    var _dist = (transformToGlobalCoords(vertices[j].clone()).sub(point)).lengthSq();
-                    if (_dist<dist){
-                        dist = _dist;
-                        if (j==1) nodeIndex = face.b;
-                        else nodeIndex = face.c;
-                    }
-                }
-                var nodesArray = globals.model.getNodes();
-                nodes[i] = nodesArray[nodeIndex];
-                object3D.position.copy(transformToGlobalCoords(nodes[i].getPosition().clone()));
-                object3D.visible = true;
-            } else nodes[i] = null;
-        }
-    }
-
-    function transformToGlobalCoords(position){
-        position.multiplyScalar(scale);
-        position.y += yOffset;
-        return position;
-    }
+    // function checkForIntersections(){
+    //     for (var i=0;i<2;i++){
+    //         var object3D = highlighters[i].object3D;
+    //         var controller = controllers[i];
+    //         object3D.visible = false;
+    //         var position = controller.position.clone();
+    //         position.applyMatrix4(controller.standingMatrix);
+    //
+    //         if (controllerStates[i] && nodes[i]){
+    //             //drag node
+    //             if (!nodes[i].isFixed()) {
+    //                 nodes[i].setFixed(true);
+    //                 globals.fixedHasChanged = true;
+    //             }
+    //             position.y -= yOffset;
+    //             position.multiplyScalar(1/scale);
+    //             nodes[i].moveManually(position);
+    //             globals.nodePositionHasChanged = true;
+    //             continue;
+    //         }
+    //
+    //         if (releaseEvent[i]){
+    //             if (nodes[i]) nodes[i].setFixed(false);
+    //             globals.fixedHasChanged = true;
+    //         }
+    //
+    //         releaseEvent[i] = false;
+    //
+    //         var direction = new THREE.Vector3(0,0,-1);
+    //         direction.applyQuaternion(controller.quaternion);
+    //         position.add(direction.clone().multiplyScalar(-0.05));
+    //
+    //         var cast = new THREE.Raycaster(position, direction, -0.1, 10);
+    //         var intersects = cast.intersectObjects(globals.model.getMesh(), false);
+    //         if (intersects.length>0){
+    //             var intersection = intersects[0];
+    //             var face = intersection.face;
+    //             var point = intersection.point;
+    //
+    //             if (point.clone().sub(position).length() > 0.2) {
+    //                 nodes[i] = null;
+    //                 continue;
+    //             }
+    //
+    //             var verticesArray = globals.model.getVertices();
+    //             var vertices = [];
+    //             vertices.push(verticesArray[face.a]);
+    //             vertices.push(verticesArray[face.b]);
+    //             vertices.push(verticesArray[face.c]);
+    //             var dist = transformToGlobalCoords(vertices[0].clone()).sub(point).lengthSq();
+    //             var nodeIndex = face.a;
+    //             for (var j=1;j<3;j++){
+    //                 var _dist = (transformToGlobalCoords(vertices[j].clone()).sub(point)).lengthSq();
+    //                 if (_dist<dist){
+    //                     dist = _dist;
+    //                     if (j==1) nodeIndex = face.b;
+    //                     else nodeIndex = face.c;
+    //                 }
+    //             }
+    //             var nodesArray = globals.model.getNodes();
+    //             nodes[i] = nodesArray[nodeIndex];
+    //             object3D.position.copy(transformToGlobalCoords(nodes[i].getPosition().clone()));
+    //             object3D.visible = true;
+    //         } else nodes[i] = null;
+    //     }
+    // }
+    //
+    // function transformToGlobalCoords(position){
+    //     position.multiplyScalar(scale);
+    //     position.y += yOffset;
+    //     return position;
+    // }
 
     return {
-        effect: effect,
+        // effect: effect,
         render: render
     }
 
