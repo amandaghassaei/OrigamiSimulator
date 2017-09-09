@@ -128,13 +128,14 @@ function initViveInterface(globals){
                 globals.vrEnabled = !display.isPresenting;
                 // globals.threeView.renderer.setSize( window.innerWidth, window.innerHeight );
                 globals.threeView.renderer.vr.enabled = globals.vrEnabled;
-                globals.threeView.renderer.vr.standing = true;
                 var y = 0;
                 var vrScale = 1;
                 if (globals.vrEnabled) {
                     y = yOffset;
                     vrScale = scale;
                     $link.html("EXIT VR");
+                    globals.threeView.renderer.vr.setDevice( display );
+                    globals.threeView.renderer.vr.standing = true;
                 } else {
                     globals.model.reset();
                     globals.threeView.resetCamera();

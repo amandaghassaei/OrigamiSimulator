@@ -78,7 +78,8 @@ function initModel(globals){
         var polygonOffset = 0.5;
         if (globals.colorMode == "normal") {
             material = new THREE.MeshNormalMaterial({
-                shading:THREE.FlatShading, side: THREE.DoubleSide,
+                flatShading:true,
+                side: THREE.DoubleSide,
                 polygonOffset: true,
                 polygonOffsetFactor: polygonOffset, // positive value pushes polygon further away
                 polygonOffsetUnits: 1

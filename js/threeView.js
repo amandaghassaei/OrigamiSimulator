@@ -10,7 +10,7 @@ function initThreeView(globals) {
     var camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 500);
     // var camera = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, -10000, 10000);//-40, 40);
     var renderer = new THREE.WebGLRenderer({antialias: true});
-    var svgRenderer = new THREE.SVGRenderer();
+    // var svgRenderer = new THREE.SVGRenderer();
     var controls;
 
     init();
@@ -171,37 +171,37 @@ function initThreeView(globals) {
         controls.enableRotate = state;
     }
 
-    function saveSVG(){
-        // svgRenderer.setClearColor(0xffffff);
-        svgRenderer.setSize(window.innerWidth,window.innerHeight);
-        svgRenderer.sortElements = true;
-        svgRenderer.sortObjects = true;
-        svgRenderer.setQuality('high');
-        svgRenderer.render(scene,camera);
-        //get svg source.
-        var serializer = new XMLSerializer();
-        var source = serializer.serializeToString(svgRenderer.domElement);
-
-        //add name spaces.
-        if(!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)){
-            source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
-        }
-        if(!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)){
-            source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
-        }
-
-        //add xml declaration
-        source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
-
-        var svgBlob = new Blob([source], {type:"image/svg+xml;charset=utf-8"});
-        var svgUrl = URL.createObjectURL(svgBlob);
-        var downloadLink = document.createElement("a");
-        downloadLink.href = svgUrl;
-        downloadLink.download =  globals.filename + " : " + parseInt(globals.creasePercent*100) +  "PercentFolded.svg";
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-    }
+    // function saveSVG(){
+    //     // svgRenderer.setClearColor(0xffffff);
+    //     svgRenderer.setSize(window.innerWidth,window.innerHeight);
+    //     svgRenderer.sortElements = true;
+    //     svgRenderer.sortObjects = true;
+    //     svgRenderer.setQuality('high');
+    //     svgRenderer.render(scene,camera);
+    //     //get svg source.
+    //     var serializer = new XMLSerializer();
+    //     var source = serializer.serializeToString(svgRenderer.domElement);
+    //
+    //     //add name spaces.
+    //     if(!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)){
+    //         source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+    //     }
+    //     if(!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)){
+    //         source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+    //     }
+    //
+    //     //add xml declaration
+    //     source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+    //
+    //     var svgBlob = new Blob([source], {type:"image/svg+xml;charset=utf-8"});
+    //     var svgUrl = URL.createObjectURL(svgBlob);
+    //     var downloadLink = document.createElement("a");
+    //     downloadLink.href = svgUrl;
+    //     downloadLink.download =  globals.filename + " : " + parseInt(globals.creasePercent*100) +  "PercentFolded.svg";
+    //     document.body.appendChild(downloadLink);
+    //     downloadLink.click();
+    //     document.body.removeChild(downloadLink);
+    // }
 
     function resetModel(){
         modelWrapper.rotation.set(0,0,0);
@@ -226,7 +226,7 @@ function initThreeView(globals) {
         renderer: renderer,//needed for VR
         modelWrapper:modelWrapper,
 
-        saveSVG: saveSVG,//svg screenshot
+        // saveSVG: saveSVG,//svg screenshot
 
         setCameraX:setCameraX,
         setCameraY: setCameraY,
