@@ -26,10 +26,12 @@ function initViveInterface(globals){
     // controllers
     var controller1 = new THREE.ViveController( 0 );
     controller1.standingMatrix = controls.getStandingMatrix();
+    controller1.head = globals.threeView.camera;
     globals.threeView.scene.add( controller1 );
 
     var controller2 = new THREE.ViveController( 1 );
     controller2.standingMatrix = controls.getStandingMatrix();
+    controller2.head = globals.threeView.camera;
     globals.threeView.scene.add( controller2 );
 
     controller1.add(mesh.clone());
@@ -80,6 +82,7 @@ function initViveInterface(globals){
                     vrScale = scale;
                     $link.html("EXIT VR");
                 } else {
+                    globals.model.reset();
                     globals.threeView.resetCamera();
                     $link.html("ENTER VR");
                 }

@@ -18,6 +18,7 @@ function initThreeView(globals) {
     function init() {
 
         var container = $("#threeContainer");
+        renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize(window.innerWidth, window.innerHeight);
         container.append(renderer.domElement);
 
