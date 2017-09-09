@@ -98,13 +98,15 @@ function initModel(globals){
             }
         } else {
             material = new THREE.MeshPhongMaterial({
-                shading:THREE.FlatShading, side:THREE.FrontSide,
+                flatShading:true,
+                side:THREE.FrontSide,
                 polygonOffset: true,
                 polygonOffsetFactor: polygonOffset, // positive value pushes polygon further away
                 polygonOffsetUnits: 1
             });
             material2 = new THREE.MeshPhongMaterial({
-                shading:THREE.FlatShading, side:THREE.BackSide,
+                flatShading:true,
+                side:THREE.BackSide,
                 polygonOffset: true,
                 polygonOffsetFactor: polygonOffset, // positive value pushes polygon further away
                 polygonOffsetUnits: 1
