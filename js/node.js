@@ -4,7 +4,7 @@
 
 var nodeMaterial = new THREE.MeshBasicMaterial({color: 0x000000, side:THREE.DoubleSide});
 var transparentMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, opacity:0.5, transparent:true});
-var transparentVRMaterial = new THREE.MeshBasicMaterial({color: 0x000000, opacity:0.8, transparent:true});
+var transparentVRMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, opacity:0.8, transparent:true});
 
 var nodeGeo = new THREE.SphereGeometry(0.02,20);
 
