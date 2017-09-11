@@ -49,7 +49,7 @@ function initViveInterface(globals){
     gui.position.set( 0.2, 0.8, -1 );
     gui.rotation.set( Math.PI / -6, 0, 0 );
     scene.add( gui );
-
+    gui.visible = false;
 
     gui.add(variables, "foldPercent").min(-100).max(100).step(1).name("Fold Percent").onChange(function(val){
         globals.creasePercent = val/100;
@@ -89,6 +89,10 @@ function initViveInterface(globals){
     gui.add(variables.position, "y").min(-positionBound).max(positionBound).step(0.01).name("Position Z").onChange(positionCallback);
 
 
+    // var examplesMenu = dat.GUIVR.create( 'Examples' );
+    // // gui.position.set( 0.2, 0.8, -1 );
+    // // gui.rotation.set( Math.PI / -6, 0, 0 );
+    // scene.add( examplesMenu );
 
 
 
@@ -103,8 +107,8 @@ function initViveInterface(globals){
         controller.head = camera;
 
         var
-        meshColorOff = 0xFF4040,
-        meshColorOn  = 0xFFFF00,
+        meshColorOff = 0x888888,
+        meshColorOn  = 0x555555,
         controllerMaterial = new THREE.MeshStandardMaterial({
             color: meshColorOff
         }),
@@ -192,6 +196,7 @@ function initViveInterface(globals){
                         child.visible = globals.vrEnabled;
                     });
                 });
+                gui.visible = globals.vrEnabled;
                 if (callback) callback();
             });
         } );
@@ -219,6 +224,7 @@ function initViveInterface(globals){
 
                 var position = controllers[i].position.clone();
                 position.applyMatrix4(renderer.vr.getStandingMatrix());
+                position.add((new THREE.Vector3(0,0,-0.06)).applyQuaternion(controllers[i].quaternion));
 
                 if (states[i] && nodes[i]){
                     //drag node
