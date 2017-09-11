@@ -35,7 +35,7 @@ function initViveInterface(globals){
     var variables = {
         scale: 0.5,
         foldPercent: globals.creasePercent*100,
-        resetBtn: function(){
+        Reset: function(){
             globals.model.reset();
         },
         stepsPerFrame: globals.numSteps,
@@ -56,7 +56,7 @@ function initViveInterface(globals){
         globals.shouldChangeCreasePercent = true;
         globals.controls.updateCreasePercent();//update other gui
     });
-    gui.add(variables, "strainMap").name("Strain Map").onChange( function(val) {
+    gui.add(variables, "strainMap").name("Show Strain Map").onChange( function(val) {
         var mode = "color";
         if (val) mode = "axialStrain";
         globals.colorMode = mode;
@@ -67,7 +67,7 @@ function initViveInterface(globals){
         globals.model.setMeshMaterial();
         $(".radio>input[value="+mode+"]").prop("checked", true);
     });
-    gui.add(variables,'resetBtn').name("Reset");
+    gui.add(variables,'Reset').name("Reset");
     gui.add(variables, "damping").min(0.1).max(1).step(0.01).name("Damping").onChange( function(val) {
         globals.percentDamping = val;
         globals.materialHasChanged = true;
@@ -87,6 +87,8 @@ function initViveInterface(globals){
     gui.add(variables.position, "x").min(-positionBound).max(positionBound).step(0.01).name("Position X").onChange(positionCallback);
     gui.add(variables.position, "z").min(-positionBound).max(positionBound).step(0.01).name("Position Y").onChange(positionCallback);//z and y are flipped
     gui.add(variables.position, "y").min(-positionBound).max(positionBound).step(0.01).name("Position Z").onChange(positionCallback);
+
+
 
 
 
