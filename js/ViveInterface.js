@@ -14,28 +14,9 @@ function initViveInterface(globals){
     }
     $status.html("No device connected.");
 
-    var geo = new THREE.CylinderGeometry(0, 0.05, 0.25, 4);
-    geo.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
-    var mesh = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({color:0x444444}));
-    mesh.position.set(0,0,0.125);
-    mesh.visible = false;
-
-    // var controls = new THREE.VRControls(globals.threeView.camera);
-    // controls.standing = true;
-
-    // controllers
-    // var controller1 = new THREE.ViveController( 0 );
-    // controller1.standingMatrix = controls.getStandingMatrix();
-    // controller1.head = globals.threeView.camera;
-    // globals.threeView.scene.add( controller1 );
-    //
-    // var controller2 = new THREE.ViveController( 1 );
-    // controller2.standingMatrix = controls.getStandingMatrix();
-    // controller2.head = globals.threeView.camera;
-    // globals.threeView.scene.add( controller2 );
-    //
-    // controller1.add(mesh.clone());
-    // controller2.add(mesh.clone());
+    var renderer = globals.threeView.renderer;
+    var scene = globals.threeView.scene;
+    var camera = globals.threeView.camera;
 
     var controllers = [];
     // var controllerStates = [false, false];
@@ -44,26 +25,24 @@ function initViveInterface(globals){
     var highlighters = [new Node(new THREE.Vector3()), new Node(new THREE.Vector3())];
     _.each(highlighters, function(highlighter){
         highlighter.setTransparentVR();
-        globals.threeView.scene.add(highlighter.getObject3D());
+        scene.add(highlighter.getObject3D());
     });
 
     var nodes = [null, null];
     var releaseEvent = [false, false];
-    // var effect = new THREE.VREffect(globals.threeView.renderer);
 
     connect();
 
     var yOffset = 1.6;
     var scale = 0.5;
 
-
     window.addEventListener( 'vr controller connected', function( event ){
 
         var controller = event.detail;
-        globals.threeView.scene.add( controller );
+        scene.add( controller );
 
-        controller.standingMatrix = globals.threeView.renderer.vr.getStandingMatrix();
-        controller.head = globals.threeView.camera;
+        controller.standingMatrix = renderer.vr.getStandingMatrix();
+        controller.head = camera;
 
         var
         meshColorOff = 0xFF4040,
@@ -119,24 +98,22 @@ function initViveInterface(globals){
             }
             $status.html("VR device detected.  Hit the button below to enter VR.  If you have problems, check that you are connected to Steam VR and your HMD has the latest firmware updates.");
             $("#VRoptions").show();
-            var button = WEBVR.getButton( display, globals.threeView.renderer.domElement );
+            var button = WEBVR.getButton( display, renderer.domElement );
             $link.show();
             $link.html("ENTER VR");
             var callback = button.onclick;
             $link.click(function(e){
                 e.preventDefault();
                 globals.vrEnabled = !display.isPresenting;
-                console.log(globals.vrEnabled);
-                // globals.threeView.renderer.setSize( window.innerWidth, window.innerHeight );
-                globals.threeView.renderer.vr.enabled = globals.vrEnabled;
+                renderer.vr.enabled = globals.vrEnabled;
                 var y = 0;
                 var vrScale = 1;
                 if (globals.vrEnabled) {
                     y = yOffset;
                     vrScale = scale;
                     $link.html("EXIT VR");
-                    globals.threeView.renderer.vr.setDevice( display );
-                    globals.threeView.renderer.vr.standing = true;
+                    renderer.vr.setDevice( display );
+                    renderer.vr.standing = true;
                 } else {
                     globals.model.reset();
                     globals.threeView.resetCamera();
@@ -144,12 +121,11 @@ function initViveInterface(globals){
                 }
                 globals.threeView.modelWrapper.scale.set(vrScale, vrScale, vrScale);
                 globals.threeView.modelWrapper.position.set(0,y,0);
-                // _.each(controller1.children, function(child){
-                //     child.visible = globals.vrEnabled;
-                // });
-                // _.each(controller2.children, function(child){
-                //     child.visible = globals.vrEnabled;
-                // });
+                _.each(controllers, function(controller){
+                    _.each(controller.children, function(child){
+                        child.visible = globals.vrEnabled;
+                    });
+                });
                 if (callback) callback();
             });
         } );
@@ -158,9 +134,7 @@ function initViveInterface(globals){
     function render(){
         THREE.VRController.update();
         // checkForIntersections();
-        // controls.update();
-        globals.threeView.renderer.render( globals.threeView.scene, globals.threeView.camera );
-        // effect.render( globals.threeView.scene, globals.threeView.camera );
+        renderer.render( scene, camera );
     }
 
     // function checkForIntersections(){
@@ -237,7 +211,6 @@ function initViveInterface(globals){
     // }
 
     return {
-        // effect: effect,
         render: render
     }
 
