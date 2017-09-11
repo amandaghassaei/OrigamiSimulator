@@ -139,12 +139,6 @@ function initThreeView(globals) {
         modelWrapper.add(object);
     }
 
-    function sceneClearModel(){
-        for (var i=0;i<modelWrapper.children.length;i++){
-            modelWrapper.remove(modelWrapper.children[i]);
-        }
-    }
-
     function onWindowResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
         // camera.left = -window.innerWidth / 2;
@@ -200,13 +194,13 @@ function initThreeView(globals) {
         modelWrapper.rotation.set(0,0,0);
     }
 
-    function setBackgroundColor(){
-        scene.background.setStyle( "#" + globals.backgroundColor);
+    function setBackgroundColor(color){
+        if (color === undefined) color = globals.backgroundColor;
+        scene.background.setStyle( "#" + color);
     }
 
     return {
         sceneAddModel: sceneAddModel,
-        sceneClearModel: sceneClearModel,
         onWindowResize: onWindowResize,
 
         startAnimation: startAnimation,
