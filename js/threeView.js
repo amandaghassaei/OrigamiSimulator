@@ -88,12 +88,7 @@ function initThreeView(globals) {
 
     function startAnimation(){
         console.log("starting animation");
-        _loop();
-
-        // renderer.animate(function(){
-        //     _loop(callback);
-        // })
-
+        renderer.animate(_loop);
     }
 
     function pauseSimulation(){
@@ -133,11 +128,9 @@ function initThreeView(globals) {
         }
         if (globals.simulationRunning) globals.model.step();
         if (globals.vrEnabled){
-            requestAnimationFrame(_loop);
             _render();
             return;
         }
-        requestAnimationFrame(_loop);
         controls.update();
         _render();
     }
