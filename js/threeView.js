@@ -86,9 +86,13 @@ function initThreeView(globals) {
         controls.reset(new THREE.Vector3(1,1,1));
     }
 
-    function startAnimation(callback){
+    function startAnimation(){
         console.log("starting animation");
-        _loop(callback);
+        _loop();
+
+        // renderer.animate(function(){
+        //     _loop(callback);
+        // })
 
     }
 
@@ -115,7 +119,7 @@ function initThreeView(globals) {
         }
     }
 
-    function _loop(callback){
+    function _loop(){
         if (globals.rotateModel !== null){
             if (globals.rotateModel == "x") modelWrapper.rotateX(globals.rotationSpeed);
             if (globals.rotateModel == "y") modelWrapper.rotateY(globals.rotationSpeed);
@@ -127,17 +131,13 @@ function initThreeView(globals) {
         if (globals.simNeedsSync){
             globals.model.syncSolver();
         }
-        if (globals.simulationRunning) callback();
+        if (globals.simulationRunning) globals.model.step();
         if (globals.vrEnabled){
-            requestAnimationFrame(function(){
-                _loop(callback);
-            });
+            requestAnimationFrame(_loop);
             _render();
             return;
         }
-        requestAnimationFrame(function(){
-            _loop(callback);
-        });
+        requestAnimationFrame(_loop);
         controls.update();
         _render();
     }

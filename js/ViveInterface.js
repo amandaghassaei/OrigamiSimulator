@@ -126,6 +126,7 @@ function initViveInterface(globals){
             $link.click(function(e){
                 e.preventDefault();
                 globals.vrEnabled = !display.isPresenting;
+                console.log(globals.vrEnabled);
                 // globals.threeView.renderer.setSize( window.innerWidth, window.innerHeight );
                 globals.threeView.renderer.vr.enabled = globals.vrEnabled;
                 var y = 0;

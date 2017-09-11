@@ -179,7 +179,7 @@ function initModel(globals){
     }
 
     function startSolver(){
-        globals.threeView.startAnimation(step);
+        globals.threeView.startAnimation();
     }
 
     function getSolver(){
