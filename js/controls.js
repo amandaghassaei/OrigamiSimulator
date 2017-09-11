@@ -768,6 +768,12 @@ function initControls(globals){
         });
     }
 
+    function setSliderInputVal(id, val){
+        $(id+">div").slider({value:val});
+        var $input = $(id+">input");
+        $input.val(val);
+    }
+
     function setSliderInput(id, val, min, max, incr, callback){
 
         var slider = $(id+">div").slider({
@@ -808,7 +814,8 @@ function initControls(globals){
 
     return {
         setDeltaT: setDeltaT,
-        updateCreasePercent: updateCreasePercent
+        updateCreasePercent: updateCreasePercent,
+        setSliderInputVal: setSliderInputVal
     }
 }
 

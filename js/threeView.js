@@ -140,6 +140,12 @@ function initThreeView(globals) {
     }
 
     function onWindowResize() {
+
+        if (globals.vrEnabled){
+            globals.warn("Can't resize window when in VR mode.");
+            return;
+        }
+
         camera.aspect = window.innerWidth / window.innerHeight;
         // camera.left = -window.innerWidth / 2;
         // camera.right = window.innerWidth / 2;

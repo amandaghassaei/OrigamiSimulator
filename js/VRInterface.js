@@ -32,8 +32,63 @@ function initViveInterface(globals){
 
     connect();
 
-    var yOffset = 1.6;
-    var scale = 0.5;
+    var variables = {
+        scale: 0.5,
+        foldPercent: globals.creasePercent*100,
+        resetBtn: function(){
+            globals.model.reset();
+        },
+        stepsPerFrame: globals.numSteps,
+        damping: globals.percentDamping,
+        strainMap: false,
+        position: new THREE.Vector3(0,1.6,0)
+    };
+
+    dat.GUIVR.enableMouse(camera);
+    var gui = dat.GUIVR.create( 'Settings' );
+    gui.position.set( 0.2, 0.8, -1 );
+    gui.rotation.set( Math.PI / -6, 0, 0 );
+    scene.add( gui );
+
+
+    gui.add(variables, "foldPercent").min(-100).max(100).step(1).name("Fold Percent").onChange(function(val){
+        globals.creasePercent = val/100;
+        globals.shouldChangeCreasePercent = true;
+        globals.controls.updateCreasePercent();//update other gui
+    });
+    gui.add(variables, "strainMap").name("Strain Map").onChange( function(val) {
+        var mode = "color";
+        if (val) mode = "axialStrain";
+        globals.colorMode = mode;
+        if (mode == "color") $("#coloredMaterialOptions").show();
+        else $("#coloredMaterialOptions").hide();
+        if (mode == "axialStrain") $("#axialStrainMaterialOptions").show();
+        else $("#axialStrainMaterialOptions").hide();
+        globals.model.setMeshMaterial();
+        $(".radio>input[value="+mode+"]").prop("checked", true);
+    });
+    gui.add(variables,'resetBtn').name("Reset");
+    gui.add(variables, "damping").min(0.1).max(1).step(0.01).name("Damping").onChange( function(val) {
+        globals.percentDamping = val;
+        globals.materialHasChanged = true;
+        globals.controls.setSliderInputVal("#percentDamping", val);
+    });
+    gui.add(variables, "stepsPerFrame").min(1).max(200).step(1).name("Num Steps Per Render").onChange( function(val) {
+        globals.numSteps = val;
+        $(".numStepsPerRender").val(val);
+    });
+    gui.add(variables, "scale").min(0.01).max(1).step(0.001).name("Scale").onChange( function(val) {
+        globals.threeView.modelWrapper.scale.set(val, val, val);
+    });
+    var positionCallback = function(val){
+        globals.threeView.modelWrapper.position.copy(variables.position);
+    };
+    var positionBound = 2;
+    gui.add(variables.position, "x").min(-positionBound).max(positionBound).step(0.01).name("Position X").onChange(positionCallback);
+    gui.add(variables.position, "z").min(-positionBound).max(positionBound).step(0.01).name("Position Y").onChange(positionCallback);//z and y are flipped
+    gui.add(variables.position, "y").min(-positionBound).max(positionBound).step(0.01).name("Position Z").onChange(positionCallback);
+
+
 
     window.addEventListener( 'vr controller connected', function( event ){
 
@@ -68,14 +123,14 @@ function initViveInterface(globals){
         controller.add( controllerMesh );
 
 
-        // var guiInputHelper = dat.GUIVR.addInputObject( controller )
-        // scene.add( guiInputHelper )
-        //
+        var guiInputHelper = dat.GUIVR.addInputObject( controller );
+        scene.add( guiInputHelper );
+
 
         controller.addEventListener( 'primary press began', function( event ){
             event.target.userData.mesh.material.color.setHex( meshColorOn );
             states[controllerIndex] = true;
-            // guiInputHelper.pressed( true );
+            guiInputHelper.pressed( true );
         });
         controller.addEventListener( 'primary press ended', function( event ){
             event.target.userData.mesh.material.color.setHex( meshColorOff );
@@ -84,8 +139,7 @@ function initViveInterface(globals){
                 nodes[controllerIndex].setFixed(false);
                 globals.fixedHasChanged = true;
             }
-
-            // guiInputHelper.pressed( false );
+            guiInputHelper.pressed( false );
         });
 
         controller.addEventListener( 'disconnected', function( event ){
@@ -115,23 +169,22 @@ function initViveInterface(globals){
                 e.preventDefault();
                 globals.vrEnabled = !display.isPresenting;
                 renderer.vr.enabled = globals.vrEnabled;
-                var y = 0;
-                var vrScale = 1;
                 if (globals.vrEnabled) {
-                    y = yOffset;
-                    vrScale = scale;
+                    globals.threeView.modelWrapper.scale.set(variables.scale, variables.scale, variables.scale);
+                    globals.threeView.modelWrapper.position.copy(variables.position);
                     $link.html("EXIT VR");
                     renderer.vr.setDevice( display );
                     renderer.vr.standing = true;
                     globals.threeView.setBackgroundColor("000000");
                 } else {
                     globals.model.reset();
+                    // globals.threeView.onWindowResize();
                     globals.threeView.resetCamera();
                     $link.html("ENTER VR");
                     globals.threeView.setBackgroundColor();
+                    globals.threeView.modelWrapper.scale.set(1, 1, 1);
+                    globals.threeView.modelWrapper.position.set(0,0,0);
                 }
-                globals.threeView.modelWrapper.scale.set(vrScale, vrScale, vrScale);
-                globals.threeView.modelWrapper.position.set(0,y,0);
                 _.each(controllers, function(controller){
                     _.each(controller.children, function(child){
                         child.visible = globals.vrEnabled;
@@ -171,8 +224,8 @@ function initViveInterface(globals){
                         nodes[i].setFixed(true);
                         globals.fixedHasChanged = true;
                     }
-                    position.y -= yOffset;
-                    position.multiplyScalar(1/scale);
+                    position.sub(variables.position);
+                    position.multiplyScalar(1/variables.scale);
                     nodes[i].moveManually(position);
                     globals.nodePositionHasChanged = true;
                     continue;
@@ -223,8 +276,8 @@ function initViveInterface(globals){
     }
 
     function transformToGlobalCoords(position){
-        position.multiplyScalar(scale);
-        position.y += yOffset;
+        position.multiplyScalar(variables.scale);
+        position.add(variables.position);
         return position;
     }
 
