@@ -34,23 +34,28 @@ function initModel(globals){
     function clearGeometries(){
 
         if (geometry) {
-            // geometry.dispose();
-        } else geometry = new THREE.BufferGeometry();
-        geometry.verticesNeedUpdate = true;
-        geometry.dynamic = true;
+            frontside.geometry = null;
+            backside.geometry = null;
+            geometry.dispose();
+        }
 
-
+        geometry = new THREE.BufferGeometry();
         frontside.geometry = geometry;
         backside.geometry = geometry;
+        // geometry.verticesNeedUpdate = true;
+        geometry.dynamic = true;
 
         _.each(lines, function(line){
             var lineGeometry = line.geometry;
             if (lineGeometry) {
-                // line.geometry.dispose();
-            } else lineGeometry = new THREE.BufferGeometry();
-            lineGeometry.verticesNeedUpdate = true;
-            lineGeometry.dynamic = true;
+                line.geometry = null;
+                lineGeometry.dispose();
+            }
+
+            lineGeometry = new THREE.BufferGeometry();
             line.geometry = lineGeometry;
+            // lineGeometry.verticesNeedUpdate = true;
+            lineGeometry.dynamic = true;
         });
     }
 
@@ -321,8 +326,8 @@ function initModel(globals){
             }
             lines[key].geometry.addAttribute('position', positionsAttribute);
             lines[key].geometry.setIndex(new THREE.BufferAttribute(indices, 1));
-            lines[key].geometry.attributes.position.needsUpdate = true;
-            lines[key].geometry.index.needsUpdate = true;
+            // lines[key].geometry.attributes.position.needsUpdate = true;
+            // lines[key].geometry.index.needsUpdate = true;
             lines[key].geometry.computeBoundingBox();
             lines[key].geometry.computeBoundingSphere();
             lines[key].geometry.center();
@@ -331,7 +336,9 @@ function initModel(globals){
         geometry.addAttribute('position', positionsAttribute);
         geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
         geometry.setIndex(new THREE.BufferAttribute(indices, 1));
-
+        // geometry.attributes.position.needsUpdate = true;
+        // geometry.index.needsUpdate = true;
+        // geometry.verticesNeedUpdate = true;
         geometry.computeVertexNormals();
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
