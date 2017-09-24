@@ -109,6 +109,17 @@ function initThreeView(globals) {
         }
         renderer.render(scene, camera);
         if (globals.capturer) {
+            if (globals.capturer == "png"){
+                var canvas = globals.threeView.renderer.domElement;
+                canvas.toBlob(function(blob) {
+                    saveAs(blob, globals.screenRecordFilename + ".png");
+                }, "image/png");
+                globals.capturer = null;
+                globals.shouldScaleCanvas = false;
+                globals.shouldAnimateFoldPercent = false;
+                globals.threeView.onWindowResize();
+                return;
+            }
             captureStats.html("( " + ++globals.capturerFrames + " frames  at " + globals.currentFPS  + "fps )");
             globals.capturer.capture(renderer.domElement);
         }

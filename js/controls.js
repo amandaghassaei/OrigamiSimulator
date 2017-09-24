@@ -197,8 +197,20 @@ function initControls(globals){
 
     setLink("#createGif", function(){
         globals.shouldScaleCanvas = true;
-        $("#screenCaptureModal .gif").show();
         $("#screenCaptureModal .video").hide();
+        $("#screenCaptureModal .png").hide();
+        $("#screenCaptureModal .gif").show();
+        $("#screenCaptureModal").modal("show");
+        $("#screenRecordFilename").val(globals.filename);
+        globals.screenRecordFilename = globals.filename;
+        globals.threeView.onWindowResize();
+        updateCanvasDimensions();
+    });
+    setLink("#createPNG", function(){
+        globals.shouldScaleCanvas = true;
+        $("#screenCaptureModal .gif").hide();
+        $("#screenCaptureModal .video").hide();
+        $("#screenCaptureModal .png").show();
         $("#screenCaptureModal").modal("show");
         $("#screenRecordFilename").val(globals.filename);
         globals.screenRecordFilename = globals.filename;
@@ -214,6 +226,7 @@ function initControls(globals){
               if (hasWebP){
                   //timeLimit: s of video to limit
                 $("#screenCaptureModal .gif").hide();
+                $("#screenCaptureModal .png").hide();
                 $("#screenCaptureModal .video").show();
                 $("#screenCaptureModal").modal("show");
                 $("#screenRecordFilename").val(globals.filename);
@@ -282,6 +295,10 @@ function initControls(globals){
             globals.shouldAnimateFoldPercent = true;
             globals.videoAnimator.compile();
         }
+    });
+    setLink("#doPNGCapture", function(){
+        globals.shouldScaleCanvas = false;
+        globals.capturer = "png";
     });
     setLink("#doGifRecord", function(){
         globals.capturerFrames = 0;
