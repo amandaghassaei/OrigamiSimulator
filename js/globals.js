@@ -108,13 +108,13 @@ function initGlobals(){
     _globals.setCreasePercent = setCreasePercent;
 
     function warn(msg){
-        if (($("#warningMessage").data('bs.modal') || {}).isShown){
-            $("#warningMessage").append("<br/><br/>" + msg);
-            return;
-        }
-        $("#warningMessage").html(msg);
-        $("#warningModal").modal("show");
+        if (($("#warningMessage").html()) != "") $("#warningMessage").append("<br/><hr>" + msg);
+        else $("#warningMessage").html(msg);
+        if (!$('#warningModal').hasClass('show')) $("#warningModal").modal("show");
     }
+    $('#warningMessage').on('hidden.bs.modal', function () {
+        $("#warningMessage").html("");
+    });
     _globals.warn = warn;
 
     function noCreasePatternAvailable(){

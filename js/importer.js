@@ -67,8 +67,8 @@ function initImporter(globals){
                     try {
                         var fold = JSON.parse(reader.result);
                         if (!fold || !fold.vertices_coords || !fold.edges_assignment || !fold.edges_vertices || !fold.faces_vertices){
-                            globals.warn("<br/>Invalid FOLD file, must contain all of: <br/>" +
-                                "<br/>vertices_coords<br/>edges_vertices<br/>edges_assignment<br/>faces_vertices<br/><br/>");
+                            globals.warn("Invalid FOLD file, must contain all of: <br/>" +
+                                "<br/>vertices_coords<br/>edges_vertices<br/>edges_assignment<br/>faces_vertices");
                             return;
                         }
 

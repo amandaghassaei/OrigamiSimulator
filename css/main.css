@@ -294,6 +294,7 @@ svg{
 }
 
 #warningMessage{
+    padding: 30px 0;
     text-align: center;
     margin: 0 18px;
 }

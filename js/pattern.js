@@ -339,9 +339,18 @@ function initPattern(globals){
 
     function loadSVG(url){
         SVGloader.load(url, function(svg){
+
             var _$svg = $(svg);
 
             clearAll();
+
+            //warn of global styling
+            var $style = _$svg.children("style");
+            if ($style.length>0){
+                globals.warn("Global styling found on SVG, this is currently ignored by the app.  This may cause some lines " +
+                    "to be styled incorrectly and missed during import.  Please find a way to save this file without using global style tags." +
+                    "<br/><br/>Global styling:<br/><br/><b>" + $style.html() + "</b>");
+            }
 
             //format all appropriate svg elements
             var $paths = _$svg.children("path");
@@ -364,12 +373,12 @@ function initPattern(globals){
 
             if (badColors.length>0){
                 badColors = _.uniq(badColors);
-                var string = "<br/>Some objects found with the following stroke colors:<br/><br/>";
+                var string = "Some objects found with the following stroke colors:<br/><br/>";
                 _.each(badColors, function(color){
                     string += "<span style='background:" + color + "' class='colorSwatch'></span>" + color + "<br/>";
                 });
-                string += "<br/> These objects were ignored.<br/>  Please check that your file is set up correctly, <br/>" +
-                    "see <b>File > File Import Tips</b> for more information.<br/><br/>";
+                string +=  "<br/>These objects were ignored.<br/>  Please check that your file is set up correctly, <br/>" +
+                    "see <b>File > File Import Tips</b> for more information.";
                 globals.warn(string);
             }
 
