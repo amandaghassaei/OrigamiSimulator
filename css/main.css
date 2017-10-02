@@ -516,3 +516,19 @@ object{
     width:100%;
     margin-bottom: 10px;
 }
+
+#aboutCorner{
+    display: none;
+    position: absolute;
+    z-index: 6;
+    top:0;
+    right:0;
+    background: rgba(40, 40, 40, 0.7);
+    width: 30px;
+    text-align: center;
+    color: white;
+}
+
+#noSupportModal{
+    text-align: center;
+}

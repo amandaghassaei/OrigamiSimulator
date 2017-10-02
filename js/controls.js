@@ -71,6 +71,9 @@ function initControls(globals){
     setLink("#about", function(){
         $('#aboutModal').modal('show');
     });
+    setLink("#aboutCorner", function(){
+        $('#aboutModal').modal('show');
+    });
     setLink("#tips", function(){
         $('#tipsModal').modal('show');
     });

@@ -28,6 +28,7 @@ function initGPUMath(){
                   '</div>';
                 $(elm).appendTo($("body"));
         $("#noSupportModal").modal("show");
+        $("#aboutCorner").show();
        console.warn("floating point textures are not supported on your system");
     }
 
