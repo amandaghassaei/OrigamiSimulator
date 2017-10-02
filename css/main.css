@@ -3,7 +3,7 @@ html{
     height:100%;
     padding:0;
     overflow: hidden;
-    min-width: 1025px;
+    /*min-width: 1025px;*/
 }
 
 body{
@@ -12,7 +12,7 @@ body{
     padding:0;
     margin:0;
     overflow: hidden;
-    min-width: 1025px;
+    /*min-width: 1025px;*/
     /*-webkit-touch-callout: none; !* iOS Safari *!*/
     /*-webkit-user-select: none;   !* Chrome/Safari/Opera *!*/
     /*-khtml-user-select: none;    !* Konqueror *!*/
