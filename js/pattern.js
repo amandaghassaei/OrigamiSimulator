@@ -352,6 +352,13 @@ function initPattern(globals){
                     "<br/><br/>Global styling:<br/><br/><b>" + $style.html() + "</b>");
             }
 
+            //warn of groups
+            var $groups = _$svg.children("g");
+            if ($groups.length>0){
+                globals.warn("Grouped elements found in SVG, these are currently ignored by the app.  " +
+                    "Please ungroup all elements before importing.");
+            }
+
             //format all appropriate svg elements
             var $paths = _$svg.children("path");
             $paths.css({fill:"none", 'stroke-dasharray':"none"});

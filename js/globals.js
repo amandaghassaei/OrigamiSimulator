@@ -112,7 +112,7 @@ function initGlobals(){
         else $("#warningMessage").html(msg);
         if (!$('#warningModal').hasClass('show')) $("#warningModal").modal("show");
     }
-    $('#warningMessage').on('hidden.bs.modal', function () {
+    $('#warningModal').on('hidden.bs.modal', function () {
         $("#warningMessage").html("");
     });
     _globals.warn = warn;
