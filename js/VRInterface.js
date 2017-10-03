@@ -51,11 +51,11 @@ function initViveInterface(globals){
     scene.add( gui );
     gui.visible = false;
 
-    // gui.add(variables, "foldPercent").min(-100).max(100).step(1).name("Fold Percent").onChange(function(val){
-    //     globals.creasePercent = val/100;
-    //     globals.shouldChangeCreasePercent = true;
-    //     globals.controls.updateCreasePercent();//update other gui
-    // });
+    gui.add(variables, "foldPercent").min(-100).max(100).step(1).name("Fold Percent").onChange(function(val){
+        globals.creasePercent = val/100;
+        globals.shouldChangeCreasePercent = true;
+        globals.controls.updateCreasePercent();//update other gui
+    });
     gui.add(variables, "strainMap").name("Show Strain").onChange( function(val) {
         var mode = "color";
         if (val) mode = "axialStrain";
@@ -175,6 +175,7 @@ function initViveInterface(globals){
                 e.preventDefault();
                 globals.vrEnabled = !display.isPresenting;
                 renderer.vr.enabled = globals.vrEnabled;
+
                 if (globals.vrEnabled) {
                     globals.threeView.modelWrapper.scale.set(variables.scale, variables.scale, variables.scale);
                     globals.threeView.modelWrapper.position.copy(variables.position);
@@ -190,6 +191,8 @@ function initViveInterface(globals){
                     globals.threeView.setBackgroundColor();
                     globals.threeView.modelWrapper.scale.set(1, 1, 1);
                     globals.threeView.modelWrapper.position.set(0,0,0);
+                    // renderer.setPixelRatio( window.devicePixelRatio );
+                    // renderer.setSize(window.innerWidth, window.innerHeight);
                 }
                 _.each(controllers, function(controller){
                     _.each(controller.children, function(child){

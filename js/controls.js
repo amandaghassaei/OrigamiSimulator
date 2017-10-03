@@ -67,6 +67,7 @@ function initControls(globals){
         }
         globals.menusVisible = !globals.menusVisible;
     });
+    $("#controls").fadeIn();
 
     setLink("#about", function(){
         $('#aboutModal').modal('show');
@@ -475,6 +476,7 @@ function initControls(globals){
         $('#currentFoldPercent').val(val);
         $('#creasePercent>input').val(val);
     }
+    // updateCreasePercent();
 
     function setDeltaT(val){
         $("#deltaT").html(val.toFixed(4));
