@@ -147,10 +147,6 @@ function initModel(globals){
         return [frontside, backside];
     }
 
-    function getVertices(){
-        return vertices;
-    }
-
     function getPositionsArray(){
         return positions;
     }
@@ -409,7 +405,6 @@ function initModel(globals){
         getFaces: getFaces,
         getCreases: getCreases,
         getGeometry: getGeometry,//for save stl
-        getVertices: getVertices,//for user interaction, vive interface
         getPositionsArray: getPositionsArray,
         getColorsArray: getColorsArray,
         getMesh: getMesh,

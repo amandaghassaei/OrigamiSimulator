@@ -100,11 +100,11 @@ function init3DUI(globals) {
         if (intersections.length>0){
             var face = intersections[0].face;
             var position = intersections[0].point;
-            var verticesArray = globals.model.getVertices();
+            var positionsArray = globals.model.getPositionsArray();
             var vertices = [];
-            vertices.push(verticesArray[face.a]);
-            vertices.push(verticesArray[face.b]);
-            vertices.push(verticesArray[face.c]);
+            vertices.push(new THREE.Vector3(positionsArray[3*face.a], positionsArray[3*face.a+1], positionsArray[3*face.a+2]));
+            vertices.push(new THREE.Vector3(positionsArray[3*face.b], positionsArray[3*face.b+1], positionsArray[3*face.b+2]));
+            vertices.push(new THREE.Vector3(positionsArray[3*face.c], positionsArray[3*face.c+1], positionsArray[3*face.c+2]));
             var dist = vertices[0].clone().sub(position).lengthSq();
             var nodeIndex = face.a;
             for (var i=1;i<3;i++){
