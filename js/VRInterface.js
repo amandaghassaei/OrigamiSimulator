@@ -128,7 +128,6 @@ function initViveInterface(globals){
         controller.userData.mesh = controllerMesh;
         controller.add( controllerMesh );
 
-
         var guiInputHelper = dat.GUIVR.addInputObject( controller );
         scene.add( guiInputHelper );
 
@@ -211,6 +210,10 @@ function initViveInterface(globals){
         renderer.render( scene, camera );
     }
 
+
+    var tMatrix = new THREE.Matrix4();
+    var tDirection = new THREE.Vector3(0,0,-1);
+
     function checkForIntersections(){
         var numControllers = controllers.length;
         if (numControllers>2){
@@ -227,7 +230,11 @@ function initViveInterface(globals){
 
                 var position = controllers[i].position.clone();
                 position.applyMatrix4(renderer.vr.getStandingMatrix());
-                position.add((new THREE.Vector3(0,0,-0.06)).applyQuaternion(controllers[i].quaternion));
+
+
+                tMatrix.identity().extractRotation(controllers[i].matrixWorld);
+                tDirection.set(0, 0, -1).applyMatrix4(tMatrix).normalize();
+                position.add(tDirection.clone().multiplyScalar(0.05));
 
                 if (states[i] && nodes[i]){
                     //drag node
@@ -242,21 +249,14 @@ function initViveInterface(globals){
                     continue;
                 }
 
-                var direction = new THREE.Vector3(0,0,-1);
-                direction.applyQuaternion(controllers[i].quaternion);
-                position.add(direction.clone().multiplyScalar(-0.05));
+                //todo get position and mesh in same reference frame
 
-                var cast = new THREE.Raycaster(position, direction, -0.1, 10);
+                var cast = new THREE.Raycaster(position, tDirection, -0.1, 0.2);
                 var intersects = cast.intersectObjects(globals.model.getMesh(), false);
                 if (intersects.length>0){
                     var intersection = intersects[0];
                     var face = intersection.face;
                     var point = intersection.point;
-
-                    if (point.clone().sub(position).length() > 0.2) {
-                        nodes[i] = null;
-                        continue;
-                    }
 
                     var positionsArray = globals.model.getPositionsArray();
                     var vertices = [];
