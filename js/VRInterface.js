@@ -107,8 +107,8 @@ function initViveInterface(globals){
         controller.head = camera;
 
         var
-        meshColorOff = 0x888888,
-        meshColorOn  = 0x555555,
+        meshColorOff = 0x555555,
+        meshColorOn  = 0x888888,
         controllerMaterial = new THREE.MeshStandardMaterial({
             color: meshColorOff
         }),
@@ -255,7 +255,7 @@ function initViveInterface(globals){
 
                 //todo get position and mesh in same reference frame
 
-                var cast = new THREE.Raycaster(position, tDirection, 0, 1);
+                var cast = new THREE.Raycaster(position, tDirection, 0, 0.1);
                 var intersects = cast.intersectObjects(globals.model.getMesh(), false);
                 if (intersects.length>0){
                     var intersection = intersects[0];
@@ -281,9 +281,7 @@ function initViveInterface(globals){
                     nodes[i] = nodesArray[nodeIndex];
                     object3D.position.copy(transformToGlobalCoords(nodes[i].getPosition().clone()));
                     object3D.visible = true;
-                    controllers[i].userData.mesh.material.color.setHex( 0x888888 );
                 } else {
-                    controllers[i].userData.mesh.material.color.setHex( 0xff0000 );
                     nodes[i] = null;
                 }
 
