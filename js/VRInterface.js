@@ -44,12 +44,13 @@ function initViveInterface(globals){
         position: new THREE.Vector3(0,1.6,0)
     };
 
-    dat.GUIVR.disableMouse();
+    // dat.GUIVR.disableMouse();
     var gui = dat.GUIVR.create( 'Settings' );
-    gui.position.set( 0.2, 0.8, -1 );
-    gui.rotation.set( Math.PI / -6, 0, 0 );
+    gui.position.set( -0.033949220776551325, 2.2973055921574033, -1.0077168687920643 );
+    gui.rotation.set( 0,0,0 );
     scene.add( gui );
     gui.visible = false;
+    window.gui = gui;
 
     gui.add(variables, "foldPercent").min(-100).max(100).step(1).name("Fold Percent").onChange(function(val){
         globals.creasePercent = val/100;
@@ -73,10 +74,10 @@ function initViveInterface(globals){
         globals.materialHasChanged = true;
         globals.controls.setSliderInputVal("#percentDamping", val);
     });
-    gui.add(variables, "stepsPerFrame").min(1).max(200).step(1).name("Num Steps Per Frame").onChange( function(val) {
+    var numStepsSlider = gui.add(variables, "stepsPerFrame").min(1).max(200).step(1).name("Num Steps Per Frame").onChange( function(val) {
         globals.numSteps = val;
         $(".numStepsPerRender").val(val);
-    });
+    }).listen();;
     gui.add(variables, "scale").min(0.01).max(1).step(0.001).name("Scale").onChange( function(val) {
         globals.threeView.modelWrapper.scale.set(val, val, val);
     });
@@ -176,7 +177,9 @@ function initViveInterface(globals){
                 renderer.vr.enabled = globals.vrEnabled;
 
                 if (globals.vrEnabled) {
-                    dat.GUIVR.enableMouse(camera);
+                    globals.numSteps = 30;
+                    $(".numStepsPerRender").val(globals.numSteps);
+                    variables.stepsPerFrame = globals.numSteps;
                     globals.threeView.modelWrapper.scale.set(variables.scale, variables.scale, variables.scale);
                     globals.threeView.modelWrapper.position.copy(variables.position);
                     $link.html("EXIT VR");
@@ -184,7 +187,8 @@ function initViveInterface(globals){
                     renderer.vr.standing = true;
                     globals.threeView.setBackgroundColor("000000");
                 } else {
-                    dat.GUIVR.disableMouse();
+                    globals.numSteps = 100;
+                    $(".numStepsPerRender").val(globals.numSteps);
                     globals.model.reset();
                     // globals.threeView.onWindowResize();
                     globals.threeView.resetCamera();
@@ -250,10 +254,6 @@ function initViveInterface(globals){
                     globals.nodePositionHasChanged = true;
                     continue;
                 }
-
-                // position = transformToMeshCoords(position);
-
-                //todo get position and mesh in same reference frame
 
                 var cast = new THREE.Raycaster(position, tDirection, 0, 0.1);
                 var intersects = cast.intersectObjects(globals.model.getMesh(), false);
