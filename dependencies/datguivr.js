@@ -1635,6 +1635,7 @@ var GUIVR = function DATGUIVR() {
     }
 
     if (isObject(arg3) || isArray(arg3)) {
+      console.log("here");
       return addDropdown(object, propertyName, arg3);
     }
 

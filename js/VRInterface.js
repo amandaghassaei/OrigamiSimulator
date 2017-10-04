@@ -43,15 +43,19 @@ function initViveInterface(globals){
         stepsPerFrame: globals.numSteps,
         damping: globals.percentDamping,
         strainMap: false,
-        position: new THREE.Vector3(0,1.3,0)
+        position: new THREE.Vector3(0,1.3,0),
+        examples:[
+            "amanda",
+            "one",
+            "two"
+        ]
     };
 
     var gui = dat.GUIVR.create( 'Settings' );
-    gui.position.set( -0.033949220776551325, 2.2973055921574033, -1.0077168687920643 );
+    gui.position.set( 0, 2.3, -1);
     gui.rotation.set( 0,0,0 );
     scene.add( gui );
     gui.visible = false;
-    window.gui = gui;
 
     gui.add(variables, "foldPercent").min(-100).max(100).step(1).name("Fold Percent").onChange(function(val){
         globals.creasePercent = val/100;
@@ -78,7 +82,7 @@ function initViveInterface(globals){
     gui.add(variables, "stepsPerFrame").min(1).max(200).step(1).name("Num Steps Per Frame").onChange( function(val) {
         globals.numSteps = val;
         $(".numStepsPerRender").val(val);
-    }).listen();;
+    }).listen();
     gui.add(variables, "scale").min(0.01).max(1).step(0.001).name("Scale").onChange( function(val) {
         globals.threeView.modelWrapper.scale.set(val, val, val);
     });
@@ -91,11 +95,93 @@ function initViveInterface(globals){
     gui.add(variables.position, "y").min(-positionBound).max(positionBound).step(0.01).name("Position Z").onChange(positionCallback);
 
 
-    // var examplesMenu = dat.GUIVR.create( 'Examples' );
-    // // gui.position.set( 0.2, 0.8, -1 );
-    // // gui.rotation.set( Math.PI / -6, 0, 0 );
-    // scene.add( examplesMenu );
+    var examplesMenu = dat.GUIVR.create( 'Examples' );
+    examplesMenu.position.set(1.1, 2.3, -0.1);
+    examplesMenu.rotation.set(0, -Math.PI / 2, 0);
+    scene.add( examplesMenu );
+    examplesMenu.visible = false;
 
+    var examples = {
+        Origami: {
+            "Origami/flappingBird.svg": "Flapping Bird",
+            "Origami/randlettflappingbird.svg": "Randlett Flapping Bird",
+            "Origami/traditionalCrane.svg": "Crane",
+            "Origami/hypar.svg": "Hypar",
+            "Origami/6ptHypar-anti.svg": "Hypar (6 point)",
+            "Origami/singlesquaretwist.svg": "Square Twist (single)",
+            "Origami/squaretwistManyAngles.svg": "Square Twist (many angles)",
+            "Origami/langCardinal.svg": "Lang Cardinal",
+            "Origami/langOrchid.svg": "Lang Orchid",
+            "Origami/langKnlDragon.svg": "Lang KNL Dragon"
+        },
+        Tessellations: {
+            "Tessellations/miura-ori.svg": "Miura-Ori",
+            "Tessellations//miura_sharpangle.svg": "Miura-Ori (sharp angle)",
+            "Tessellations/whirlpool.svg": "Waterbomb",
+            "Tessellations/huffmanExtrudedBoxes.svg": "Whirlpool",
+            "Tessellations/huffmanWaterbomb.svg": "Huffman Extruded Boxes",
+            "Tessellations/huffmanRectangularWeave.svg": "Huffman Waterbombs",
+            "Tessellations/huffmanStarsTriangles.svg": "Huffman Rect Weave",
+            "Tessellations/huffmanExdentedBoxes.svg": "Huffman Exdented Boxes",
+            "Tessellations/reschTriTessellation.svg": "Resch Triangle Tessellation",
+            "Tessellations/reschBarbell.svg": "Resch Barbell Tessellation",
+            "Tessellations/langHoneycomb.svg": "Lang Honeycomb Tessellation",
+            "Tessellations/langWedgeDoubleFaced.svg": "Lang Wedged Double Faced Tessellation",
+            "Tessellations/langOvalTessellation.svg": "Lang Oval Tessellation",
+            "Tessellations/langHyperbolicLimit.svg": "Lang Hyperbolic Limit",
+        },
+        "Curved Creases": {
+            "Curved/huffmanTower.svg": "Huffman Tower",
+            "Curved/CircularPleat-antiFacet.svg": "Circular Pleat",
+            "Curved/shell14.svg": "14 panel shell",
+            "Curved/shell6.svg": "6 panel shell"
+        },
+        Kirigami: {
+            "Kirigami/miyamotoTower.svg": "Miyamoto Tower",
+            "Kirigami/honeycombKiri.svg": "Kirigami Honeycomb"
+        },
+        Popups: {
+            "Popup/geometricPopup.svg": "Geometric Pattern",
+            "Popup/castlePopup.svg": "Castle",
+            "Popup/housePopup.svg": "House"
+        },
+        "Maze Foldings": {
+            "Squaremaze/helloworld.svg": "Square Maze \"hello world\"",
+            "Squaremaze/origamisimulator.svg": "Square Maze \"origami simulator\"",
+            "Squaremaze/cross.svg": "Square Maze \"+\"",
+            "Polygami/polygamiCross.svg": "Polygami \"+\""
+        },
+        "Origami Bases": {
+            "Bases/birdBase.svg": "Bird Base",
+            "Bases/frogBase.svg": "Frog Base",
+            "Bases/boatBase.svg": "Boat Base",
+            "Bases/pinwheelBase.svg": "Pinwheel Base",
+            "Bases/openSinkBase.svg": "Open Sink Base",
+            "Bases/squareBase.svg": "Square Base",
+            "Bases/waterbombBase.svg": "Waterbomb Base"
+        },
+        Bistable: {
+            "Bistable/curvedPleatSimple.svg": "Curved Pleat"
+        }
+    };
+
+
+
+
+    _.each(examples, function(object, key){
+        examplesMenu.add(examples, key, _.values(object)).onChange(function(val){
+            var index = _.values(object).indexOf(val);
+            if (index<0) {
+                console.warn("pattern not found: " + val);
+                return;
+            }
+            var url = _.keys(object)[index];
+            if (url){
+                globals.vertTol = 3;
+                globals.importer.importDemoFile(url);
+            }
+        });
+    });
 
 
     window.addEventListener( 'vr controller connected', function( event ){
@@ -209,6 +295,7 @@ function initViveInterface(globals){
                     });
                 });
                 gui.visible = globals.vrEnabled;
+                examplesMenu.visible = globals.vrEnabled;
                 if (callback) callback();
             });
         } );
