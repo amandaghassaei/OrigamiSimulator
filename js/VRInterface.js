@@ -178,7 +178,7 @@ function initViveInterface(globals){
                 globals.vertTol = 3;
                 globals.importer.importDemoFile(url);
             }
-            examplesMenu.name("Examples, current file: " + val);
+            examplesMenu.name("Examples - current file: " + val);
         });
     });
 
@@ -353,6 +353,7 @@ function initViveInterface(globals){
                     globals.nodePositionHasChanged = true;
                     continue;
                 }
+                if (states[i]) continue;//using the gui
 
                 var cast = new THREE.Raycaster(position, tDirection, 0, 1);
                 var intersects = cast.intersectObjects(globals.model.getMesh(), false);
@@ -417,7 +418,7 @@ function initViveInterface(globals){
         for (var i=0;i<keys.length;i++){
             var group = examples[keys[i]];
             if (group[globals.url]){
-                return ", current file: " + group[globals.url];
+                return " - current file: " + group[globals.url];
             }
         }
         return "";
