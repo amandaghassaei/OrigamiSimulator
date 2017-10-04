@@ -10,8 +10,7 @@ function initViveInterface(globals){
     if ( WEBVR.isAvailable() === false ) {
         $status.html("WebVR not supported by this browser<br/>see <a href='https://webvr.info/' target='_blank'>webvr.info</a> for more information.");
         $("#VRoptions").hide();
-        // return;
-        // todo put this back!!
+        return;
     }
     $status.html("No device connected.");
 
@@ -96,12 +95,12 @@ function initViveInterface(globals){
     gui.add(variables.position, "y").min(-positionBound).max(positionBound).step(0.01).name("Position Z").onChange(positionCallback);
 
 
-    var examplesMenu = dat.GUIVR.create( 'Examples' );
+    var examplesMenu = dat.GUIVR.create( 'Examples');
     examplesMenu.position.set(1.1, 2.3, -0.1);
     examplesMenu.rotation.set(0, -Math.PI / 2, 0);
     scene.add( examplesMenu );
-    // examplesMenu.visible = false;
-    dat.GUIVR.enableMouse(camera);
+    examplesMenu.visible = false;
+    // dat.GUIVR.enableMouse(camera);
 
     var examples = {
         Origami: {
@@ -179,6 +178,7 @@ function initViveInterface(globals){
                 globals.vertTol = 3;
                 globals.importer.importDemoFile(url);
             }
+            examplesMenu.name("Examples, current file: " + val);
         });
     });
 
@@ -275,6 +275,8 @@ function initViveInterface(globals){
                     renderer.vr.setDevice( display );
                     renderer.vr.standing = true;
                     globals.threeView.setBackgroundColor("000000");
+                    var filename = getCurrentFileName();
+                    examplesMenu.name("Examples" + filename);
                 } else {
                     globals.numSteps = 100;
                     $(".numStepsPerRender").val(globals.numSteps);
@@ -406,6 +408,19 @@ function initViveInterface(globals){
     function transformToMeshCoords(position){
         position.multiplyScalar(1/variables.scale);
         return position;
+    }
+
+    function getCurrentFileName(){
+        console.log(globals.url);
+        if (globals.url === null) return "";
+        var keys = _.keys(examples);
+        for (var i=0;i<keys.length;i++){
+            var group = examples[keys[i]];
+            if (group[globals.url]){
+                return ", current file: " + group[globals.url];
+            }
+        }
+        return "";
     }
 
     return {

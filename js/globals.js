@@ -39,6 +39,8 @@ function initGlobals(){
 
         menusVisible: true,
 
+        url: null,
+
         //3d vis
         simType: "dynamic",
 

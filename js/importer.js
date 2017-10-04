@@ -14,6 +14,7 @@ function initImporter(globals){
         extension = extension[extension.length-1];
         // globals.setCreasePercent(0);
         if (extension == "svg"){
+            globals.url = url;
             globals.filename = name;
             globals.extension = extension;
             globals.pattern.loadSVG("assets/" + url);
@@ -49,6 +50,7 @@ function initImporter(globals){
                         $('#doSVGImport').unbind("click");
                         globals.filename = name;
                         globals.extension = extension;
+                        globals.url = null;
                         globals.pattern.loadSVG(reader.result);
                     });
                 }
@@ -63,6 +65,7 @@ function initImporter(globals){
                     }
                     globals.filename = name;
                     globals.extension = extension;
+                    globals.url = null;
 
                     try {
                         var fold = JSON.parse(reader.result);
