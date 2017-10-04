@@ -1745,6 +1745,8 @@ var GUIVR = function DATGUIVR() {
       mouseInput.intersections = performMouseInput(hitscanObjects, mouseInput);
     }
 
+    var intersectingGUI = false;
+
     inputObjects.forEach(function () {
       var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       if (!_ref.enabled) return;
@@ -1770,17 +1772,20 @@ var GUIVR = function DATGUIVR() {
       // laser.geometry.vertices[ 1 ].copy( tPosition ).add( tDirection.multiplyScalar( 1 ) );
 
       var intersections = raycast.intersectObjects(hitscanObjects, false);
-      if (intersections.length == 0){
-        for (var i=0;i<controllers.length;i++){
-          if (controllers[i].visible) {
-            if (controllers[i].collapseOptions) controllers[i].collapseOptions();
-          }
-        }
-      }
+      if (intersections.length > 0) intersectingGUI = true;
+
       parseIntersections(intersections, laser, cursor);
 
       inputObjects[index].intersections = intersections;
     });
+
+    if (!intersectingGUI){
+      for (var i=0;i<controllers.length;i++){
+        if (controllers[i].visible) {
+          if (controllers[i].collapseOptions) controllers[i].collapseOptions();
+        }
+      }
+    }
 
     var inputs = inputObjects.slice();
 
