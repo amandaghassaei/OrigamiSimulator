@@ -44,7 +44,7 @@ function initViveInterface(globals){
         position: new THREE.Vector3(0,1.6,0)
     };
 
-    dat.GUIVR.enableMouse(camera);
+    dat.GUIVR.disableMouse();
     var gui = dat.GUIVR.create( 'Settings' );
     gui.position.set( 0.2, 0.8, -1 );
     gui.rotation.set( Math.PI / -6, 0, 0 );
@@ -176,6 +176,7 @@ function initViveInterface(globals){
                 renderer.vr.enabled = globals.vrEnabled;
 
                 if (globals.vrEnabled) {
+                    dat.GUIVR.enableMouse(camera);
                     globals.threeView.modelWrapper.scale.set(variables.scale, variables.scale, variables.scale);
                     globals.threeView.modelWrapper.position.copy(variables.position);
                     $link.html("EXIT VR");
@@ -183,6 +184,7 @@ function initViveInterface(globals){
                     renderer.vr.standing = true;
                     globals.threeView.setBackgroundColor("000000");
                 } else {
+                    dat.GUIVR.disableMouse();
                     globals.model.reset();
                     // globals.threeView.onWindowResize();
                     globals.threeView.resetCamera();
@@ -231,7 +233,6 @@ function initViveInterface(globals){
                 var position = controllers[i].position.clone();
                 position.applyMatrix4(renderer.vr.getStandingMatrix());
 
-
                 tMatrix.identity().extractRotation(controllers[i].matrixWorld);
                 tDirection.set(0, 0, -1).applyMatrix4(tMatrix).normalize();
                 position.add(tDirection.clone().multiplyScalar(0.05));
@@ -242,16 +243,19 @@ function initViveInterface(globals){
                         nodes[i].setFixed(true);
                         globals.fixedHasChanged = true;
                     }
+
                     position.sub(variables.position);
-                    position.multiplyScalar(1/variables.scale);
+                    position = transformToMeshCoords(position);
                     nodes[i].moveManually(position);
                     globals.nodePositionHasChanged = true;
                     continue;
                 }
 
+                // position = transformToMeshCoords(position);
+
                 //todo get position and mesh in same reference frame
 
-                var cast = new THREE.Raycaster(position, tDirection, -0.1, 0.2);
+                var cast = new THREE.Raycaster(position, tDirection, 0, 1);
                 var intersects = cast.intersectObjects(globals.model.getMesh(), false);
                 if (intersects.length>0){
                     var intersection = intersects[0];
@@ -269,7 +273,7 @@ function initViveInterface(globals){
                         var _dist = (transformToGlobalCoords(vertices[j].clone()).sub(point)).lengthSq();
                         if (_dist<dist){
                             dist = _dist;
-                            if (j==1) nodeIndex = face.b;
+                            if (j<2) nodeIndex = face.b;
                             else nodeIndex = face.c;
                         }
                     }
@@ -277,7 +281,11 @@ function initViveInterface(globals){
                     nodes[i] = nodesArray[nodeIndex];
                     object3D.position.copy(transformToGlobalCoords(nodes[i].getPosition().clone()));
                     object3D.visible = true;
-                } else nodes[i] = null;
+                    controllers[i].userData.mesh.material.color.setHex( 0x888888 );
+                } else {
+                    controllers[i].userData.mesh.material.color.setHex( 0xff0000 );
+                    nodes[i] = null;
+                }
 
             } else {
                 console.warn("bad controller ");
@@ -289,6 +297,10 @@ function initViveInterface(globals){
     function transformToGlobalCoords(position){
         position.multiplyScalar(variables.scale);
         position.add(variables.position);
+        return position;
+    }
+    function transformToMeshCoords(position){
+        position.multiplyScalar(1/variables.scale);
         return position;
     }
 
