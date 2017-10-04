@@ -29,6 +29,7 @@ function initViveInterface(globals){
     });
 
     var nodes = [null, null];
+    var intersections = [false, false];
 
     connect();
 
@@ -44,7 +45,6 @@ function initViveInterface(globals){
         position: new THREE.Vector3(0,1.6,0)
     };
 
-    // dat.GUIVR.disableMouse();
     var gui = dat.GUIVR.create( 'Settings' );
     gui.position.set( -0.033949220776551325, 2.2973055921574033, -1.0077168687920643 );
     gui.rotation.set( 0,0,0 );
@@ -74,7 +74,7 @@ function initViveInterface(globals){
         globals.materialHasChanged = true;
         globals.controls.setSliderInputVal("#percentDamping", val);
     });
-    var numStepsSlider = gui.add(variables, "stepsPerFrame").min(1).max(200).step(1).name("Num Steps Per Frame").onChange( function(val) {
+    gui.add(variables, "stepsPerFrame").min(1).max(200).step(1).name("Num Steps Per Frame").onChange( function(val) {
         globals.numSteps = val;
         $(".numStepsPerRender").val(val);
     }).listen();;
@@ -136,7 +136,9 @@ function initViveInterface(globals){
         controller.addEventListener( 'primary press began', function( event ){
             event.target.userData.mesh.material.color.setHex( meshColorOn );
             states[controllerIndex] = true;
-            guiInputHelper.pressed( true );
+            if (intersections[controllerIndex] || nodes[controllerIndex]) {
+                guiInputHelper.pressed( false );
+            } else guiInputHelper.pressed( true );
         });
         controller.addEventListener( 'primary press ended', function( event ){
             event.target.userData.mesh.material.color.setHex( meshColorOff );
@@ -255,12 +257,18 @@ function initViveInterface(globals){
                     continue;
                 }
 
-                var cast = new THREE.Raycaster(position, tDirection, 0, 0.1);
+                var cast = new THREE.Raycaster(position, tDirection, 0, 1);
                 var intersects = cast.intersectObjects(globals.model.getMesh(), false);
                 if (intersects.length>0){
+                    intersections[i] = true;
                     var intersection = intersects[0];
                     var face = intersection.face;
                     var point = intersection.point;
+
+                    if ((point.clone().sub(position)).lengthSq() > 0.01) {
+                        nodes[i] = null;
+                        continue;
+                    }
 
                     var positionsArray = globals.model.getPositionsArray();
                     var vertices = [];
@@ -282,6 +290,7 @@ function initViveInterface(globals){
                     object3D.position.copy(transformToGlobalCoords(nodes[i].getPosition().clone()));
                     object3D.visible = true;
                 } else {
+                    intersections[i] = false;
                     nodes[i] = null;
                 }
 
