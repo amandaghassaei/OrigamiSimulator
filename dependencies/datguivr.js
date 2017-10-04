@@ -1461,6 +1461,7 @@ var GUIVR = function DATGUIVR() {
       pressed: false,
       gripped: false,
       events: new _events2.default(),
+      enabled: true,
       interaction: {
         grip: undefined,
         press: undefined,
@@ -1556,7 +1557,7 @@ var GUIVR = function DATGUIVR() {
 
     inputObjects.push(input);
 
-    return input.laser;
+    return input;
   }
 
   /*
@@ -1741,8 +1742,9 @@ var GUIVR = function DATGUIVR() {
     }
 
     inputObjects.forEach(function () {
-      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-          box = _ref.box,
+      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      if (!_ref.enabled) return;
+      var box = _ref.box,
           object = _ref.object,
           raycast = _ref.raycast,
           laser = _ref.laser,

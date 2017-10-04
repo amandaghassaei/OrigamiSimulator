@@ -30,6 +30,7 @@ function initViveInterface(globals){
 
     var nodes = [null, null];
     var intersections = [false, false];
+    var guiHelpers = [null, null];
 
     connect();
 
@@ -42,7 +43,7 @@ function initViveInterface(globals){
         stepsPerFrame: globals.numSteps,
         damping: globals.percentDamping,
         strainMap: false,
-        position: new THREE.Vector3(0,1.6,0)
+        position: new THREE.Vector3(0,1.3,0)
     };
 
     var gui = dat.GUIVR.create( 'Settings' );
@@ -108,8 +109,8 @@ function initViveInterface(globals){
         controller.head = camera;
 
         var
-        meshColorOff = 0x555555,
-        meshColorOn  = 0x888888,
+        meshColorOff = 0x888888,
+        meshColorOn  = 0xcccccc,
         controllerMaterial = new THREE.MeshStandardMaterial({
             color: meshColorOff
         }),
@@ -130,15 +131,16 @@ function initViveInterface(globals){
         controller.add( controllerMesh );
 
         var guiInputHelper = dat.GUIVR.addInputObject( controller );
-        scene.add( guiInputHelper );
+        scene.add( guiInputHelper.laser );
+        guiHelpers[controllerIndex] = guiInputHelper;
 
 
         controller.addEventListener( 'primary press began', function( event ){
             event.target.userData.mesh.material.color.setHex( meshColorOn );
             states[controllerIndex] = true;
             if (intersections[controllerIndex] || nodes[controllerIndex]) {
-                guiInputHelper.pressed( false );
-            } else guiInputHelper.pressed( true );
+                guiInputHelper.laser.pressed( false );
+            } else guiInputHelper.laser.pressed( true );
         });
         controller.addEventListener( 'primary press ended', function( event ){
             event.target.userData.mesh.material.color.setHex( meshColorOff );
@@ -147,7 +149,7 @@ function initViveInterface(globals){
                 nodes[controllerIndex].setFixed(false);
                 globals.fixedHasChanged = true;
             }
-            guiInputHelper.pressed( false );
+            guiInputHelper.laser.pressed( false );
         });
 
         controller.addEventListener( 'disconnected', function( event ){
@@ -222,6 +224,12 @@ function initViveInterface(globals){
     var tMatrix = new THREE.Matrix4();
     var tDirection = new THREE.Vector3(0,0,-1);
 
+    function disableLaserPointer(helper){
+        helper.enabled = false;
+        helper.laser.visible = false;
+        helper.cursor.visible = false;
+    }
+
     function checkForIntersections(){
         var numControllers = controllers.length;
         if (numControllers>2){
@@ -245,6 +253,7 @@ function initViveInterface(globals){
 
                 if (states[i] && nodes[i]){
                     //drag node
+                    disableLaserPointer(guiHelpers[i]);
                     if (!nodes[i].isFixed()) {
                         nodes[i].setFixed(true);
                         globals.fixedHasChanged = true;
@@ -260,6 +269,7 @@ function initViveInterface(globals){
                 var cast = new THREE.Raycaster(position, tDirection, 0, 1);
                 var intersects = cast.intersectObjects(globals.model.getMesh(), false);
                 if (intersects.length>0){
+                    disableLaserPointer(guiHelpers[i]);
                     intersections[i] = true;
                     var intersection = intersects[0];
                     var face = intersection.face;
@@ -292,6 +302,7 @@ function initViveInterface(globals){
                 } else {
                     intersections[i] = false;
                     nodes[i] = null;
+                    guiHelpers[i].enabled = true;
                 }
 
             } else {
