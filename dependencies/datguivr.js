@@ -546,6 +546,7 @@ function createCheckbox() {
     if (isOption) {
       labelInteraction.events.on('onPressed', function (p) {
         selectedLabel.setString(labelText);
+        selectedLabel.setString("");//todo there's a better way to do this
 
         var propertyChanged = false;
 
@@ -701,6 +702,8 @@ function createCheckbox() {
     descriptorLabel.update(str);
     return group;
   };
+
+  group.collapseOptions = collapseOptions;
 
   return group;
 }
@@ -1635,7 +1638,6 @@ var GUIVR = function DATGUIVR() {
     }
 
     if (isObject(arg3) || isArray(arg3)) {
-      console.log("here");
       return addDropdown(object, propertyName, arg3);
     }
 
@@ -1735,6 +1737,7 @@ var GUIVR = function DATGUIVR() {
 
   function update() {
     requestAnimationFrame(update);
+    if (!mouseEnabled && inputObjects.length == 0) return;
 
     var hitscanObjects = getVisibleHitscanObjects();
 
@@ -1767,6 +1770,13 @@ var GUIVR = function DATGUIVR() {
       // laser.geometry.vertices[ 1 ].copy( tPosition ).add( tDirection.multiplyScalar( 1 ) );
 
       var intersections = raycast.intersectObjects(hitscanObjects, false);
+      if (intersections.length == 0){
+        for (var i=0;i<controllers.length;i++){
+          if (controllers[i].visible) {
+            if (controllers[i].collapseOptions) controllers[i].collapseOptions();
+          }
+        }
+      }
       parseIntersections(intersections, laser, cursor);
 
       inputObjects[index].intersections = intersections;
@@ -1835,6 +1845,13 @@ var GUIVR = function DATGUIVR() {
 
     if (mouseCamera) {
       intersections = performMouseIntersection(raycast, mouse, mouseCamera);
+      if (intersections.length == 0){
+        for (var i=0;i<controllers.length;i++){
+          if (controllers[i].visible) {
+            if (controllers[i].collapseOptions) controllers[i].collapseOptions();
+          }
+        }
+      }
       parseIntersections(intersections, laser, cursor);
       cursor.visible = true;
       laser.visible = true;

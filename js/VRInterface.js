@@ -10,7 +10,8 @@ function initViveInterface(globals){
     if ( WEBVR.isAvailable() === false ) {
         $status.html("WebVR not supported by this browser<br/>see <a href='https://webvr.info/' target='_blank'>webvr.info</a> for more information.");
         $("#VRoptions").hide();
-        return;
+        // return;
+        // todo put this back!!
     }
     $status.html("No device connected.");
 
@@ -99,7 +100,8 @@ function initViveInterface(globals){
     examplesMenu.position.set(1.1, 2.3, -0.1);
     examplesMenu.rotation.set(0, -Math.PI / 2, 0);
     scene.add( examplesMenu );
-    examplesMenu.visible = false;
+    // examplesMenu.visible = false;
+    dat.GUIVR.enableMouse(camera);
 
     var examples = {
         Origami: {
@@ -165,11 +167,8 @@ function initViveInterface(globals){
         }
     };
 
-
-
-
     _.each(examples, function(object, key){
-        examplesMenu.add(examples, key, _.values(object)).onChange(function(val){
+        var dropdown = examplesMenu.add(examples, key, _.values(object)).onChange(function(val){
             var index = _.values(object).indexOf(val);
             if (index<0) {
                 console.warn("pattern not found: " + val);
@@ -393,8 +392,8 @@ function initViveInterface(globals){
                 }
 
             } else {
-                console.warn("bad controller ");
-                console.log(controllers[i]);
+                console.warn("bad controller");
+                // console.log(controllers[i]);
             }
         }
     }
