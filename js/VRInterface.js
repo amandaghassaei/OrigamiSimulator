@@ -167,7 +167,7 @@ function initViveInterface(globals){
     };
 
     _.each(examples, function(object, key){
-        var dropdown = examplesMenu.add(examples, key, _.values(object)).onChange(function(val){
+        examplesMenu.add(examples, key, _.values(object)).onChange(function(val){
             var index = _.values(object).indexOf(val);
             if (index<0) {
                 console.warn("pattern not found: " + val);
