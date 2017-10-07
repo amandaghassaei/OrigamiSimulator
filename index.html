@@ -78,6 +78,54 @@
         }
     </script>
 
+    <script id="packToBytesShaderHalfPrecision" type="x-shader/x-fragment">
+        precision mediump float;
+        uniform vec2 u_floatTextureDim;
+        uniform sampler2D u_floatTexture;
+        uniform float u_vectorLength;
+        float shift_right (float v, float amt) {
+            v = floor(v) + 0.5;
+            return floor(v / exp2(amt));
+        }
+        float shift_left (float v, float amt) {
+            return floor(v * exp2(amt) + 0.5);
+        }
+        float mask_last (float v, float bits) {
+            return mod(v, shift_left(1.0, bits));
+        }
+        float extract_bits (float num, float from, float to) {
+            from = floor(from + 0.5); to = floor(to + 0.5);
+            return mask_last(shift_right(num, from), to - from);
+        }
+        vec2 encode_half_float (float val) {
+            if (val == 0.0) return vec2(0, 0);
+            float sign = val > 0.0 ? 0.0 : 1.0;
+            val = abs(val);
+            float exponent = floor(log2(val));
+            float biased_exponent = exponent + 15.0;
+            float fraction = ((val / exp2(exponent)) - 1.0) * 1024.0;
+            float byte2 = extract_bits(fraction, 0.0, 8.0) / 255.0;
+            float byte1 = (sign * 128.0 + biased_exponent*4.0 + extract_bits(fraction, 8.0, 10.0)) / 255.0;
+            return vec2(byte2, byte1);
+        }
+        void main(){
+            vec2 fragCoord = gl_FragCoord.xy;
+            float textureXcoord = floor((fragCoord.x - 0.5)/u_vectorLength+0.0001) + 0.5;
+            vec4 data = texture2D(u_floatTexture, vec2(textureXcoord, fragCoord.y)/u_floatTextureDim);
+            int textureIndex = int(floor(mod(fragCoord.x-0.5+0.0001, u_vectorLength)));
+            if (textureIndex == 0){
+                vec2 float1 = encode_half_float(data[0]);
+                vec2 float2 = encode_half_float(data[1]);
+                gl_FragColor = vec4(float1.x, float1.y, float2.x, float2.y);
+                return;
+            }
+
+            vec2 float1 = encode_half_float(data[2]);
+            vec2 float2 = encode_half_float(data[3]);
+            gl_FragColor = vec4(float1.x, float1.y, float2.x, float2.y);
+        }
+    </script>
+
     <script id="zeroTexture" type="x-shader/x-fragment">
         precision mediump float;
         void main(){

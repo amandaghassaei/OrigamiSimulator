@@ -183,6 +183,22 @@ function initDynamicSolver(globals){
         return avgPosition;
     }
 
+    //https://stackoverflow.com/questions/5678432/decompressing-half-precision-floats-in-javascript
+    function decodeFloat16 (byte1, byte2) {
+        var binary = (byte2<<8) + byte1;
+        var exponent = (binary & 0x7C00) >> 10,
+            fraction = binary & 0x03FF;
+        return (binary >> 15 ? -1 : 1) * (
+            exponent ?
+            (
+                exponent === 0x1F ?
+                fraction ? NaN : Infinity :
+                Math.pow(2, exponent - 15) * (1 + fraction / 0x400)
+            ) :
+            6.103515625e-5 * (fraction / 0x400)
+        );
+    }
+
     function render(){
 
         // var vectorLength = 2;
@@ -208,19 +224,22 @@ function initDynamicSolver(globals){
         //     console.log("here");
         // }
 
-        var vectorLength = 4;
-        globals.gpuMath.setProgram("packToBytes");
-        globals.gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
-        globals.gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDim, textureDim], "2f");
-        globals.gpuMath.setSize(textureDim*vectorLength, textureDim);
-        globals.gpuMath.step("packToBytes", ["u_lastPosition"], "outputBytes");
+        var vectorLength = 4;//must be even num
+        globals.gpuMath.setProgram("packToBytesHalfFloat");
+        globals.gpuMath.setUniformForProgram("packToBytesHalfFloat", "u_vectorLength", vectorLength/2, "1f");
+        globals.gpuMath.setUniformForProgram("packToBytesHalfFloat", "u_floatTextureDim", [textureDim, textureDim], "2f");
+        globals.gpuMath.setSize(textureDim*vectorLength/2, textureDim);
+        globals.gpuMath.step("packToBytesHalfFloat", ["u_lastPosition"], "outputBytes");
 
         if (globals.gpuMath.readyToRead()) {
-            var numPixels = nodes.length*vectorLength;
-            var height = Math.ceil(numPixels/(textureDim*vectorLength));
-            var pixels = new Uint8Array(height*textureDim*4*vectorLength);
-            globals.gpuMath.readPixels(0, 0, textureDim * vectorLength, height, pixels);
-            var parsedPixels = new Float32Array(pixels.buffer);
+            var numPixels = nodes.length*vectorLength/2;
+            var height = Math.ceil(numPixels/(textureDim*vectorLength/2));
+            var pixels = new Uint8Array(height*textureDim*4*vectorLength/2);
+            globals.gpuMath.readPixels(0, 0, textureDim * vectorLength/2, height, pixels);
+            var parsedPixels = new Float32Array(pixels.length/2);
+            for (var i=0;i<parsedPixels.length;i++) {
+                parsedPixels[i] = decodeFloat16(pixels[2*i], pixels[2*i+1]);
+            }
             var globalError = 0;
             var shouldUpdateColors = globals.colorMode == "axialStrain";
             for (var i = 0; i < nodes.length; i++) {
@@ -385,11 +404,17 @@ function initDynamicSolver(globals){
         gpuMath.setUniformForProgram("normalCalc", "u_textureDim", [textureDim, textureDim], "2f");
         gpuMath.setUniformForProgram("normalCalc", "u_textureDimFaces", [textureDimFaces, textureDimFaces], "2f");
 
-        gpuMath.createProgram("packToBytes", vertexShader, document.getElementById("packToBytesShader").text);
-        gpuMath.initTextureFromData("outputBytes", textureDim*4, textureDim, "UNSIGNED_BYTE", null, true);
-        gpuMath.initFrameBufferForTexture("outputBytes", true);
-        gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDim, textureDim], "2f");
-        gpuMath.setUniformForProgram("packToBytes", "u_floatTexture", 0, "1i");
+        // gpuMath.createProgram("packToBytes", vertexShader, document.getElementById("packToBytesShader").text);
+        // gpuMath.initTextureFromData("outputBytes", textureDim*4, textureDim, "UNSIGNED_BYTE", null, true);
+        // gpuMath.initFrameBufferForTexture("outputBytes", true);
+        // gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDim, textureDim], "2f");
+        // gpuMath.setUniformForProgram("packToBytes", "u_floatTexture", 0, "1i");
+
+        gpuMath.createProgram("packToBytesHalfFloat", vertexShader, document.getElementById("packToBytesShaderHalfPrecision").text);
+        gpuMath.initTextureFromData("outputBytesHalfFloat", textureDim*2, textureDim, "UNSIGNED_BYTE", null, true);
+        gpuMath.initFrameBufferForTexture("outputBytesHalfFloat", true);
+        gpuMath.setUniformForProgram("packToBytesHalfFloat", "u_floatTextureDim", [textureDim, textureDim], "2f");
+        gpuMath.setUniformForProgram("packToBytesHalfFloat", "u_floatTexture", 0, "1i");
 
         gpuMath.createProgram("zeroTexture", vertexShader, document.getElementById("zeroTexture").text);
         gpuMath.createProgram("zeroThetaTexture", vertexShader, document.getElementById("zeroThetaTexture").text);
