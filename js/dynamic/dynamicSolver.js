@@ -188,15 +188,16 @@ function initDynamicSolver(globals){
         var binary = (byte2<<8) + byte1;
         var exponent = (binary & 0x7C00) >> 10,
             fraction = binary & 0x03FF;
-        return (binary >> 15 ? -1 : 1) * (
-            exponent ?
-            (
-                exponent === 0x1F ?
-                fraction ? NaN : Infinity :
-                Math.pow(2, exponent - 15) * (1 + fraction / 0x400)
-            ) :
-            6.103515625e-5 * (fraction / 0x400)
-        );
+        return (binary >> 15 ? -1 : 1) * Math.pow(2, exponent - 15) * (1 + fraction / 0x400);
+        // return (binary >> 15 ? -1 : 1) * (
+        //     exponent ?
+        //     (
+        //         exponent === 0x1F ?
+        //         fraction ? NaN : Infinity :
+        //         Math.pow(2, exponent - 15) * (1 + fraction / 0x400)
+        //     ) :
+        //     6.103515625e-5 * (fraction / 0x400)
+        // );
     }
 
     function render(){
@@ -237,9 +238,11 @@ function initDynamicSolver(globals){
             var pixels = new Uint8Array(height*textureDim*4*vectorLength/2);
             globals.gpuMath.readPixels(0, 0, textureDim * vectorLength/2, height, pixels);
             var parsedPixels = new Float32Array(pixels.length/2);
-            for (var i=0;i<parsedPixels.length;i++) {
+            for (var i=0;i<numPixels*2;i++) {
                 parsedPixels[i] = decodeFloat16(pixels[2*i], pixels[2*i+1]);
+                if (Math.abs(parsedPixels[i])>1.0) console.log(parsedPixels[i]);
             }
+            // console.log(parsedPixels);
             var globalError = 0;
             var shouldUpdateColors = globals.colorMode == "axialStrain";
             for (var i = 0; i < nodes.length; i++) {

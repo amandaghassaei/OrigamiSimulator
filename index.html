@@ -99,13 +99,20 @@
         }
         vec2 encode_half_float (float val) {
             if (val == 0.0) return vec2(0, 0);
-            float sign = val > 0.0 ? 0.0 : 1.0;
+            int sign = val > 0.0 ? 0 : 1;
             val = abs(val);
-            float exponent = floor(log2(val));
-            float biased_exponent = exponent + 15.0;
-            float fraction = ((val / exp2(exponent)) - 1.0) * 1024.0;
-            float byte2 = extract_bits(fraction, 0.0, 8.0) / 255.0;
-            float byte1 = (sign * 128.0 + biased_exponent*4.0 + extract_bits(fraction, 8.0, 10.0)) / 255.0;
+            int exponent = int(floor(log2(val)));
+            float remainder = val / exp2(float(exponent));
+            if (remainder>=2.0) {
+                remainder = 0.0;
+                exponent++;
+            }
+            int fraction = int((remainder - 1.0) * 1024.0);
+            if (fraction >= 1024) fraction = 1023;
+            if (fraction < 0) fraction = 0;
+            int biased_exponent = exponent + 15;
+            float byte2 = extract_bits(float(fraction), 0.0, 8.0) / 255.0;
+            float byte1 = (float(sign * 128) + float(biased_exponent*4) + extract_bits(float(fraction), 8.0, 10.0)) / 255.0;
             return vec2(byte2, byte1);
         }
         void main(){
