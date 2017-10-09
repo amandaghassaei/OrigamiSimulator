@@ -533,3 +533,10 @@ object{
 #noSupportModal{
     text-align: center;
 }
+
+#tipImportSVG{
+    float: left;
+    display: inline-block;
+    margin-top: 8px;
+    margin-left: 20px;
+}

@@ -403,6 +403,7 @@ function initControls(globals){
 
     setLink(".goToImportInstructions", function(){
        $("#aboutModal").modal("hide");
+        $("#importSettingsModal").modal("hide");
         $("#tipsModal").modal("show");
     });
 
