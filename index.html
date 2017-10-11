@@ -790,7 +790,7 @@
                 <p>
                 <b>ORIGAMI SIMULATOR</b><br/>
 
-                    <img style="width: 60%;" src="crane.gif" />
+                    <img style="width: 100%; max-width:500px" src="crane.gif" />
 
                     This app allows you to simulate how any origami crease pattern will fold.  It may look a little different
                     from what you typically think of as "origami" - rather than folding paper in a set of sequential steps,
@@ -802,6 +802,8 @@
                     All simulation methods were written from scratch and are executed in parallel in several GPU fragment shaders for fast performance.
                 </p><br/>
                     <b>Instructions:</b><br/><br/>
+                    <img style="width: 100%; max-width:600px" src="demoui.gif" /><br/>
+
                     <ul>
                         <li>Slide the <b>Fold Percent</b> slider to control the degree of folding of the pattern (100% is fully folded, 0% is unfolded,
                             and -100% is fully folded with the opposite mountain/valley assignments).</li>
@@ -809,12 +811,18 @@
                         <li>Import other patterns under the <b>Examples</b> menu.</li>
                         <li>Upload your own crease patterns in SVG or <a href="https://github.com/edemaine/fold" target="_blank">FOLD</a> formats, following <a href="#" class="goToImportInstructions">these instructions</a>.</li>
                         <li>Export FOLD files or 3D models ( STL or OBJ ) of the folded state of your design ( <b>File > Save Simulation as...</b> ).</li>
+                    </ul>
+                        <img style="width: 100%;" src="strain.jpg" />
+                    <ul>
                         <li>Visualize the internal strain of the origami as it folds using the <b>Strain Visualization</b> in the left menu.</li>
+                    </ul>
+                        <img style="width: 100%; max-width:600px" src="huffmanvr.jpg" /><br/>
+                    <ul>
                         <li>If you are working from a computer connected to a VR headset and hand controllers, follow <a href="#" id="goToViveInstructions">these instructions</a>
                             to use this app in an interactive virtual reality mode.</li>
                     </ul>
 
-                    <img style="width: 100%;" src="strain.jpg" />
+
                     <br/>
                     <b>External Libraries:</b><br/><br/>
                     <ul>
@@ -835,11 +843,9 @@
                     Code available on <a href="https://github.com/amandaghassaei/OrigamiSimulator" target="_blank">Github</a>.  If you have interesting crease patterns that would
                     make good demo files, please send them to me (Amanda) so I can add them to the <b>Examples</b> menu.  My email address is on my website.  Thanks!<br/>
                     <br/>
-                    More documentation coming soon.<br/>
+                    More documentation coming soon - I'm preparing a paper about the simulation methods used here, I will post it once its ready.
+                    For now, find some additional info <a href="http://www.amandaghassaei.com/projects/origami_simulator/" target="_blank">here</a>.<br/>
                     <br/>
-                    <b>What's Next:</b> (As of 9/8/17) I'm happy with the performance of the web app, but I'm working on some
-                    optimizations so that the simulation + rendering is more performant in VR.  Some of these changes
-                    may break things that were previously working in the app, please let me know if you see any bugs.<br/>
                 </p>
             </div>
         </div><!-- /.modal-content -->

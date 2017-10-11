@@ -14,6 +14,7 @@ exerted by creases.  This solver extends work from the following sources: <br/><
 All simulation methods were written from scratch and are executed in parallel in several GPU fragment shaders for fast performance.
 </p><br/>
 <b>Instructions:</b><br/><br/>
+<img style="width: 100%; max-width:600px" src="demoui.gif" /><br/>
 <ul>
     <li>Slide the <b>Fold Percent</b> slider to control the degree of folding of the pattern (100% is fully folded, 0% is unfolded,
         and -100% is fully folded with the opposite mountain/valley assignments).</li>
@@ -21,12 +22,17 @@ All simulation methods were written from scratch and are executed in parallel in
     <li>Import other patterns under the <b>Examples</b> menu.</li>
     <li>Upload your own crease patterns in SVG or <a href="https://github.com/edemaine/fold" target="_blank">FOLD</a> formats, following the instructions under <b>File > File Import Tips</b>.</li>
     <li>Export FOLD files or 3D models ( STL or OBJ ) of the folded state of your design ( <b>File > Save Simulation as...</b> ).</li>
+    </ul>
+        <img style="width: 100%;" src="strain.jpg" />
+    <ul>
     <li>Visualize the internal strain of the origami as it folds using the <b>Strain Visualization</b> in the left menu.</li>
+    </ul>
+        <img style="width: 100%; max-width:600px" src="huffmanvr.jpg" /><br/>
+    <ul>
     <li>If you are working from a computer connected to a Vive, follow the instructions near the <b>VR</b> menu
         to use this app in an interactive virtual reality mode.</li>
 </ul>
 
-<img src="strain.jpg" />
 <br/>
 
 <b>External Libraries:</b><br/><br/>
@@ -48,4 +54,5 @@ Built by <a href="http://www.amandaghassaei.com/" target="_blank">Amanda Ghassae
 Code available on <a href="https://github.com/amandaghassaei/OrigamiSimulator" target="_blank">Github</a>.  If you have interesting crease patterns that would
 make good demo files, please send them to me (Amanda) so I can add them to the <b>Examples</b> menu.  My email address is on my website.  Thanks!<br/>
 <br/>
-More documentation coming soon.<br/>
+More documentation coming soon - I'm preparing a paper about the simulation methods used here, I will post it once its ready.
+                    For now, find some additional info <a href="http://www.amandaghassaei.com/projects/origami_simulator/" target="_blank">here</a>.<br/>
