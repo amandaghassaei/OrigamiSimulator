@@ -27,7 +27,7 @@ All simulation methods were written from scratch and are executed in parallel in
     <ul>
     <li>Visualize the internal strain of the origami as it folds using the <b>Strain Visualization</b> in the left menu.</li>
     </ul>
-        <img style="width: 100%; max-width:600px" src="huffmanvr.jpg" /><br/>
+        <img src="huffmanvr.jpg" /><br/>
     <ul>
     <li>If you are working from a computer connected to a Vive, follow the instructions near the <b>VR</b> menu
         to use this app in an interactive virtual reality mode.</li>
