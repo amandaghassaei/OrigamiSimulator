@@ -33,7 +33,7 @@ p{
     top:53px;
     bottom: 0;
     right:0;
-    width:450px;
+    width:400px;
     padding:20px 20px;
     overflow: auto;
     background:rgba(10,10,10,0.1);
@@ -248,7 +248,7 @@ span.modal-close{
 }
 
 .sliderInput>.flat-slider{
-   width: 132px;
+   width: 100px;
 }
 
 .label-slider{

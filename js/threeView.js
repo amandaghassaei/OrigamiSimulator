@@ -59,7 +59,7 @@ function initThreeView(globals) {
         controls.staticMoving = true;
         controls.dynamicDampingFactor = 0.3;
         controls.minDistance = 1;
-	    controls.maxDistance = 13;
+	    controls.maxDistance = 30;
         // controls.addEventListener("change", render);
 
         _render();//render before model loads
