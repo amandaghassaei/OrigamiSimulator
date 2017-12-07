@@ -124,8 +124,5 @@ function initGlobals(){
     }
     _globals.noCreasePatternAvailable = noCreasePatternAvailable;
 
-    _globals.threeView = initThreeView(_globals);
-    _globals.controls = initControls(_globals);
-
     return _globals;
 }

@@ -185,7 +185,7 @@ function initPattern(globals){
             var pathVertices = [];
             if (path === undefined || path.getPathData === undefined){//mobile problem
                 var elm = '<div id="coverImg" ' +
-                  'style="background: url(crane.gif) no-repeat center center fixed;' +
+                  'style="background: url(assets/doc/crane.gif) no-repeat center center fixed;' +
                     '-webkit-background-size: cover;' +
                     '-moz-background-size: cover;' +
                     '-o-background-size: cover;' +

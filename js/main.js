@@ -18,14 +18,17 @@ $(function() {
     // }
 
     globals = initGlobals();
+    globals.threeView = initThreeView(globals);
+    globals.controls = initControls(globals);
     globals.UI3D = init3DUI(globals);
     globals.importer = initImporter(globals);
     globals.model = initModel(globals);
-    globals.staticSolver = initStaticSolver(globals);
+    // globals.staticSolver = initStaticSolver(globals);//still in development
     globals.dynamicSolver = initDynamicSolver(globals);
-    globals.rigidSolver = initRigidSolver(globals);
+    // globals.rigidSolver = initRigidSolver(globals);//still in development
     globals.pattern = initPattern(globals);
     globals.vive = initViveInterface(globals);
     globals.videoAnimator = initVideoAnimator(globals);
-    $(".demo[data-url='Tessellations/huffmanWaterbomb.svg']").click();//load demo models
+
+    $(".demo[data-url='Tessellations/huffmanWaterbomb.svg']").click();//load demo model
 });
