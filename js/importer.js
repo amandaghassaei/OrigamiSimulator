@@ -82,7 +82,7 @@ function initImporter(globals){
                         $("#importFoldModal").modal("show");
                         $('#importFoldModal').on('hidden.bs.modal', function () {
                             $('#importFoldModal').off('hidden.bs.modal');
-                            if (globals.foldUseAngles) {
+                            if (globals.foldUseAngles) {//todo this should all go to pattern.js
                                 globals.setCreasePercent(1);
                                 var foldAngles = [];
                                 for (var i=0;i<fold.edges_assignment.length;i++){
