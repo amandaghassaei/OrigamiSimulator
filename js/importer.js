@@ -17,7 +17,7 @@ function initImporter(globals){
             globals.url = url;
             globals.filename = name;
             globals.extension = extension;
-            globals.pattern.loadSVG("assets/" + url);
+            globals.pattern.loadSVG("assets/" + url, {vertexTol: globals.vertexTol});
         } else {
             console.warn("unknown extension: " + extension);
         }
@@ -43,7 +43,7 @@ function initImporter(globals){
                         warnUnableToLoad();
                         return;
                     }
-                    $("#vertTol").val(globals.vertTol);
+                    $("#vertexTol").val(globals.vertexTol);
                     $("#importSettingsModal").modal("show");
                     $('#doSVGImport').click(function (e) {
                         e.preventDefault();
@@ -51,7 +51,7 @@ function initImporter(globals){
                         globals.filename = name;
                         globals.extension = extension;
                         globals.url = null;
-                        globals.pattern.loadSVG(reader.result);
+                        globals.pattern.loadSVG(reader.result, {vertexTol: globals.vertexTol});
                     });
                 }
             }(file);

@@ -59,7 +59,7 @@ function initGlobals(){
         strainClip: 5.0,//for strain visualization, % strain that is drawn red
 
         //import pattern settings
-        vertTol: 3,//vertex merge tolerance
+        vertexTol: 3,//vertex merge tolerance
         foldUseAngles: true,//import current angles from fold format as target angles
 
         //save stl settings

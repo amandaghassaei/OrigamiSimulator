@@ -2,12 +2,33 @@
  * Created by amandaghassaei on 2/25/17.
  */
 
-function initPattern(globals){
+function initPattern(globals){//todo Pattern()
 
+    //internal state: foldData, rawFoldData
+
+    //dependencies FOLD, THREEjs, THREE.SVGLoader, underscore
     var FOLD = require('fold');
 
     var foldData = {};
+    var rawFoldData = {};
+
+     //raw data imported from svg
+    var verticesRaw = [];
+    var mountainsRaw = [];
+    var valleysRaw = [];
+    var bordersRaw = [];
+    var cutsRaw = [];
+    var triangulationsRaw = [];
+    var hingesRaw = [];
+
+    var badColors = [];//store any bad colors in svg file to show user
+
+    //raw data imported from fold
     var rawFold = {};
+
+    clearAll();
+
+    var SVGloader = new THREE.SVGLoader();
 
     function clearFold(){
         foldData.vertices_coords = [];
@@ -20,28 +41,18 @@ function initPattern(globals){
         rawFold = {};
     }
 
-    var verticesRaw = [];
-    //refs to vertex indices
-    var mountainsRaw = [];
-    var valleysRaw = [];
-    var bordersRaw = [];
-    var cutsRaw = [];
-    var triangulationsRaw = [];
-    var hingesRaw = [];
-
+    //todo need these?
     var mountains = [];
     var valleys = [];
     var borders = [];
     var hinges = [];
     var triangulations = [];
 
-    var badColors = [];//store any bad colors in svg file to show user
-
     function clearAll(){
 
         clearFold();
-        verticesRaw = [];
 
+        verticesRaw = [];
         mountainsRaw = [];
         valleysRaw = [];
         bordersRaw = [];
@@ -58,19 +69,15 @@ function initPattern(globals){
         badColors = [];
     }
 
-    clearAll();
-
-    var SVGloader = new THREE.SVGLoader();
-
     //filter for svg parsing
     function borderFilter(){
         var stroke = getStroke($(this));
-        return typeForStroke(stroke) == "border";
+        return typeForStroke(stroke) == "B";
     }
     function mountainFilter(){
         var $this = $(this);
         var stroke = getStroke($this);
-        if (typeForStroke(stroke) == "mountain"){
+        if (typeForStroke(stroke) == "M"){
             var opacity = getOpacity($this);
             this.targetAngle = -opacity*Math.PI;
             return true;
@@ -80,7 +87,7 @@ function initPattern(globals){
     function valleyFilter(){
         var $this = $(this);
         var stroke = getStroke($this);
-        if (typeForStroke(stroke) == "valley"){
+        if (typeForStroke(stroke) == "V"){
             var opacity = getOpacity($this);
             this.targetAngle = opacity*Math.PI;
             return true;
@@ -89,15 +96,15 @@ function initPattern(globals){
     }
     function cutFilter(){
         var stroke = getStroke($(this));
-        return typeForStroke(stroke) == "cut";
+        return typeForStroke(stroke) == "C";
     }
     function triangulationFilter(){
         var stroke = getStroke($(this));
-        return typeForStroke(stroke) == "triangulation";
+        return typeForStroke(stroke) == "F";
     }
     function hingeFilter(){
         var stroke = getStroke($(this));
-        return typeForStroke(stroke) == "hinge";
+        return typeForStroke(stroke) == "U";
     }
 
     function getOpacity(obj){
@@ -135,12 +142,12 @@ function initPattern(globals){
     }
 
     function typeForStroke(stroke){
-        if (stroke == "#000000" || stroke == "#000" || stroke == "black" || stroke == "rgb(0,0,0)") return "border";
-        if (stroke == "#ff0000" || stroke == "#f00" || stroke == "red" || stroke == "rgb(255,0,0)") return "mountain";
-        if (stroke == "#0000ff" || stroke == "#00f" || stroke == "blue" || stroke == "rgb(0,0,255)") return "valley";
-        if (stroke == "#00ff00" || stroke == "#0f0" || stroke == "green" || stroke == "rgb(0,255,0)") return "cut";
-        if (stroke == "#ffff00" || stroke == "#ff0" || stroke == "yellow" || stroke == "rgb(255,255,0)") return "triangulation";
-        if (stroke == "#ff00ff" || stroke == "#f0f" || stroke == "magenta" || stroke == "rgb(255,0,255)") return "hinge";
+        if (stroke == "#000000" || stroke == "#000" || stroke == "black" || stroke == "rgb(0,0,0)") return "B";
+        if (stroke == "#ff0000" || stroke == "#f00" || stroke == "red" || stroke == "rgb(255,0,0)") return "M";
+        if (stroke == "#0000ff" || stroke == "#00f" || stroke == "blue" || stroke == "rgb(0,0,255)") return "V";
+        if (stroke == "#00ff00" || stroke == "#0f0" || stroke == "green" || stroke == "rgb(0,255,0)") return "C";
+        if (stroke == "#ffff00" || stroke == "#ff0" || stroke == "yellow" || stroke == "rgb(255,255,0)") return "F";
+        if (stroke == "#ff00ff" || stroke == "#f0f" || stroke == "magenta" || stroke == "rgb(255,0,255)") return "U";
         badColors.push(stroke);
         return null;
     }
@@ -183,6 +190,7 @@ function initPattern(globals){
         for (var i=0;i<$elements.length;i++){
             var path = $elements[i];
             var pathVertices = [];
+
             if (path === undefined || path.getPathData === undefined){//mobile problem
                 var elm = '<div id="coverImg" ' +
                   'style="background: url(assets/doc/crane.gif) no-repeat center center fixed;' +
@@ -196,6 +204,7 @@ function initPattern(globals){
                 console.warn("path parser not supported");
                 return;
             }
+
             var segments = path.getPathData();
             for (var j=0;j<segments.length;j++){
                 var segment = segments[j];
@@ -337,38 +346,48 @@ function initPattern(globals){
         }
     }
 
-    function loadSVG(url){
+    function loadSVG(url, params, callback){
+
+        //check that we have all necessary params
+        if (!params || params.vertexTol === undefined || params.vertexTol < 0){
+            console.warn("must pass in a vertexTol parameter to loadSVG(),  vertexTol must be greater than zero.  Aborting.");
+            return;
+        }
+
         SVGloader.load(url, function(svg){
 
-            var _$svg = $(svg);
+            var $svg = $(svg);
 
             clearAll();
 
             //warn of global styling
-            var $style = _$svg.children("style");
+            var $style = $svg.children("style");
             if ($style.length>0){
-                globals.warn("Global styling found on SVG, this is currently ignored by the app.  This may cause some lines " +
-                    "to be styled incorrectly and missed during import.  Please find a way to save this file without using global style tags." +
-                    "<br/><br/>Global styling:<br/><br/><b>" + $style.html() + "</b>");
+                var msg = "Global styling found on SVG, this is currently ignored by the app.  This may cause some lines " +
+                    "to be styled incorrectly and missed during import.  Please find a way to save this file without using global style tags.";
+                console.warn(msg, $style);
+                if (globals && globals.warn) globals.warn(msg + "<br/><br/>Global styling:<br/><br/><b>" + $style.html() + "</b>");
             }
 
             //warn of groups
-            var $groups = _$svg.children("g");
+            var $groups = $svg.children("g");
             if ($groups.length>0){
-                globals.warn("Grouped elements found in SVG, these are currently ignored by the app.  " +
-                    "Please ungroup all elements before importing.");
+                var msg = "Grouped elements found in SVG, these are currently ignored by the app.  " +
+                    "Please ungroup all elements before importing.";
+                console.warn(msg);
+                if (globals && globals.warn) globals.warn(msg);
             }
 
             //format all appropriate svg elements
-            var $paths = _$svg.children("path");
+            var $paths = $svg.children("path");
             $paths.css({fill:"none", 'stroke-dasharray':"none"});
-            var $lines = _$svg.children("line");
+            var $lines = $svg.children("line");
             $lines.css({fill:"none", 'stroke-dasharray':"none"});
-            var $rects = _$svg.children("rect");
+            var $rects = $svg.children("rect");
             $rects.css({fill:"none", 'stroke-dasharray':"none"});
-            var $polygons = _$svg.children("polygon");
+            var $polygons = $svg.children("polygon");
             $polygons.css({fill:"none", 'stroke-dasharray':"none"});
-            var $polylines = _$svg.children("polyline");
+            var $polylines = $svg.children("polyline");
             $polylines.css({fill:"none", 'stroke-dasharray':"none"});
 
             findType(verticesRaw, bordersRaw, borderFilter, $paths, $lines, $rects, $polygons, $polylines);
@@ -378,6 +397,7 @@ function initPattern(globals){
             findType(verticesRaw, triangulationsRaw, triangulationFilter, $paths, $lines, $rects, $polygons, $polylines);
             findType(verticesRaw, hingesRaw, hingeFilter, $paths, $lines, $rects, $polygons, $polylines);
 
+            //check for bad colors
             if (badColors.length>0){
                 badColors = _.uniq(badColors);
                 var string = "Some objects found with the following stroke colors:<br/><br/>";
@@ -386,13 +406,15 @@ function initPattern(globals){
                 });
                 string +=  "<br/>These objects were ignored.<br/>  Please check that your file is set up correctly, <br/>" +
                     "see <b>File > File Import Tips</b> for more information.";
-                globals.warn(string);
+                console.warn(string);
+                if (globals && globals.warn) globals.warn(string);
             }
 
             //todo revert back to old pattern if bad import
-            var success = parseSVG(verticesRaw, bordersRaw, mountainsRaw, valleysRaw, cutsRaw, triangulationsRaw, hingesRaw);
+            var success = parseSVG(verticesRaw, bordersRaw, mountainsRaw, valleysRaw, cutsRaw, triangulationsRaw, hingesRaw, params);
             if (!success) return;
 
+            //todo this goes somewhere else
             //find max and min vertices
             var max = new THREE.Vector3(-Infinity,-Infinity,-Infinity);
             var min = new THREE.Vector3(Infinity,Infinity,Infinity);
@@ -444,7 +466,9 @@ function initPattern(globals){
         });
     }
 
-    function parseSVG(_verticesRaw, _bordersRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw, _hingesRaw){
+    function parseSVG(_verticesRaw, _bordersRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw, _hingesRaw, params){
+
+        var vertexTol = params.vertexTol;//we have already checked that this is valid in loadSVG
 
         _.each(_verticesRaw, function(vertex){
             foldData.vertices_coords.push([vertex.x, vertex.z]);
@@ -485,14 +509,14 @@ function initPattern(globals){
             return false;
         }
 
-        foldData = FOLD.filter.collapseNearbyVertices(foldData, globals.vertTol);
+        foldData = FOLD.filter.collapseNearbyVertices(foldData, vertexTol);
         foldData = FOLD.filter.removeLoopEdges(foldData);//remove edges that points to same vertex
         foldData = FOLD.filter.removeDuplicateEdges_vertices(foldData);//remove duplicate edges
-        // foldData = FOLD.filter.subdivideCrossingEdges_vertices(foldData, globals.vertTol);//find intersections and add vertices/edges
+        // foldData = FOLD.filter.subdivideCrossingEdges_vertices(foldData, vertexTol);//find intersections and add vertices/edges
 
-        foldData = findIntersections(foldData, globals.vertTol);
+        foldData = findIntersections(foldData, vertexTol);
         //cleanup after intersection operation
-        foldData = FOLD.filter.collapseNearbyVertices(foldData, globals.vertTol);
+        foldData = FOLD.filter.collapseNearbyVertices(foldData, vertexTol);
         foldData = FOLD.filter.removeLoopEdges(foldData);//remove edges that points to same vertex
         foldData = FOLD.filter.removeDuplicateEdges_vertices(foldData);//remove duplicate edges
 
@@ -513,7 +537,7 @@ function initPattern(globals){
 
     function processFold(fold, returnCreaseParams){
 
-        rawFold = JSON.parse(JSON.stringify(fold));//save pre-triangulated for for save later
+        rawFold = JSON.parse(JSON.stringify(fold));//save pre-triangulated for save later
         //make 3d
         for (var i=0;i<rawFold.vertices_coords.length;i++){
             var vertex = rawFold.vertices_coords[i];
@@ -1178,9 +1202,10 @@ function initPattern(globals){
 
     return {
         loadSVG: loadSVG,
-        saveSVG: saveSVG,
-        getFoldData: getFoldData,
-        getTriangulatedFaces: getTriangulatedFaces,
-        setFoldData: setFoldData
+        saveSVG: saveSVG,//todo getSVG, getRawSVG
+        setFoldData: setFoldData,//todo loadFOLD
+        getFoldData: getFoldData,//todo getFOLD, getRawFold
+        getTriangulatedFaces: getTriangulatedFaces//todo why?
+
     }
 }

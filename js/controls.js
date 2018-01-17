@@ -192,11 +192,11 @@ function initControls(globals){
     });
 
     setLink("#importSettings", function(){
-        $("#vertTol").val(globals.vertTol);
+        $("#vertexTol").val(globals.vertexTol);
         $("#importSettingsModal").modal("show");
     });
-    setInput("#vertTol", globals.vertTol, function(val){
-        globals.vertTol = val;
+    setInput("#vertexTol", globals.vertexTol, function(val){
+        globals.vertexTol = val;
     });
 
     setLink("#createGif", function(){
@@ -491,7 +491,7 @@ function initControls(globals){
     setLink(".demo", function(e){
         var url = $(e.target).data("url");
         if (url) {
-            globals.vertTol = 3;
+            globals.vertexTol = 3;
             globals.importer.importDemoFile(url);
         }
     });
