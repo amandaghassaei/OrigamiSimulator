@@ -119,6 +119,19 @@ function initGlobals(){
     });
     _globals.warn = warn;
 
+    function notSupportedWarning(){
+        var elm = '<div id="coverImg" ' +
+          'style="background: url(assets/doc/crane.gif) no-repeat center center fixed;' +
+            '-webkit-background-size: cover;' +
+            '-moz-background-size: cover;' +
+            '-o-background-size: cover;' +
+            'background-size: cover;">'+
+          '</div>';
+        $(elm).appendTo($("body"));
+        $("#noSupportModal").modal("show");
+    }
+    _globals.notSupportedWarning = notSupportedWarning;
+
     function noCreasePatternAvailable(){
         return _globals.extension == "fold";
     }

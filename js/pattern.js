@@ -6,16 +6,15 @@ function initPattern(globals){//todo Pattern()
 
     //internal state: foldData, rawFoldData
 
-    //dependencies FOLD, THREEjs, THREE.SVGLoader, underscore
+    //dependencies FOLD, THREEjs, THREE.SVGLoader, underscore, path-data-polyfill (for svg path parsing)
     var FOLD = require('fold');
 
-    var foldData = {};
-    var rawFoldData = {};
+    //rawFoldData is what what brought in directly from file (for SVGs this will be an unconnected set of line segments)
+    //preProcessedFoldData forms a valid mesh, but not triangulated or cuts split
+    //foldData is the triangulated model used for FEA
+    var rawFoldData, preProcessedFoldData, foldData;
 
     var badColors = [];//store any bad colors in svg file to show user
-
-    //raw data imported from fold
-    var rawFold = {};
 
     var SVGloader = new THREE.SVGLoader();
 
@@ -25,7 +24,6 @@ function initPattern(globals){//todo Pattern()
 
         foldData = makeEmptyFold();
         rawFoldData = makeEmptyFold();
-        rawFold = makeEmptyFold();
 
         badColors = [];
     }
@@ -38,6 +36,15 @@ function initPattern(globals){//todo Pattern()
             edges_foldAngles: []//target angles
         };
     }
+
+
+    /**
+     *
+     *
+     * helper functions for importing SVG objects
+     *
+     *
+     */
 
     function getOpacity(obj){
         var opacity = obj.attr("opacity");
@@ -93,6 +100,8 @@ function initPattern(globals){//todo Pattern()
         if (assignment == "U") return "#f0f";//hinge
         return "#0ff"
     }
+
+    //todo this code goes to pattern viewer
     function opacityForAngle(angle, assignment){
         if (angle === null || assignment == "F") return 1;
         return Math.abs(angle)/Math.PI;
@@ -144,18 +153,9 @@ function initPattern(globals){//todo Pattern()
             var path = $elements[i];
             var pathVertices = [];
 
-            //todo fix this
             if (path === undefined || path.getPathData === undefined){//mobile problem
-                var elm = '<div id="coverImg" ' +
-                  'style="background: url(assets/doc/crane.gif) no-repeat center center fixed;' +
-                    '-webkit-background-size: cover;' +
-                    '-moz-background-size: cover;' +
-                    '-o-background-size: cover;' +
-                    'background-size: cover;">'+
-                  '</div>';
-                $(elm).appendTo($("body"));
-                $("#noSupportModal").modal("show");
-                console.warn("path parser not supported");
+                if (globals && globals.notSupportedWarning) globals.notSupportedWarning();
+                console.warn("path parser not supported on this device");
                 return;
             }
 
@@ -225,9 +225,12 @@ function initPattern(globals){//todo Pattern()
             vertices.push(new THREE.Vector3(element.x1.baseVal.value, 0, element.y1.baseVal.value));
             vertices.push(new THREE.Vector3(element.x2.baseVal.value, 0, element.y2.baseVal.value));
             edges.push([vertices.length-2, vertices.length-1]);
+
+            //be sure to grow fold.edges_foldAngles and fold.edges_assignment arrays to match fold.edges_vertices.length
             fold.edges_foldAngles.push(null);
             if (element.targetAngle) fold.edges_foldAngles[edges.length-1] = element.targetAngle;
             fold.edges_assignment.push(assignment);
+
             applyTransformation(vertices[vertices.length-2], element.transform);
             applyTransformation(vertices[vertices.length-1], element.transform);
         }
@@ -251,9 +254,12 @@ function initPattern(globals){//todo Pattern()
             edges.push([vertices.length-2, vertices.length-1]);
             edges.push([vertices.length-1, vertices.length-4]);
             for (var j=1;j<=4;j++){
+
+                //be sure to grow fold.edges_foldAngles and fold.edges_assignment arrays to match fold.edges_vertices.length
                 fold.edges_foldAngles.push(null);
                 if (element.targetAngle) fold.edges_foldAngles[edges.length-j] = element.targetAngle;
                 fold.edges_assignment.push(assignment);
+
                 applyTransformation(vertices[vertices.length-j], element.transform);
             }
         }
@@ -271,6 +277,7 @@ function initPattern(globals){//todo Pattern()
                 if (j<element.points.length-1) edges.push([vertices.length-1, vertices.length]);
                 else edges.push([vertices.length-1, vertices.length-element.points.length]);
 
+                //be sure to grow fold.edges_foldAngles and fold.edges_assignment arrays to match fold.edges_vertices.length
                 fold.edges_foldAngles.push(null);
                 if (element.targetAngle) fold.edges_foldAngles[edges.length-1] = element.targetAngle;
                 fold.edges_assignment.push(assignment);
@@ -288,6 +295,7 @@ function initPattern(globals){//todo Pattern()
                 applyTransformation(vertices[vertices.length-1], element.transform);
                 if (j>0) edges.push([vertices.length-1, vertices.length-2]);
 
+                //be sure to grow fold.edges_foldAngles and fold.edges_assignment arrays to match fold.edges_vertices.length
                 fold.edges_foldAngles.push(null);
                 if (element.targetAngle) fold.edges_foldAngles[edges.length-1] = element.targetAngle;
                 fold.edges_assignment.push(assignment);
@@ -295,19 +303,30 @@ function initPattern(globals){//todo Pattern()
         }
     }
 
+
+     /**
+     *
+     *
+     * loading and parsing SVGs
+     *
+     *
+     */
+
+
     function loadSVG(url, params, callback){
 
-        //check that we have all necessary params
-        if (!params || params.vertexTol === undefined || params.vertexTol < 0){
-            console.warn("must pass in a vertexTol parameter to loadSVG(),  vertexTol must be greater than zero.  Aborting.");
-            return;
-        }
+         params = params || {};
+         if (params.vertexTol === undefined || params.vertexTol < 0){
+             console.warn("you may want to pass in a valid vertexTol parameter to loadSVG(), using defaults");
+             params.vertexTol = 3;
+         }
+
 
         SVGloader.load(url, function(svg){
 
             var $svg = $(svg);
 
-            clearAll();
+            badColors = [];
 
             //warn of global styling
             var $style = $svg.children("style");
@@ -327,24 +346,27 @@ function initPattern(globals){//todo Pattern()
                 if (globals && globals.warn) globals.warn(msg);
             }
 
-            //format all appropriate svg elements
+            //find all supported elements in svg
             var $paths = $svg.children("path");
-            $paths.css({fill:"none", 'stroke-dasharray':"none"});
             var $lines = $svg.children("line");
-            $lines.css({fill:"none", 'stroke-dasharray':"none"});
             var $rects = $svg.children("rect");
-            $rects.css({fill:"none", 'stroke-dasharray':"none"});
             var $polygons = $svg.children("polygon");
-            $polygons.css({fill:"none", 'stroke-dasharray':"none"});
             var $polylines = $svg.children("polyline");
-            $polylines.css({fill:"none", 'stroke-dasharray':"none"});
 
-            findType(rawFoldData, "B", $paths, $lines, $rects, $polygons, $polylines);
-            findType(rawFoldData, "M", $paths, $lines, $rects, $polygons, $polylines);
-            findType(rawFoldData, "V", $paths, $lines, $rects, $polygons, $polylines);
-            findType(rawFoldData, "C", $paths, $lines, $rects, $polygons, $polylines);
-            findType(rawFoldData, "F", $paths, $lines, $rects, $polygons, $polylines);
-            findType(rawFoldData, "U", $paths, $lines, $rects, $polygons, $polylines);
+            var fold = makeEmptyFold();
+
+            findType(fold, "B", $paths, $lines, $rects, $polygons, $polylines);
+            findType(fold, "M", $paths, $lines, $rects, $polygons, $polylines);
+            findType(fold, "V", $paths, $lines, $rects, $polygons, $polylines);
+            findType(fold, "C", $paths, $lines, $rects, $polygons, $polylines);
+            findType(fold, "F", $paths, $lines, $rects, $polygons, $polylines);
+            findType(fold, "U", $paths, $lines, $rects, $polygons, $polylines);
+
+            //convert vertices_coords from THREE.Vector3 to []
+            for (var i=0;i<fold.vertices_coords.length;i++){
+                var vertex = fold.vertices_coords[i];
+                fold.vertices_coords[i] = [vertex.x, vertex.z];
+            }
 
             //check for bad colors
             if (badColors.length>0){
@@ -359,16 +381,29 @@ function initPattern(globals){//todo Pattern()
                 if (globals && globals.warn) globals.warn(string);
             }
 
-            //todo revert back to old pattern if bad import
-            var success = parseSVG(rawFoldData, params);
-            if (!success) return;
+            if (fold.vertices_coords.length == 0 || fold.edges_vertices.length == 0){
+                var msg = "No valid geometry found in SVG, be sure to ungroup all and remove all clipping masks.";
+                console.warn(msg);
+                globals.warn(msg);
+                return;
+            }
+
+            clearAll();
+            rawFoldData = JSON.parse(JSON.stringify(fold));
+            preProcessedFoldData = preProcessFoldFromSVG(JSON.parse(JSON.stringify(rawFoldData)), params);
+            foldData = processFold(JSON.parse(JSON.stringify(preProcessedFoldData)));
+            if (callback) callback(foldData);
+
+            if (!foldData) return;
+
+            console.log(rawFoldData);
 
             //todo this goes somewhere else
             //find max and min vertices
-            var max = new THREE.Vector3(-Infinity,-Infinity,-Infinity);
-            var min = new THREE.Vector3(Infinity,Infinity,Infinity);
-            for (var i=0;i<rawFold.vertices_coords.length;i++){
-                var vertex = new THREE.Vector3(rawFold.vertices_coords[i][0], rawFold.vertices_coords[i][1], rawFold.vertices_coords[i][2]);
+            var max = new THREE.Vector2(-Infinity,-Infinity);
+            var min = new THREE.Vector2(Infinity,Infinity);
+            for (var i=0;i<rawFoldData.vertices_coords.length;i++){
+                var vertex = new THREE.Vector2(rawFoldData.vertices_coords[i][0], rawFoldData.vertices_coords[i][1]);
                 max.max(vertex);
                 min.min(vertex);
             }
@@ -377,31 +412,31 @@ function initPattern(globals){//todo Pattern()
                 return;
             }
             max.sub(min);
-            var border = new THREE.Vector3(0.1, 0, 0.1);
+            var border = new THREE.Vector2(0.1, 0.1);
             var scale = max.x;
-            if (max.z < scale) scale = max.z;
+            if (max.y < scale) scale = max.y;
             if (scale == 0) return;
 
             var strokeWidth = scale/300;
             border.multiplyScalar(scale);
             min.sub(border);
             max.add(border.multiplyScalar(2));
-            var viewBoxTxt = min.x + " " + min.z + " " + max.x + " " + max.z;
+            var viewBoxTxt = min.x + " " + min.y + " " + max.x + " " + max.y;
 
             var ns = 'http://www.w3.org/2000/svg';
             var svg = document.createElementNS(ns, 'svg');
             svg.setAttribute('viewBox', viewBoxTxt);
-            for (var i=0;i<rawFold.edges_vertices.length;i++){
+            for (var i=0;i<rawFoldData.edges_vertices.length;i++){
                 var line = document.createElementNS(ns, 'line');
-                var edge = rawFold.edges_vertices[i];
-                var vertex = rawFold.vertices_coords[edge[0]];
-                line.setAttribute('stroke', colorForAssignment(rawFold.edges_assignment[i]));
-                line.setAttribute('opacity', opacityForAngle(rawFold.edges_foldAngles[i], rawFold.edges_assignment[i]));
+                var edge = rawFoldData.edges_vertices[i];
+                var vertex = rawFoldData.vertices_coords[edge[0]];
+                line.setAttribute('stroke', colorForAssignment(rawFoldData.edges_assignment[i]));
+                line.setAttribute('opacity', opacityForAngle(rawFoldData.edges_foldAngles[i], rawFoldData.edges_assignment[i]));
                 line.setAttribute('x1', vertex[0]);
-                line.setAttribute('y1', vertex[2]);
-                vertex = rawFold.vertices_coords[edge[1]];
+                line.setAttribute('y1', vertex[1]);
+                vertex = rawFoldData.vertices_coords[edge[1]];
                 line.setAttribute('x2', vertex[0]);
-                line.setAttribute('y2', vertex[2]);
+                line.setAttribute('y2', vertex[1]);
                 line.setAttribute('stroke-width', strokeWidth);
                 svg.appendChild(line);
             }
@@ -415,98 +450,204 @@ function initPattern(globals){//todo Pattern()
         });
     }
 
-    function parseSVG(rawFoldData, params){
+    function preProcessFoldFromSVG(fold, params){
 
         var vertexTol = params.vertexTol;//we have already checked that this is valid in loadSVG
 
-        //copy fold
-        _.each(rawFoldData.vertices_coords, function(vertex){
-            foldData.vertices_coords.push([vertex.x, vertex.z]);
-        });
-        for (var i=0;i<rawFoldData.edges_vertices.length;i++){
-            foldData.edges_vertices.push([rawFoldData.edges_vertices[i][0], rawFoldData.edges_vertices[i][1]]);
-            foldData.edges_assignment.push(rawFoldData.edges_assignment[i]);
-            foldData.edges_foldAngles.push(rawFoldData.edges_foldAngles[i]);
-        }
-
-        if (foldData.vertices_coords.length == 0 || foldData.edges_vertices.length == 0){
-            globals.warn("No valid geometry found in SVG, be sure to ungroup all and remove all clipping masks.");
-            return false;
-        }
-
-        foldData = FOLD.filter.collapseNearbyVertices(foldData, vertexTol);
-        foldData = FOLD.filter.removeLoopEdges(foldData);//remove edges that points to same vertex
-        foldData = FOLD.filter.removeDuplicateEdges_vertices(foldData);//remove duplicate edges
+        fold = FOLD.filter.collapseNearbyVertices(fold, vertexTol);
+        fold = FOLD.filter.removeLoopEdges(fold);//remove edges that points to same vertex
+        fold = FOLD.filter.removeDuplicateEdges_vertices(fold);//remove duplicate edges
         // foldData = FOLD.filter.subdivideCrossingEdges_vertices(foldData, vertexTol);//find intersections and add vertices/edges
 
-        foldData = findIntersections(foldData, vertexTol);
+        fold = findIntersections(fold, vertexTol);
         //cleanup after intersection operation
-        foldData = FOLD.filter.collapseNearbyVertices(foldData, vertexTol);
-        foldData = FOLD.filter.removeLoopEdges(foldData);//remove edges that points to same vertex
-        foldData = FOLD.filter.removeDuplicateEdges_vertices(foldData);//remove duplicate edges
+        fold = FOLD.filter.collapseNearbyVertices(fold, vertexTol);
+        fold = FOLD.filter.removeLoopEdges(fold);//remove edges that points to same vertex
+        fold = FOLD.filter.removeDuplicateEdges_vertices(fold);//remove duplicate edges
 
-        foldData = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(foldData);
-        foldData = removeStrayVertices(foldData);//delete stray anchors
-        foldData = removeRedundantVertices(foldData, 0.01);//remove vertices that split edge
+        fold = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(fold);
+        fold = removeStrayVertices(fold);//delete stray anchors
+        fold = removeRedundantVertices(fold, 0.01);//remove vertices that split edge
 
-        foldData.vertices_vertices = FOLD.convert.sort_vertices_vertices(foldData);
-        foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
+        fold.vertices_vertices = FOLD.convert.sort_vertices_vertices(fold);
+        fold = FOLD.convert.vertices_vertices_to_faces_vertices(fold);
 
-        foldData = edgesVerticesToVerticesEdges(foldData);
-        foldData = removeBorderFaces(foldData);//expose holes surrounded by all border edges
+        fold = edgesVerticesToVerticesEdges(fold);
+        fold = removeBorderFaces(fold);//expose holes surrounded by all border edges
 
-        foldData = reverseFaceOrder(foldData);//set faces to counter clockwise
+        fold = reverseFaceOrder(fold);//set faces to counter clockwise
 
-        return processFold(foldData);
+        return fold;
     }
 
-    function processFold(fold, returnCreaseParams){
-
-        rawFold = JSON.parse(JSON.stringify(fold));//save pre-triangulated for save later
-        //make 3d
-        for (var i=0;i<rawFold.vertices_coords.length;i++){
-            var vertex = rawFold.vertices_coords[i];
-            if (vertex.length === 2) {//make vertices_coords 3d
-                rawFold.vertices_coords[i] = [vertex[0], 0, vertex[1]];
-            }
+    function saveSVG() {
+        if (globals.extension == "fold") {
+            //todo solve for crease pattern
+            globals.warn("No crease pattern available for files imported from FOLD format.");
+            return;
         }
+        var serializer = new XMLSerializer();
+        var source = serializer.serializeToString($("#svgViewer>svg").get(0));
+        var svgBlob = new Blob([source], {type: "image/svg+xml;charset=utf-8"});
+        var svgUrl = URL.createObjectURL(svgBlob);
+        var downloadLink = document.createElement("a");
+        downloadLink.href = svgUrl;
+        downloadLink.download = globals.filename + ".svg";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }
+
+
+    /**
+     *
+     *
+     * loading and parsing imported FOLD files
+     *
+     *
+     */
+
+
+    /*
+    * params = {calcFoldAnglesFromGeo: boolean (flag to calc fold.edges_foldAngles from the current 3D geometry of the
+    *                                           imported FOLD file, only valid for fold file without edges_foldAngles)
+    *           }
+     */
+    function loadFOLD(fold, params, callback){
+
+        params = params || {};
+        params.calcFoldAnglesFromGeo = params.calcFoldAnglesFromGeo || false;
+
+        if (!fold || !fold.vertices_coords || !fold.edges_assignment || !fold.edges_vertices || !fold.faces_vertices) {
+            var msg = "Invalid FOLD file, must contain all of: <br/>" +
+                "<br/>vertices_coords<br/>edges_vertices<br/>edges_assignment<br/>faces_vertices";
+            console.warn(msg);
+            if (globals && globals.warn) globals.warn(msg);
+            return;
+        }
+
+        if (fold.edges_assignment.length != fold.edges_vertices.length){
+            var msg = "invalid fold file, invalid length for edges_assignment array";
+            console.warn(msg);
+            if (globals && globals.warn) globals.warn(msg);
+            return;
+        }
+
+        if (!fold.edges_foldAngles){
+
+            // if (params && params.calcFoldAnglesFromGeo){
+            //
+            //     var foldAngles = [];
+            //     for (var i=0;i<fold.edges_assignment.length;i++){
+            //         var assignment = fold.edges_assignment[i];
+            //         if (assignment == "F") foldAngles.push(0);
+            //         else foldAngles.push(null);
+            //     }
+            //     fold.edges_foldAngles = foldAngles;
+            //
+            //     var allCreaseParams = globals.pattern.setFoldData(fold, true);
+            //     var j = 0;
+            //     var faces = globals.pattern.getTriangulatedFaces();
+            //     for (var i=0;i<fold.edges_assignment.length;i++){
+            //         var assignment = fold.edges_assignment[i];
+            //         if (assignment !== "M" && assignment !== "V" && assignment !== "F") continue;
+            //         var creaseParams = allCreaseParams[j];
+            //         var face1 = faces[creaseParams[0]];
+            //         var vec1 = makeVector(fold.vertices_coords[face1[1]]).sub(makeVector(fold.vertices_coords[face1[0]]));
+            //         var vec2 = makeVector(fold.vertices_coords[face1[2]]).sub(makeVector(fold.vertices_coords[face1[0]]));
+            //         var normal1 = (vec2.cross(vec1)).normalize();
+            //         var face2 = faces[creaseParams[2]];
+            //         vec1 = makeVector(fold.vertices_coords[face2[1]]).sub(makeVector(fold.vertices_coords[face2[0]]));
+            //         vec2 = makeVector(fold.vertices_coords[face2[2]]).sub(makeVector(fold.vertices_coords[face2[0]]));
+            //         var normal2 = (vec2.cross(vec1)).normalize();
+            //         var angle = Math.abs(normal1.angleTo(normal2));
+            //         if (assignment == "M") angle *= -1;
+            //         fold.edges_foldAngles[i] = angle;
+            //         creaseParams[5] = angle;
+            //         j++;
+            //     }
+            // } else {
+                var foldAngles = [];
+                for (var i=0;i<fold.edges_assignment.length;i++){
+                    var assignment = fold.edges_assignment[i];
+                    if (assignment == "M") foldAngles.push(-Math.PI);
+                    else if (assignment == "V") foldAngles.push(Math.PI);
+                    else if (assignment == "F") foldAngles.push(0);
+                    else foldAngles.push(null);
+                }
+                fold.edges_foldAngles = foldAngles;
+            // }
+        }
+
+        if (fold.edges_foldAngles.length != fold.edges_vertices.length){
+            var msg = "invalid fold file, invalid length for edges_foldAngles array";
+            console.warn(msg);
+            if (globals && globals.warn) globals.warn(msg);
+            return;
+        }
+
+        clearAll();
+        rawFoldData = JSON.parse(JSON.stringify(fold));//save pre-triangulated file
+        preProcessedFoldData = JSON.parse(JSON.stringify(rawFoldData));
+        foldData = processFold(JSON.parse(JSON.stringify(preProcessedFoldData)));
+
+        if (callback) callback(foldData);
+    }
+
+
+    /**
+     *
+     *
+     * common FOLD processing (shared between svg and fold import): split cuts, triangulate
+     *
+     *
+     */
+
+    function processFold(fold){
 
         var cuts = FOLD.filter.cutEdges(fold);
         if (cuts.length>0) {
             fold = splitCuts(fold);
             fold = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(fold);
+
+            //todo expose this param
             fold = removeRedundantVertices(fold, 0.01);//remove vertices that split edge
         }
         delete fold.vertices_vertices;
         delete fold.vertices_edges;
 
-        foldData = triangulatePolys(fold, true);
+        fold = triangulatePolys(fold, true);
 
-        for (var i=0;i<foldData.vertices_coords.length;i++){
-            var vertex = foldData.vertices_coords[i];
+        //make 3D
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            var vertex = fold.vertices_coords[i];
             if (vertex.length === 2) {//make vertices_coords 3d
-                foldData.vertices_coords[i] = [vertex[0], 0, vertex[1]];
+                fold.vertices_coords[i] = [vertex[0], 0, vertex[1]];
             }
         }
 
-        mountains = FOLD.filter.mountainEdges(foldData);
-        valleys = FOLD.filter.valleyEdges(foldData);
-        borders = FOLD.filter.boundaryEdges(foldData);
-        hinges = FOLD.filter.unassignedEdges(foldData);
-        triangulations = FOLD.filter.flatEdges(foldData);
+        $("#numMtns").html("(" + FOLD.filter.mountainEdges(fold).length + ")");
+        $("#numValleys").html("(" + FOLD.filter.valleyEdges(fold).length + ")");
+        $("#numFacets").html("(" + FOLD.filter.flatEdges(fold).length + ")");
+        $("#numBoundary").html("(" + FOLD.filter.boundaryEdges(fold).length + ")");
+        $("#numPassive").html("(" + FOLD.filter.unassignedEdges(fold).length + ")");
 
-        $("#numMtns").html("(" + mountains.length + ")");
-        $("#numValleys").html("(" + valleys.length + ")");
-        $("#numFacets").html("(" + triangulations.length + ")");
-        $("#numBoundary").html("(" + borders.length + ")");
-        $("#numPassive").html("(" + hinges.length + ")");
+        var allCreaseParams = getFacesAndVerticesForEdges(fold);//todo precompute vertices_faces
 
-        var allCreaseParams = getFacesAndVerticesForEdges(foldData);//todo precompute vertices_faces
-        if (returnCreaseParams) return allCreaseParams;
-
-        globals.model.buildModel(foldData, allCreaseParams);
-        return foldData;
+        globals.model.buildModel(fold, allCreaseParams);
+        return fold;
     }
+
+
+
+
+    /**
+     *
+     *
+     * helper functions for processing FOLD geometry - more of this should be in FOLD library!
+     *
+     *
+     */
 
     function reverseFaceOrder(fold){
         for (var i=0;i<fold.faces_vertices.length;i++){
@@ -993,24 +1134,6 @@ function initPattern(globals){//todo Pattern()
         return fold;
     }
 
-    function saveSVG(){
-        if (globals.extension == "fold"){
-            //todo solve for crease pattern
-            globals.warn("No crease pattern available for files imported from FOLD format.");
-            return;
-        }
-        var serializer = new XMLSerializer();
-        var source = serializer.serializeToString($("#svgViewer>svg").get(0));
-        var svgBlob = new Blob([source], {type:"image/svg+xml;charset=utf-8"});
-        var svgUrl = URL.createObjectURL(svgBlob);
-        var downloadLink = document.createElement("a");
-        downloadLink.href = svgUrl;
-        downloadLink.download =  globals.filename + ".svg";
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-    }
-
     function findIntersections(fold, tol){
         var vertices = fold.vertices_coords;
         var edges = fold.edges_vertices;
@@ -1111,25 +1234,42 @@ function initPattern(globals){//todo Pattern()
         };
     }
 
-    function getFoldData(raw){
-        if (raw) return rawFold;
-        return foldData;
+
+    /*
+    *
+    *
+    * getters
+    *
+    *
+     */
+
+    function getFoldData(){
+        return JSON.parse(JSON.stringify(foldData));
     }
 
-    function setFoldData(fold, returnCreaseParams){
-        clearAll();
-        return processFold(fold, returnCreaseParams);
+    function getPreProcessedFoldData(){
+        return JSON.parse(JSON.stringify(preProcessedFoldData));
     }
 
     function getTriangulatedFaces(){
         return foldData.faces_vertices;
     }
 
+
+    /*
+    *
+    *
+    * public functions
+    *
+    *
+     */
+
     return {
         loadSVG: loadSVG,
         saveSVG: saveSVG,//todo getSVG, getRawSVG
-        setFoldData: setFoldData,//todo loadFOLD
-        getFoldData: getFoldData,//todo getFOLD, getRawFold
+        loadFOLD: loadFOLD,
+        getFoldData: getFoldData,
+        getPreProcessedFoldData: getPreProcessedFoldData,
         getTriangulatedFaces: getTriangulatedFaces//todo why?
 
     }

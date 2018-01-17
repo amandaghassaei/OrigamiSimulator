@@ -40,7 +40,9 @@ function saveFOLD(){
     }
 
     var useTriangulated = globals.triangulateFOLDexport;
-    var fold = globals.pattern.getFoldData(!useTriangulated);
+    var fold;
+    if (useTriangulated) fold = globals.pattern.getFoldData();
+    else fold = globals.pattern.getPreProcessedFoldData();
     json.edges_vertices = fold.edges_vertices;
     var assignment = [];
     for (var i=0;i<fold.edges_assignment.length;i++){
