@@ -506,7 +506,7 @@ function initControls(globals){
     });
 
     setLink("#saveSVG", function(){
-        globals.PatternImporter.saveSVG();
+        globals.PatternViewer2D.saveSVG();
     });
     setLink("#addAnimationItem", function(){
         globals.videoAnimator.addItem();
