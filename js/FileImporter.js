@@ -3,9 +3,13 @@
  */
 
 
-function initImporter(globals){
+function FileImporter(){
 
     var reader = new FileReader();
+
+    function onPatternLoad(){
+        globals.PatternViewer2D.showSVG();
+    }
 
     function importDemoFile(url){
         var extension = url.split(".");
@@ -17,9 +21,7 @@ function initImporter(globals){
             globals.url = url;
             globals.filename = name;
             globals.extension = extension;
-            globals.PatternImporter.loadSVG("assets/" + url, {vertexTol: globals.vertexTol}, function(){
-                globals.PatternViewer2D.showSVG();
-            });
+            globals.PatternImporter.loadSVG("assets/" + url, {vertexTol: globals.vertexTol}, onPatternLoad);
         } else {
             console.warn("unknown extension: " + extension);
         }
@@ -53,9 +55,7 @@ function initImporter(globals){
                         globals.filename = name;
                         globals.extension = extension;
                         globals.url = null;
-                        globals.PatternImporter.loadSVG(reader.result, {vertexTol: globals.vertexTol}, function(){
-                            globals.PatternViewer2D.showSVG();
-                        });
+                        globals.PatternImporter.loadSVG(reader.result, {vertexTol: globals.vertexTol}, onPatternLoad);
                     });
                 }
             }(file);
@@ -81,10 +81,7 @@ function initImporter(globals){
                         }
 
                         if (fold.edges_foldAngles) {
-                            //todo add params
-                            globals.PatternImporter.loadFOLD(fold, {}, function(){
-                                globals.PatternViewer2D.showSVG();
-                            });
+                            globals.PatternImporter.loadFOLD(fold, {}, onPatternLoad);
                             return;
                         }
 
@@ -93,18 +90,10 @@ function initImporter(globals){
                             $('#importFoldModal').off('hidden.bs.modal');
                             if (globals.foldUseAngles) {
                                 globals.setCreasePercent(1);
-
-                                globals.PatternImporter.loadFOLD(fold, {calcFoldAnglesFromGeo: true}, function(){
-                                    globals.PatternViewer2D.showSVG();
-                                });
-                                return;
                             }
 
-                            globals.PatternImporter.loadFOLD(fold, {}, function(){
-                                globals.PatternViewer2D.showSVG();
-                            });
+                            globals.PatternImporter.loadFOLD(fold, {calcFoldAnglesFromGeo: globals.foldUseAngles}, onPatternLoad);
                         });
-
 
                     } catch(err) {
                         globals.warn("Unable to parse FOLD json.");

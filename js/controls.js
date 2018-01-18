@@ -492,7 +492,7 @@ function initControls(globals){
         var url = $(e.target).data("url");
         if (url) {
             globals.vertexTol = 3;
-            globals.importer.importDemoFile(url);
+            globals.FileImporter.importDemoFile(url);
         }
     });
 

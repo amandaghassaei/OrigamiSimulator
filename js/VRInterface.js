@@ -177,7 +177,7 @@ function initViveInterface(globals){
             var url = _.keys(object)[index];
             if (url){
                 globals.vertexTol = 3;
-                globals.importer.importDemoFile(url);
+                globals.FileImporter.importDemoFile(url);
             }
             examplesMenu.name("Examples - current file: " + val);
         });
