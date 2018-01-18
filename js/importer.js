@@ -17,7 +17,9 @@ function initImporter(globals){
             globals.url = url;
             globals.filename = name;
             globals.extension = extension;
-            globals.pattern.loadSVG("assets/" + url, {vertexTol: globals.vertexTol});
+            globals.PatternImporter.loadSVG("assets/" + url, {vertexTol: globals.vertexTol}, function(){
+                globals.PatternViewer2D.showSVG();
+            });
         } else {
             console.warn("unknown extension: " + extension);
         }
@@ -51,7 +53,7 @@ function initImporter(globals){
                         globals.filename = name;
                         globals.extension = extension;
                         globals.url = null;
-                        globals.pattern.loadSVG(reader.result, {vertexTol: globals.vertexTol});
+                        globals.PatternImporter.loadSVG(reader.result, {vertexTol: globals.vertexTol});
                     });
                 }
             }(file);
@@ -78,7 +80,7 @@ function initImporter(globals){
 
                         if (fold.edges_foldAngles) {
                             //todo add params
-                            globals.pattern.loadFOLD(fold, {});
+                            globals.PatternImporter.loadFOLD(fold, {});
                             return;
                         }
 
@@ -88,11 +90,11 @@ function initImporter(globals){
                             if (globals.foldUseAngles) {
                                 globals.setCreasePercent(1);
 
-                                globals.pattern.loadFOLD(fold, {calcFoldAnglesFromGeo: true});
+                                globals.PatternImporter.loadFOLD(fold, {calcFoldAnglesFromGeo: true});
                                 return;
                             }
 
-                            globals.pattern.loadFOLD(fold);
+                            globals.PatternImporter.loadFOLD(fold);
                         });
 
 

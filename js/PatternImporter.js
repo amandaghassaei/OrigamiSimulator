@@ -2,17 +2,18 @@
  * Created by amandaghassaei on 2/25/17.
  */
 
-function initPattern(globals){//todo Pattern()
+function PatternImporter(){
 
-    //dependencies FOLD, THREEjs, THREE.SVGLoader, underscore, path-data-polyfill (for svg path parsing)
+    //dependencies: FOLD, THREEjs, THREE.SVGLoader, underscore, path-data-polyfill (for svg path parsing)
     var FOLD = require('fold');
 
     //rawFoldData is what what brought in directly from file (for SVGs this will be an unconnected set of line segments)
-    //preProcessedFoldData forms a valid mesh, but not triangulated or cuts split
+    //preProcessedFoldData forms a valid mesh, but not triangulated or cuts split (for FOLD import, this is identical to rawFoldData)
     //foldData is the triangulated model used for FEA
     var rawFoldData, preProcessedFoldData, foldData;
 
-    var badColors = [];//store any bad colors in svg file to show user
+    var badColors = [];//store any unused line colors in svg file to show user (sometimes the file with have a slightly
+                        // different color red than 0xff0000)
 
     var SVGloader = new THREE.SVGLoader();
 
@@ -84,22 +85,6 @@ function initPattern(globals){//todo Pattern()
         if (stroke == "#ff00ff" || stroke == "#f0f" || stroke == "magenta" || stroke == "rgb(255,0,255)") return "U";
         badColors.push(stroke);
         return null;
-    }
-
-    function colorForAssignment(assignment){
-        if (assignment == "B") return "#000";//border
-        if (assignment == "M") return "#f00";//mountain
-        if (assignment == "V") return "#00f";//valley
-        if (assignment == "C") return "#0f0";//cut
-        if (assignment == "F") return "#ff0";//facet
-        if (assignment == "U") return "#f0f";//hinge
-        return "#0ff"
-    }
-
-    //todo this code goes to pattern viewer
-    function opacityForAngle(angle, assignment){
-        if (angle === null || assignment == "F") return 1;
-        return Math.abs(angle)/Math.PI;
     }
 
     function findType(fold, assignment, $paths, $lines, $rects, $polygons, $polylines){
@@ -303,7 +288,12 @@ function initPattern(globals){//todo Pattern()
      * loading and parsing SVGs
      */
 
-
+    /**
+     *
+     * @param url
+     * @param params (optional) {vertexTol: float (vertex merge tolerance of SVG import, in units of imported file, must be > 0) }
+     * @param callback (optional)
+     */
     function loadSVG(url, params, callback){
 
          params = params || {};
@@ -311,7 +301,6 @@ function initPattern(globals){//todo Pattern()
              console.warn("you may want to pass in a valid vertexTol parameter to loadSVG(), using defaults");
              params.vertexTol = 3;
          }
-
 
         SVGloader.load(url, function(svg){
 
@@ -383,11 +372,8 @@ function initPattern(globals){//todo Pattern()
             rawFoldData = JSON.parse(JSON.stringify(fold));
             preProcessedFoldData = preProcessFoldFromSVG(JSON.parse(JSON.stringify(rawFoldData)), params);
             foldData = processFold(JSON.parse(JSON.stringify(preProcessedFoldData)));
+
             if (callback) callback(foldData);
-
-            if (!foldData) return;
-
-            $("#svgViewer").html(getSVG(rawFoldData));
 
             },
             function(){},
@@ -427,75 +413,6 @@ function initPattern(globals){//todo Pattern()
         return fold;
     }
 
-    function getSVG(fold){
-
-        //if fold is 3D - no svg available
-        for (var i=0;i<fold.vertices_coords.length;i++){
-            if (fold.vertices_coords[i].length > 2) return null;
-        }
-
-        //find max and min vertices
-        var max = new THREE.Vector2(-Infinity,-Infinity);
-        var min = new THREE.Vector2(Infinity,Infinity);
-        for (var i=0;i<fold.vertices_coords.length;i++){
-            var vertex = new THREE.Vector2(fold.vertices_coords[i][0], fold.vertices_coords[i][1]);
-            max.max(vertex);
-            min.min(vertex);
-        }
-        if (min.x === Infinity){
-            if (badColors.length == 0) globals.warn("no geometry found in file");
-            return;
-        }
-        max.sub(min);
-        var border = new THREE.Vector2(0.1, 0.1);
-        var scale = max.x;
-        if (max.y < scale) scale = max.y;
-        if (scale == 0) return;
-
-        var strokeWidth = scale/300;
-        border.multiplyScalar(scale);
-        min.sub(border);
-        max.add(border.multiplyScalar(2));
-        var viewBoxTxt = min.x + " " + min.y + " " + max.x + " " + max.y;
-
-        var ns = 'http://www.w3.org/2000/svg';
-        var svg = document.createElementNS(ns, 'svg');
-        svg.setAttribute('viewBox', viewBoxTxt);
-        for (var i=0;i<fold.edges_vertices.length;i++){
-            var line = document.createElementNS(ns, 'line');
-            var edge = fold.edges_vertices[i];
-            var vertex = fold.vertices_coords[edge[0]];
-            line.setAttribute('stroke', colorForAssignment(fold.edges_assignment[i]));
-            line.setAttribute('opacity', opacityForAngle(fold.edges_foldAngles[i], fold.edges_assignment[i]));
-            line.setAttribute('x1', vertex[0]);
-            line.setAttribute('y1', vertex[1]);
-            vertex = fold.vertices_coords[edge[1]];
-            line.setAttribute('x2', vertex[0]);
-            line.setAttribute('y2', vertex[1]);
-            line.setAttribute('stroke-width', strokeWidth);
-            svg.appendChild(line);
-        }
-        return svg;
-    }
-
-    function saveSVG() {
-        if (globals.extension == "fold") {
-            //todo solve for crease pattern
-            globals.warn("No crease pattern available for files imported from FOLD format.");
-            return;
-        }
-        var serializer = new XMLSerializer();
-        var source = serializer.serializeToString($("#svgViewer>svg").get(0));
-        var svgBlob = new Blob([source], {type: "image/svg+xml;charset=utf-8"});
-        var svgUrl = URL.createObjectURL(svgBlob);
-        var downloadLink = document.createElement("a");
-        downloadLink.href = svgUrl;
-        downloadLink.download = globals.filename + ".svg";
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-    }
-
 
     /**
      * loading and parsing imported FOLD files
@@ -503,9 +420,10 @@ function initPattern(globals){//todo Pattern()
 
 
     /**
-    * params = {calcFoldAnglesFromGeo: boolean (flag to calc fold.edges_foldAngles from the current 3D geometry of the
-    *                                           imported FOLD file, only valid for fold file without edges_foldAngles)
-    *           }
+     *
+     * @param fold
+     * @param params (optional) {calcFoldAnglesFromGeo: boolean (flag to calc fold.edges_foldAngles from the current 3D geometry of the imported FOLD file, only valid for fold file without edges_foldAngles)}
+     * @param callback (optional)
      */
     function loadFOLD(fold, params, callback){
 
@@ -539,9 +457,9 @@ function initPattern(globals){//todo Pattern()
             //     }
             //     fold.edges_foldAngles = foldAngles;
             //
-            //     var allCreaseParams = globals.pattern.setFoldData(fold, true);
+            //     var allCreaseParams = globals.PatternImporter.setFoldData(fold, true);
             //     var j = 0;
-            //     var faces = globals.pattern.getTriangulatedFaces();
+            //     var faces = globals.PatternImporter.getTriangulatedFaces();
             //     for (var i=0;i<fold.edges_assignment.length;i++){
             //         var assignment = fold.edges_assignment[i];
             //         if (assignment !== "M" && assignment !== "V" && assignment !== "F") continue;
@@ -1247,13 +1165,14 @@ function initPattern(globals){//todo Pattern()
      */
 
     return {
+
         loadSVG: loadSVG,
-        getSVG: getSVG,
-        saveSVG: saveSVG,
         loadFOLD: loadFOLD,
+
         getFoldData: getFoldData,
         getPreProcessedFoldData: getPreProcessedFoldData,
         getRawFoldData: getRawFoldData,
+
         getTriangulatedFaces: getTriangulatedFaces//todo why?
 
     }
