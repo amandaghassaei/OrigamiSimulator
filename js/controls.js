@@ -532,16 +532,16 @@ function initControls(globals){
         else $("#coloredMaterialOptions").hide();
         if (val == "axialStrain") $("#axialStrainMaterialOptions").show();
         else $("#axialStrainMaterialOptions").hide();
-        globals.model.setMeshMaterial();
+        globals.model.setColorMode(globals.colorMode);
     });
 
     setHexInput("#color1", globals.color1, function(val){
         globals.color1 = val;
-        globals.model.setMeshMaterial();
+        globals.model.setFrontColor(globals.color1);
     });
     setHexInput("#color2", globals.color2, function(val){
         globals.color2 = val;
-        globals.model.setMeshMaterial();
+        globals.model.setBackColor(globals.color2);
     });
 
     setCheckbox("#edgesVisible", globals.edgesVisible, function(val){

@@ -23,11 +23,10 @@ function Animator(){
     }
 
     function _loop(){
-        if (globals.needsSync){
+        if (globals.model.needsSync()){
             globals.model.sync();
             getSolver().syncNodesAndEdges();
             globals.simNeedsSync = false;
-            globals.needsSync = false;
             if (!globals.simulationRunning) reset();
         }
         if (globals.simNeedsSync){

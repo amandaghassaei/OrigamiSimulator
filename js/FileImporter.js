@@ -9,7 +9,16 @@ function FileImporter(){
 
     function onPatternLoad(){
         globals.PatternViewer2D.showSVG();
-        globals.model.setFoldData(globals.PatternImporter.getFoldData(), globals.PatternImporter.getCreaseParams());
+        globals.model.setFoldDataAsync(globals.PatternImporter.getFoldData(), globals.PatternImporter.getCreaseParams());
+        globals.simNeedsSync = true;
+
+        if (globals.noCreasePatternAvailable() && globals.navMode == "pattern"){
+            //switch to simulation mode
+            $("#navSimulation").parent().addClass("open");
+            $("#navPattern").parent().removeClass("open");
+            $("#svgViewer").hide();
+            globals.navMode = "simulation";
+        }
     }
 
     function importDemoFile(url){

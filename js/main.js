@@ -22,7 +22,7 @@ $(function() {
     globals.controls = initControls(globals);
     globals.UI3D = init3DUI(globals);
     globals.FileImporter = FileImporter(globals);
-    globals.model = initModel(globals);
+    globals.model = initModel({colorMode: globals.colorMode, frontColor: globals.color1, backColor: globals.color2});
     var object3Ds = globals.model.getObject3Ds();
     _.each(object3Ds, function(object){
         globals.threeView.sceneAddModel(object);

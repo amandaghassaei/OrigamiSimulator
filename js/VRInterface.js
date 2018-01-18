@@ -70,7 +70,7 @@ function initViveInterface(globals){
         else $("#coloredMaterialOptions").hide();
         if (mode == "axialStrain") $("#axialStrainMaterialOptions").show();
         else $("#axialStrainMaterialOptions").hide();
-        globals.model.setMeshMaterial();
+        globals.model.setColorMode(globals.colorMode);
         $(".radio>input[value="+mode+"]").prop("checked", true);
     });
     gui.add(variables,'Reset').name("Reset Simulation");

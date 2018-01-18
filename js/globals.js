@@ -34,7 +34,6 @@ function initGlobals(){
         nodePositionHasChanged: false,
         shouldZeroDynamicVelocity: false,
         shouldCenterGeo: false,
-        needsSync: false,
         simNeedsSync: false,
 
         menusVisible: true,
