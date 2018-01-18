@@ -4,8 +4,6 @@
 
 function initPattern(globals){//todo Pattern()
 
-    //internal state: foldData, rawFoldData
-
     //dependencies FOLD, THREEjs, THREE.SVGLoader, underscore, path-data-polyfill (for svg path parsing)
     var FOLD = require('fold');
 
@@ -24,6 +22,7 @@ function initPattern(globals){//todo Pattern()
 
         foldData = makeEmptyFold();
         rawFoldData = makeEmptyFold();
+        preProcessedFoldData = makeEmptyFold();
 
         badColors = [];
     }
@@ -39,11 +38,7 @@ function initPattern(globals){//todo Pattern()
 
 
     /**
-     *
-     *
      * helper functions for importing SVG objects
-     *
-     *
      */
 
     function getOpacity(obj){
@@ -305,11 +300,7 @@ function initPattern(globals){//todo Pattern()
 
 
      /**
-     *
-     *
      * loading and parsing SVGs
-     *
-     *
      */
 
 
@@ -396,56 +387,12 @@ function initPattern(globals){//todo Pattern()
 
             if (!foldData) return;
 
-            console.log(rawFoldData);
-
-            //todo this goes somewhere else
-            //find max and min vertices
-            var max = new THREE.Vector2(-Infinity,-Infinity);
-            var min = new THREE.Vector2(Infinity,Infinity);
-            for (var i=0;i<rawFoldData.vertices_coords.length;i++){
-                var vertex = new THREE.Vector2(rawFoldData.vertices_coords[i][0], rawFoldData.vertices_coords[i][1]);
-                max.max(vertex);
-                min.min(vertex);
-            }
-            if (min.x === Infinity){
-                if (badColors.length == 0) globals.warn("no geometry found in file");
-                return;
-            }
-            max.sub(min);
-            var border = new THREE.Vector2(0.1, 0.1);
-            var scale = max.x;
-            if (max.y < scale) scale = max.y;
-            if (scale == 0) return;
-
-            var strokeWidth = scale/300;
-            border.multiplyScalar(scale);
-            min.sub(border);
-            max.add(border.multiplyScalar(2));
-            var viewBoxTxt = min.x + " " + min.y + " " + max.x + " " + max.y;
-
-            var ns = 'http://www.w3.org/2000/svg';
-            var svg = document.createElementNS(ns, 'svg');
-            svg.setAttribute('viewBox', viewBoxTxt);
-            for (var i=0;i<rawFoldData.edges_vertices.length;i++){
-                var line = document.createElementNS(ns, 'line');
-                var edge = rawFoldData.edges_vertices[i];
-                var vertex = rawFoldData.vertices_coords[edge[0]];
-                line.setAttribute('stroke', colorForAssignment(rawFoldData.edges_assignment[i]));
-                line.setAttribute('opacity', opacityForAngle(rawFoldData.edges_foldAngles[i], rawFoldData.edges_assignment[i]));
-                line.setAttribute('x1', vertex[0]);
-                line.setAttribute('y1', vertex[1]);
-                vertex = rawFoldData.vertices_coords[edge[1]];
-                line.setAttribute('x2', vertex[0]);
-                line.setAttribute('y2', vertex[1]);
-                line.setAttribute('stroke-width', strokeWidth);
-                svg.appendChild(line);
-            }
-            $("#svgViewer").html(svg);
+            $("#svgViewer").html(getSVG(rawFoldData));
 
             },
             function(){},
             function(error){
-                globals.warn("Error loading SVG " + url + " : " + error);
+                if (globals && globals.warn) globals.warn("Error loading SVG " + url + " : " + error);
                 console.warn(error);
         });
     }
@@ -480,6 +427,57 @@ function initPattern(globals){//todo Pattern()
         return fold;
     }
 
+    function getSVG(fold){
+
+        //if fold is 3D - no svg available
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            if (fold.vertices_coords[i].length > 2) return null;
+        }
+
+        //find max and min vertices
+        var max = new THREE.Vector2(-Infinity,-Infinity);
+        var min = new THREE.Vector2(Infinity,Infinity);
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            var vertex = new THREE.Vector2(fold.vertices_coords[i][0], fold.vertices_coords[i][1]);
+            max.max(vertex);
+            min.min(vertex);
+        }
+        if (min.x === Infinity){
+            if (badColors.length == 0) globals.warn("no geometry found in file");
+            return;
+        }
+        max.sub(min);
+        var border = new THREE.Vector2(0.1, 0.1);
+        var scale = max.x;
+        if (max.y < scale) scale = max.y;
+        if (scale == 0) return;
+
+        var strokeWidth = scale/300;
+        border.multiplyScalar(scale);
+        min.sub(border);
+        max.add(border.multiplyScalar(2));
+        var viewBoxTxt = min.x + " " + min.y + " " + max.x + " " + max.y;
+
+        var ns = 'http://www.w3.org/2000/svg';
+        var svg = document.createElementNS(ns, 'svg');
+        svg.setAttribute('viewBox', viewBoxTxt);
+        for (var i=0;i<fold.edges_vertices.length;i++){
+            var line = document.createElementNS(ns, 'line');
+            var edge = fold.edges_vertices[i];
+            var vertex = fold.vertices_coords[edge[0]];
+            line.setAttribute('stroke', colorForAssignment(fold.edges_assignment[i]));
+            line.setAttribute('opacity', opacityForAngle(fold.edges_foldAngles[i], fold.edges_assignment[i]));
+            line.setAttribute('x1', vertex[0]);
+            line.setAttribute('y1', vertex[1]);
+            vertex = fold.vertices_coords[edge[1]];
+            line.setAttribute('x2', vertex[0]);
+            line.setAttribute('y2', vertex[1]);
+            line.setAttribute('stroke-width', strokeWidth);
+            svg.appendChild(line);
+        }
+        return svg;
+    }
+
     function saveSVG() {
         if (globals.extension == "fold") {
             //todo solve for crease pattern
@@ -500,15 +498,11 @@ function initPattern(globals){//todo Pattern()
 
 
     /**
-     *
-     *
      * loading and parsing imported FOLD files
-     *
-     *
      */
 
 
-    /*
+    /**
     * params = {calcFoldAnglesFromGeo: boolean (flag to calc fold.edges_foldAngles from the current 3D geometry of the
     *                                           imported FOLD file, only valid for fold file without edges_foldAngles)
     *           }
@@ -596,11 +590,7 @@ function initPattern(globals){//todo Pattern()
 
 
     /**
-     *
-     *
      * common FOLD processing (shared between svg and fold import): split cuts, triangulate
-     *
-     *
      */
 
     function processFold(fold){
@@ -642,11 +632,7 @@ function initPattern(globals){//todo Pattern()
 
 
     /**
-     *
-     *
      * helper functions for processing FOLD geometry - more of this should be in FOLD library!
-     *
-     *
      */
 
     function reverseFaceOrder(fold){
@@ -1235,12 +1221,8 @@ function initPattern(globals){//todo Pattern()
     }
 
 
-    /*
-    *
-    *
+    /**
     * getters
-    *
-    *
      */
 
     function getFoldData(){
@@ -1251,25 +1233,27 @@ function initPattern(globals){//todo Pattern()
         return JSON.parse(JSON.stringify(preProcessedFoldData));
     }
 
+    function getRawFoldData(){
+        return JSON.parse(JSON.stringify(rawFoldData));
+    }
+
     function getTriangulatedFaces(){
         return foldData.faces_vertices;
     }
 
 
-    /*
-    *
-    *
+    /**
     * public functions
-    *
-    *
      */
 
     return {
         loadSVG: loadSVG,
-        saveSVG: saveSVG,//todo getSVG, getRawSVG
+        getSVG: getSVG,
+        saveSVG: saveSVG,
         loadFOLD: loadFOLD,
         getFoldData: getFoldData,
         getPreProcessedFoldData: getPreProcessedFoldData,
+        getRawFoldData: getRawFoldData,
         getTriangulatedFaces: getTriangulatedFaces//todo why?
 
     }
