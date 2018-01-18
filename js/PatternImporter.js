@@ -10,10 +10,11 @@ parses incoming files so that they are valid, trinagulated meshes for simulation
 uses FOLD as internal data structure
 currently support FOLD and SVG import - though FOLD support needs some work/testing
 
+dependencies: FOLD, THREEjs, THREE.SVGLoader, underscore, path-data-polyfill (for svg path parsing)
+
  */
 function PatternImporter(){
 
-    //dependencies: FOLD, THREEjs, THREE.SVGLoader, underscore, path-data-polyfill (for svg path parsing)
     var FOLD = require('fold');
 
     //rawFoldData is what's brought in directly from file (for SVGs this will be an unconnected set of line segments)
@@ -21,8 +22,7 @@ function PatternImporter(){
     //foldData is the triangulated model used for FEA
     var rawFoldData, preProcessedFoldData, foldData;
 
-    var badColors = [];//store any unused line colors in svg file to show user (sometimes the file with have a slightly
-                        // different color red than 0xff0000)
+    var badColors = [];//store any unused line colors in svg file to show user (sometimes the file with have a slightly different color red than 0xff0000)
 
     var SVGloader = new THREE.SVGLoader();
 
@@ -300,7 +300,13 @@ function PatternImporter(){
     /**
      *
      * @param url
-     * @param params (optional) {vertexTol: float (vertex merge tolerance of SVG import, in units of imported file, must be > 0) }
+     * @param params (optional)
+     *
+     *      {
+     *          vertexTol: pos, non-zero float (vertex merge tolerance of SVG import, in units of imported file, must be > 0),
+     *          splitEdgeEpsilon: pos float (used to set the tolerance for deleting vertices that split an edge, see removeRedundantVertices for more info)
+     *      }
+     *
      * @param callback (optional)
      */
     function loadSVG(url, params, callback){
@@ -381,7 +387,7 @@ function PatternImporter(){
             clearAll();
             rawFoldData = JSON.parse(JSON.stringify(fold));
             preProcessedFoldData = preProcessFoldFromSVG(JSON.parse(JSON.stringify(rawFoldData)), params);
-            foldData = processFold(JSON.parse(JSON.stringify(preProcessedFoldData)));
+            foldData = processFold(JSON.parse(JSON.stringify(preProcessedFoldData)), params);
 
             if (callback) callback();
 
@@ -410,7 +416,7 @@ function PatternImporter(){
 
         fold = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(fold);
         fold = removeStrayVertices(fold);//delete stray anchors
-        fold = removeRedundantVertices(fold, 0.01);//remove vertices that split edge
+        fold = removeRedundantVertices(fold, params);//remove vertices that split edge
 
         fold.vertices_vertices = FOLD.convert.sort_vertices_vertices(fold);
         fold = FOLD.convert.vertices_vertices_to_faces_vertices(fold);
@@ -523,15 +529,13 @@ function PatternImporter(){
      * common FOLD processing (shared between svg and fold import): split cuts, triangulate
      */
 
-    function processFold(fold){
+    function processFold(fold, params){
 
         var cuts = FOLD.filter.cutEdges(fold);
         if (cuts.length>0) {
             fold = splitCuts(fold);
             fold = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(fold);
-
-            //todo expose this param
-            fold = removeRedundantVertices(fold, 0.01);//remove vertices that split edge
+            fold = removeRedundantVertices(fold, params);//remove vertices that split edge
         }
         delete fold.vertices_vertices;
         delete fold.vertices_edges;
@@ -818,7 +822,10 @@ function PatternImporter(){
         return allCreaseParams;
     }
 
-    function removeRedundantVertices(fold, epsilon){
+    function removeRedundantVertices(fold, params){
+
+        var epsilon = params.splitEdgeEpsilon || 0.01;
+        if (epsilon < 0) epsilon = Math.abs(epsilon);
 
         var old2new = [];
         var numRedundant = 0;

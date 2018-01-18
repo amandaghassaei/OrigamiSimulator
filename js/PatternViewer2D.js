@@ -98,7 +98,6 @@ function PatternViewer2D($container){
         $container.html(svg);
     }
 
-
     return {
         saveSVG: saveSVG,
         showSVG: showSVG
