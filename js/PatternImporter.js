@@ -1175,11 +1175,6 @@ function PatternImporter(){
         return JSON.parse(JSON.stringify(rawFoldData));
     }
 
-    function getTriangulatedFaces(){
-        return foldData.faces_vertices;
-    }
-
-
     /**
     * public functions
      */
@@ -1191,9 +1186,6 @@ function PatternImporter(){
 
         getFoldData: getFoldData,
         getPreProcessedFoldData: getPreProcessedFoldData,
-        getRawFoldData: getRawFoldData,
-
-        getTriangulatedFaces: getTriangulatedFaces//todo why?
-
+        getRawFoldData: getRawFoldData
     }
 }
