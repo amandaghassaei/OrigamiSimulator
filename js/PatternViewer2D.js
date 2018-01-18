@@ -9,9 +9,12 @@ function PatternViewer2D($container){
 
     function makeSVG(fold){
 
+        var ns = 'http://www.w3.org/2000/svg';
+        var svg = document.createElementNS(ns, 'svg');
+
         //if fold is 3D - no svg available
         for (var i=0;i<fold.vertices_coords.length;i++){
-            if (fold.vertices_coords[i].length > 2) return null;
+            if (fold.vertices_coords[i].length > 2) return svg;//return empty svg
         }
 
         //find max and min vertices
@@ -38,8 +41,6 @@ function PatternViewer2D($container){
         max.add(border.multiplyScalar(2));
         var viewBoxTxt = min.x + " " + min.y + " " + max.x + " " + max.y;
 
-        var ns = 'http://www.w3.org/2000/svg';
-        var svg = document.createElementNS(ns, 'svg');
         svg.setAttribute('viewBox', viewBoxTxt);
         for (var i=0;i<fold.edges_vertices.length;i++){
             var line = document.createElementNS(ns, 'line');

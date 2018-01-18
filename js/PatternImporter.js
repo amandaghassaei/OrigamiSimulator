@@ -2,13 +2,22 @@
  * Created by amandaghassaei on 2/25/17.
  */
 
+
+/*
+Pattern Importer
+
+parses incoming files so that they are valid, trinagulated meshes for simulation
+uses FOLD as internal data structure
+currently support FOLD and SVG import - though FOLD support needs some work/testing
+
+ */
 function PatternImporter(){
 
     //dependencies: FOLD, THREEjs, THREE.SVGLoader, underscore, path-data-polyfill (for svg path parsing)
     var FOLD = require('fold');
 
-    //rawFoldData is what what brought in directly from file (for SVGs this will be an unconnected set of line segments)
-    //preProcessedFoldData forms a valid mesh, but not triangulated or cuts split (for FOLD import, this is identical to rawFoldData)
+    //rawFoldData is what's brought in directly from file (for SVGs this will be an unconnected set of line segments)
+    //preProcessedFoldData forms a valid mesh, but w/o triangulation or cuts split (for FOLD import, this is identical to rawFoldData)
     //foldData is the triangulated model used for FEA
     var rawFoldData, preProcessedFoldData, foldData;
 
@@ -326,7 +335,7 @@ function PatternImporter(){
                 if (globals && globals.warn) globals.warn(msg);
             }
 
-            //find all supported elements in svg
+            //find all supported element types in svg
             var $paths = $svg.children("path");
             var $lines = $svg.children("line");
             var $rects = $svg.children("rect");
@@ -335,6 +344,7 @@ function PatternImporter(){
 
             var fold = makeEmptyFold();
 
+            //sort by edge types and populate in fold
             findType(fold, "B", $paths, $lines, $rects, $polygons, $polylines);
             findType(fold, "M", $paths, $lines, $rects, $polygons, $polylines);
             findType(fold, "V", $paths, $lines, $rects, $polygons, $polylines);
@@ -373,7 +383,7 @@ function PatternImporter(){
             preProcessedFoldData = preProcessFoldFromSVG(JSON.parse(JSON.stringify(rawFoldData)), params);
             foldData = processFold(JSON.parse(JSON.stringify(preProcessedFoldData)));
 
-            if (callback) callback(foldData);
+            if (callback) callback();
 
             },
             function(){},
@@ -445,6 +455,8 @@ function PatternImporter(){
             return;
         }
 
+
+        //todo finish this
         if (!fold.edges_foldAngles){
 
             // if (params && params.calcFoldAnglesFromGeo){
@@ -503,7 +515,7 @@ function PatternImporter(){
         preProcessedFoldData = JSON.parse(JSON.stringify(rawFoldData));
         foldData = processFold(JSON.parse(JSON.stringify(preProcessedFoldData)));
 
-        if (callback) callback(foldData);
+        if (callback) callback();
     }
 
 
@@ -542,6 +554,7 @@ function PatternImporter(){
 
         var allCreaseParams = getFacesAndVerticesForEdges(fold);//todo precompute vertices_faces
 
+        //todo fix this
         globals.model.buildModel(fold, allCreaseParams);
         return fold;
     }
