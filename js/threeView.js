@@ -88,21 +88,6 @@ function initThreeView(globals) {
         controls.reset(new THREE.Vector3(1,1,1));
     }
 
-    function startAnimation(){
-        console.log("starting animation");
-        renderer.animate(_loop);
-    }
-
-    function pauseSimulation(){
-        globals.simulationRunning = false;
-        console.log("pausing simulation");
-    }
-
-    function startSimulation(){
-        console.log("starting simulation");
-        globals.simulationRunning = true;
-    }
-
     var captureStats = $("#stopRecord>span");
     function _render(){
         if (globals.vrEnabled){
@@ -127,26 +112,7 @@ function initThreeView(globals) {
         }
     }
 
-    function _loop(){
-        if (globals.rotateModel !== null){
-            if (globals.rotateModel == "x") modelWrapper.rotateX(globals.rotationSpeed);
-            if (globals.rotateModel == "y") modelWrapper.rotateY(globals.rotationSpeed);
-            if (globals.rotateModel == "z") modelWrapper.rotateZ(globals.rotationSpeed);
-        }
-        if (globals.needsSync){
-            globals.model.sync();
-        }
-        if (globals.simNeedsSync){
-            globals.model.syncSolver();
-        }
-        if (globals.simulationRunning) globals.model.step();
-        if (globals.vrEnabled){
-            _render();
-            return;
-        }
-        controls.update();
-        _render();
-    }
+
 
     function sceneAddModel(object){
         modelWrapper.add(object);
@@ -175,6 +141,21 @@ function initThreeView(globals) {
     function enableControls(state){
         controls.enabled = state;
         controls.enableRotate = state;
+    }
+
+    function render(){
+        if (globals.rotateModel !== null){
+            if (globals.rotateModel == "x") modelWrapper.rotateX(globals.rotationSpeed);
+            if (globals.rotateModel == "y") modelWrapper.rotateY(globals.rotationSpeed);
+            if (globals.rotateModel == "z") modelWrapper.rotateZ(globals.rotationSpeed);
+        }
+
+        if (globals.vrEnabled){
+            _render();
+            return;
+        }
+        controls.update();
+        _render();
     }
 
     // function saveSVG(){
@@ -222,14 +203,10 @@ function initThreeView(globals) {
         sceneAddModel: sceneAddModel,
         onWindowResize: onWindowResize,
 
-        startAnimation: startAnimation,
-        startSimulation: startSimulation,
-        pauseSimulation: pauseSimulation,
-
         enableControls: enableControls,//user interaction
         scene: scene,
         camera: camera,//needed for user interaction
-        renderer: renderer,//needed for VR
+        renderer: renderer,//needed for VR and Animator
         modelWrapper:modelWrapper,
 
         // saveSVG: saveSVG,//svg screenshot
@@ -241,6 +218,8 @@ function initThreeView(globals) {
 
         resetModel: resetModel,//reset model orientation
         resetCamera:resetCamera,
-        setBackgroundColor: setBackgroundColor
+        setBackgroundColor: setBackgroundColor,
+
+        render: render
     }
 }

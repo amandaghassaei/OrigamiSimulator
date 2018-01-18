@@ -4,7 +4,7 @@
 
 //model updates object3d geometry and materials
 
-function initModel(globals){//3DViewer()
+function initModel(){//3DViewer()
 
     var material, material2, geometry;
     var frontside = new THREE.Mesh();//front face of mesh
@@ -12,6 +12,7 @@ function initModel(globals){//3DViewer()
     backside.visible = false;
 
     var lineMaterial = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1});
+    //each edge type is a separate LineSegments object - so visibility can be easily toggled
     var hingeLines = new THREE.LineSegments(null, lineMaterial);
     var mountainLines = new THREE.LineSegments(null, lineMaterial);
     var valleyLines = new THREE.LineSegments(null, lineMaterial);
@@ -27,6 +28,16 @@ function initModel(globals){//3DViewer()
         F: facetLines,
         B: borderLines
     };
+
+    var positions;//place to store buffer geo vertex data
+    var colors;//place to store buffer geo vertex colors
+
+    var nodes = [];
+    var faces = [];
+    var edges = [];
+    var creases = [];
+    var fold, creaseParams;
+    var nextFold, nextCreaseParams;//todo only nextFold, nextCreases?
 
     clearGeometries();
     setMeshMaterial();
@@ -59,26 +70,6 @@ function initModel(globals){//3DViewer()
         });
     }
 
-    globals.threeView.sceneAddModel(frontside);
-    globals.threeView.sceneAddModel(backside);
-    _.each(lines, function(line){
-        globals.threeView.sceneAddModel(line);
-    });
-
-    var positions;//place to store buffer geo vertex data
-    var colors;//place to store buffer geo vertex colors
-    var indices;
-    var nodes = [];
-    var faces = [];
-    var edges = [];
-    var creases = [];
-    var vertices = [];//indexed vertices array
-    var fold, creaseParams;
-
-    var nextCreaseParams, nextFold;//todo only nextFold, nextCreases?
-
-    var inited = false;
-
     function setMeshMaterial() {
         var polygonOffset = 0.5;
         if (globals.colorMode == "normal") {
@@ -99,8 +90,7 @@ function initModel(globals){//3DViewer()
             });
             backside.visible = false;
             if (!globals.threeView.simulationRunning) {
-                getSolver().render();
-                setGeoUpdates();
+                globals.Animator.render();
             }
         } else {
             material = new THREE.MeshPhongMaterial({
@@ -139,37 +129,7 @@ function initModel(globals){//3DViewer()
         backside.visible = globals.colorMode == "color" && globals.meshVisible;
     }
 
-    function getGeometry(){
-        return geometry;
-    }
-
-    function getMesh(){
-        return [frontside, backside];
-    }
-
-    function getPositionsArray(){
-        return positions;
-    }
-
-    function getColorsArray(){
-        return colors;
-    }
-
-    function pause(){
-        globals.threeView.pauseSimulation();
-    }
-
-    function resume(){
-        globals.threeView.startSimulation();
-    }
-
-    function reset(){
-        getSolver().reset();
-        setGeoUpdates();
-    }
-
-    function step(numSteps){
-        getSolver().solve(numSteps);
+    function update(){
         setGeoUpdates();
     }
 
@@ -179,44 +139,36 @@ function initModel(globals){//3DViewer()
         if (globals.userInteractionEnabled || globals.vrEnabled) geometry.computeBoundingBox();
     }
 
-    function startSolver(){
-        globals.threeView.startAnimation();
-    }
 
-    function getSolver(){
-        if (globals.simType == "dynamic") return globals.dynamicSolver;
-        else if (globals.simType == "static") return globals.staticSolver;
-        return globals.rigidSolver;
-    }
-
-
-
-
-    function buildModel(fold, creaseParams){
+    function setFoldData(fold, creaseParams){
 
         if (fold.vertices_coords.length == 0) {
-            globals.warn("No geometry found.");
+            var msg = "No geometry found.";
+            console.warn(msg);
+            if (globals && globals.warn) globals.warn(msg);
             return;
         }
         if (fold.faces_vertices.length == 0) {
-            globals.warn("No faces found, try adjusting import vertex merge tolerance.");
+            var msg = "No faces found, try adjusting import vertex merge tolerance.";
+            console.warn(msg);
+            if (globals && globals.warn) globals.warn(msg);
             return;
         }
         if (fold.edges_vertices.length == 0) {
-            globals.warn("No edges found.");
+            var msg = "No edges found.";
+            console.warn(msg);
+            globals.warn(msg);
             return;
         }
 
+        //cue up for next iter
         nextFold = fold;
         nextCreaseParams = creaseParams;
 
         globals.needsSync = true;
         globals.simNeedsSync = true;
 
-        if (!inited) {
-            startSolver();//start animation loop
-            inited = true;
-        }
+        globals.inited = true;//todo get rid of this
     }
 
 
@@ -267,7 +219,7 @@ function initModel(globals){//3DViewer()
             creases.push(new Crease(edges[_creaseParams[4]], _creaseParams[0], _creaseParams[2], _creaseParams[5], type, nodes[_creaseParams[1]], nodes[_creaseParams[3]], creases.length));
         }
 
-        vertices = [];
+        var vertices = [];
         for (var i=0;i<nodes.length;i++){
             vertices.push(nodes[i].getOriginalPosition());
         }
@@ -282,7 +234,7 @@ function initModel(globals){//3DViewer()
 
         positions = new Float32Array(vertices.length*3);
         colors = new Float32Array(vertices.length*3);
-        indices = new Uint16Array(faces.length*3);
+        var indices = new Uint16Array(faces.length*3);
 
         for (var i=0;i<vertices.length;i++){
             positions[3*i] = vertices[i].x;
@@ -361,16 +313,6 @@ function initModel(globals){//3DViewer()
 
         updateEdgeVisibility();
         updateMeshVisibility();
-
-        syncSolver();
-
-        globals.needsSync = false;
-        if (!globals.simulationRunning) reset();
-    }
-
-    function syncSolver(){
-        getSolver().syncNodesAndEdges();
-        globals.simNeedsSync = false;
     }
 
     function getNodes(){
@@ -394,30 +336,59 @@ function initModel(globals){//3DViewer()
         return geometry.boundingBox.max.clone().sub(geometry.boundingBox.min);
     }
 
-    return {
-        pause: pause,
-        resume: resume,
-        reset: reset,
-        step: step,
+    function getObject3Ds(){
+        return [
+            frontside,
+            backside,
+            lines.U,
+            lines.M,
+            lines.V,
+            lines.C,
+            lines.F,
+            lines.B
+        ];
+    }
 
+    function getGeometry(){
+        return geometry;
+    }
+
+    function getMesh(){
+        return [frontside, backside];
+    }
+
+    function getPositionsArray(){
+        return positions;
+    }
+
+    function getColorsArray(){
+        return colors;
+    }
+
+    return {
+        update: update,//update threejs geometry - must call this before rendering
+
+        //todo get rid of these
         getNodes: getNodes,
         getEdges: getEdges,
         getFaces: getFaces,
         getCreases: getCreases,
-        getGeometry: getGeometry,//for save stl
+
+        getGeometry: getGeometry,//returns buffer geometry, for save stl
+        getDimensions: getDimensions,//for save stl
+        getMesh: getMesh,//for direct manipulation, actually returns two meshes [frontside, backside]
+        getObject3Ds: getObject3Ds,//so they can be added to scene
+
+        //for updating with solver
         getPositionsArray: getPositionsArray,
         getColorsArray: getColorsArray,
-        getMesh: getMesh,
 
-        buildModel: buildModel,//load new model
+        setFoldData: setFoldData,//load new model
         sync: sync,//update geometry to new model
-        syncSolver: syncSolver,//update solver params
 
         //rendering
         setMeshMaterial: setMeshMaterial,
         updateEdgeVisibility: updateEdgeVisibility,
-        updateMeshVisibility: updateMeshVisibility,
-
-        getDimensions: getDimensions//for save stl
+        updateMeshVisibility: updateMeshVisibility
     }
 }

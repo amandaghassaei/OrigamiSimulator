@@ -68,7 +68,8 @@ function initDynamicSolver(globals){
         globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
         globals.gpuMath.step("zeroThetaTexture", ["u_lastTheta"], "u_theta");
         globals.gpuMath.step("zeroThetaTexture", ["u_theta"], "u_lastTheta");
-        render();
+        //todo is this breaking anything?
+        // render();
     }
 
     function solve(_numSteps){
@@ -125,7 +126,6 @@ function initDynamicSolver(globals){
         for (var j=0;j<_numSteps;j++){
             solveStep();
         }
-        render();
     }
 
     function solveStep(){
@@ -183,7 +183,7 @@ function initDynamicSolver(globals){
         return avgPosition;
     }
 
-    function render(){
+    function render(positions, colors){
 
         // var vectorLength = 2;
         // globals.gpuMath.setProgram("packToBytes");

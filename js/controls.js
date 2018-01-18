@@ -350,7 +350,7 @@ function initControls(globals){
         }
         if (globals.navMode == "pattern") return;
         globals.pausedForPatternView = globals.simulationRunning;
-        globals.model.pause();
+        globals.Animator.pauseSimulation();
         globals.navMode = "pattern";
         $("#navPattern").parent().addClass("open");
         $("#navSimulation").parent().removeClass("open");
@@ -361,7 +361,7 @@ function initControls(globals){
     setLink("#navSimulation", function(){
         if (globals.navMode == "simulation") return;
         globals.navMode = "simulation";
-        if (globals.pausedForPatternView) globals.model.resume();
+        if (globals.pausedForPatternView) globals.Animator.startSimulation();
         $("#navSimulation").parent().addClass("open");
         $("#navPattern").parent().removeClass("open");
         $("#svgViewer").hide();
@@ -609,13 +609,13 @@ function initControls(globals){
         $("#reset").css('display', 'inline-block');
         $("#start").hide();
         $("#stepForwardOptions").hide();
-        globals.model.resume();
+        globals.Animator.startSimulation();
     });
     setLink("#pause", function(){
         $("#start").css('display', 'inline-block');
         $("#stepForwardOptions").css('display', 'inline-block');
         $("#pause").hide();
-        globals.model.pause();
+        globals.Animator.pauseSimulation();
     });
     setLink("#reset", function(){
         if (!globals.simulationRunning) $("#reset").hide();

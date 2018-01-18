@@ -23,6 +23,10 @@ $(function() {
     globals.UI3D = init3DUI(globals);
     globals.FileImporter = FileImporter(globals);
     globals.model = initModel(globals);
+    var object3Ds = globals.model.getObject3Ds();
+    _.each(object3Ds, function(object){
+        globals.threeView.sceneAddModel(object);
+    });
     // globals.staticSolver = initStaticSolver(globals);//still in development
     globals.dynamicSolver = initDynamicSolver(globals);
     // globals.rigidSolver = initRigidSolver(globals);//still in development
@@ -30,6 +34,7 @@ $(function() {
     globals.PatternViewer2D = PatternViewer2D($("#svgViewer"));
     globals.vive = initViveInterface(globals);
     globals.videoAnimator = initVideoAnimator(globals);
+    globals.Animator = Animator();
 
     $(".demo[data-url='Tessellations/huffmanWaterbomb.svg']").click();//load demo model
 });

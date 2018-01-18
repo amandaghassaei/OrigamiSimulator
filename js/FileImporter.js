@@ -9,6 +9,7 @@ function FileImporter(){
 
     function onPatternLoad(){
         globals.PatternViewer2D.showSVG();
+        globals.model.setFoldData(globals.PatternImporter.getFoldData(), globals.PatternImporter.getCreaseParams());
     }
 
     function importDemoFile(url){

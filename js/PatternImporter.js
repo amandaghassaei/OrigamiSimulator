@@ -556,11 +556,12 @@ function PatternImporter(){
         $("#numBoundary").html("(" + FOLD.filter.boundaryEdges(fold).length + ")");
         $("#numPassive").html("(" + FOLD.filter.unassignedEdges(fold).length + ")");
 
-        var allCreaseParams = getFacesAndVerticesForEdges(fold);//todo precompute vertices_faces
-
-        //todo fix this
-        globals.model.buildModel(fold, allCreaseParams);
         return fold;
+    }
+
+    function getCreaseParams(){
+        //todo remove this
+        return getFacesAndVerticesForEdges(foldData);//todo precompute vertices_faces
     }
 
 
@@ -1186,6 +1187,8 @@ function PatternImporter(){
 
         getFoldData: getFoldData,
         getPreProcessedFoldData: getPreProcessedFoldData,
-        getRawFoldData: getRawFoldData
+        getRawFoldData: getRawFoldData,
+
+        getCreaseParams: getCreaseParams
     }
 }
