@@ -102,5 +102,4 @@ function PatternViewer2D($container){
         saveSVG: saveSVG,
         showSVG: showSVG
     }
-
 }

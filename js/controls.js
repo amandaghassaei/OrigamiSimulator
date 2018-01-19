@@ -629,7 +629,7 @@ function initControls(globals){
     });
     setLink("#reset", function(){
         if (!globals.simulationRunning) $("#reset").hide();
-        globals.model.reset();
+        globals.Animator.resetSimulation();
     });
     setLink("#stepForward", function(){
         var numSteps = $("#numSteps").val();

@@ -191,7 +191,7 @@ function initModel(params){//3DViewer()
 
 
 
-    function setFoldData(fold, creaseParams){
+    function setFoldData(fold){
 
         if (fold.vertices_coords.length == 0) {
             var msg = "No geometry found.";
@@ -211,7 +211,7 @@ function initModel(params){//3DViewer()
             if (globals && globals.warn) globals.warn(msg);
             return;
         }
-        
+
         globals.inited = true;//todo get rid of this
 
         for (var i=0;i<nodes.length;i++){
@@ -248,6 +248,8 @@ function initModel(params){//3DViewer()
         for (var i=0;i<_edges.length;i++) {
             edges.push(new Beam([nodes[_edges[i][0]], nodes[_edges[i][1]]]));
         }
+
+        var creaseParams = getFacesAndVerticesForEdges(fold);
 
         for (var i=0;i<creaseParams.length;i++) {//allCreaseParams.length
             var _creaseParams = creaseParams[i];//face1Ind, vert1Ind, face2Ind, ver2Ind, edgeInd, angle
@@ -342,6 +344,53 @@ function initModel(params){//3DViewer()
         setMeshVisibility(true);
     }
 
+    //todo get rid of this
+    function getFacesAndVerticesForEdges(fold){
+        var allCreaseParams = [];//face1Ind, vertInd, face2Ind, ver2Ind, edgeInd, angle
+        var faces = fold.faces_vertices;
+        for (var i=0;i<fold.edges_vertices.length;i++){
+            var assignment = fold.edges_assignment[i];
+            if (assignment !== "M" && assignment !== "V" && assignment !== "F") continue;
+            var edge = fold.edges_vertices[i];
+            var v1 = edge[0];
+            var v2 = edge[1];
+            var creaseParams = [];
+            for (var j=0;j<faces.length;j++){
+                var face = faces[j];
+                var faceVerts = [face[0], face[1], face[2]];
+                var v1Index = faceVerts.indexOf(v1);
+                if (v1Index>=0){
+                    var v2Index = faceVerts.indexOf(v2);
+                    if (v2Index>=0){
+                        creaseParams.push(j);
+                        if (v2Index>v1Index) {
+                            faceVerts.splice(v2Index, 1);
+                            faceVerts.splice(v1Index, 1);
+                        } else {
+                            faceVerts.splice(v1Index, 1);
+                            faceVerts.splice(v2Index, 1);
+                        }
+                        creaseParams.push(faceVerts[0]);
+                        if (creaseParams.length == 4) {
+
+                            if (v2Index-v1Index == 1 || v2Index-v1Index == -2) {
+                                creaseParams = [creaseParams[2], creaseParams[3], creaseParams[0], creaseParams[1]];
+                            }
+
+                            creaseParams.push(i);
+                            var angle = fold.edges_foldAngles[i];
+                            creaseParams.push(angle);
+                            allCreaseParams.push(creaseParams);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return allCreaseParams;
+    }
+
+
     function getNodes(){
         return nodes;
     }
@@ -415,22 +464,18 @@ function initModel(params){//3DViewer()
         setColorMode: setColorMode,
         setBackColor: setBackColor,
         setFrontColor: setFrontColor,
-
         setEdgesVisibility: setEdgesVisibility,
         setMountainVisiblity: setMountainVisiblity,
         setValleyVisiblity: setValleyVisiblity,
         setFacetVisiblity: setFacetVisiblity,
         setHingeVisiblity: setHingeVisiblity,
         setBoundaryVisiblity: setBoundaryVisiblity,
-
         setMeshVisibility: setMeshVisibility,
-
 
         getGeometry: getGeometry,//returns buffer geometry, for save stl
         getDimensions: getDimensions,//return vector3, for save stl
         getMesh: getMesh,//for direct manipulation, actually returns two meshes [frontside, backside]
         getObject3Ds: getObject3Ds,//return array of all object3ds, so they can be added to threejs scene
         getScale: getScale//scale of mesh, used for stl export
-
     }
 }
