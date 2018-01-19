@@ -38,7 +38,7 @@ function initViveInterface(globals){
         scale: 0.5,
         foldPercent: globals.creasePercent*100,
         Reset: function(){
-            globals.model.reset();
+            globals.Model3D.reset();
         },
         stepsPerFrame: globals.numSteps,
         damping: globals.percentDamping,
@@ -70,7 +70,7 @@ function initViveInterface(globals){
         else $("#coloredMaterialOptions").hide();
         if (mode == "axialStrain") $("#axialStrainMaterialOptions").show();
         else $("#axialStrainMaterialOptions").hide();
-        globals.model.setColorMode(globals.colorMode);
+        globals.Model3D.setColorMode(globals.colorMode);
         if (globals.colorMode == "axialStrain" && !globals.threeView.simulationRunning) {
             globals.Animator.render();
         }
@@ -284,7 +284,7 @@ function initViveInterface(globals){
                 } else {
                     globals.numSteps = 100;
                     $(".numStepsPerRender").val(globals.numSteps);
-                    globals.model.reset();
+                    globals.Model3D.reset();
                     // globals.threeView.onWindowResize();
                     globals.threeView.resetCamera();
                     $link.html("ENTER VR");
@@ -360,7 +360,7 @@ function initViveInterface(globals){
                 if (states[i]) continue;//using the gui
 
                 var cast = new THREE.Raycaster(position, tDirection, 0, 1);
-                var intersects = cast.intersectObjects(globals.model.getMesh(), false);
+                var intersects = cast.intersectObjects(globals.Model3D.getMesh(), false);
                 if (intersects.length>0){
                     disableLaserPointer(guiHelpers[i]);
                     intersections[i] = true;
@@ -373,7 +373,7 @@ function initViveInterface(globals){
                         continue;
                     }
 
-                    var positionsArray = globals.model.getPositionsArray();
+                    var positionsArray = globals.Model3D.getPositionsArray();
                     var vertices = [];
                     vertices.push(new THREE.Vector3(positionsArray[3*face.a], positionsArray[3*face.a+1], positionsArray[3*face.a+2]));
                     vertices.push(new THREE.Vector3(positionsArray[3*face.b], positionsArray[3*face.b+1], positionsArray[3*face.b+2]));
@@ -388,7 +388,7 @@ function initViveInterface(globals){
                             else nodeIndex = face.c;
                         }
                     }
-                    var nodesArray = globals.model.getNodes();
+                    var nodesArray = globals.Model3D.getNodes();
                     nodes[i] = nodesArray[nodeIndex];
                     object3D.position.copy(transformToGlobalCoords(nodes[i].getPosition().clone()));
                     object3D.visible = true;

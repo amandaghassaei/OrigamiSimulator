@@ -127,8 +127,8 @@ function initControls(globals){
         updateDimensions();
     }, 0);
     function updateDimensions(){
-        var dim = globals.model.getDimensions();
-        dim.multiplyScalar(globals.exportScale/globals.model.getScale());
+        var dim = globals.Model3D.getDimensions();
+        dim.multiplyScalar(globals.exportScale/globals.Model3D.getScale());
         $(".exportDimensions").html(dim.x.toFixed(2) + " x " + dim.y.toFixed(2) + " x " + dim.z.toFixed(2));
     }
     setCheckbox("#doublesidedSTL", globals.doublesidedSTL, function(val){
@@ -532,7 +532,7 @@ function initControls(globals){
         else $("#coloredMaterialOptions").hide();
         if (val == "axialStrain") $("#axialStrainMaterialOptions").show();
         else $("#axialStrainMaterialOptions").hide();
-        globals.model.setColorMode(globals.colorMode);
+        globals.Model3D.setColorMode(globals.colorMode);
         if (globals.colorMode == "axialStrain" && !globals.threeView.simulationRunning) {
             globals.Animator.render();
         }
@@ -540,50 +540,50 @@ function initControls(globals){
 
     setHexInput("#color1", globals.color1, function(val){
         globals.color1 = val;
-        globals.model.setFrontColor(globals.color1);
+        globals.Model3D.setFrontColor(globals.color1);
     });
     setHexInput("#color2", globals.color2, function(val){
         globals.color2 = val;
-        globals.model.setBackColor(globals.color2);
+        globals.Model3D.setBackColor(globals.color2);
     });
 
     setCheckbox("#edgesVisible", globals.edgesVisible, function(val){
         globals.edgesVisible = val;
         if (globals.edgesVisible) $("#edgeVisOptions").show();
         else $("#edgeVisOptions").hide();
-        if (!globals.edgesVisible) globals.model.setEdgesVisibility(false);
+        if (!globals.edgesVisible) globals.Model3D.setEdgesVisibility(false);
         else {
-            globals.model.setMountainVisiblity(globals.mtnsVisible);
-            globals.model.setValleyVisiblity(globals.valleysVisible);
-            globals.model.setFacetVisiblity(globals.panelsVisible);
-            globals.model.setHingeVisiblity(globals.passiveEdgesVisible);
-            globals.model.setBoundaryVisiblity(globals.boundaryEdgesVisible);
+            globals.Model3D.setMountainVisiblity(globals.mtnsVisible);
+            globals.Model3D.setValleyVisiblity(globals.valleysVisible);
+            globals.Model3D.setFacetVisiblity(globals.panelsVisible);
+            globals.Model3D.setHingeVisiblity(globals.passiveEdgesVisible);
+            globals.Model3D.setBoundaryVisiblity(globals.boundaryEdgesVisible);
         }
     });
     setCheckbox("#mtnsVisible", globals.mtnsVisible, function(val){
         globals.mtnsVisible = val;
-        globals.model.setMountainVisiblity(globals.mtnsVisible);
+        globals.Model3D.setMountainVisiblity(globals.mtnsVisible);
     });
     setCheckbox("#valleysVisible", globals.valleysVisible, function(val){
         globals.valleysVisible = val;
-        globals.model.setValleyVisiblity(globals.valleysVisible);
+        globals.Model3D.setValleyVisiblity(globals.valleysVisible);
     });
     setCheckbox("#panelsVisible", globals.panelsVisible, function(val){
         globals.panelsVisible = val;
-        globals.model.setFacetVisiblity(globals.panelsVisible);
+        globals.Model3D.setFacetVisiblity(globals.panelsVisible);
     });
     setCheckbox("#passiveEdgesVisible", globals.passiveEdgesVisible, function(val){
         globals.passiveEdgesVisible = val;
-        globals.model.setHingeVisiblity(globals.passiveEdgesVisible);
+        globals.Model3D.setHingeVisiblity(globals.passiveEdgesVisible);
     });
     setCheckbox("#boundaryEdgesVisible", globals.boundaryEdgesVisible, function(val){
         globals.boundaryEdgesVisible = val;
-        globals.model.setBoundaryVisiblity(globals.boundaryEdgesVisible);
+        globals.Model3D.setBoundaryVisiblity(globals.boundaryEdgesVisible);
     });
 
     setCheckbox("#meshVisible", globals.meshVisible, function(val){
         globals.meshVisible = val;
-        globals.model.setMeshVisibility(globals.meshVisible);
+        globals.Model3D.setMeshVisibility(globals.meshVisible);
         if (globals.meshVisible) $("#meshMaterialOptions").show();
         else $("#meshMaterialOptions").hide();
     });
@@ -637,7 +637,7 @@ function initControls(globals){
         if (isNaN(numSteps)) return;
         if (numSteps<=0) return;
         $("#numSteps").val(numSteps);
-        globals.model.step(numSteps);
+        globals.Model3D.step(numSteps);
         $("#reset").css('display', 'inline-block');
     });
 

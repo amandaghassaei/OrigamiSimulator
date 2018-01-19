@@ -26,7 +26,7 @@ function Animator(){
 
     function _loop(){
         if (nextFold){
-            globals.model.setFoldData(nextFold);
+            globals.Model3D.setFoldData(nextFold);
             getSolver().syncNodesAndEdges();
             globals.simNeedsSync = false;
             if (!globals.simulationRunning) resetSimulation();
@@ -61,8 +61,8 @@ function Animator(){
     }
 
     function render(){
-        getSolver().render(globals.model.getPositionsArray(), globals.model.getColorsArray());
-        globals.model.update(globals.userInteractionEnabled || globals.vrEnabled);
+        getSolver().render(globals.Model3D.getPositionsArray(), globals.Model3D.getColorsArray());
+        globals.Model3D.update(globals.userInteractionEnabled || globals.vrEnabled);
     }
 
     function loadNewData(fold){

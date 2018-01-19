@@ -23,13 +23,13 @@ $(function() {
     globals.UI3D = init3DUI(globals);
     globals.FileImporter = FileImporter(globals);
 
-    globals.model = initModel({colorMode: globals.colorMode, frontColor: globals.color1, backColor: globals.color2});
-    globals.model.setMountainVisiblity(globals.mtnsVisible);
-    globals.model.setValleyVisiblity(globals.valleysVisible);
-    globals.model.setFacetVisiblity(globals.panelsVisible);
-    globals.model.setHingeVisiblity(globals.passiveEdgesVisible);
-    globals.model.setBoundaryVisiblity(globals.boundaryEdgesVisible);
-    var object3Ds = globals.model.getObject3Ds();
+    globals.Model3D = Model3D({colorMode: globals.colorMode, frontColor: globals.color1, backColor: globals.color2});
+    globals.Model3D.setMountainVisiblity(globals.mtnsVisible);
+    globals.Model3D.setValleyVisiblity(globals.valleysVisible);
+    globals.Model3D.setFacetVisiblity(globals.panelsVisible);
+    globals.Model3D.setHingeVisiblity(globals.passiveEdgesVisible);
+    globals.Model3D.setBoundaryVisiblity(globals.boundaryEdgesVisible);
+    var object3Ds = globals.Model3D.getObject3Ds();
     _.each(object3Ds, function(object){
         globals.threeView.sceneAddModel(object);
     });

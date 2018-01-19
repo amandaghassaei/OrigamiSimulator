@@ -38,13 +38,13 @@ function initDynamicSolver(globals){
     var lastTheta;//[theta, w, normalIndex1, normalIndex2]
 
     function syncNodesAndEdges(){
-        nodes = globals.model.getNodes();
-        edges = globals.model.getEdges();
-        faces = globals.model.getFaces();
-        creases = globals.model.getCreases();
+        nodes = globals.Model3D.getNodes();
+        edges = globals.Model3D.getEdges();
+        faces = globals.Model3D.getFaces();
+        creases = globals.Model3D.getCreases();
 
-        positions = globals.model.getPositionsArray();
-        colors = globals.model.getColorsArray();
+        positions = globals.Model3D.getPositionsArray();
+        colors = globals.Model3D.getColorsArray();
 
         initTypedArrays();
         initTexturesAndPrograms(globals.gpuMath);

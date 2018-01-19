@@ -185,13 +185,13 @@ Node.prototype.setOriginalPosition = function(x, y, z){
 };
 
 Node.prototype.getPosition = function(){
-    var positions = globals.model.getPositionsArray();
+    var positions = globals.Model3D.getPositionsArray();
     var i = this.getIndex();
     return new THREE.Vector3(positions[3*i], positions[3*i+1], positions[3*i+2]);
 };
 
 Node.prototype.moveManually = function(position){
-    var positions = globals.model.getPositionsArray();
+    var positions = globals.Model3D.getPositionsArray();
     var i = this.getIndex();
     positions[3*i] = position.x;
     positions[3*i+1] = position.y;

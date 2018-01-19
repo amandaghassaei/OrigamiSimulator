@@ -4,7 +4,7 @@
 
 //model updates object3d geometry and materials
 
-function initModel(params){//3DViewer()
+function Model3D(params){
 
     var material, material2, geometry;
     var frontside = new THREE.Mesh();//front face of mesh

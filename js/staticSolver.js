@@ -17,12 +17,12 @@ function initStaticSolver(){
     var indicesMapping, fixedIndicesMapping, freeEdgesMapping, freeCreasesMapping;
 
     function syncNodesAndEdges(){
-        nodes = globals.model.getNodes();
-        edges = globals.model.getEdges();
-        faces = globals.model.getFaces();
-        creases = globals.model.getCreases();
+        nodes = globals.Model3D.getNodes();
+        edges = globals.Model3D.getEdges();
+        faces = globals.Model3D.getFaces();
+        creases = globals.Model3D.getCreases();
 
-        positions = globals.model.getPositionsArray();
+        positions = globals.Model3D.getPositionsArray();
 
         setUpParams();
     }
@@ -190,7 +190,7 @@ function initStaticSolver(){
             }
         }
 
-        var geometry = globals.model.getGeometry();
+        var geometry = globals.Model3D.getGeometry();
         var indices = geometry.index.array;
         var normals = [];
 

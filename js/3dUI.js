@@ -52,7 +52,7 @@ function init3DUI(globals) {
 
         var _highlightedObj = null;
         if (!isDragging) {
-            _highlightedObj = checkForIntersections(e, globals.model.getMesh());
+            _highlightedObj = checkForIntersections(e, globals.Model3D.getMesh());
             setHighlightedObj(_highlightedObj);
         }  else if (isDragging && highlightedObj){
             if (!draggingNode) {
@@ -100,7 +100,7 @@ function init3DUI(globals) {
         if (intersections.length>0){
             var face = intersections[0].face;
             var position = intersections[0].point;
-            var positionsArray = globals.model.getPositionsArray();
+            var positionsArray = globals.Model3D.getPositionsArray();
             var vertices = [];
             vertices.push(new THREE.Vector3(positionsArray[3*face.a], positionsArray[3*face.a+1], positionsArray[3*face.a+2]));
             vertices.push(new THREE.Vector3(positionsArray[3*face.b], positionsArray[3*face.b+1], positionsArray[3*face.b+2]));
@@ -115,7 +115,7 @@ function init3DUI(globals) {
                     else nodeIndex = face.c;
                 }
             }
-            var nodesArray = globals.model.getNodes();
+            var nodesArray = globals.Model3D.getNodes();
             _highlightedObj = nodesArray[nodeIndex];
         }
         return _highlightedObj;

@@ -3,7 +3,7 @@
  */
 
 function makeSaveGEO(doublesided){
-    var geo = new THREE.Geometry().fromBufferGeometry( globals.model.getGeometry() );
+    var geo = new THREE.Geometry().fromBufferGeometry( globals.Model3D.getGeometry() );
 
     if (geo.vertices.length == 0 || geo.faces.length == 0) {
         globals.warn("No geometry to save.");
@@ -11,7 +11,7 @@ function makeSaveGEO(doublesided){
     }
 
     for (var i=0;i<geo.vertices.length;i++){
-        geo.vertices[i].multiplyScalar(globals.exportScale/globals.model.getScale());
+        geo.vertices[i].multiplyScalar(globals.exportScale/globals.Model3D.getScale());
     }
 
 
