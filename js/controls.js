@@ -128,7 +128,7 @@ function initControls(globals){
     }, 0);
     function updateDimensions(){
         var dim = globals.model.getDimensions();
-        dim.multiplyScalar(globals.exportScale/globals.scale);
+        dim.multiplyScalar(globals.exportScale/globals.model.getScale());
         $(".exportDimensions").html(dim.x.toFixed(2) + " x " + dim.y.toFixed(2) + " x " + dim.z.toFixed(2));
     }
     setCheckbox("#doublesidedSTL", globals.doublesidedSTL, function(val){
@@ -533,6 +533,9 @@ function initControls(globals){
         if (val == "axialStrain") $("#axialStrainMaterialOptions").show();
         else $("#axialStrainMaterialOptions").hide();
         globals.model.setColorMode(globals.colorMode);
+        if (globals.colorMode == "axialStrain" && !globals.threeView.simulationRunning) {
+            globals.Animator.render();
+        }
     });
 
     setHexInput("#color1", globals.color1, function(val){
@@ -548,32 +551,39 @@ function initControls(globals){
         globals.edgesVisible = val;
         if (globals.edgesVisible) $("#edgeVisOptions").show();
         else $("#edgeVisOptions").hide();
-        globals.model.updateEdgeVisibility();
+        if (!globals.edgesVisible) globals.model.setEdgesVisibility(false);
+        else {
+            globals.model.setMountainVisiblity(globals.mtnsVisible);
+            globals.model.setValleyVisiblity(globals.valleysVisible);
+            globals.model.setFacetVisiblity(globals.panelsVisible);
+            globals.model.setHingeVisiblity(globals.passiveEdgesVisible);
+            globals.model.setBoundaryVisiblity(globals.boundaryEdgesVisible);
+        }
     });
     setCheckbox("#mtnsVisible", globals.mtnsVisible, function(val){
         globals.mtnsVisible = val;
-        globals.model.updateEdgeVisibility();
+        globals.model.setMountainVisiblity(globals.mtnsVisible);
     });
     setCheckbox("#valleysVisible", globals.valleysVisible, function(val){
         globals.valleysVisible = val;
-        globals.model.updateEdgeVisibility();
+        globals.model.setValleyVisiblity(globals.valleysVisible);
     });
     setCheckbox("#panelsVisible", globals.panelsVisible, function(val){
         globals.panelsVisible = val;
-        globals.model.updateEdgeVisibility();
+        globals.model.setFacetVisiblity(globals.panelsVisible);
     });
     setCheckbox("#passiveEdgesVisible", globals.passiveEdgesVisible, function(val){
         globals.passiveEdgesVisible = val;
-        globals.model.updateEdgeVisibility();
+        globals.model.setHingeVisiblity(globals.passiveEdgesVisible);
     });
     setCheckbox("#boundaryEdgesVisible", globals.boundaryEdgesVisible, function(val){
         globals.boundaryEdgesVisible = val;
-        globals.model.updateEdgeVisibility();
+        globals.model.setBoundaryVisiblity(globals.boundaryEdgesVisible);
     });
 
     setCheckbox("#meshVisible", globals.meshVisible, function(val){
         globals.meshVisible = val;
-        globals.model.updateMeshVisibility();
+        globals.model.setMeshVisibility(globals.meshVisible);
         if (globals.meshVisible) $("#meshMaterialOptions").show();
         else $("#meshMaterialOptions").hide();
     });

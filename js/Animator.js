@@ -5,6 +5,8 @@
 
 function Animator(){
 
+    var nextFold, nextCreaseParam;//next objects to load
+
     startAnimation();
 
     function startAnimation(){
@@ -23,11 +25,14 @@ function Animator(){
     }
 
     function _loop(){
-        if (globals.model.needsSync()){
-            globals.model.sync();
+        if (nextFold){
+            globals.model.setFoldData(nextFold, nextCreaseParam);
             getSolver().syncNodesAndEdges();
             globals.simNeedsSync = false;
             if (!globals.simulationRunning) reset();
+
+            nextFold = null;
+            nextCreaseParam = null;
         }
         if (globals.simNeedsSync){
             getSolver().syncNodesAndEdges();
@@ -57,7 +62,12 @@ function Animator(){
 
     function render(){
         getSolver().render(globals.model.getPositionsArray(), globals.model.getColorsArray());
-        globals.model.update();
+        globals.model.update(globals.userInteractionEnabled || globals.vrEnabled);
+    }
+
+    function loadNewData(fold, creaseParams){
+        nextFold = fold;
+        nextCreaseParam = creaseParams;
     }
 
     return {
@@ -65,8 +75,8 @@ function Animator(){
         startSimulation: startSimulation,
         pauseSimulation: pauseSimulation,
 
-        render: render
+        render: render,
 
-
+        loadNewData: loadNewData
     }
 }

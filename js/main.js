@@ -22,11 +22,18 @@ $(function() {
     globals.controls = initControls(globals);
     globals.UI3D = init3DUI(globals);
     globals.FileImporter = FileImporter(globals);
+
     globals.model = initModel({colorMode: globals.colorMode, frontColor: globals.color1, backColor: globals.color2});
+    globals.model.setMountainVisiblity(globals.mtnsVisible);
+    globals.model.setValleyVisiblity(globals.valleysVisible);
+    globals.model.setFacetVisiblity(globals.panelsVisible);
+    globals.model.setHingeVisiblity(globals.passiveEdgesVisible);
+    globals.model.setBoundaryVisiblity(globals.boundaryEdgesVisible);
     var object3Ds = globals.model.getObject3Ds();
     _.each(object3Ds, function(object){
         globals.threeView.sceneAddModel(object);
     });
+
     // globals.staticSolver = initStaticSolver(globals);//still in development
     globals.dynamicSolver = initDynamicSolver(globals);
     // globals.rigidSolver = initRigidSolver(globals);//still in development

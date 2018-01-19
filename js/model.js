@@ -11,14 +11,17 @@ function initModel(params){//3DViewer()
     var backside = new THREE.Mesh();//back face of mesh (different color)
     backside.visible = false;
     var frontColor, backColor;//colors used for mesh, hex strings
+    var colorMode;
 
     var lineMaterial = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1});
     //each edge type is a separate LineSegments object - so visibility can be easily toggled
     var hingeLines = new THREE.LineSegments(null, lineMaterial);
+    setHingeVisiblity(false);//default to no hinge vis
     var mountainLines = new THREE.LineSegments(null, lineMaterial);
     var valleyLines = new THREE.LineSegments(null, lineMaterial);
     var cutLines = new THREE.LineSegments(null, lineMaterial);
     var facetLines = new THREE.LineSegments(null, lineMaterial);
+    setFacetVisiblity(false);//default to no facet vis
     var borderLines = new THREE.LineSegments(null, lineMaterial);
 
     var lines = {
@@ -37,10 +40,8 @@ function initModel(params){//3DViewer()
     var faces = [];
     var edges = [];
     var creases = [];
-    var fold, creaseParams;
 
-    var modelNeedsSync = false;
-    var nextFold, nextCreaseParams;//todo only nextFold, nextCreases?
+    var scale;//used in stl export
 
     clearGeometries();
     setMeshMaterial(params);
@@ -75,21 +76,20 @@ function initModel(params){//3DViewer()
 
 
     /**
-     *
      * @param params (optional)
      *          {
      *              colorMode: "color" (default), "normal", "axialStrain",
      *              frontColor: valid hex string, no #
      *              backColor: valid hex string, no #
      *          }
-     *
      */
     function setMeshMaterial(params) {
 
         params = params || {};
-        params.colorMode = params.colorMode || "color";
+        params.colorMode = params.colorMode || colorMode || "color";
         params.frontColor = params.frontColor || frontColor || "ec008b";
         params.backColor = params.backColor || backColor || "dddddd";
+        colorMode = params.colorMode;
 
         var polygonOffset = 0.5;
         if (params.colorMode == "normal") {
@@ -109,11 +109,6 @@ function initModel(params){//3DViewer()
                 polygonOffsetUnits: 1
             });
             backside.visible = false;
-
-            //todo
-            if (!globals.threeView.simulationRunning) {
-                globals.Animator.render();
-            }
         } else {
             material = new THREE.MeshPhongMaterial({
                 flatShading:true,
@@ -151,41 +146,52 @@ function initModel(params){//3DViewer()
         setMeshMaterial({colorMode: mode});
     }
 
-
-    function updateEdgeVisibility(){
-        mountainLines.visible = globals.edgesVisible && globals.mtnsVisible;
-        valleyLines.visible = globals.edgesVisible && globals.valleysVisible;
-        facetLines.visible = globals.edgesVisible && globals.panelsVisible;
-        hingeLines.visible = globals.edgesVisible && globals.passiveEdgesVisible;
-        borderLines.visible = globals.edgesVisible && globals.boundaryEdgesVisible;
-        cutLines.visible = false;
+    function setEdgesVisibility(state){
+        setMountainVisiblity(state);
+        setValleyVisiblity(state);
+        setFacetVisiblity(state);
+        setHingeVisiblity(state);
+        setBoundaryVisiblity(state);
     }
 
-    function updateMeshVisibility(){
-        frontside.visible = globals.meshVisible;
-        backside.visible = globals.colorMode == "color" && globals.meshVisible;
+    function setMountainVisiblity(state){
+        mountainLines.visible = state;
     }
 
-    function update(){
-        setGeoUpdates();
+    function setValleyVisiblity(state){
+        valleyLines.visible = state;
     }
 
-    function setGeoUpdates(){
+    function setFacetVisiblity(state){
+        facetLines.visible = state;
+    }
+
+    function setHingeVisiblity(state){
+        hingeLines.visible = state;
+    }
+
+    function setBoundaryVisiblity(state){
+        borderLines.visible = state;
+    }
+
+    function setMeshVisibility(state){
+        frontside.visible = state;
+        backside.visible = colorMode == "color" && state;
+    }
+
+
+    /**
+     * call update to set flags for next render
+     */
+    function update(shouldComputeBoundingBox){
         geometry.attributes.position.needsUpdate = true;
-        if (globals.colorMode == "axialStrain") geometry.attributes.color.needsUpdate = true;
-        if (globals.userInteractionEnabled || globals.vrEnabled) geometry.computeBoundingBox();
+        if (colorMode == "axialStrain") geometry.attributes.color.needsUpdate = true;
+        if (shouldComputeBoundingBox) geometry.computeBoundingBox();
     }
+
 
 
     function setFoldData(fold, creaseParams){
-        setFoldDataAsync(fold, creaseParams);
-        sync();
-    }
-
-    /**
-     * async version updates model on next render loop
-     */
-    function setFoldDataAsync(fold, creaseParams){
 
         if (fold.vertices_coords.length == 0) {
             var msg = "No geometry found.";
@@ -202,30 +208,11 @@ function initModel(params){//3DViewer()
         if (fold.edges_vertices.length == 0) {
             var msg = "No edges found.";
             console.warn(msg);
-            globals.warn(msg);
+            if (globals && globals.warn) globals.warn(msg);
             return;
         }
-
-        //cue up for next iter
-        nextFold = fold;
-        nextCreaseParams = creaseParams;
-
-        modelNeedsSync = true;
-
+        
         globals.inited = true;//todo get rid of this
-    }
-
-    /**
-     * need this to check while using async call
-     */
-    function needsSync(){
-        return modelNeedsSync;
-    }
-
-    /**
-     * sync with cued up fold (nextFold)
-     */
-    function sync(){
 
         for (var i=0;i<nodes.length;i++){
             nodes[i].destroy();
@@ -239,12 +226,10 @@ function initModel(params){//3DViewer()
             creases[i].destroy();
         }
 
-        fold = nextFold;
         nodes = [];
         edges = [];
         faces = fold.faces_vertices;
         creases = [];
-        creaseParams = nextCreaseParams;
         var _edges = fold.edges_vertices;
 
         var _vertices = [];
@@ -336,8 +321,7 @@ function initModel(params){//3DViewer()
         geometry.computeBoundingSphere();
         geometry.center();
 
-        var scale = 1/geometry.boundingSphere.radius;
-        globals.scale = scale;
+        scale = 1/geometry.boundingSphere.radius;
 
         //scale geometry
         for (var i=0;i<positions.length;i++){
@@ -355,10 +339,7 @@ function initModel(params){//3DViewer()
             edges[i].recalcOriginalLength();
         }
 
-        updateEdgeVisibility();
-        updateMeshVisibility();
-
-        modelNeedsSync = false;
+        setMeshVisibility(true);
     }
 
     function getNodes(){
@@ -411,39 +392,45 @@ function initModel(params){//3DViewer()
         return colors;
     }
 
-    return {
-        update: update,//update internal threejs geometry - call this after solver.render() and before THREE.renderer.render()
+    function getScale(){
+        return scale;
+    }
 
+    return {
         //todo get rid of these
         getNodes: getNodes,
         getEdges: getEdges,
         getFaces: getFaces,
         getCreases: getCreases,
 
-        getGeometry: getGeometry,//returns buffer geometry, for save stl
-        getDimensions: getDimensions,//for save stl
-        getMesh: getMesh,//for direct manipulation, actually returns two meshes [frontside, backside]
-        getObject3Ds: getObject3Ds,//return array of all object3ds, so they can be added to threejs scene
+        setFoldData: setFoldData,//load new model
 
-        //for updating with solver - types arrays from buffer geometry
+        //for updating with solver - typed arrays from buffer geometry
         getPositionsArray: getPositionsArray,
         getColorsArray: getColorsArray,
 
-        setFoldData: setFoldData,//load new model
-
-        //todo can get rid of this?
-        //async methods - use these if you have an animation loop running, waits til next render cycle to load new geo
-        setFoldDataAsync: setFoldDataAsync,//cues up next model to load
-        needsSync: needsSync,
-        sync: sync,//update geometry to new model
+        update: update,//update internal threejs geometry - call this after solver.render() and before THREE.renderer.render()
 
         //rendering
-        setMeshMaterial: setMeshMaterial,
         setColorMode: setColorMode,
         setBackColor: setBackColor,
         setFrontColor: setFrontColor,
 
-        updateEdgeVisibility: updateEdgeVisibility,
-        updateMeshVisibility: updateMeshVisibility
+        setEdgesVisibility: setEdgesVisibility,
+        setMountainVisiblity: setMountainVisiblity,
+        setValleyVisiblity: setValleyVisiblity,
+        setFacetVisiblity: setFacetVisiblity,
+        setHingeVisiblity: setHingeVisiblity,
+        setBoundaryVisiblity: setBoundaryVisiblity,
+
+        setMeshVisibility: setMeshVisibility,
+
+
+        getGeometry: getGeometry,//returns buffer geometry, for save stl
+        getDimensions: getDimensions,//return vector3, for save stl
+        getMesh: getMesh,//for direct manipulation, actually returns two meshes [frontside, backside]
+        getObject3Ds: getObject3Ds,//return array of all object3ds, so they can be added to threejs scene
+        getScale: getScale//scale of mesh, used for stl export
+
     }
 }

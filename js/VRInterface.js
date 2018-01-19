@@ -71,6 +71,9 @@ function initViveInterface(globals){
         if (mode == "axialStrain") $("#axialStrainMaterialOptions").show();
         else $("#axialStrainMaterialOptions").hide();
         globals.model.setColorMode(globals.colorMode);
+        if (globals.colorMode == "axialStrain" && !globals.threeView.simulationRunning) {
+            globals.Animator.render();
+        }
         $(".radio>input[value="+mode+"]").prop("checked", true);
     });
     gui.add(variables,'Reset').name("Reset Simulation");
