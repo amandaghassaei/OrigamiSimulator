@@ -37,7 +37,6 @@ function Model3D(params){
     var colors;//place to store buffer geo vertex colors
 
     var nodes = [];
-    var faces = [];
     var edges = [];
     var creases = [];
 
@@ -228,7 +227,6 @@ function Model3D(params){
 
         nodes = [];
         edges = [];
-        faces = fold.faces_vertices;
         creases = [];
         var _edges = fold.edges_vertices;
 
@@ -265,15 +263,15 @@ function Model3D(params){
 
         positions = new Float32Array(vertices.length*3);
         colors = new Float32Array(vertices.length*3);
-        var indices = new Uint16Array(faces.length*3);
+        var indices = new Uint16Array(fold.faces_vertices.length*3);
 
         for (var i=0;i<vertices.length;i++){
             positions[3*i] = vertices[i].x;
             positions[3*i+1] = vertices[i].y;
             positions[3*i+2] = vertices[i].z;
         }
-        for (var i=0;i<faces.length;i++){
-            var face = faces[i];
+        for (var i=0;i<fold.faces_vertices.length;i++){
+            var face = fold.faces_vertices[i];
             indices[3*i] = face[0];
             indices[3*i+1] = face[1];
             indices[3*i+2] = face[2];
@@ -399,10 +397,6 @@ function Model3D(params){
         return edges;
     }
 
-    function getFaces(){
-        return faces;
-    }
-
     function getCreases(){
         return creases;
     }
@@ -449,7 +443,6 @@ function Model3D(params){
         //todo get rid of these
         getNodes: getNodes,
         getEdges: getEdges,
-        getFaces: getFaces,
         getCreases: getCreases,
 
         setFoldData: setFoldData,//load new model
