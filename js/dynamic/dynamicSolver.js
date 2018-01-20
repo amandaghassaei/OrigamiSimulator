@@ -7,6 +7,9 @@ function initDynamicSolver(){
     var gpuMath = initGPUMath();
     var FOLD = require('fold');
 
+    var forceHasChanged = false;
+    var fixedHasChanged = false;
+
     var fold;
     //todo get rid of these
     var nodes;
@@ -118,6 +121,30 @@ function initDynamicSolver(){
     }
 
 
+    function setFixedVertices(fixed){
+        for (var i=0;i<fixed.length;i++){
+            fold.vertices_fixed[i] = fixed[i] ? 1 : 0;
+        }
+        fixedHasChanged = true;
+    }
+
+    function fixVertexAtIndex(index, state){
+        fold.vertices_fixed[index] = state ? 1 : 0;
+        fixedHasChanged = true;
+    }
+
+    function setExternalForces(forces){
+        for (var i=0;i<forces.length;i++){
+            fold.vertices_externalForce[i] = forces[i];
+        }
+        forceHasChanged = true;
+    }
+
+    function setForceAtIndex(index, force){
+        fold.vertices_externalForce[index] = force;
+        forceHasChanged = true;
+    }
+
 
     var programsInited = false;//flag for initial setup
 
@@ -138,33 +165,31 @@ function initDynamicSolver(){
         gpuMath.step("zeroThetaTexture", ["u_theta"], "u_lastTheta");
     }
 
-    function step(_numSteps){
+    function step(params){
 
-        _numSteps = _numSteps || 1;
-        if (_numSteps<1){
+        params = params || {};
+
+        params.numSteps = params.numSteps || 1;
+        if (params.numSteps<1){
             console.warn("num steps must be > 0");
+            params.numSteps = 1;
+        }
+        params.integrationType = params.integrationType || "euler";
+
+        if (params.creasePercent !== undefined){
+            setCreasePercent(params.creasePercent);
         }
 
+        //update boundary conditions
+        if (forceHasChanged) updateExternalForces();
+        if (fixedHasChanged) updateFixed();
 
-        if (globals.shouldAnimateFoldPercent){
-            globals.creasePercent = globals.videoAnimator.nextFoldAngle(0);
-            globals.controls.updateCreasePercent();
-            setCreasePercent(globals.creasePercent);
-            globals.shouldChangeCreasePercent = true;
-        }
-
-        if (globals.forceHasChanged) {
-            updateExternalForces();
-            globals.forceHasChanged = false;
-        }
-        if (globals.fixedHasChanged) {
-            updateFixed();
-            globals.fixedHasChanged = false;
-        }
         if (globals.nodePositionHasChanged) {
             updateLastPosition();
             globals.nodePositionHasChanged = false;
         }
+
+        //update sim params
         if (globals.creaseMaterialHasChanged) {
             updateCreasesMeta();
             globals.creaseMaterialHasChanged = false;
@@ -172,10 +197,6 @@ function initDynamicSolver(){
         if (globals.materialHasChanged) {
             updateMaterials();
             globals.materialHasChanged = false;
-        }
-        if (globals.shouldChangeCreasePercent) {
-            setCreasePercent(globals.creasePercent);
-            globals.shouldChangeCreasePercent = false;
         }
         // if (globals.shouldZeroDynamicVelocity){
         //     gpuMath.step("zeroTexture", [], "u_velocity");
@@ -187,15 +208,14 @@ function initDynamicSolver(){
             gpuMath.setProgram("centerTexture");
             gpuMath.setUniformForProgram("centerTexture", "u_center", [avgPosition.x, avgPosition.y, avgPosition.z], "3f");
             gpuMath.step("centerTexture", ["u_lastPosition"], "u_position");
-            if (globals.integrationType == "verlet") gpuMath.step("copyTexture", ["u_position"], "u_lastLastPosition");
+            if (params.integrationType == "verlet") gpuMath.step("copyTexture", ["u_position"], "u_lastLastPosition");
             gpuMath.swapTextures("u_position", "u_lastPosition");
             gpuMath.step("zeroTexture", [], "u_lastVelocity");
             gpuMath.step("zeroTexture", [], "u_velocity");
             globals.shouldCenterGeo = false;
         }
 
-        if (_numSteps === undefined) _numSteps = globals.numSteps;
-        for (var j=0;j<_numSteps;j++){
+        for (var j=0;j<params.numSteps;j++){
             solveSingleStep();
         }
     }
@@ -561,6 +581,7 @@ function initDynamicSolver(){
             externalForces[4*i+2] = externalForce[2];
         }
         gpuMath.initTextureFromData("u_externalForces", textureDim, textureDim, "FLOAT", externalForces, true);
+        forceHasChanged = false;
     }
 
     function updateFixed(){
@@ -568,6 +589,7 @@ function initDynamicSolver(){
             mass[4*i+1] = fold.vertices_fixed[i];
         }
         gpuMath.initTextureFromData("u_mass", textureDim, textureDim, "FLOAT", mass, true);
+        fixedHasChanged = false;
     }
 
     function updateOriginalPosition(){
@@ -770,8 +792,12 @@ function initDynamicSolver(){
 
     return {
         setFoldData: setFoldData,
-        updateFixed: updateFixed,
-        
+
+        setFixedVertices: setFixedVertices,
+        fixVertexAtIndex: fixVertexAtIndex,
+        setExternalForce: setExternalForces,
+        setForceAtIndex: setForceAtIndex,
+
         step: step,
         reset: reset,
         

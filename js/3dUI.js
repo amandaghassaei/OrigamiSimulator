@@ -29,7 +29,7 @@ function init3DUI(globals) {
         if (draggingNode){
             draggingNode.setFixed(draggingNodeFixed);
             draggingNode = null;
-            globals.fixedHasChanged = true;
+            globals.fixedHasChanged = true;//todo fix this
             globals.threeView.enableControls(true);
             setHighlightedObj(null);
             globals.shouldCenterGeo = true;
@@ -59,7 +59,7 @@ function init3DUI(globals) {
                 draggingNode = highlightedObj;
                 draggingNodeFixed = draggingNode.isFixed();
                 draggingNode.setFixed(true);
-                globals.fixedHasChanged = true;
+                globals.fixedHasChanged = true;//todo fix this
                 globals.threeView.enableControls(false);
             }
             var intersection = getIntersectionWithObjectPlane(highlightedObj.getPosition().clone());

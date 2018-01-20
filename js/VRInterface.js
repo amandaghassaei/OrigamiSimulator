@@ -236,7 +236,7 @@ function initViveInterface(globals){
             states[controllerIndex] = false;
             if (nodes[controllerIndex]) {
                 nodes[controllerIndex].setFixed(false);
-                globals.fixedHasChanged = true;
+                globals.fixedHasChanged = true;//todo ix this
             }
             guiInputHelper.laser.pressed( false );
         });
@@ -348,7 +348,7 @@ function initViveInterface(globals){
                     disableLaserPointer(guiHelpers[i]);
                     if (!nodes[i].isFixed()) {
                         nodes[i].setFixed(true);
-                        globals.fixedHasChanged = true;
+                        globals.fixedHasChanged = true;//todo fix this
                     }
 
                     position.sub(variables.position);

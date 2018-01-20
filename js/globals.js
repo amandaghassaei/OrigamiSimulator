@@ -25,8 +25,6 @@ function initGlobals(){
 
         //flags
         simulationRunning: true,
-        fixedHasChanged: false,
-        forceHasChanged: false,
         materialHasChanged: false,
         creaseMaterialHasChanged: false,
         shouldResetDynamicSim: false,//not used

@@ -55,7 +55,24 @@ function Animator(){
     }
 
     function step(numSteps){
-        getSolver().step(numSteps);
+        var params = {
+            numSteps: numSteps,
+            integrationType: globals.integrationType
+        };
+        if (globals.shouldAnimateFoldPercent){
+            globals.creasePercent = globals.videoAnimator.nextFoldAngle(0);
+            globals.controls.updateCreasePercent();
+            globals.shouldChangeCreasePercent = true;
+        }
+        if (globals.shouldChangeCreasePercent) {
+            params.creasePercent = globals.creasePercent;
+            globals.shouldChangeCreasePercent = false;
+        }
+
+
+
+
+        getSolver().step(params);
         render();
     }
 
@@ -76,6 +93,8 @@ function Animator(){
 
         render: render,
         step: step,
+
+        getSolver: getSolver,
 
         loadNewData: loadNewData
     }
