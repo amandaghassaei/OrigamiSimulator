@@ -18,6 +18,8 @@ function initDynamicSolver(){
     var creaseMaterialHasChanged = false;
     var damping = 0.85;
 
+    var creasePercent = 0.6;
+
     var fold;
 
     //todo get rid of these
@@ -274,10 +276,6 @@ function initDynamicSolver(){
         }
         params.integrationType = params.integrationType || "euler";
 
-        if (params.creasePercent !== undefined){
-            setCreasePercent(params.creasePercent);
-        }
-
         //update boundary conditions
         if (forceHasChanged) updateExternalForces();
         if (fixedHasChanged) updateFixed();
@@ -532,8 +530,8 @@ function initDynamicSolver(){
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimCreases", [textureDimCreases, textureDimCreases], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimNodeCreases", [textureDimNodeCreases, textureDimNodeCreases], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimNodeFaces", [textureDimNodeFaces, textureDimNodeFaces], "2f");
-        gpuMath.setUniformForProgram("velocityCalc", "u_creasePercent", globals.creasePercent, "1f");
-        gpuMath.setUniformForProgram("velocityCalc", "u_axialStiffness", globals.axialStiffness, "1f");
+        gpuMath.setUniformForProgram("velocityCalc", "u_creasePercent", creasePercent, "1f");
+        gpuMath.setUniformForProgram("velocityCalc", "u_axialStiffness", axialStiffness, "1f");
 
         gpuMath.createProgram("positionCalcVerlet", vertexShader, document.getElementById("positionCalcVerletShader").text);
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_lastPosition", 0, "1i");
@@ -558,8 +556,8 @@ function initDynamicSolver(){
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_textureDimCreases", [textureDimCreases, textureDimCreases], "2f");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_textureDimNodeCreases", [textureDimNodeCreases, textureDimNodeCreases], "2f");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_textureDimNodeFaces", [textureDimNodeFaces, textureDimNodeFaces], "2f");
-        gpuMath.setUniformForProgram("positionCalcVerlet", "u_creasePercent", globals.creasePercent, "1f");
-        gpuMath.setUniformForProgram("positionCalcVerlet", "u_axialStiffness", globals.axialStiffness, "1f");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_creasePercent", creasePercent, "1f");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_axialStiffness", axialStiffness, "1f");
 
         gpuMath.createProgram("thetaCalc", vertexShader, document.getElementById("thetaCalcShader").text);
         gpuMath.setUniformForProgram("thetaCalc", "u_normals", 0, "1i");
@@ -644,9 +642,9 @@ function initDynamicSolver(){
 
         if (programsInited) {
             gpuMath.setProgram("velocityCalc");
-            gpuMath.setUniformForProgram("velocityCalc", "u_axialStiffness", globals.axialStiffness, "1f");
+            gpuMath.setUniformForProgram("velocityCalc", "u_axialStiffness", axialStiffness, "1f");
             gpuMath.setProgram("positionCalcVerlet");
-            gpuMath.setUniformForProgram("positionCalcVerlet", "u_axialStiffness", globals.axialStiffness, "1f");
+            gpuMath.setUniformForProgram("positionCalcVerlet", "u_axialStiffness", axialStiffness, "1f");
             setSolveParams();//recalc dt
         }
     }
@@ -717,6 +715,7 @@ function initDynamicSolver(){
     }
 
     function setCreasePercent(percent){
+        creasePercent = percent;
         if (!programsInited) return;
         gpuMath.setProgram("velocityCalc");
         gpuMath.setUniformForProgram("velocityCalc", "u_creasePercent", percent, "1f");
@@ -864,7 +863,7 @@ function initDynamicSolver(){
         updateExternalForces();
         updateCreasesMeta(true);
         updateCreaseVectors();
-        setCreasePercent(globals.creasePercent);
+        setCreasePercent(creasePercent);
     }
 
     function makeVector3(v){
@@ -922,6 +921,8 @@ function initDynamicSolver(){
         setFacetStiffness: setFacetStiffness,
         setCreaseStiffness: setCreaseStiffness,
         setDamping: setDamping,
+
+        setCreasePercent: setCreasePercent,
 
         step: step,
         reset: reset,

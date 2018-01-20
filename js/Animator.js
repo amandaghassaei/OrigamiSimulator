@@ -65,7 +65,7 @@ function Animator(){
             globals.shouldChangeCreasePercent = true;
         }
         if (globals.shouldChangeCreasePercent) {
-            params.creasePercent = globals.creasePercent;
+            getSolver().setCreasePercent(globals.creasePercent);
             globals.shouldChangeCreasePercent = false;
         }
 
