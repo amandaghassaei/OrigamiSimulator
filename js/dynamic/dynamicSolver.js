@@ -10,7 +10,6 @@ function initDynamicSolver(){
     var fold;
     //todo get rid of these
     var nodes;
-    var edges;
     var creases;
 
     var originalPosition;
@@ -46,9 +45,11 @@ function initDynamicSolver(){
         // if (!fold.vertices_vertices) fold = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(fold);
         if (!fold.vertices_faces) fold = facesVerticesToVerticesFaces(fold);
 
+        //calc edge lengths
+        fold = edgesVerticesToEdgesLengths(fold);
+
 
         nodes = globals.Model3D.getNodes();
-        edges = globals.Model3D.getEdges();
         creases = globals.Model3D.getCreases();
 
         initTypedArrays();
@@ -83,6 +84,18 @@ function initDynamicSolver(){
             }
         }
         fold.vertices_faces = verticesFaces;
+        return fold;
+    }
+
+    function edgesVerticesToEdgesLengths(fold){
+        fold.edges_length = [];
+        for (var i=0;i<fold.edges_vertices.length;i++){
+            var edge = fold.edges_vertices[i];
+            var vertex1 = fold.vertices_coords[edge[0]];
+            var vertex2 = fold.vertices_coords[edge[1]];
+            var diff = [vertex1[0]-vertex2[0], vertex1[1]-vertex2[1], vertex1[2]-vertex2[2]];
+            fold.edges_length.push(Math.sqrt(diff[0]*diff[0] + diff[1]*diff[1] + diff[2]*diff[2]));
+        }
         return fold;
     }
 
@@ -311,25 +324,20 @@ function initDynamicSolver(){
 
     function calcDt(){
         var maxFreqNat = 0;
-        _.each(edges, function(beam){
-            if (beam.getNaturalFrequency()>maxFreqNat) maxFreqNat = beam.getNaturalFrequency();
-        });
+        for (var i=0;i<fold.edges_length.length;i++){
+            var natFreq = getNaturalFrequency(fold.edges_length[i]);
+            if (natFreq>maxFreqNat) maxFreqNat = natFreq;
+        }
         return (1/(2*Math.PI*maxFreqNat))*0.9;//0.9 of max delta t for good measure
     }
 
-    // function getNaturalFrequency(){
-    //     return Math.sqrt(this.getK()/this.getMinMass());
-    // }
-    //
-    // function getK(){
-    //     return globals.axialStiffness/this.getLength();
-    // }
-    //
-    // function getMinMass(){
-    //     var minMass = this.nodes[0].getSimMass();
-    //     if (this.nodes[1].getSimMass()<minMass) minMass = this.nodes[1].getSimMass();
-    //     return minMass;
-    // }
+    function getNaturalFrequency(length){
+        return Math.sqrt(getK(length)/1);//this.getMinMass()); - min mass is always returning 1 currently
+    }
+
+    function getK(length){
+        return globals.axialStiffness/length;
+    }
 
 
 

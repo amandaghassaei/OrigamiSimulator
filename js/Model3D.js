@@ -439,7 +439,6 @@ function Model3D(params){
     return {
         //todo get rid of these
         getNodes: getNodes,
-        getEdges: getEdges,
         getCreases: getCreases,
 
         setFoldData: setFoldData,//load new model
