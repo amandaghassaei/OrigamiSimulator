@@ -44,6 +44,8 @@ function initDynamicSolver(){
         console.log(fold);
         // if (!fold.vertices_vertices) fold = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(fold);
         if (!fold.vertices_faces) fold = facesVerticesToVerticesFaces(fold);
+        if (!fold.vertices_fixed) fold = initFloatingConditions(fold);
+        if (!fold.vertices_externalForce) fold = initZeroExternalForces(fold);
 
         //calc edge lengths
         fold = edgesVerticesToEdgesLengths(fold);
@@ -99,7 +101,21 @@ function initDynamicSolver(){
         return fold;
     }
 
+    function initFloatingConditions(fold){
+        fold.vertices_fixed = [];
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            fold.vertices_fixed.push(0);
+        }
+        return fold;
+    }
 
+    function initZeroExternalForces(fold){
+        fold.vertices_externalForce = [];
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            fold.vertices_externalForce.push([0,0,0]);
+        }
+        return fold;
+    }
 
 
 
@@ -339,6 +355,15 @@ function initDynamicSolver(){
         return globals.axialStiffness/length;
     }
 
+    function getD(length){
+        return globals.percentDamping*2*Math.sqrt(getK(length));//*this.getMinMass()); - min mass is always returning 1
+    }
+
+    function getOtherVertex(edgeVertexIndices, nodeIndex){
+        if (edgeVertexIndices[0] == nodeIndex) return edgeVertexIndices[1];
+        return edgeVertexIndices[0];
+    }
+
 
 
 
@@ -506,12 +531,12 @@ function initDynamicSolver(){
                 meta[4*i+1] = adjacentEdges.length;
             }
             for (var j=0;j<adjacentEdges.length;j++){
-                var beam = nodes[i].beams[j];
-                beamMeta[4*index] = beam.getK();
-                beamMeta[4*index+1] = beam.getD()*0.5;//why 0.5?
+                var edgeIndex = adjacentEdges[j];
+                beamMeta[4*index] = getK(fold.edges_length[edgeIndex]);
+                beamMeta[4*index+1] = getD(fold.edges_length[edgeIndex])*0.5;//why 0.5?
                 if (initing) {
-                    beamMeta[4*index+2] = beam.getLength();
-                    beamMeta[4*index+3] = beam.getOtherNode(nodes[i]).getIndex();
+                    beamMeta[4*index+2] = fold.edges_length[edgeIndex];
+                    beamMeta[4*index+3] = getOtherVertex(fold.edges_vertices[edgeIndex], i);
                 }
                 index+=1;
             }
@@ -529,28 +554,28 @@ function initDynamicSolver(){
     }
 
     function updateExternalForces(){
-        for (var i=0;i<nodes.length;i++){
-            var externalForce = nodes[i].getExternalForce();
-            externalForces[4*i] = externalForce.x;
-            externalForces[4*i+1] = externalForce.y;
-            externalForces[4*i+2] = externalForce.z;
+        for (var i=0;i<fold.vertices_externalForce.length;i++){
+            var externalForce = fold.vertices_externalForce[i];
+            externalForces[4*i] = externalForce[0];
+            externalForces[4*i+1] = externalForce[1];
+            externalForces[4*i+2] = externalForce[2];
         }
         gpuMath.initTextureFromData("u_externalForces", textureDim, textureDim, "FLOAT", externalForces, true);
     }
 
     function updateFixed(){
-        for (var i=0;i<nodes.length;i++){
-            mass[4*i+1] = (nodes[i].isFixed() ? 1 : 0);
+        for (var i=0;i<fold.vertices_fixed.length;i++){
+            mass[4*i+1] = fold.vertices_fixed[i];
         }
         gpuMath.initTextureFromData("u_mass", textureDim, textureDim, "FLOAT", mass, true);
     }
 
     function updateOriginalPosition(){
-        for (var i=0;i<nodes.length;i++){
-            var origPosition = nodes[i].getOriginalPosition();
-            originalPosition[4*i] = origPosition.x;
-            originalPosition[4*i+1] = origPosition.y;
-            originalPosition[4*i+2] = origPosition.z;
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            var origPosition = fold.vertices_coords[i];
+            originalPosition[4*i] = origPosition[0];
+            originalPosition[4*i+1] = origPosition[1];
+            originalPosition[4*i+2] = origPosition[2];
         }
         gpuMath.initTextureFromData("u_originalPosition", textureDim, textureDim, "FLOAT", originalPosition, true);
     }
@@ -598,7 +623,7 @@ function initDynamicSolver(){
 
     function initTypedArrays(){
 
-        textureDim = calcTextureSize(nodes.length);
+        textureDim = calcTextureSize(fold.vertices_coords.length);
 
         var numNodeFaces = 0;
         for (var i=0;i<fold.vertices_faces.length;i++){
@@ -607,8 +632,8 @@ function initDynamicSolver(){
         textureDimNodeFaces = calcTextureSize(numNodeFaces);
 
         var numEdges = 0;
-        for (var i=0;i<nodes.length;i++){
-            numEdges += nodes[i].numBeams();
+        for (var i=0;i<fold.vertices_edges.length;i++){
+            numEdges += fold.vertices_edges[i].length;
         }
         textureDimEdges = calcTextureSize(numEdges);
 
@@ -655,9 +680,9 @@ function initDynamicSolver(){
             faceVertexIndices[4*i+1] = face[1];
             faceVertexIndices[4*i+2] = face[2];
 
-            var a = nodes[face[0]].getOriginalPosition();
-            var b = nodes[face[1]].getOriginalPosition();
-            var c = nodes[face[2]].getOriginalPosition();
+            var a = makeVector3(fold.vertices_coords[face[0]]);
+            var b = makeVector3(fold.vertices_coords[face[1]]);
+            var c = makeVector3(fold.vertices_coords[face[2]]);
             var ab = (b.clone().sub(a)).normalize();
             var ac = (c.clone().sub(a)).normalize();
             var bc = (c.clone().sub(b)).normalize();
@@ -704,7 +729,7 @@ function initDynamicSolver(){
 
         var index = 0;
         for (var i=0;i<nodes.length;i++){
-            mass[4*i] = nodes[i].getSimMass();
+            mass[4*i] = 1;//nodes[i].getSimMass();
             meta[i*4+2] = index;
             var nodeCreases = nodes[i].creases;
             var nodeInvCreases = nodes[i].invCreases;//nodes attached to crease move in opposite direction
@@ -737,6 +762,10 @@ function initDynamicSolver(){
         updateCreasesMeta(true);
         updateCreaseVectors();
         setCreasePercent(globals.creasePercent);
+    }
+
+    function makeVector3(v){
+        return new THREE.Vector3(v[0], v[1], v[2]);
     }
 
     return {
