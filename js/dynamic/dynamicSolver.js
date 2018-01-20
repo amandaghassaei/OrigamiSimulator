@@ -273,10 +273,10 @@ function initDynamicSolver(){
                 var rgbaIndex = i * vectorLength;
                 var nodeError = parsedPixels[rgbaIndex+3]*100;
                 globalError += nodeError;
-                var originalPosition = nodes[i]._originalPosition;//fold.vertices_coords[i];
-                positions[3*i] = parsedPixels[rgbaIndex]+originalPosition.x;
-                positions[3*i+1] = parsedPixels[rgbaIndex + 1]+originalPosition.y;
-                positions[3*i+2] = parsedPixels[rgbaIndex + 2]+originalPosition.z;
+                var originalPosition = fold.vertices_coords[i];
+                positions[3*i] = parsedPixels[rgbaIndex]+originalPosition[0];
+                positions[3*i+1] = parsedPixels[rgbaIndex + 1]+originalPosition[1];
+                positions[3*i+2] = parsedPixels[rgbaIndex + 2]+originalPosition[2];
                 if (shouldUpdateColors){
                     if (nodeError>globals.strainClip) nodeError = globals.strainClip;
                     var scaledVal = (1-nodeError/globals.strainClip) * 0.7;

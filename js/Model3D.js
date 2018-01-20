@@ -232,7 +232,6 @@ function Model3D(params){
 
         for (var i=0;i<fold.vertices_coords.length;i++){
             var vertex = fold.vertices_coords[i];
-            console.log(new THREE.Vector3(vertex[0], vertex[1], vertex[2]));
             nodes.push(new Node(new THREE.Vector3(vertex[0], vertex[1], vertex[2]), nodes.length));
         }
         // _nodes[_faces[0][0]].setFixed(true);
@@ -314,17 +313,17 @@ function Model3D(params){
 
         scale = 1/geometry.boundingSphere.radius;
 
-        //scale fold geo to unit dimensions and return
-        fold = JSON.parse(JSON.stringify(fold));//make a copy
-        for (var i=0;i<fold.vertices_coords.length;i++){
-            fold.vertices_coords[i][0] *= (scale);
-            fold.vertices_coords[i][1] *= (scale);
-            fold.vertices_coords[i][2] *= (scale);
-        }
-
         //scale geometry
         for (var i=0;i<positions.length;i++){
             positions[i] *= scale;
+        }
+
+        //scale fold geo to unit dimensions and return
+        fold = JSON.parse(JSON.stringify(fold));//make a copy
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            fold.vertices_coords[i][0] = positions[3*i];
+            fold.vertices_coords[i][1] = positions[3*i+1];
+            fold.vertices_coords[i][2] = positions[3*i+2];
         }
 
         //todo get rid of this - update vertices and edges
@@ -336,6 +335,8 @@ function Model3D(params){
         }
 
         setMeshVisibility(true);
+
+        return fold;
     }
 
     //todo get rid of this
