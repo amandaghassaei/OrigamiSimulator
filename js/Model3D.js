@@ -36,10 +36,6 @@ function Model3D(params){
     var positions;//place to store buffer geo vertex data
     var colors;//place to store buffer geo vertex colors
 
-    var nodes = [];
-    var edges = [];
-    var creases = [];
-
     var scale;//used in stl export
 
     clearGeometries();

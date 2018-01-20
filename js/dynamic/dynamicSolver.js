@@ -306,11 +306,11 @@ function initDynamicSolver(){
         }
 
         for (var j=0;j<params.numSteps;j++){
-            solveSingleStep();
+            solveSingleStep(params);
         }
     }
 
-    function solveSingleStep(){
+    function solveSingleStep(params){
 
         gpuMath.setProgram("normalCalc");
         gpuMath.setSize(textureDimFaces, textureDimFaces);
@@ -325,7 +325,7 @@ function initDynamicSolver(){
         //already at textureDimCreasesxtextureDimCreases
         gpuMath.step("updateCreaseGeo", ["u_lastPosition", "u_originalPosition", "u_creaseMeta2"], "u_creaseGeo");
 
-        if (globals.integrationType == "verlet"){
+        if (params.integrationType == "verlet"){
             gpuMath.setProgram("positionCalcVerlet");
             gpuMath.setSize(textureDim, textureDim);
             gpuMath.step("positionCalcVerlet", ["u_lastPosition", "u_lastLastPosition", "u_lastVelocity", "u_originalPosition", "u_externalForces",
@@ -458,15 +458,24 @@ function initDynamicSolver(){
     }
 
     function getNaturalFrequency(length){
-        return Math.sqrt(getK(length)/1);//this.getMinMass()); - min mass is always returning 1 currently
+        return Math.sqrt(getAxialK(length)/1);//this.getMinMass()); - min mass is always returning 1 currently
     }
 
-    function getK(length){
+    function getAxialK(length){
         return globals.axialStiffness/length;
     }
 
-    function getD(length){
-        return globals.percentDamping*2*Math.sqrt(getK(length));//*this.getMinMass()); - min mass is always returning 1
+    function getAxialD(length){
+        return globals.percentDamping*2*Math.sqrt(getAxialK(length));//*this.getMinMass()); - min mass is always returning 1
+    }
+
+    function getCreaseK(length, assignment){
+        if (assignment == "F") return globals.panelStiffness*length;
+        return globals.creaseStiffness*length;
+    }
+
+    function getCreaseD(length, assignment){
+        return globals.percentDamping*2*Math.sqrt(getCreaseK(length, assignment));
     }
 
     function getOtherVertex(edgeVertexIndices, nodeIndex){
@@ -642,8 +651,8 @@ function initDynamicSolver(){
             }
             for (var j=0;j<adjacentEdges.length;j++){
                 var edgeIndex = adjacentEdges[j];
-                beamMeta[4*index] = getK(fold.edges_length[edgeIndex]);
-                beamMeta[4*index+1] = getD(fold.edges_length[edgeIndex])*0.5;//why 0.5?
+                beamMeta[4*index] = getAxialK(fold.edges_length[edgeIndex]);
+                beamMeta[4*index+1] = getAxialD(fold.edges_length[edgeIndex])*0.5;//why 0.5?
                 if (initing) {
                     beamMeta[4*index+2] = fold.edges_length[edgeIndex];
                     beamMeta[4*index+3] = getOtherVertex(fold.edges_vertices[edgeIndex], i);
@@ -706,7 +715,9 @@ function initDynamicSolver(){
     function updateCreasesMeta(initing){
         for (var i=0;i<creases.length;i++){
             var crease = creases[i];
-            creaseMeta[i*4] = crease.getK();
+            var assignment = "M";
+            if (crease.type == 1) assignment = "F";
+            creaseMeta[i*4] = getCreaseK(crease.getLength(), assignment);
             // creaseMeta[i*4+1] = crease.getD();
             if (initing) creaseMeta[i*4+2] = crease.getTargetTheta();
         }
