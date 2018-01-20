@@ -322,8 +322,7 @@ function Model3D(params){
         //for updating with solver - typed arrays from buffer geometry
         getPositionsArray: getPositionsArray,
         getColorsArray: getColorsArray,
-
-        update: update,//update internal threejs geometry - call this after solver.render() and before THREE.renderer.render()
+        update: update,//update internal threejs geometry - called from solver.render()
 
         //rendering
         setColorMode: setColorMode,

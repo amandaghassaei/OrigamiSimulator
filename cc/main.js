@@ -12,7 +12,10 @@ $(function() {
 
     threeView.addModel(model3D);
 
-    patternImporter.loadSVG('assets/Tessellations/huffmanWaterbomb.svg', {vertexTol: 3}, function(){
+    dynamicSolver.setDamping(0.1);
+    model3D.setColorMode("axialStrain");
+
+    patternImporter.loadSVG('assets/cctests/huffmanTower-noends,nosides.svg', {vertexTol: 1.8}, function(){
 
         var fold = patternImporter.getFold();
         model3D.setFold(fold);
@@ -22,10 +25,12 @@ $(function() {
 
     });
 
+    $(window).resize(threeView.onWindowResize);
+
     function loop(){
 
         dynamicSolver.stepForward({numSteps: 100});
-        dynamicSolver.updateModel3DGeometry(model3D);
+        dynamicSolver.updateModel3DGeometry(model3D, {colorMode: "axialStrain", strainClip: 5});
         threeView.render();
 
         window.requestAnimationFrame(loop);

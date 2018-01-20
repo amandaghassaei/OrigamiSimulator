@@ -1166,9 +1166,9 @@ function PatternImporter(){
         loadSVG: loadSVG,
         loadFOLD: loadFOLD,
 
-        getFold: getFold,
-        getPreProcessedFoldData: getPreProcessedFoldData,
-        getRawFoldData: getRawFoldData,
+        getFold: getFold,//scaled, triangulated
+        getPreProcessedFoldData: getPreProcessedFoldData,//closed mesh
+        getRawFoldData: getRawFoldData,//raw svg
 
         getScale: getScale//scale of mesh, used for stl export
     }
