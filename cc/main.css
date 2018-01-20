@@ -1,0 +1,28 @@
+html{
+    width:100%;
+    height:100%;
+    overflow: hidden;
+    padding:0;
+    margin:0;
+}
+
+body{
+    width:100%;
+    height:100%;
+    padding:0;
+    margin:0;
+    overflow: hidden;
+}
+
+#gpuMathCanvas{
+    display: none;
+}
+
+#threeContainer {
+    width:100%;
+    height:100%;
+    padding:0;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
