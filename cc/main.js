@@ -15,8 +15,8 @@ $(function() {
     patternImporter.loadSVG('assets/Tessellations/huffmanWaterbomb.svg', {vertexTol: 3}, function(){
 
         var fold = patternImporter.getFold();
-        var scaledFold = model3D.setFold(fold);
-        dynamicSolver.setFold(scaledFold);
+        model3D.setFold(fold);
+        dynamicSolver.setFold(fold);
 
         window.requestAnimationFrame(loop);
 

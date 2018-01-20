@@ -26,9 +26,9 @@ function Animator(){
 
     function _loop(){
         if (nextFold){
-            var scaledFold = globals.Model3D.setFold(nextFold);
+            globals.Model3D.setFold(nextFold);
             globals.inited = true;
-            getSolver().setFold(scaledFold);
+            getSolver().setFold(nextFold);
             globals.simNeedsSync = false;
             if (!globals.simulationRunning) resetSimulation();
 

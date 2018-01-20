@@ -550,6 +550,21 @@ function PatternImporter(){
             }
         }
 
+        //scale to unit size
+        var boundingSphere = computeBoundingSphereRad(fold);
+        var scale = 1/boundingSphere.radius;
+
+        //scale fold geo to unit dimensions and return
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            fold.vertices_coords[i][0] -= boundingSphere.center.x;
+            fold.vertices_coords[i][1] -= boundingSphere.center.y;
+            fold.vertices_coords[i][2] -= boundingSphere.center.z;
+
+            fold.vertices_coords[i][0] *= scale;
+            fold.vertices_coords[i][1] *= scale;
+            fold.vertices_coords[i][2] *= scale;
+        }
+
         $("#numMtns").html("(" + FOLD.filter.mountainEdges(fold).length + ")");
         $("#numValleys").html("(" + FOLD.filter.valleyEdges(fold).length + ")");
         $("#numFacets").html("(" + FOLD.filter.flatEdges(fold).length + ")");
@@ -561,10 +576,21 @@ function PatternImporter(){
 
 
 
-
     /**
      * helper functions for processing FOLD geometry - more of this should be in FOLD library!
      */
+
+    function computeBoundingSphereRad(fold){
+        //this could be a lot better
+        var vertices = [];
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            var vertex = fold.vertices_coords[i];
+            vertices.push(new THREE.Vector3(vertex[0], vertex[1], vertex[2]));
+        }
+        var boundingSphere = new THREE.Sphere();
+        boundingSphere.setFromPoints(vertices);
+        return boundingSphere;
+    }
 
     function reverseFaceOrder(fold){
         for (var i=0;i<fold.faces_vertices.length;i++){

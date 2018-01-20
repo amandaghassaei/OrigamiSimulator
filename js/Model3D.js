@@ -264,27 +264,8 @@ function Model3D(params){
         // geometry.verticesNeedUpdate = true;
         geometry.computeVertexNormals();
         geometry.computeBoundingBox();
-        geometry.computeBoundingSphere();
-        geometry.center();
-
-        scale = 1/geometry.boundingSphere.radius;
-
-        //scale geometry
-        for (var i=0;i<positions.length;i++){
-            positions[i] *= scale;
-        }
-
-        //scale fold geo to unit dimensions and return
-        fold = JSON.parse(JSON.stringify(fold));//make a copy
-        for (var i=0;i<fold.vertices_coords.length;i++){
-            fold.vertices_coords[i][0] = positions[3*i];
-            fold.vertices_coords[i][1] = positions[3*i+1];
-            fold.vertices_coords[i][2] = positions[3*i+2];
-        }
 
         setMeshVisibility(true);
-
-        return fold;
     }
 
     function getDimensions(){
