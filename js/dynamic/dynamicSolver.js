@@ -5,10 +5,12 @@
 function initDynamicSolver(){
 
     var gpuMath = initGPUMath();
+    var FOLD = require('fold');
 
+    var fold;
+    //todo get rid of these
     var nodes;
     var edges;
-    var faces;
     var creases;
 
     var originalPosition;
@@ -35,16 +37,58 @@ function initDynamicSolver(){
     var theta;//[theta, w, normalIndex1, normalIndex2]
     var lastTheta;//[theta, w, normalIndex1, normalIndex2]
 
-    function setFoldData(fold){
+    function setFoldData(_fold){
+
+        //fold assumed to have vertices_coords, edges_vertices, edges_assignment, edges_foldAngles, faces_vertices
+        fold = JSON.parse(JSON.stringify(_fold));//make copy
+        if (!fold.vertices_edges) fold = edgesVerticesToVerticesEdges(fold);
+        console.log(fold);
+        // if (!fold.vertices_vertices) fold = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(fold);
+        if (!fold.vertices_faces) fold = facesVerticesToVerticesFaces(fold);
+
+
         nodes = globals.Model3D.getNodes();
         edges = globals.Model3D.getEdges();
-        faces = globals.Model3D.getFaces();
         creases = globals.Model3D.getCreases();
 
         initTypedArrays();
         initTexturesAndPrograms(gpuMath);
         setSolveParams();
     }
+
+    //todo this is duplicate from pattern importer
+    function edgesVerticesToVerticesEdges(fold){
+        var verticesEdges = [];
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            verticesEdges.push([]);
+        }
+        for (var i=0;i<fold.edges_vertices.length;i++){
+            var edge = fold.edges_vertices[i];
+            verticesEdges[edge[0]].push(i);
+            verticesEdges[edge[1]].push(i);
+        }
+        fold.vertices_edges = verticesEdges;
+        return fold;
+    }
+
+    function facesVerticesToVerticesFaces(fold){
+        var verticesFaces = [];
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            verticesFaces.push([]);
+        }
+        for (var i=0;i<fold.faces_vertices.length;i++){
+            var face = fold.faces_vertices[i];
+            for (var j=0;j<face.length;j++){
+                verticesFaces[face[j]].push(i);
+            }
+        }
+        fold.vertices_faces = verticesFaces;
+        return fold;
+    }
+
+
+
+
 
     var programsInited = false;//flag for initial setup
 
@@ -215,23 +259,24 @@ function initDynamicSolver(){
         gpuMath.setSize(textureDim*vectorLength, textureDim);
         gpuMath.step("packToBytes", ["u_lastPosition"], "outputBytes");
 
+        var numVertices = fold.vertices_coords.length;
+
         if (gpuMath.readyToRead()) {
-            var numPixels = nodes.length*vectorLength;
+            var numPixels = numVertices*vectorLength;
             var height = Math.ceil(numPixels/(textureDim*vectorLength));
             var pixels = new Uint8Array(height*textureDim*4*vectorLength);
             gpuMath.readPixels(0, 0, textureDim * vectorLength, height, pixels);
             var parsedPixels = new Float32Array(pixels.buffer);
             var globalError = 0;
             var shouldUpdateColors = globals.colorMode == "axialStrain";
-            for (var i = 0; i < nodes.length; i++) {
+            for (var i = 0; i < numVertices; i++) {
                 var rgbaIndex = i * vectorLength;
                 var nodeError = parsedPixels[rgbaIndex+3]*100;
                 globalError += nodeError;
-                var nodePosition = new THREE.Vector3(parsedPixels[rgbaIndex], parsedPixels[rgbaIndex + 1], parsedPixels[rgbaIndex + 2]);
-                nodePosition.add(nodes[i]._originalPosition);
-                positions[3*i] = nodePosition.x;
-                positions[3*i+1] = nodePosition.y;
-                positions[3*i+2] = nodePosition.z;
+                var originalPosition = nodes[i]._originalPosition;//fold.vertices_coords[i];
+                positions[3*i] = parsedPixels[rgbaIndex]+originalPosition.x;
+                positions[3*i+1] = parsedPixels[rgbaIndex + 1]+originalPosition.y;
+                positions[3*i+2] = parsedPixels[rgbaIndex + 2]+originalPosition.z;
                 if (shouldUpdateColors){
                     if (nodeError>globals.strainClip) nodeError = globals.strainClip;
                     var scaledVal = (1-nodeError/globals.strainClip) * 0.7;
@@ -242,7 +287,7 @@ function initDynamicSolver(){
                     colors[3*i+2] = color.b;
                 }
             }
-            $errorOutput.html((globalError/nodes.length).toFixed(7) + " %");
+            $errorOutput.html((globalError/numVertices).toFixed(7) + " %");
         } else {
             console.log("shouldn't be here");
         }
@@ -271,6 +316,23 @@ function initDynamicSolver(){
         });
         return (1/(2*Math.PI*maxFreqNat))*0.9;//0.9 of max delta t for good measure
     }
+
+    // function getNaturalFrequency(){
+    //     return Math.sqrt(this.getK()/this.getMinMass());
+    // }
+    //
+    // function getK(){
+    //     return globals.axialStiffness/this.getLength();
+    // }
+    //
+    // function getMinMass(){
+    //     var minMass = this.nodes[0].getSimMass();
+    //     if (this.nodes[1].getSimMass()<minMass) minMass = this.nodes[1].getSimMass();
+    //     return minMass;
+    // }
+
+
+
 
     function initTexturesAndPrograms(gpuMath){
 
@@ -429,12 +491,13 @@ function initDynamicSolver(){
 
     function updateMaterials(initing){
         var index = 0;
-        for (var i=0;i<nodes.length;i++){
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            var adjacentEdges = fold.vertices_edges[i];
             if (initing) {
                 meta[4*i] = index;
-                meta[4*i+1] = nodes[i].numBeams();
+                meta[4*i+1] = adjacentEdges.length;
             }
-            for (var j=0;j<nodes[i].beams.length;j++){
+            for (var j=0;j<adjacentEdges.length;j++){
                 var beam = nodes[i].beams[j];
                 beamMeta[4*index] = beam.getK();
                 beamMeta[4*index+1] = beam.getD()*0.5;//why 0.5?
@@ -530,15 +593,8 @@ function initDynamicSolver(){
         textureDim = calcTextureSize(nodes.length);
 
         var numNodeFaces = 0;
-        var nodeFaces = [];
-        for (var i=0;i<nodes.length;i++){
-            nodeFaces.push([]);
-            for (var j=0;j<faces.length;j++){
-                if (faces[j].indexOf(i)>=0) {
-                    nodeFaces[i].push(j);
-                    numNodeFaces++;
-                }
-            }
+        for (var i=0;i<fold.vertices_faces.length;i++){
+            numNodeFaces += fold.vertices_faces[i].length;
         }
         textureDimNodeFaces = calcTextureSize(numNodeFaces);
 
@@ -558,7 +614,7 @@ function initDynamicSolver(){
         numNodeCreases += numCreases*2;//reactions
         textureDimNodeCreases = calcTextureSize(numNodeCreases);
 
-        var numFaces = faces.length;
+        var numFaces = fold.faces_vertices.length;
         textureDimFaces = calcTextureSize(numFaces);
 
         originalPosition = new Float32Array(textureDim*textureDim*4);
@@ -585,8 +641,8 @@ function initDynamicSolver(){
         theta = new Float32Array(textureDimCreases*textureDimCreases*4);
         lastTheta = new Float32Array(textureDimCreases*textureDimCreases*4);
 
-        for (var i=0;i<faces.length;i++){
-            var face = faces[i];
+        for (var i=0;i<fold.faces_vertices.length;i++){
+            var face = fold.faces_vertices[i];
             faceVertexIndices[4*i] = face[0];
             faceVertexIndices[4*i+1] = face[1];
             faceVertexIndices[4*i+2] = face[2];
@@ -622,14 +678,15 @@ function initDynamicSolver(){
         }
 
         var index = 0;
-        for (var i=0;i<nodes.length;i++){
+        for (var i=0;i<fold.vertices_faces.length;i++){
             meta2[4*i] = index;
-            var num = nodeFaces[i].length;
+            var vertex_faces = fold.vertices_faces[i];
+            var num = vertex_faces.length;
             meta2[4*i+1] = num;
             for (var j=0;j<num;j++){
                 var _index = (index+j)*4;
-                var face = faces[nodeFaces[i][j]];
-                nodeFaceMeta[_index] = nodeFaces[i][j];
+                var face = fold.faces_vertices[vertex_faces[j]];
+                nodeFaceMeta[_index] = vertex_faces[j];//face index
                 nodeFaceMeta[_index+1] = face[0] == i ? -1 : face[0];
                 nodeFaceMeta[_index+2] = face[1] == i ? -1 : face[1];
                 nodeFaceMeta[_index+3] = face[2] == i ? -1 : face[2];
