@@ -230,14 +230,10 @@ function Model3D(params){
         creases = [];
         var _edges = fold.edges_vertices;
 
-        var _vertices = [];
         for (var i=0;i<fold.vertices_coords.length;i++){
             var vertex = fold.vertices_coords[i];
-            _vertices.push(new THREE.Vector3(vertex[0], vertex[1], vertex[2]));
-        }
-
-        for (var i=0;i<_vertices.length;i++){
-            nodes.push(new Node(_vertices[i].clone(), nodes.length));
+            console.log(new THREE.Vector3(vertex[0], vertex[1], vertex[2]));
+            nodes.push(new Node(new THREE.Vector3(vertex[0], vertex[1], vertex[2]), nodes.length));
         }
         // _nodes[_faces[0][0]].setFixed(true);
         // _nodes[_faces[0][1]].setFixed(true);
@@ -256,19 +252,14 @@ function Model3D(params){
             creases.push(new Crease(edges[_creaseParams[4]], _creaseParams[0], _creaseParams[2], _creaseParams[5], type, nodes[_creaseParams[1]], nodes[_creaseParams[3]], creases.length));
         }
 
-        var vertices = [];
-        for (var i=0;i<nodes.length;i++){
-            vertices.push(nodes[i].getOriginalPosition());
-        }
-
-        positions = new Float32Array(vertices.length*3);
-        colors = new Float32Array(vertices.length*3);
+        positions = new Float32Array(fold.vertices_coords.length*3);
+        colors = new Float32Array(fold.vertices_coords.length*3);
         var indices = new Uint16Array(fold.faces_vertices.length*3);
 
-        for (var i=0;i<vertices.length;i++){
-            positions[3*i] = vertices[i].x;
-            positions[3*i+1] = vertices[i].y;
-            positions[3*i+2] = vertices[i].z;
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            positions[3*i] = fold.vertices_coords[i][0];
+            positions[3*i+1] = fold.vertices_coords[i][1];
+            positions[3*i+2] = fold.vertices_coords[i][2];
         }
         for (var i=0;i<fold.faces_vertices.length;i++){
             var face = fold.faces_vertices[i];
@@ -323,19 +314,24 @@ function Model3D(params){
 
         scale = 1/geometry.boundingSphere.radius;
 
+        //scale fold geo to unit dimensions and return
+        fold = JSON.parse(JSON.stringify(fold));//make a copy
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            fold.vertices_coords[i][0] *= (scale);
+            fold.vertices_coords[i][1] *= (scale);
+            fold.vertices_coords[i][2] *= (scale);
+        }
+
         //scale geometry
         for (var i=0;i<positions.length;i++){
             positions[i] *= scale;
         }
-        for (var i=0;i<vertices.length;i++){
-            vertices[i].multiplyScalar(scale);
-        }
 
-        //update vertices and edges
-        for (var i=0;i<vertices.length;i++){
+        //todo get rid of this - update vertices and edges
+        for (var i=0;i<fold.vertices_coords.length;i++){
             nodes[i].setOriginalPosition(positions[3*i], positions[3*i+1], positions[3*i+2]);
         }
-        for (var i=0;i<edges.length;i++){
+        for (var i=0;i<fold.edges_vertices.length;i++){
             edges[i].recalcOriginalLength();
         }
 
