@@ -128,7 +128,7 @@ function initControls(globals){
     }, 0);
     function updateDimensions(){
         var dim = globals.Model3D.getDimensions();
-        dim.multiplyScalar(globals.exportScale/globals.Model3D.getScale());
+        dim.multiplyScalar(globals.exportScale/globals.PatternImporter.getScale());
         $(".exportDimensions").html(dim.x.toFixed(2) + " x " + dim.y.toFixed(2) + " x " + dim.z.toFixed(2));
     }
     setCheckbox("#doublesidedSTL", globals.doublesidedSTL, function(val){

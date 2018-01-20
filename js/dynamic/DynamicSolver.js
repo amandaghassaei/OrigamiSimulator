@@ -18,7 +18,7 @@ function DynamicSolver($canvas){
     var creaseMaterialHasChanged = false;
     var damping = 0.85;
 
-    var creasePercent = 0.6;
+    var creasePercent = 1;
 
     var fold;
 

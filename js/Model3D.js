@@ -302,10 +302,6 @@ function Model3D(params){
         return colors;
     }
 
-    function getScale(){
-        return scale;
-    }
-
     function calculateGeometryCenter(){
         var xavg = 0;
         var yavg = 0;
@@ -346,6 +342,5 @@ function Model3D(params){
         getDimensions: getDimensions,//return vector3, for save stl
         getMesh: getMesh,//for direct manipulation, actually returns two meshes [frontside, backside]
         getObject3Ds: getObject3Ds,//return array of all object3ds, so they can be added to threejs scene
-        getScale: getScale//scale of mesh, used for stl export
     }
 }

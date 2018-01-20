@@ -26,7 +26,7 @@ function initGlobals(){
         //flags
         simulationRunning: true,
         shouldResetDynamicSim: false,//not used
-        shouldChangeCreasePercent: false,
+        shouldChangeCreasePercent: true,
         nodePositionHasChanged: false,
         shouldZeroDynamicVelocity: false,
         shouldCenterGeo: false,

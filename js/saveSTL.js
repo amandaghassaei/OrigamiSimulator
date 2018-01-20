@@ -11,7 +11,7 @@ function makeSaveGEO(doublesided){
     }
 
     for (var i=0;i<geo.vertices.length;i++){
-        geo.vertices[i].multiplyScalar(globals.exportScale/globals.Model3D.getScale());
+        geo.vertices[i].multiplyScalar(globals.exportScale/globals.PatternImporter.getScale());
     }
 
 

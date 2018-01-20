@@ -26,6 +26,8 @@ function PatternImporter(){
 
     var SVGloader = new THREE.SVGLoader();
 
+    var scale;
+
     clearAll();
 
     function clearAll(){
@@ -552,7 +554,7 @@ function PatternImporter(){
 
         //scale to unit size
         var boundingSphere = computeBoundingSphereRad(fold);
-        var scale = 1/boundingSphere.radius;
+        scale = 1/boundingSphere.radius;
 
         //scale fold geo to unit dimensions and return
         for (var i=0;i<fold.vertices_coords.length;i++){
@@ -1152,6 +1154,10 @@ function PatternImporter(){
         return JSON.parse(JSON.stringify(rawFoldData));
     }
 
+    function getScale(){
+        return scale;
+    }
+
     /**
     * public functions
      */
@@ -1162,6 +1168,8 @@ function PatternImporter(){
 
         getFold: getFold,
         getPreProcessedFoldData: getPreProcessedFoldData,
-        getRawFoldData: getRawFoldData
+        getRawFoldData: getRawFoldData,
+
+        getScale: getScale//scale of mesh, used for stl export
     }
 }
