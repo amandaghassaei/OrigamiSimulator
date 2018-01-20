@@ -186,7 +186,7 @@ function Model3D(params){
 
 
 
-    function setFoldData(fold){
+    function setFold(fold){
 
         if (fold.vertices_coords.length == 0) {
             var msg = "No geometry found.";
@@ -340,7 +340,7 @@ function Model3D(params){
     }
 
     return {
-        setFoldData: setFoldData,//load new model
+        setFold: setFold,//load new model
 
         //for updating with solver - typed arrays from buffer geometry
         getPositionsArray: getPositionsArray,

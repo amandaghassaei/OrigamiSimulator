@@ -51,7 +51,7 @@ function DynamicSolver($canvas){
     var theta;//[theta, w, normalIndex1, normalIndex2]
     var lastTheta;//[theta, w, normalIndex1, normalIndex2]
 
-    function setFoldData(_fold){
+    function setFold(_fold){
 
         //fold assumed to have vertices_coords, edges_vertices, edges_assignment, edges_foldAngles, faces_vertices
         fold = JSON.parse(JSON.stringify(_fold));//make copy
@@ -910,7 +910,7 @@ function DynamicSolver($canvas){
 
 
     return {
-        setFoldData: setFoldData,
+        setFold: setFold,
 
         setFixedVertices: setFixedVertices,
         fixVertexAtIndex: fixVertexAtIndex,

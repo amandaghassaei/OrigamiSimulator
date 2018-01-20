@@ -41,7 +41,7 @@ function saveFOLD(){
 
     var useTriangulated = globals.triangulateFOLDexport;
     var fold;
-    if (useTriangulated) fold = globals.PatternImporter.getFoldData();
+    if (useTriangulated) fold = globals.PatternImporter.getFold();
     else fold = globals.PatternImporter.getPreProcessedFoldData();
     json.edges_vertices = fold.edges_vertices;
     var assignment = [];

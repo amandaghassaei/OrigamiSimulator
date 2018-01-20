@@ -1114,7 +1114,7 @@ function PatternImporter(){
     * getters
      */
 
-    function getFoldData(){
+    function getFold(){
         return JSON.parse(JSON.stringify(foldData));
     }
 
@@ -1134,7 +1134,7 @@ function PatternImporter(){
         loadSVG: loadSVG,
         loadFOLD: loadFOLD,
 
-        getFoldData: getFoldData,
+        getFold: getFold,
         getPreProcessedFoldData: getPreProcessedFoldData,
         getRawFoldData: getRawFoldData
     }

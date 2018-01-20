@@ -26,16 +26,16 @@ function Animator(){
 
     function _loop(){
         if (nextFold){
-            var scaledFold = globals.Model3D.setFoldData(nextFold);
+            var scaledFold = globals.Model3D.setFold(nextFold);
             globals.inited = true;
-            getSolver().setFoldData(scaledFold);
+            getSolver().setFold(scaledFold);
             globals.simNeedsSync = false;
             if (!globals.simulationRunning) resetSimulation();
 
             nextFold = null;
         }
         if (globals.simNeedsSync){
-            getSolver().setFoldData();
+            getSolver().setFold();
             globals.simNeedsSync = false;
         }
         if (globals.inited && globals.simulationRunning) step(globals.numSteps);

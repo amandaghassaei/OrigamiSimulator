@@ -10,19 +10,20 @@ $(function() {
     var dynamicSolver = DynamicSolver($("#gpuMathCanvas"));
     var patternImporter = PatternImporter();
 
-    threeView.addObjects(model3D.getObject3Ds());
+    threeView.addModel(model3D);
 
     patternImporter.loadSVG('assets/Tessellations/huffmanWaterbomb.svg', {vertexTol: 3}, function(){
 
-        var scaledFold = model3D.setFoldData(patternImporter.getFoldData());
-        dynamicSolver.setFoldData(scaledFold);
+        var fold = patternImporter.getFold();
+        var scaledFold = model3D.setFold(fold);
+        dynamicSolver.setFold(scaledFold);
 
         window.requestAnimationFrame(loop);
 
     });
 
     function loop(){
-        
+
         dynamicSolver.stepForward({numSteps: 100});
         dynamicSolver.updateModel3DGeometry(model3D);
         threeView.render();

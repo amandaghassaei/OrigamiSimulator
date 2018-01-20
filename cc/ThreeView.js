@@ -95,7 +95,8 @@ function ThreeView($container, params) {
     }
 
 
-    function addObjects(objects){
+    function addModel(model){
+        var objects = model.getObject3Ds();
         _.each(objects, function(object){
             sceneAddModel(object);
         });
@@ -136,7 +137,7 @@ function ThreeView($container, params) {
     }
 
     return {
-        addObjects: addObjects,
+        addModel: addModel,
         onWindowResize: onWindowResize,
 
         enableControls: enableControls,//user interaction

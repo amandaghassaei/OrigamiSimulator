@@ -9,7 +9,7 @@ function FileImporter(){
 
     function onPatternLoad(){
         globals.PatternViewer2D.showSVG();
-        globals.Animator.loadNewData(globals.PatternImporter.getFoldData());
+        globals.Animator.loadNewData(globals.PatternImporter.getFold());
 
         if (globals.noCreasePatternAvailable() && globals.navMode == "pattern"){
             //switch to simulation mode
