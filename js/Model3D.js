@@ -288,115 +288,9 @@ function Model3D(params){
             fold.vertices_coords[i][2] = positions[3*i+2];
         }
 
-
-        for (var i=0;i<nodes.length;i++){
-            nodes[i].destroy();
-        }
-
-        for (var i=0;i<edges.length;i++){
-            edges[i].destroy();
-        }
-
-        for (var i=0;i<creases.length;i++){
-            creases[i].destroy();
-        }
-
-        nodes = [];
-        edges = [];
-        creases = [];
-        var _edges = fold.edges_vertices;
-
-        for (var i=0;i<fold.vertices_coords.length;i++){
-            var vertex = fold.vertices_coords[i];
-            nodes.push(new Node(new THREE.Vector3(vertex[0], vertex[1], vertex[2]), nodes.length));
-        }
-        // _nodes[_faces[0][0]].setFixed(true);
-        // _nodes[_faces[0][1]].setFixed(true);
-        // _nodes[_faces[0][2]].setFixed(true);
-
-        for (var i=0;i<_edges.length;i++) {
-            edges.push(new Beam([nodes[_edges[i][0]], nodes[_edges[i][1]]]));
-        }
-
-        var creaseParams = getFacesAndVerticesForEdges(fold);
-
-        for (var i=0;i<creaseParams.length;i++) {//allCreaseParams.length
-            var _creaseParams = creaseParams[i];//face1Ind, vert1Ind, face2Ind, ver2Ind, edgeInd, angle
-            var type = _creaseParams[5]!=0 ? 1:0;
-            //edge, face1Index, face2Index, targetTheta, type, node1, node2, index
-            creases.push(new Crease(edges[_creaseParams[4]], _creaseParams[0], _creaseParams[2], _creaseParams[5], type, nodes[_creaseParams[1]], nodes[_creaseParams[3]], creases.length));
-        }
-
-        //todo get rid of this - update vertices and edges
-        for (var i=0;i<fold.vertices_coords.length;i++){
-            nodes[i].setOriginalPosition(positions[3*i], positions[3*i+1], positions[3*i+2]);
-        }
-        for (var i=0;i<fold.edges_vertices.length;i++){
-            edges[i].recalcOriginalLength();
-        }
-
         setMeshVisibility(true);
 
         return fold;
-    }
-
-    //todo get rid of this
-    function getFacesAndVerticesForEdges(fold){
-        var allCreaseParams = [];//face1Ind, vertInd, face2Ind, ver2Ind, edgeInd, angle
-        var faces = fold.faces_vertices;
-        for (var i=0;i<fold.edges_vertices.length;i++){
-            var assignment = fold.edges_assignment[i];
-            if (assignment !== "M" && assignment !== "V" && assignment !== "F") continue;
-            var edge = fold.edges_vertices[i];
-            var v1 = edge[0];
-            var v2 = edge[1];
-            var creaseParams = [];
-            for (var j=0;j<faces.length;j++){
-                var face = faces[j];
-                var faceVerts = [face[0], face[1], face[2]];
-                var v1Index = faceVerts.indexOf(v1);
-                if (v1Index>=0){
-                    var v2Index = faceVerts.indexOf(v2);
-                    if (v2Index>=0){
-                        creaseParams.push(j);
-                        if (v2Index>v1Index) {
-                            faceVerts.splice(v2Index, 1);
-                            faceVerts.splice(v1Index, 1);
-                        } else {
-                            faceVerts.splice(v1Index, 1);
-                            faceVerts.splice(v2Index, 1);
-                        }
-                        creaseParams.push(faceVerts[0]);
-                        if (creaseParams.length == 4) {
-
-                            if (v2Index-v1Index == 1 || v2Index-v1Index == -2) {
-                                creaseParams = [creaseParams[2], creaseParams[3], creaseParams[0], creaseParams[1]];
-                            }
-
-                            creaseParams.push(i);
-                            var angle = fold.edges_foldAngles[i];
-                            creaseParams.push(angle);
-                            allCreaseParams.push(creaseParams);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return allCreaseParams;
-    }
-
-
-    function getNodes(){
-        return nodes;
-    }
-
-    function getEdges(){
-        return edges;
-    }
-
-    function getCreases(){
-        return creases;
     }
 
     function getDimensions(){
@@ -438,10 +332,6 @@ function Model3D(params){
     }
 
     return {
-        //todo get rid of these
-        getNodes: getNodes,
-        getCreases: getCreases,
-
         setFoldData: setFoldData,//load new model
 
         //for updating with solver - typed arrays from buffer geometry

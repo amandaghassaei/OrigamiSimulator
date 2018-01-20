@@ -388,7 +388,7 @@ function initViveInterface(globals){
                             else nodeIndex = face.c;
                         }
                     }
-                    var nodesArray = globals.Model3D.getNodes();
+                    var nodesArray = globals.Model3D.getNodes();//todo this is broken
                     nodes[i] = nodesArray[nodeIndex];
                     object3D.position.copy(transformToGlobalCoords(nodes[i].getPosition().clone()));
                     object3D.visible = true;

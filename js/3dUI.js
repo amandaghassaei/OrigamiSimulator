@@ -115,7 +115,7 @@ function init3DUI(globals) {
                     else nodeIndex = face.c;
                 }
             }
-            var nodesArray = globals.Model3D.getNodes();
+            var nodesArray = globals.Model3D.getNodes();//todo this is broken
             _highlightedObj = nodesArray[nodeIndex];
         }
         return _highlightedObj;
