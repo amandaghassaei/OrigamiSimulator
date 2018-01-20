@@ -2,9 +2,9 @@
  * Created by ghassaei on 10/7/16.
  */
 
-function initDynamicSolver(){
+function DynamicSolver($canvas){
 
-    var gpuMath = initGPUMath();
+    var gpuMath = GPUMath($canvas);
     var FOLD = require('fold');
 
     var forceHasChanged = false;
@@ -56,7 +56,6 @@ function initDynamicSolver(){
         //fold assumed to have vertices_coords, edges_vertices, edges_assignment, edges_foldAngles, faces_vertices
         fold = JSON.parse(JSON.stringify(_fold));//make copy
         if (!fold.vertices_edges) fold = edgesVerticesToVerticesEdges(fold);
-        console.log(fold);
         // if (!fold.vertices_vertices) fold = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(fold);
         if (!fold.vertices_faces) fold = facesVerticesToVerticesFaces(fold);
         if (!fold.vertices_fixed) fold = initFloatingConditions(fold);

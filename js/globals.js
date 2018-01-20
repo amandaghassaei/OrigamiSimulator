@@ -125,6 +125,7 @@ function initGlobals(){
           '</div>';
         $(elm).appendTo($("body"));
         $("#noSupportModal").modal("show");
+        $("#aboutCorner").show();
     }
     _globals.notSupportedWarning = notSupportedWarning;
 

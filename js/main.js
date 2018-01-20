@@ -35,7 +35,7 @@ $(function() {
     });
 
     // globals.staticSolver = initStaticSolver(globals);//still in development
-    globals.dynamicSolver = initDynamicSolver(globals);
+    globals.dynamicSolver = DynamicSolver($("#gpuMathCanvas"));
     // globals.rigidSolver = initRigidSolver(globals);//still in development
     globals.PatternImporter = PatternImporter();
     globals.PatternViewer2D = PatternViewer2D($("#svgViewer"));

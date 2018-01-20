@@ -3,11 +3,11 @@
  */
 
 
-function initGPUMath(){
+function GPUMath($canvas){
 
     var glBoilerplate = GLBoilerPlate();
 
-    var canvas = document.getElementById("gpuMathCanvas");
+    var canvas = $canvas.get(0);
     var gl = canvas.getContext("webgl", {antialias:false}) || canvas.getContext("experimental-webgl", {antialias:false});
     var floatTextures = gl.getExtension('OES_texture_float');
     if (!floatTextures) {
@@ -19,16 +19,7 @@ function initGPUMath(){
     console.log(maxTexturesInFragmentShader + " textures max");
 
     function notSupported(){
-        var elm = '<div id="coverImg" ' +
-                  'style="background: url(crane.gif) no-repeat center center fixed;' +
-                    '-webkit-background-size: cover;' +
-                    '-moz-background-size: cover;' +
-                    '-o-background-size: cover;' +
-                    'background-size: cover;">'+
-                  '</div>';
-                $(elm).appendTo($("body"));
-        $("#noSupportModal").modal("show");
-        $("#aboutCorner").show();
+        if (globals && globals.notSupportedWarning) globals.notSupportedWarning();
        console.warn("floating point textures are not supported on your system");
     }
 
