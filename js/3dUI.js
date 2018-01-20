@@ -3,7 +3,7 @@
  */
 
 
-function init3DUI(globals) {
+function init3DUI() {
 
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();

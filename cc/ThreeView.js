@@ -25,7 +25,6 @@ function ThreeView($container, params) {
         $container.append(renderer.domElement);
 
         scene.background = new THREE.Color(0xffffff);//new THREE.Color(0xe6e6e6);
-        console.log(params.backgroundColor);
         setBackgroundColor(params.backgroundColor);
         scene.add(modelWrapper);
         var directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
@@ -96,6 +95,11 @@ function ThreeView($container, params) {
     }
 
 
+    function addObjects(objects){
+        _.each(objects, function(object){
+            sceneAddModel(object);
+        });
+    }
 
     function sceneAddModel(object){
         modelWrapper.add(object);
@@ -132,7 +136,7 @@ function ThreeView($container, params) {
     }
 
     return {
-        sceneAddModel: sceneAddModel,
+        addObjects: addObjects,
         onWindowResize: onWindowResize,
 
         enableControls: enableControls,//user interaction

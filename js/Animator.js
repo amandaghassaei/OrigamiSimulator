@@ -76,15 +76,12 @@ function Animator(){
             globals.shouldCenterGeo = false;
         }
 
-
-
-
-        getSolver().step(params);
+        getSolver().stepForward(params);
         render();
     }
 
     function render(){
-        getSolver().updateModel3D(globals.Model3D, {colorMode:globals.colorMode, strainClip:globals.strainClip});
+        getSolver().updateModel3DGeometry(globals.Model3D, {colorMode:globals.colorMode, strainClip:globals.strainClip});
         globals.Model3D.update(globals.userInteractionEnabled || globals.vrEnabled);
     }
 

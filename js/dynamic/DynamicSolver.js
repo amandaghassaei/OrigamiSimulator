@@ -264,7 +264,7 @@ function DynamicSolver($canvas){
         gpuMath.step("zeroThetaTexture", ["u_theta"], "u_lastTheta");
     }
 
-    function step(params){
+    function stepForward(params){
 
         params = params || {};
 
@@ -338,7 +338,7 @@ function DynamicSolver($canvas){
 
     var $errorOutput = $("#globalError");
 
-    function updateModel3D(model, params){
+    function updateModel3DGeometry(model, params){
 
         params = params || {};
 
@@ -408,6 +408,7 @@ function DynamicSolver($canvas){
         } else {
             console.log("shouldn't be here");
         }
+        model.update();
     }
 
     function setSolveParams(){
@@ -923,13 +924,13 @@ function DynamicSolver($canvas){
 
         setCreasePercent: setCreasePercent,
 
-        step: step,
+        stepForward: stepForward,
         reset: reset,
 
         //todo get rid of these
         getNodes: getNodes,
 
-        updateModel3D: updateModel3D,
+        updateModel3DGeometry: updateModel3DGeometry,
         reCenter: reCenter
     }
 }
