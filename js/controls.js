@@ -637,7 +637,7 @@ function initControls(globals){
         if (isNaN(numSteps)) return;
         if (numSteps<=0) return;
         $("#numSteps").val(numSteps);
-        globals.Model3D.step(numSteps);
+        globals.Animator.step(numSteps);
         $("#reset").css('display', 'inline-block');
     });
 

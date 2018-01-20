@@ -2,16 +2,14 @@
  * Created by ghassaei on 10/7/16.
  */
 
-function initDynamicSolver(globals){
+function initDynamicSolver(){
 
-    globals.gpuMath = initGPUMath();
+    var gpuMath = initGPUMath();
 
     var nodes;
     var edges;
     var faces;
     var creases;
-    var positions;
-    var colors;
 
     var originalPosition;
     var position;
@@ -37,17 +35,14 @@ function initDynamicSolver(globals){
     var theta;//[theta, w, normalIndex1, normalIndex2]
     var lastTheta;//[theta, w, normalIndex1, normalIndex2]
 
-    function syncNodesAndEdges(){
+    function setFoldData(fold){
         nodes = globals.Model3D.getNodes();
         edges = globals.Model3D.getEdges();
         faces = globals.Model3D.getFaces();
         creases = globals.Model3D.getCreases();
 
-        positions = globals.Model3D.getPositionsArray();
-        colors = globals.Model3D.getColorsArray();
-
         initTypedArrays();
-        initTexturesAndPrograms(globals.gpuMath);
+        initTexturesAndPrograms(gpuMath);
         setSolveParams();
     }
 
@@ -61,18 +56,22 @@ function initDynamicSolver(globals){
     var textureDimNodeFaces = 0;
 
     function reset(){
-        globals.gpuMath.step("zeroTexture", [], "u_position");
-        globals.gpuMath.step("zeroTexture", [], "u_lastPosition");
-        globals.gpuMath.step("zeroTexture", [], "u_lastLastPosition");
-        globals.gpuMath.step("zeroTexture", [], "u_velocity");
-        globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
-        globals.gpuMath.step("zeroThetaTexture", ["u_lastTheta"], "u_theta");
-        globals.gpuMath.step("zeroThetaTexture", ["u_theta"], "u_lastTheta");
-        //todo is this breaking anything?
-        // render();
+        gpuMath.step("zeroTexture", [], "u_position");
+        gpuMath.step("zeroTexture", [], "u_lastPosition");
+        gpuMath.step("zeroTexture", [], "u_lastLastPosition");
+        gpuMath.step("zeroTexture", [], "u_velocity");
+        gpuMath.step("zeroTexture", [], "u_lastVelocity");
+        gpuMath.step("zeroThetaTexture", ["u_lastTheta"], "u_theta");
+        gpuMath.step("zeroThetaTexture", ["u_theta"], "u_lastTheta");
     }
 
-    function solve(_numSteps){
+    function step(_numSteps){
+
+        _numSteps = _numSteps || 1;
+        if (_numSteps<1){
+            console.warn("num steps must be > 0");
+        }
+
 
         if (globals.shouldAnimateFoldPercent){
             globals.creasePercent = globals.videoAnimator.nextFoldAngle(0);
@@ -106,31 +105,29 @@ function initDynamicSolver(globals){
             globals.shouldChangeCreasePercent = false;
         }
         // if (globals.shouldZeroDynamicVelocity){
-        //     globals.gpuMath.step("zeroTexture", [], "u_velocity");
-        //     globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
+        //     gpuMath.step("zeroTexture", [], "u_velocity");
+        //     gpuMath.step("zeroTexture", [], "u_lastVelocity");
         //     globals.shouldZeroDynamicVelocity = false;
         // }
         if (globals.shouldCenterGeo){
-            var avgPosition = getAvgPosition();
-            globals.gpuMath.setProgram("centerTexture");
-            globals.gpuMath.setUniformForProgram("centerTexture", "u_center", [avgPosition.x, avgPosition.y, avgPosition.z], "3f");
-            globals.gpuMath.step("centerTexture", ["u_lastPosition"], "u_position");
-            if (globals.integrationType == "verlet") globals.gpuMath.step("copyTexture", ["u_position"], "u_lastLastPosition");
-            globals.gpuMath.swapTextures("u_position", "u_lastPosition");
-            globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
-            globals.gpuMath.step("zeroTexture", [], "u_velocity");
+            var avgPosition = getAvgPosition(globals.Model3D.getPositionsArray());
+            gpuMath.setProgram("centerTexture");
+            gpuMath.setUniformForProgram("centerTexture", "u_center", [avgPosition.x, avgPosition.y, avgPosition.z], "3f");
+            gpuMath.step("centerTexture", ["u_lastPosition"], "u_position");
+            if (globals.integrationType == "verlet") gpuMath.step("copyTexture", ["u_position"], "u_lastLastPosition");
+            gpuMath.swapTextures("u_position", "u_lastPosition");
+            gpuMath.step("zeroTexture", [], "u_lastVelocity");
+            gpuMath.step("zeroTexture", [], "u_velocity");
             globals.shouldCenterGeo = false;
         }
 
         if (_numSteps === undefined) _numSteps = globals.numSteps;
         for (var j=0;j<_numSteps;j++){
-            solveStep();
+            solveSingleStep();
         }
     }
 
-    function solveStep(){
-
-        var gpuMath = globals.gpuMath;
+    function solveSingleStep(){
 
         gpuMath.setProgram("normalCalc");
         gpuMath.setSize(textureDimFaces, textureDimFaces);
@@ -169,7 +166,7 @@ function initDynamicSolver(globals){
 
     var $errorOutput = $("#globalError");
 
-    function getAvgPosition(){
+    function getAvgPosition(positions){
         var xavg = 0;
         var yavg = 0;
         var zavg = 0;
@@ -183,20 +180,20 @@ function initDynamicSolver(globals){
         return avgPosition;
     }
 
-    function render(positions, colors){
+    function updateModel3D(model){
 
         // var vectorLength = 2;
-        // globals.gpuMath.setProgram("packToBytes");
-        // globals.gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
-        // globals.gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDimCreases, textureDimCreases], "2f");
-        // globals.gpuMath.setSize(textureDimCreases*vectorLength, textureDimCreases);
-        // globals.gpuMath.step("packToBytes", ["u_lastTheta"], "outputBytes");
+        // gpuMath.setProgram("packToBytes");
+        // gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
+        // gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDimCreases, textureDimCreases], "2f");
+        // gpuMath.setSize(textureDimCreases*vectorLength, textureDimCreases);
+        // gpuMath.step("packToBytes", ["u_lastTheta"], "outputBytes");
         //
-        // if (globals.gpuMath.readyToRead()) {
+        // if (gpuMath.readyToRead()) {
         //     var numPixels = nodes.length*vectorLength;
         //     var height = Math.ceil(numPixels/(textureDimCreases*vectorLength));
         //     var pixels = new Uint8Array(height*textureDimCreases*4*vectorLength);
-        //     globals.gpuMath.readPixels(0, 0, textureDimCreases * vectorLength, height, pixels);
+        //     gpuMath.readPixels(0, 0, textureDimCreases * vectorLength, height, pixels);
         //     var parsedPixels = new Float32Array(pixels.buffer);
         //     for (var i=0;i<parsedPixels.length;i+=2){
         //         if (Math.abs(parsedPixels[i+1])>Math.PI-1) {
@@ -208,18 +205,21 @@ function initDynamicSolver(globals){
         //     console.log("here");
         // }
 
-        var vectorLength = 4;
-        globals.gpuMath.setProgram("packToBytes");
-        globals.gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
-        globals.gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDim, textureDim], "2f");
-        globals.gpuMath.setSize(textureDim*vectorLength, textureDim);
-        globals.gpuMath.step("packToBytes", ["u_lastPosition"], "outputBytes");
+        var positions = model.getPositionsArray();
+        var colors = model.getColorsArray();
 
-        if (globals.gpuMath.readyToRead()) {
+        var vectorLength = 4;
+        gpuMath.setProgram("packToBytes");
+        gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
+        gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDim, textureDim], "2f");
+        gpuMath.setSize(textureDim*vectorLength, textureDim);
+        gpuMath.step("packToBytes", ["u_lastPosition"], "outputBytes");
+
+        if (gpuMath.readyToRead()) {
             var numPixels = nodes.length*vectorLength;
             var height = Math.ceil(numPixels/(textureDim*vectorLength));
             var pixels = new Uint8Array(height*textureDim*4*vectorLength);
-            globals.gpuMath.readPixels(0, 0, textureDim * vectorLength, height, pixels);
+            gpuMath.readPixels(0, 0, textureDim * vectorLength, height, pixels);
             var parsedPixels = new Float32Array(pixels.buffer);
             var globalError = 0;
             var shouldUpdateColors = globals.colorMode == "axialStrain";
@@ -251,16 +251,16 @@ function initDynamicSolver(globals){
     function setSolveParams(){
         var dt = calcDt();
         $("#deltaT").html(dt);
-        globals.gpuMath.setProgram("thetaCalc");
-        globals.gpuMath.setUniformForProgram("thetaCalc", "u_dt", dt, "1f");
-        globals.gpuMath.setProgram("velocityCalc");
-        globals.gpuMath.setUniformForProgram("velocityCalc", "u_dt", dt, "1f");
-        globals.gpuMath.setProgram("positionCalcVerlet");
-        globals.gpuMath.setUniformForProgram("positionCalcVerlet", "u_dt", dt, "1f");
-        globals.gpuMath.setProgram("positionCalc");
-        globals.gpuMath.setUniformForProgram("positionCalc", "u_dt", dt, "1f");
-        globals.gpuMath.setProgram("velocityCalcVerlet");
-        globals.gpuMath.setUniformForProgram("velocityCalcVerlet", "u_dt", dt, "1f");
+        gpuMath.setProgram("thetaCalc");
+        gpuMath.setUniformForProgram("thetaCalc", "u_dt", dt, "1f");
+        gpuMath.setProgram("velocityCalc");
+        gpuMath.setUniformForProgram("velocityCalc", "u_dt", dt, "1f");
+        gpuMath.setProgram("positionCalcVerlet");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_dt", dt, "1f");
+        gpuMath.setProgram("positionCalc");
+        gpuMath.setUniformForProgram("positionCalc", "u_dt", dt, "1f");
+        gpuMath.setProgram("velocityCalcVerlet");
+        gpuMath.setUniformForProgram("velocityCalcVerlet", "u_dt", dt, "1f");
         globals.controls.setDeltaT(dt);
     }
 
@@ -445,14 +445,14 @@ function initDynamicSolver(globals){
                 index+=1;
             }
         }
-        globals.gpuMath.initTextureFromData("u_beamMeta", textureDimEdges, textureDimEdges, "FLOAT", beamMeta, true);
+        gpuMath.initTextureFromData("u_beamMeta", textureDimEdges, textureDimEdges, "FLOAT", beamMeta, true);
 
 
         if (programsInited) {
-            globals.gpuMath.setProgram("velocityCalc");
-            globals.gpuMath.setUniformForProgram("velocityCalc", "u_axialStiffness", globals.axialStiffness, "1f");
-            globals.gpuMath.setProgram("positionCalcVerlet");
-            globals.gpuMath.setUniformForProgram("positionCalcVerlet", "u_axialStiffness", globals.axialStiffness, "1f");
+            gpuMath.setProgram("velocityCalc");
+            gpuMath.setUniformForProgram("velocityCalc", "u_axialStiffness", globals.axialStiffness, "1f");
+            gpuMath.setProgram("positionCalcVerlet");
+            gpuMath.setUniformForProgram("positionCalcVerlet", "u_axialStiffness", globals.axialStiffness, "1f");
             setSolveParams();//recalc dt
         }
     }
@@ -464,14 +464,14 @@ function initDynamicSolver(globals){
             externalForces[4*i+1] = externalForce.y;
             externalForces[4*i+2] = externalForce.z;
         }
-        globals.gpuMath.initTextureFromData("u_externalForces", textureDim, textureDim, "FLOAT", externalForces, true);
+        gpuMath.initTextureFromData("u_externalForces", textureDim, textureDim, "FLOAT", externalForces, true);
     }
 
     function updateFixed(){
         for (var i=0;i<nodes.length;i++){
             mass[4*i+1] = (nodes[i].isFixed() ? 1 : 0);
         }
-        globals.gpuMath.initTextureFromData("u_mass", textureDim, textureDim, "FLOAT", mass, true);
+        gpuMath.initTextureFromData("u_mass", textureDim, textureDim, "FLOAT", mass, true);
     }
 
     function updateOriginalPosition(){
@@ -481,7 +481,7 @@ function initDynamicSolver(globals){
             originalPosition[4*i+1] = origPosition.y;
             originalPosition[4*i+2] = origPosition.z;
         }
-        globals.gpuMath.initTextureFromData("u_originalPosition", textureDim, textureDim, "FLOAT", originalPosition, true);
+        gpuMath.initTextureFromData("u_originalPosition", textureDim, textureDim, "FLOAT", originalPosition, true);
     }
 
     function updateCreaseVectors(){
@@ -492,7 +492,7 @@ function initDynamicSolver(globals){
             creaseVectors[rgbaIndex] = nodes[0].getIndex();
             creaseVectors[rgbaIndex+1] = nodes[1].getIndex();
         }
-        globals.gpuMath.initTextureFromData("u_creaseVectors", textureDimCreases, textureDimCreases, "FLOAT", creaseVectors, true);
+        gpuMath.initTextureFromData("u_creaseVectors", textureDimCreases, textureDimCreases, "FLOAT", creaseVectors, true);
     }
 
     function updateCreasesMeta(initing){
@@ -502,7 +502,7 @@ function initDynamicSolver(globals){
             // creaseMeta[i*4+1] = crease.getD();
             if (initing) creaseMeta[i*4+2] = crease.getTargetTheta();
         }
-        globals.gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true);
+        gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true);
     }
 
     function updateLastPosition(){
@@ -512,17 +512,17 @@ function initDynamicSolver(globals){
             lastPosition[4*i+1] = _position.y;
             lastPosition[4*i+2] = _position.z;
         }
-        globals.gpuMath.initTextureFromData("u_lastPosition", textureDim, textureDim, "FLOAT", lastPosition, true);
-        globals.gpuMath.initFrameBufferForTexture("u_lastPosition", true);
+        gpuMath.initTextureFromData("u_lastPosition", textureDim, textureDim, "FLOAT", lastPosition, true);
+        gpuMath.initFrameBufferForTexture("u_lastPosition", true);
 
     }
 
     function setCreasePercent(percent){
         if (!programsInited) return;
-        globals.gpuMath.setProgram("velocityCalc");
-        globals.gpuMath.setUniformForProgram("velocityCalc", "u_creasePercent", percent, "1f");
-        globals.gpuMath.setProgram("positionCalcVerlet");
-        globals.gpuMath.setUniformForProgram("positionCalcVerlet", "u_creasePercent", percent, "1f");
+        gpuMath.setProgram("velocityCalc");
+        gpuMath.setUniformForProgram("velocityCalc", "u_creasePercent", percent, "1f");
+        gpuMath.setProgram("positionCalcVerlet");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_creasePercent", percent, "1f");
     }
 
     function initTypedArrays(){
@@ -675,10 +675,12 @@ function initDynamicSolver(globals){
     }
 
     return {
-        syncNodesAndEdges: syncNodesAndEdges,
+        setFoldData: setFoldData,
         updateFixed: updateFixed,
-        solve: solve,
-        render: render,
-        reset: reset
+        
+        step: step,
+        reset: reset,
+        
+        updateModel3D: updateModel3D
     }
 }

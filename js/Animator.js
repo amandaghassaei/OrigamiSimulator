@@ -27,18 +27,17 @@ function Animator(){
     function _loop(){
         if (nextFold){
             globals.Model3D.setFoldData(nextFold);
-            getSolver().syncNodesAndEdges();
+            getSolver().setFoldData(nextFold);
             globals.simNeedsSync = false;
             if (!globals.simulationRunning) resetSimulation();
 
             nextFold = null;
-            nextCreaseParam = null;
         }
         if (globals.simNeedsSync){
-            getSolver().syncNodesAndEdges();
+            getSolver().setFoldData();
             globals.simNeedsSync = false;
         }
-        if (globals.inited && globals.simulationRunning) step();
+        if (globals.inited && globals.simulationRunning) step(globals.numSteps);
 
         globals.threeView.render();
     }
@@ -56,12 +55,12 @@ function Animator(){
     }
 
     function step(numSteps){
-        getSolver().solve(numSteps);
+        getSolver().step(numSteps);
         render();
     }
 
     function render(){
-        getSolver().render(globals.Model3D.getPositionsArray(), globals.Model3D.getColorsArray());
+        getSolver().updateModel3D(globals.Model3D);
         globals.Model3D.update(globals.userInteractionEnabled || globals.vrEnabled);
     }
 
@@ -76,6 +75,7 @@ function Animator(){
         resetSimulation: resetSimulation,
 
         render: render,
+        step: step,
 
         loadNewData: loadNewData
     }
