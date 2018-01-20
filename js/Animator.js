@@ -83,7 +83,7 @@ function Animator(){
     }
 
     function render(){
-        getSolver().updateModel3D(globals.Model3D);
+        getSolver().updateModel3D(globals.Model3D, {colorMode:globals.colorMode, strainClip:globals.strainClip});
         globals.Model3D.update(globals.userInteractionEnabled || globals.vrEnabled);
     }
 

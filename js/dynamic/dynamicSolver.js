@@ -16,6 +16,7 @@ function initDynamicSolver(){
     var creaseStiffness = 0.7;
     var facetStiffness = 0.7;
     var creaseMaterialHasChanged = false;
+    var damping = 0.85;
 
     var fold;
 
@@ -281,10 +282,10 @@ function initDynamicSolver(){
         if (forceHasChanged) updateExternalForces();
         if (fixedHasChanged) updateFixed();
 
-        if (globals.nodePositionHasChanged) {
-            updateLastPosition();
-            globals.nodePositionHasChanged = false;
-        }
+        // if (globals.nodePositionHasChanged) {
+        //     updateLastPosition();
+        //     globals.nodePositionHasChanged = false;
+        // }
 
         //update sim params
         if (creaseMaterialHasChanged) updateCreasesMeta();
@@ -340,7 +341,9 @@ function initDynamicSolver(){
 
     var $errorOutput = $("#globalError");
 
-    function updateModel3D(model){
+    function updateModel3D(model, params){
+
+        params = params || {};
 
         // var vectorLength = 2;
         // gpuMath.setProgram("packToBytes");
@@ -366,7 +369,8 @@ function initDynamicSolver(){
         // }
 
         var positions = model.getPositionsArray();
-        var colors = model.getColorsArray();
+        var colors;
+        if (params.colorMode == "axialStrain") colors = model.getColorsArray();
 
         var vectorLength = 4;
         gpuMath.setProgram("packToBytes");
@@ -384,7 +388,7 @@ function initDynamicSolver(){
             gpuMath.readPixels(0, 0, textureDim * vectorLength, height, pixels);
             var parsedPixels = new Float32Array(pixels.buffer);
             var globalError = 0;
-            var shouldUpdateColors = globals.colorMode == "axialStrain";
+            var shouldUpdateColors = params.colorMode == "axialStrain";
             for (var i = 0; i < numVertices; i++) {
                 var rgbaIndex = i * vectorLength;
                 var nodeError = parsedPixels[rgbaIndex+3]*100;
@@ -394,8 +398,8 @@ function initDynamicSolver(){
                 positions[3*i+1] = parsedPixels[rgbaIndex + 1]+originalPosition[1];
                 positions[3*i+2] = parsedPixels[rgbaIndex + 2]+originalPosition[2];
                 if (shouldUpdateColors){
-                    if (nodeError>globals.strainClip) nodeError = globals.strainClip;
-                    var scaledVal = (1-nodeError/globals.strainClip) * 0.7;
+                    if (nodeError>params.strainClip) nodeError = params.strainClip;
+                    var scaledVal = (1-nodeError/params.strainClip) * 0.7;
                     var color = new THREE.Color();
                     color.setHSL(scaledVal, 1, 0.5);
                     colors[3*i] = color.r;
@@ -439,21 +443,21 @@ function initDynamicSolver(){
     }
 
     function getAxialK(length){
-        return globals.axialStiffness/length;
+        return axialStiffness/length;
     }
 
     function getAxialD(length){
-        return globals.percentDamping*2*Math.sqrt(getAxialK(length));//*this.getMinMass()); - min mass is always returning 1
+        return damping*2*Math.sqrt(getAxialK(length));//*this.getMinMass()); - min mass is always returning 1
     }
 
     function getCreaseK(length, assignment){
-        if (assignment == "F") return globals.panelStiffness*length;
-        return globals.creaseStiffness*length;
+        if (assignment == "F") return facetStiffness*length;
+        return creaseStiffness*length;
     }
 
-    function getCreaseD(length, assignment){
-        return globals.percentDamping*2*Math.sqrt(getCreaseK(length, assignment));
-    }
+    // function getCreaseD(length, assignment){
+    //     return damping*2*Math.sqrt(getCreaseK(length, assignment));
+    // }
 
     function getOtherVertex(edgeVertexIndices, nodeIndex){
         if (edgeVertexIndices[0] == nodeIndex) return edgeVertexIndices[1];
@@ -890,6 +894,11 @@ function initDynamicSolver(){
         creaseMaterialHasChanged = true;
     }
 
+    function setDamping(d){
+        damping = d;
+        materialHasChanged = true;
+    }
+
     function reCenter(centerPosition){
         gpuMath.setProgram("centerTexture");
         gpuMath.setUniformForProgram("centerTexture", "u_center", [centerPosition.x, centerPosition.y, centerPosition.z], "3f");
@@ -912,6 +921,7 @@ function initDynamicSolver(){
         setAxialStiffness: setAxialStiffness,
         setFacetStiffness: setFacetStiffness,
         setCreaseStiffness: setCreaseStiffness,
+        setDamping: setDamping,
 
         step: step,
         reset: reset,

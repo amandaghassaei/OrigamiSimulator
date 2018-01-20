@@ -79,7 +79,7 @@ function initViveInterface(globals){
     gui.add(variables,'Reset').name("Reset Simulation");
     gui.add(variables, "damping").min(0.1).max(1).step(0.01).name("Damping (0-1)").onChange( function(val) {
         globals.percentDamping = val;
-        globals.Animator.getSolver().setAxialStiffness(val);
+        globals.Animator.getSolver().setDamping(val);
         globals.controls.setSliderInputVal("#percentDamping", val);
     });
     gui.add(variables, "stepsPerFrame").min(1).max(200).step(1).name("Num Steps Per Frame").onChange( function(val) {

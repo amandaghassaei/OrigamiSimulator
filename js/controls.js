@@ -445,7 +445,7 @@ function initControls(globals){
 
     setSliderInput("#percentDamping", globals.percentDamping, 0.1, 1, 0.01, function(val){
         globals.percentDamping = val;
-        globals.Animator.getSolver().setAxialStiffness(globals.axialStiffness);
+        globals.Animator.getSolver().setDamping(val);
     });
 
     var creasePercentNavSlider, creasePercentSlider;
