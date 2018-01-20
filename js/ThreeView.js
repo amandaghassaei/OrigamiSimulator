@@ -2,7 +2,10 @@
  * Created by ghassaei on 9/16/16.
  */
 
-function initThreeView(globals) {
+function ThreeView($container, params) {
+
+    params = params || {};
+    params.backgroundColor = params.backgroundColor || "ffffff";
 
     var scene = new THREE.Scene();
     var modelWrapper = new THREE.Object3D();
@@ -17,13 +20,12 @@ function initThreeView(globals) {
 
     function init() {
 
-        var container = $("#threeContainer");
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize(window.innerWidth, window.innerHeight);
-        container.append(renderer.domElement);
+        $container.append(renderer.domElement);
 
         scene.background = new THREE.Color(0xffffff);//new THREE.Color(0xe6e6e6);
-        setBackgroundColor();
+        setBackgroundColor(params.backgroundColor);
         scene.add(modelWrapper);
         var directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
         directionalLight1.position.set(0, 100, 0);
@@ -195,7 +197,6 @@ function initThreeView(globals) {
     }
 
     function setBackgroundColor(color){
-        if (color === undefined) color = globals.backgroundColor;
         scene.background.setStyle( "#" + color);
     }
 

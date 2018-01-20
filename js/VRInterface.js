@@ -288,7 +288,7 @@ function initViveInterface(globals){
                     // globals.threeView.onWindowResize();
                     globals.threeView.resetCamera();
                     $link.html("ENTER VR");
-                    globals.threeView.setBackgroundColor();
+                    globals.threeView.setBackgroundColor(globals.backgroundColor);
                     globals.threeView.modelWrapper.scale.set(1, 1, 1);
                     globals.threeView.modelWrapper.position.set(0,0,0);
                     // renderer.setPixelRatio( window.devicePixelRatio );

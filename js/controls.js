@@ -188,7 +188,7 @@ function initControls(globals){
     });
     setHexInput("#backgroundColor", globals.backgroundColor, function(val){
         globals.backgroundColor = val;
-        globals.threeView.setBackgroundColor();
+        globals.threeView.setBackgroundColor(val);
     });
 
     setLink("#importSettings", function(){

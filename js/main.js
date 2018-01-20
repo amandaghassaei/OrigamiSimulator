@@ -18,7 +18,7 @@ $(function() {
     // }
 
     globals = initGlobals();
-    globals.threeView = initThreeView(globals);
+    globals.threeView = ThreeView($("#threeContainer"));
     globals.controls = initControls(globals);
     globals.UI3D = init3DUI(globals);
     globals.FileImporter = FileImporter(globals);
