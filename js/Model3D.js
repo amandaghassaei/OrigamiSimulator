@@ -207,8 +207,6 @@ function Model3D(params){
             return;
         }
 
-        globals.inited = true;//todo get rid of this
-
         positions = new Float32Array(fold.vertices_coords.length*3);
         colors = new Float32Array(fold.vertices_coords.length*3);
         var indices = new Uint16Array(fold.faces_vertices.length*3);

@@ -424,7 +424,7 @@ function initDynamicSolver(){
         gpuMath.setUniformForProgram("positionCalc", "u_dt", dt, "1f");
         gpuMath.setProgram("velocityCalcVerlet");
         gpuMath.setUniformForProgram("velocityCalcVerlet", "u_dt", dt, "1f");
-        globals.controls.setDeltaT(dt);
+        // globals.controls.setDeltaT(dt);//todo fix this
     }
 
     function calcDt(){
@@ -929,8 +929,7 @@ function initDynamicSolver(){
 
         //todo get rid of these
         getNodes: getNodes,
-        getCreases: getCreases,
-        
+
         updateModel3D: updateModel3D,
         reCenter: reCenter
     }
