@@ -10,6 +10,15 @@ function initDynamicSolver(){
     var forceHasChanged = false;
     var fixedHasChanged = false;
 
+    var axialStiffness = 20;
+    var materialHasChanged = false;
+
+    var creaseStiffness = 0.7;
+    var facetStiffness = 0.7;
+    var creaseMaterialHasChanged = false;
+
+    var triStiffness = 1;
+
     var fold;
 
     //todo get rid of these
@@ -280,14 +289,9 @@ function initDynamicSolver(){
         }
 
         //update sim params
-        if (globals.creaseMaterialHasChanged) {
-            updateCreasesMeta();
-            globals.creaseMaterialHasChanged = false;
-        }
-        if (globals.materialHasChanged) {
-            updateMaterials();
-            globals.materialHasChanged = false;
-        }
+        if (creaseMaterialHasChanged) updateCreasesMeta();
+        if (materialHasChanged) updateMaterials();
+
         // if (globals.shouldZeroDynamicVelocity){
         //     gpuMath.step("zeroTexture", [], "u_velocity");
         //     gpuMath.step("zeroTexture", [], "u_lastVelocity");
@@ -484,8 +488,6 @@ function initDynamicSolver(){
     }
 
 
-
-
     function initTexturesAndPrograms(gpuMath){
 
         var vertexShader = document.getElementById("vertexShader").text;
@@ -661,7 +663,7 @@ function initDynamicSolver(){
             }
         }
         gpuMath.initTextureFromData("u_beamMeta", textureDimEdges, textureDimEdges, "FLOAT", beamMeta, true);
-
+        materialHasChanged = false;
 
         if (programsInited) {
             gpuMath.setProgram("velocityCalc");
@@ -722,6 +724,7 @@ function initDynamicSolver(){
             if (initing) creaseMeta[i*4+2] = crease.getTargetTheta();
         }
         gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true);
+        creaseMaterialHasChanged = false;
     }
 
     function updateLastPosition(){
@@ -899,6 +902,22 @@ function initDynamicSolver(){
         return creases;
     }
 
+    function setAxialStiffness(stiffness){
+        axialStiffness = stiffness;
+        materialHasChanged = true;
+    }
+
+    function setFacetStiffness(stiffness){
+        facetStiffness = stiffness;
+        creaseMaterialHasChanged = true;
+    }
+
+    function setCreaseStiffness(stiffness){
+        creaseStiffness = stiffness;
+        creaseMaterialHasChanged = true;
+    }
+
+
     return {
         setFoldData: setFoldData,
 
@@ -906,6 +925,10 @@ function initDynamicSolver(){
         fixVertexAtIndex: fixVertexAtIndex,
         setExternalForce: setExternalForces,
         setForceAtIndex: setForceAtIndex,
+
+        setAxialStiffness: setAxialStiffness,
+        setFacetStiffness: setFacetStiffness,
+        setCreaseStiffness: setCreaseStiffness,
 
         step: step,
         reset: reset,

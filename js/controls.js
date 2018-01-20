@@ -425,7 +425,7 @@ function initControls(globals){
 
     setSliderInput("#axialStiffness", globals.axialStiffness, 10, 100, 1, function(val){
         globals.axialStiffness = val;
-        globals.materialHasChanged = true;
+        globals.Animator.getSolver().setAxialStiffness(val);
     });
 
     // setSliderInput("#triStiffness", globals.triStiffness, 0, 10, 0.01, function(val){
@@ -435,17 +435,17 @@ function initControls(globals){
 
     setSliderInput("#creaseStiffness", globals.creaseStiffness, 0, 3, 0.01, function(val){
         globals.creaseStiffness = val;
-        globals.creaseMaterialHasChanged = true;
+        globals.Animator.getSolver().setCreaseStiffness(globals.creaseStiffness);
     });
 
     setSliderInput("#panelStiffness", globals.panelStiffness, 0, 3, 0.01, function(val){
         globals.panelStiffness = val;
-        globals.creaseMaterialHasChanged = true;
+        globals.Animator.getSolver().setFacetStiffness(globals.panelStiffness);
     });
 
     setSliderInput("#percentDamping", globals.percentDamping, 0.1, 1, 0.01, function(val){
         globals.percentDamping = val;
-        globals.materialHasChanged = true;
+        globals.Animator.getSolver().setAxialStiffness(globals.axialStiffness);
     });
 
     var creasePercentNavSlider, creasePercentSlider;
