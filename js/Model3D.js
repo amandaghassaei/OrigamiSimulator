@@ -327,6 +327,20 @@ function Model3D(params){
         return scale;
     }
 
+    function calculateGeometryCenter(){
+        var xavg = 0;
+        var yavg = 0;
+        var zavg = 0;
+        for (var i=0;i<positions.length;i+=3){
+            xavg += positions[i];
+            yavg += positions[i+1];
+            zavg += positions[i+2];
+        }
+        var avgPosition = new THREE.Vector3(xavg, yavg, zavg);
+        avgPosition.multiplyScalar(3/positions.length);
+        return avgPosition;
+    }
+
     return {
         setFoldData: setFoldData,//load new model
 
@@ -349,6 +363,7 @@ function Model3D(params){
         setMeshVisibility: setMeshVisibility,
 
         getGeometry: getGeometry,//returns buffer geometry, for save stl
+        calculateGeometryCenter: calculateGeometryCenter,
         getDimensions: getDimensions,//return vector3, for save stl
         getMesh: getMesh,//for direct manipulation, actually returns two meshes [frontside, backside]
         getObject3Ds: getObject3Ds,//return array of all object3ds, so they can be added to threejs scene

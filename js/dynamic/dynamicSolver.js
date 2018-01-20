@@ -17,8 +17,6 @@ function initDynamicSolver(){
     var facetStiffness = 0.7;
     var creaseMaterialHasChanged = false;
 
-    var triStiffness = 1;
-
     var fold;
 
     //todo get rid of these
@@ -297,17 +295,6 @@ function initDynamicSolver(){
         //     gpuMath.step("zeroTexture", [], "u_lastVelocity");
         //     globals.shouldZeroDynamicVelocity = false;
         // }
-        if (globals.shouldCenterGeo){
-            var avgPosition = getAvgPosition(globals.Model3D.getPositionsArray());
-            gpuMath.setProgram("centerTexture");
-            gpuMath.setUniformForProgram("centerTexture", "u_center", [avgPosition.x, avgPosition.y, avgPosition.z], "3f");
-            gpuMath.step("centerTexture", ["u_lastPosition"], "u_position");
-            if (params.integrationType == "verlet") gpuMath.step("copyTexture", ["u_position"], "u_lastLastPosition");
-            gpuMath.swapTextures("u_position", "u_lastPosition");
-            gpuMath.step("zeroTexture", [], "u_lastVelocity");
-            gpuMath.step("zeroTexture", [], "u_velocity");
-            globals.shouldCenterGeo = false;
-        }
 
         for (var j=0;j<params.numSteps;j++){
             solveSingleStep(params);
@@ -352,20 +339,6 @@ function initDynamicSolver(){
     }
 
     var $errorOutput = $("#globalError");
-
-    function getAvgPosition(positions){
-        var xavg = 0;
-        var yavg = 0;
-        var zavg = 0;
-        for (var i=0;i<positions.length;i+=3){
-            xavg += positions[i];
-            yavg += positions[i+1];
-            zavg += positions[i+2];
-        }
-        var avgPosition = new THREE.Vector3(xavg, yavg, zavg);
-        avgPosition.multiplyScalar(3/positions.length);
-        return avgPosition;
-    }
 
     function updateModel3D(model){
 
@@ -917,6 +890,16 @@ function initDynamicSolver(){
         creaseMaterialHasChanged = true;
     }
 
+    function reCenter(centerPosition){
+        gpuMath.setProgram("centerTexture");
+        gpuMath.setUniformForProgram("centerTexture", "u_center", [centerPosition.x, centerPosition.y, centerPosition.z], "3f");
+        gpuMath.step("centerTexture", ["u_lastPosition"], "u_position");
+        gpuMath.step("copyTexture", ["u_position"], "u_lastLastPosition");
+        gpuMath.swapTextures("u_position", "u_lastPosition");
+        gpuMath.step("zeroTexture", [], "u_lastVelocity");
+        gpuMath.step("zeroTexture", [], "u_velocity");
+    }
+
 
     return {
         setFoldData: setFoldData,
@@ -937,6 +920,7 @@ function initDynamicSolver(){
         getNodes: getNodes,
         getCreases: getCreases,
         
-        updateModel3D: updateModel3D
+        updateModel3D: updateModel3D,
+        reCenter: reCenter
     }
 }

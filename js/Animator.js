@@ -69,6 +69,12 @@ function Animator(){
             globals.shouldChangeCreasePercent = false;
         }
 
+        if (globals.shouldCenterGeo){
+            var centerPosition = globals.Model3D.calculateGeometryCenter();
+            getSolver().reCenter(centerPosition);
+            globals.shouldCenterGeo = false;
+        }
+
 
 
 
