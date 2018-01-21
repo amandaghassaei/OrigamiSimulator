@@ -532,6 +532,8 @@ function DynamicSolver($canvas){
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimNodeFaces", [textureDimNodeFaces, textureDimNodeFaces], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_creasePercent", creasePercent, "1f");
         gpuMath.setUniformForProgram("velocityCalc", "u_axialStiffness", axialStiffness, "1f");
+        gpuMath.setUniformForProgram("velocityCalc", "u_dampingPercent", damping, "1f");
+
 
         gpuMath.createProgram("positionCalcVerlet", vertexShader, document.getElementById("positionCalcVerletShader").text);
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_lastPosition", 0, "1i");
@@ -558,6 +560,7 @@ function DynamicSolver($canvas){
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_textureDimNodeFaces", [textureDimNodeFaces, textureDimNodeFaces], "2f");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_creasePercent", creasePercent, "1f");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_axialStiffness", axialStiffness, "1f");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_dampingPercent", damping, "1f");
 
         gpuMath.createProgram("thetaCalc", vertexShader, document.getElementById("thetaCalcShader").text);
         gpuMath.setUniformForProgram("thetaCalc", "u_normals", 0, "1i");
@@ -629,7 +632,7 @@ function DynamicSolver($canvas){
             for (var j=0;j<adjacentEdges.length;j++){
                 var edgeIndex = adjacentEdges[j];
                 beamMeta[4*index] = getAxialK(fold.edges_length[edgeIndex]);
-                beamMeta[4*index+1] = getAxialD(fold.edges_length[edgeIndex])*0.5;//why 0.5?
+                // beamMeta[4*index+1] = getAxialD(fold.edges_length[edgeIndex])*0.5;//why 0.5?
                 if (initing) {
                     beamMeta[4*index+2] = fold.edges_length[edgeIndex];
                     beamMeta[4*index+3] = getOtherVertex(fold.edges_vertices[edgeIndex], i);
@@ -643,8 +646,10 @@ function DynamicSolver($canvas){
         if (programsInited) {
             gpuMath.setProgram("velocityCalc");
             gpuMath.setUniformForProgram("velocityCalc", "u_axialStiffness", axialStiffness, "1f");
+            gpuMath.setUniformForProgram("velocityCalc", "u_dampingPercent", damping, "1f");
             gpuMath.setProgram("positionCalcVerlet");
             gpuMath.setUniformForProgram("positionCalcVerlet", "u_axialStiffness", axialStiffness, "1f");
+            gpuMath.setUniformForProgram("positionCalcVerlet", "u_dampingPercent", damping, "1f");
             setSolveParams();//recalc dt
         }
     }

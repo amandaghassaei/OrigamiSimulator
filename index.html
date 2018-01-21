@@ -177,6 +177,7 @@
         uniform float u_creasePercent;
         uniform float u_dt;
         uniform float u_axialStiffness;
+        uniform float u_dampingPercent;
         uniform sampler2D u_lastPosition;
         uniform sampler2D u_lastVelocity;
         uniform sampler2D u_originalPosition;
@@ -244,7 +245,7 @@
                 nodeError += abs(deltaPLength/length(nominalDist) - 1.0);
                 vec3 deltaV = neighborLastVelocity-lastVelocity;
 
-                vec3 _force = deltaP*beamMeta[0] + deltaV*beamMeta[1];
+                vec3 _force = deltaP*beamMeta[0] + deltaV*u_dampingPercent*sqrt(beamMeta[0]);//damping should be multiplied by 2
                 force += _force;
             }
             nodeError /= meta[1];
@@ -381,6 +382,7 @@
         uniform float u_creasePercent;
         uniform float u_dt;
         uniform float u_axialStiffness;
+        uniform float u_dampingPercent;
         uniform sampler2D u_lastPosition;
         uniform sampler2D u_lastLastPosition;
         uniform sampler2D u_lastVelocity;
@@ -451,7 +453,8 @@
                 nodeError += abs(deltaPLength/nominalLength - 1.0);
                 vec3 deltaV = neighborLastVelocity-lastVelocity;
 
-                vec3 _force = deltaP*beamMeta[0] + deltaV*beamMeta[1];
+                vec3 _force = deltaP*beamMeta[0] + deltaV*u_dampingPercent*sqrt(beamMeta[0]);//damping should be multiplied by 2
+
                 force += _force;
             }
             nodeError /= meta[1];
