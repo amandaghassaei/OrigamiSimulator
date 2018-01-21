@@ -94,6 +94,7 @@ function PatternImporter(){
         if (stroke == "#00ff00" || stroke == "#0f0" || stroke == "green" || stroke == "rgb(0,255,0)") return "C";
         if (stroke == "#ffff00" || stroke == "#ff0" || stroke == "yellow" || stroke == "rgb(255,255,0)") return "F";
         if (stroke == "#ff00ff" || stroke == "#f0f" || stroke == "magenta" || stroke == "rgb(255,0,255)") return "U";
+        if (stroke == "#00ffff" || stroke == "#0ff" || stroke == "cyan" || stroke == "rgb(0,255,255)") return "P";
         badColors.push(stroke);
         return null;
     }
@@ -129,9 +130,9 @@ function PatternImporter(){
         for (var i=0;i<transformations.length;i++){
             var t = transformations[i];
             var M = [[t.matrix.a, t.matrix.c, t.matrix.e], [t.matrix.b, t.matrix.d, t.matrix.f], [0,0,1]];
-            var out = numeric.dot(M, [vertex.x, vertex.z, 1]);
-            vertex.x = out[0];
-            vertex.z = out[1];
+            var out = numeric.dot(M, [vertex[0], vertex[1], 1]);
+            vertex[0] = out[0];
+            vertex[1] = out[1];
         }
     }
 
@@ -155,40 +156,46 @@ function PatternImporter(){
                 var segment = segments[j];
                 var type = segment.type;
 
-                var vertex;
+                var vertex = [0,0];
                 switch(type){
 
                     case "l"://dx, dy
-                        vertex = vertices[vertices.length-1].clone();
-                        vertex.x += segment.values[0];
-                        vertex.z += segment.values[1];
+                        vertex[0] = vertices[vertices.length-1][0];
+                        vertex[1] = vertices[vertices.length-1][1];
+                        vertex[0] += segment.values[0];
+                        vertex[1] += segment.values[1];
                         break;
                     case "v"://dy
-                        vertex = vertices[vertices.length-1].clone();
-                        vertex.z += segment.values[0];
+                        vertex[0] = vertices[vertices.length-1][0];
+                        vertex[1] = vertices[vertices.length-1][1];
+                        vertex[1] += segment.values[0];
                         break;
                     case "h"://dx
-                        vertex = vertices[vertices.length-1].clone();
-                        vertex.x += segment.values[0];
+                        vertex[0] = vertices[vertices.length-1][0];
+                        vertex[1] = vertices[vertices.length-1][1];
+                        vertex[0] += segment.values[0];
                         break;
                     case "L"://x, y
-                        vertex = new THREE.Vector3(segment.values[0], 0, segment.values[1]);
+                        vertex = [segment.values[0], segment.values[1]];
                         break;
                     case "V"://y
-                        vertex = vertices[vertices.length-1].clone();
-                        vertex.z = segment.values[0];
+                        vertex[0] = vertices[vertices.length-1][0];
+                        vertex[1] = vertices[vertices.length-1][1];
+                        vertex[1] = segment.values[0];
                         break;
                     case "H"://x
-                        vertex = vertices[vertices.length-1].clone();
-                        vertex.x = segment.values[0];
+                        vertex[0] = vertices[vertices.length-1][0];
+                        vertex[1] = vertices[vertices.length-1][1];
+                        vertex[0] = segment.values[0];
                         break;
                     case "m"://dx, dy
-                        vertex = vertices[vertices.length-1].clone();
-                        vertex.x += segment.values[0];
-                        vertex.z += segment.values[1];
+                        vertex[0] = vertices[vertices.length-1][0];
+                        vertex[1] = vertices[vertices.length-1][1];
+                        vertex[0] += segment.values[0];
+                        vertex[1] += segment.values[1];
                         break;
                     case "M"://x, y
-                        vertex = new THREE.Vector3(segment.values[0], 0, segment.values[1]);
+                        vertex = [segment.values[0], segment.values[1]];
                         break;
                 }
 
@@ -213,8 +220,8 @@ function PatternImporter(){
         var edges = fold.edges_vertices;
         for (var i=0;i<$elements.length;i++){
             var element = $elements[i];
-            vertices.push(new THREE.Vector3(element.x1.baseVal.value, 0, element.y1.baseVal.value));
-            vertices.push(new THREE.Vector3(element.x2.baseVal.value, 0, element.y2.baseVal.value));
+            vertices.push([element.x1.baseVal.value, element.y1.baseVal.value]);
+            vertices.push([element.x2.baseVal.value, element.y2.baseVal.value]);
             edges.push([vertices.length-2, vertices.length-1]);
 
             //be sure to grow fold.edges_foldAngles and fold.edges_assignment arrays to match fold.edges_vertices.length
@@ -236,10 +243,10 @@ function PatternImporter(){
             var y = element.y.baseVal.value;
             var width = element.width.baseVal.value;
             var height = element.height.baseVal.value;
-            vertices.push(new THREE.Vector3(x, 0, y));
-            vertices.push(new THREE.Vector3(x+width, 0, y));
-            vertices.push(new THREE.Vector3(x+width, 0, y+height));
-            vertices.push(new THREE.Vector3(x, 0, y+height));
+            vertices.push([x, y]);
+            vertices.push([x+width, y]);
+            vertices.push([x+width, y+height]);
+            vertices.push([x, y+height]);
             edges.push([vertices.length-4, vertices.length-3]);
             edges.push([vertices.length-3, vertices.length-2]);
             edges.push([vertices.length-2, vertices.length-1]);
@@ -262,7 +269,7 @@ function PatternImporter(){
         for (var i=0;i<$elements.length;i++){
             var element = $elements[i];
             for (var j=0;j<element.points.length;j++){
-                vertices.push(new THREE.Vector3(element.points[j].x, 0, element.points[j].y));
+                vertices.push([element.points[j].x, element.points[j].y]);
                 applyTransformation(vertices[vertices.length-1], element.transform);
 
                 if (j<element.points.length-1) edges.push([vertices.length-1, vertices.length]);
@@ -282,7 +289,7 @@ function PatternImporter(){
         for (var i=0;i<$elements.length;i++){
             var element = $elements[i];
             for (var j=0;j<element.points.length;j++){
-                vertices.push(new THREE.Vector3(element.points[j].x, 0, element.points[j].y));
+                vertices.push([element.points[j].x, element.points[j].y]);
                 applyTransformation(vertices[vertices.length-1], element.transform);
                 if (j>0) edges.push([vertices.length-1, vertices.length-2]);
 
@@ -360,12 +367,6 @@ function PatternImporter(){
             findType(fold, "F", $paths, $lines, $rects, $polygons, $polylines);
             findType(fold, "U", $paths, $lines, $rects, $polygons, $polylines);
 
-            //convert vertices_coords from THREE.Vector3 to []
-            for (var i=0;i<fold.vertices_coords.length;i++){
-                var vertex = fold.vertices_coords[i];
-                fold.vertices_coords[i] = [vertex.x, vertex.z];
-            }
-
             //check for bad colors
             if (badColors.length>0){
                 badColors = _.uniq(badColors);
@@ -389,6 +390,13 @@ function PatternImporter(){
             clearAll();
             rawFoldData = JSON.parse(JSON.stringify(fold));
             preProcessedFoldData = preProcessFoldFromSVG(JSON.parse(JSON.stringify(rawFoldData)), params);
+
+            //add pinned edges
+            findType(preProcessedFoldData, "P", $paths, $lines, $rects, $polygons, $polylines);
+            delete preProcessedFoldData.vertices_edges;
+            delete preProcessedFoldData.vertices_vertices;
+            preProcessedFoldData = FOLD.filter.collapseNearbyVertices(preProcessedFoldData, params.vertexTol);
+
             foldData = processFold(JSON.parse(JSON.stringify(preProcessedFoldData)), params);
 
             if (callback) callback();

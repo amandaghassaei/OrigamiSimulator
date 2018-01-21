@@ -23,6 +23,7 @@ function Model3D(params){
     var facetLines = new THREE.LineSegments(null, lineMaterial);
     setFacetVisiblity(false);//default to no facet vis
     var borderLines = new THREE.LineSegments(null, lineMaterial);
+    var pinnedLines = new THREE.LineSegments(null, lineMaterial);
 
     var lines = {
         U: hingeLines,
@@ -30,7 +31,8 @@ function Model3D(params){
         V: valleyLines,
         C: cutLines,
         F: facetLines,
-        B: borderLines
+        B: borderLines,
+        P: pinnedLines
     };
 
     var positions;//place to store buffer geo vertex data
@@ -147,6 +149,7 @@ function Model3D(params){
         setFacetVisiblity(state);
         setHingeVisiblity(state);
         setBoundaryVisiblity(state);
+        setPinnedVisiblity(state);
     }
 
     function setMountainVisiblity(state){
@@ -167,6 +170,10 @@ function Model3D(params){
 
     function setBoundaryVisiblity(state){
         borderLines.visible = state;
+    }
+
+    function setPinnedVisiblity(state){
+        pinnedLines.visible = state;
     }
 
     function setMeshVisibility(state){
@@ -233,7 +240,8 @@ function Model3D(params){
             M: [],
             B: [],
             F: [],
-            C: []
+            C: [],
+            P: []
         };
         for (var i=0;i<fold.edges_assignment.length;i++){
             var edge = fold.edges_vertices[i];
@@ -282,7 +290,8 @@ function Model3D(params){
             lines.V,
             lines.C,
             lines.F,
-            lines.B
+            lines.B,
+            lines.P
         ];
     }
 
@@ -334,6 +343,7 @@ function Model3D(params){
         setFacetVisiblity: setFacetVisiblity,
         setHingeVisiblity: setHingeVisiblity,
         setBoundaryVisiblity: setBoundaryVisiblity,
+        setPinnedVisiblity: setPinnedVisiblity,
         setMeshVisibility: setMeshVisibility,
 
         getGeometry: getGeometry,//returns buffer geometry, for save stl

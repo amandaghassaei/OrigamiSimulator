@@ -558,6 +558,7 @@ function initControls(globals){
             globals.Model3D.setFacetVisiblity(globals.panelsVisible);
             globals.Model3D.setHingeVisiblity(globals.passiveEdgesVisible);
             globals.Model3D.setBoundaryVisiblity(globals.boundaryEdgesVisible);
+            globals.Model3D.setPinnedVisiblity(globals.pinnedEdgesVisibile);
         }
     });
     setCheckbox("#mtnsVisible", globals.mtnsVisible, function(val){

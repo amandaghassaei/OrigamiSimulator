@@ -20,6 +20,7 @@ function initGlobals(){
         panelsVisible: false,
         passiveEdgesVisible: false,
         boundaryEdgesVisible: true,
+        pinnedEdgesVisible: true,
         meshVisible: true,
         ambientOcclusion: false,
 
