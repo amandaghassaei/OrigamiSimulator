@@ -161,6 +161,7 @@
         uniform float u_creasePercent;
         uniform float u_dt;
         uniform float u_axialStiffness;
+        uniform float u_dampingPercent;
         uniform sampler2D u_lastPosition;
         uniform sampler2D u_lastVelocity;
         uniform sampler2D u_originalPosition;
@@ -208,6 +209,7 @@
             vec2 meta2 = texture2D(u_meta2, scaledFragCoord).xy;
 
             float nodeError = 0.0;
+            float numErrorBeams = 0.0;
 
             for (int j=0;j<100;j++){//for all beams (up to 100, had to put a const int in here)
                 if (j >= int(meta[1])) break;
@@ -221,17 +223,25 @@
                 vec3 neighborLastVelocity = texture2D(u_lastVelocity, scaledNeighborIndex).xyz;
                 vec3 neighborOriginalPosition = texture2D(u_originalPosition, scaledNeighborIndex).xyz;
 
-                vec3 nominalDist = neighborOriginalPosition-originalPosition;
-                vec3 deltaP = neighborLastPosition-lastPosition+nominalDist;
+                vec3 deltaP = neighborLastPosition+neighborOriginalPosition-lastPosition-originalPosition;
                 float deltaPLength = length(deltaP);
-                deltaP -= deltaP*(beamMeta[2]/deltaPLength);
-                nodeError += abs(deltaPLength/length(nominalDist) - 1.0);
-                vec3 deltaV = neighborLastVelocity-lastVelocity;
+                float nominalLength = beamMeta[2];
+                if (beamMeta[1] == 1.0) {
+                    nominalLength *= (1.0-abs(u_creasePercent));
+                    if (deltaPLength < nominalLength) deltaP *= 0.0;
+                    else deltaP *= (1.0-nominalLength/deltaPLength);
+                } else {
+                    nodeError += abs(deltaPLength/nominalLength - 1.0);
+                    numErrorBeams++;
+                    deltaP *= (1.0-nominalLength/deltaPLength);
+                }
 
-                vec3 _force = deltaP*beamMeta[0] + deltaV*beamMeta[1];
+                vec3 deltaV = neighborLastVelocity-lastVelocity;
+                vec3 _force = deltaP*beamMeta[0] + deltaV*u_dampingPercent*sqrt(beamMeta[0]);//damping should be multiplied by 2
+
                 force += _force;
             }
-            nodeError /= meta[1];
+            nodeError /= numErrorBeams;
 
             for (int j=0;j<100;j++){//for all creases (up to 100, had to put a const int in here)
                 if (j >= int(meta[3])) break;
@@ -365,6 +375,7 @@
         uniform float u_creasePercent;
         uniform float u_dt;
         uniform float u_axialStiffness;
+        uniform float u_dampingPercent;
         uniform sampler2D u_lastPosition;
         uniform sampler2D u_lastLastPosition;
         uniform sampler2D u_lastVelocity;
@@ -415,6 +426,7 @@
             vec2 meta2 = texture2D(u_meta2, scaledFragCoord).xy;
 
             float nodeError = 0.0;
+            float numErrorBeams = 0.0;
 
             for (int j=0;j<100;j++){//for all beams (up to 100, had to put a const int in here)
                 if (j >= int(meta[1])) break;
@@ -431,14 +443,25 @@
                 vec3 deltaP = neighborLastPosition+neighborOriginalPosition-lastPosition-originalPosition;
                 float deltaPLength = length(deltaP);
                 float nominalLength = beamMeta[2];
+                if (beamMeta[1] == 1.0) {
+                    nominalLength *= (1.0-abs(u_creasePercent));
+                    if (deltaPLength < nominalLength) deltaP *= 0.0;
+                    else deltaP *= (1.0-nominalLength/deltaPLength);
+                } else {
+                    nodeError += abs(deltaPLength/nominalLength - 1.0);
+                    numErrorBeams++;
+                    deltaP *= (1.0-nominalLength/deltaPLength);
+                }
+
                 deltaP *= (1.0-nominalLength/deltaPLength);
                 nodeError += abs(deltaPLength/nominalLength - 1.0);
                 vec3 deltaV = neighborLastVelocity-lastVelocity;
 
-                vec3 _force = deltaP*beamMeta[0] + deltaV*beamMeta[1];
+                vec3 _force = deltaP*beamMeta[0] + deltaV*u_dampingPercent*sqrt(beamMeta[0]);//damping should be multiplied by 2
+
                 force += _force;
             }
-            nodeError /= meta[1];
+            nodeError /= numErrorBeams;
 
             for (int j=0;j<100;j++){//for all creases (up to 100, had to put a const int in here)
                 if (j >= int(meta[3])) break;
@@ -719,6 +742,8 @@
     <script type="text/javascript" src="dependencies/path-data-polyfill.js"></script>
     <script type="text/javascript" src="dependencies/earcut.js"></script>
     <script type="text/javascript" src="dependencies/fold.js"></script>
+    <script type="text/javascript" src="dependencies/svg.js"></script>
+    <script type="text/javascript" src="dependencies/svg.panzoom.min.js"></script>
 
     <script type="text/javascript" src="js/dynamic/GLBoilerplate.js"></script>
     <script type="text/javascript" src="js/dynamic/GPUMath.js"></script>
@@ -737,8 +762,9 @@
 </head>
 <body>
 
-<div  id="threeContainer"></div>
+<div id="threeContainer"></div>
 <canvas id="gpuMathCanvas"></canvas>
+<div id="foldViewer"></div>
 
 </body>
 </html>

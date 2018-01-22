@@ -37,7 +37,7 @@ function DynamicSolver($canvas){
     var mass;
     var meta;//[beamMetaIndex, numBeams, nodeCreaseMetaIndex, numCreases]
     var meta2;//[nodeFaceMetaIndex, numFaces]
-    var beamMeta;//[K, D, length, otherNodeIndex]
+    var beamMeta;//[K, rubberBandEdge, length, otherNodeIndex]
 
     var normals;
     var faceVertexIndices;//[a,b,c] textureDimFaces
@@ -444,9 +444,9 @@ function DynamicSolver($canvas){
         return axialStiffness/length;
     }
 
-    function getAxialD(length){
-        return damping*2*Math.sqrt(getAxialK(length));//*this.getMinMass()); - min mass is always returning 1
-    }
+    // function getAxialD(length){
+    //     return damping*2*Math.sqrt(getAxialK(length));//*this.getMinMass()); - min mass is always returning 1
+    // }
 
     function getCreaseK(length, assignment){
         if (assignment == "F") return facetStiffness*length;
@@ -632,7 +632,7 @@ function DynamicSolver($canvas){
             for (var j=0;j<adjacentEdges.length;j++){
                 var edgeIndex = adjacentEdges[j];
                 beamMeta[4*index] = getAxialK(fold.edges_length[edgeIndex]);
-                // beamMeta[4*index+1] = getAxialD(fold.edges_length[edgeIndex])*0.5;//why 0.5?
+                beamMeta[4*index+1] = fold.edges_assignment[edgeIndex] == "P" ? 1 : 0;//constraint edge flag
                 if (initing) {
                     beamMeta[4*index+2] = fold.edges_length[edgeIndex];
                     beamMeta[4*index+3] = getOtherVertex(fold.edges_vertices[edgeIndex], i);

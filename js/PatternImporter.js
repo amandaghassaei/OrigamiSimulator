@@ -561,19 +561,10 @@ function PatternImporter(){
         }
 
         //scale to unit size
-        var boundingSphere = computeBoundingSphereRad(fold);
-        scale = 1/boundingSphere.radius;
+        var scaleInfo = scaleFOLD(fold);
+        scale = scaleInfo.scale;
+        fold = scaleInfo.fold;
 
-        //scale fold geo to unit dimensions and return
-        for (var i=0;i<fold.vertices_coords.length;i++){
-            fold.vertices_coords[i][0] -= boundingSphere.center.x;
-            fold.vertices_coords[i][1] -= boundingSphere.center.y;
-            fold.vertices_coords[i][2] -= boundingSphere.center.z;
-
-            fold.vertices_coords[i][0] *= scale;
-            fold.vertices_coords[i][1] *= scale;
-            fold.vertices_coords[i][2] *= scale;
-        }
 
         $("#numMtns").html("(" + FOLD.filter.mountainEdges(fold).length + ")");
         $("#numValleys").html("(" + FOLD.filter.valleyEdges(fold).length + ")");
@@ -589,6 +580,24 @@ function PatternImporter(){
     /**
      * helper functions for processing FOLD geometry - more of this should be in FOLD library!
      */
+
+    function scaleFOLD(fold){
+
+        var boundingSphere = computeBoundingSphereRad(fold);
+        scale = 1/boundingSphere.radius;
+        var center = boundingSphere.center;
+        //scale fold geo to unit dimensions and return
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            fold.vertices_coords[i][0] -= center.x;
+            fold.vertices_coords[i][1] -= center.y;
+            fold.vertices_coords[i][2] -= center.z;
+
+            fold.vertices_coords[i][0] *= scale;
+            fold.vertices_coords[i][1] *= scale;
+            fold.vertices_coords[i][2] *= scale;
+        }
+        return {fold: fold, scale: scale};
+    }
 
     function computeBoundingSphereRad(fold){
         //this could be a lot better
@@ -1178,6 +1187,8 @@ function PatternImporter(){
         getPreProcessedFoldData: getPreProcessedFoldData,//closed mesh
         getRawFoldData: getRawFoldData,//raw svg
 
-        getScale: getScale//scale of mesh, used for stl export
+        getScale: getScale,//scale of mesh, used for stl export
+        scaleFOLD: scaleFOLD,
+        edgesVerticesToVerticesEdges: edgesVerticesToVerticesEdges
     }
 }

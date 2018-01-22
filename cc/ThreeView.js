@@ -10,8 +10,8 @@ function ThreeView($container, params) {
     var scene = new THREE.Scene();
     var modelWrapper = new THREE.Object3D();
 
-    var camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 500);
-    // var camera = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, -10000, 10000);//-40, 40);
+    var camera = new THREE.PerspectiveCamera(60, $container.width()/$container.height(), 0.1, 500);
+    // var camera = new THREE.OrthographicCamera($container.width() / -2, $container.width() / 2, $container.height() / 2, $container.height() / -2, -10000, 10000);//-40, 40);
     var renderer = new THREE.WebGLRenderer({antialias: true});
     // var svgRenderer = new THREE.SVGRenderer();
     var controls;
@@ -21,7 +21,7 @@ function ThreeView($container, params) {
     function init() {
 
         renderer.setPixelRatio( window.devicePixelRatio );
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setSize($container.width(), $container.height());
         $container.append(renderer.domElement);
 
         scene.background = new THREE.Color(0xffffff);//new THREE.Color(0xe6e6e6);
@@ -108,14 +108,14 @@ function ThreeView($container, params) {
 
     function onWindowResize() {
 
-        camera.aspect = window.innerWidth / window.innerHeight;
-        // camera.left = -window.innerWidth / 2;
-        // camera.right = window.innerWidth / 2;
-        // camera.top = window.innerHeight / 2;
-        // camera.bottom = -window.innerHeight / 2;
+        camera.aspect = $container.width() / $container.height();
+        // camera.left = -$container.width() / 2;
+        // camera.right = $container.width() / 2;
+        // camera.top = $container.height() / 2;
+        // camera.bottom = -$container.height() / 2;
         camera.updateProjectionMatrix();
 
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setSize($container.width(), $container.height());
         controls.handleResize();
     }
 

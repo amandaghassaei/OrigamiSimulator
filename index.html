@@ -225,6 +225,7 @@
             vec2 meta2 = texture2D(u_meta2, scaledFragCoord).xy;
 
             float nodeError = 0.0;
+            float numErrorBeams = 0.0;
 
             for (int j=0;j<100;j++){//for all beams (up to 100, had to put a const int in here)
                 if (j >= int(meta[1])) break;
@@ -238,17 +239,25 @@
                 vec3 neighborLastVelocity = texture2D(u_lastVelocity, scaledNeighborIndex).xyz;
                 vec3 neighborOriginalPosition = texture2D(u_originalPosition, scaledNeighborIndex).xyz;
 
-                vec3 nominalDist = neighborOriginalPosition-originalPosition;
-                vec3 deltaP = neighborLastPosition-lastPosition+nominalDist;
+                vec3 deltaP = neighborLastPosition+neighborOriginalPosition-lastPosition-originalPosition;
                 float deltaPLength = length(deltaP);
-                deltaP -= deltaP*(beamMeta[2]/deltaPLength);
-                nodeError += abs(deltaPLength/length(nominalDist) - 1.0);
-                vec3 deltaV = neighborLastVelocity-lastVelocity;
+                float nominalLength = beamMeta[2];
+                if (beamMeta[1] == 1.0) {
+                    nominalLength *= (1.0-abs(u_creasePercent));
+                    if (deltaPLength < nominalLength) deltaP *= 0.0;
+                    else deltaP *= (1.0-nominalLength/deltaPLength);
+                } else {
+                    nodeError += abs(deltaPLength/nominalLength - 1.0);
+                    numErrorBeams++;
+                    deltaP *= (1.0-nominalLength/deltaPLength);
+                }
 
+                vec3 deltaV = neighborLastVelocity-lastVelocity;
                 vec3 _force = deltaP*beamMeta[0] + deltaV*u_dampingPercent*sqrt(beamMeta[0]);//damping should be multiplied by 2
+
                 force += _force;
             }
-            nodeError /= meta[1];
+            nodeError /= numErrorBeams;
 
             for (int j=0;j<100;j++){//for all creases (up to 100, had to put a const int in here)
                 if (j >= int(meta[3])) break;
@@ -433,6 +442,7 @@
             vec2 meta2 = texture2D(u_meta2, scaledFragCoord).xy;
 
             float nodeError = 0.0;
+            float numErrorBeams = 0.0;
 
             for (int j=0;j<100;j++){//for all beams (up to 100, had to put a const int in here)
                 if (j >= int(meta[1])) break;
@@ -449,6 +459,16 @@
                 vec3 deltaP = neighborLastPosition+neighborOriginalPosition-lastPosition-originalPosition;
                 float deltaPLength = length(deltaP);
                 float nominalLength = beamMeta[2];
+                if (beamMeta[1] == 1.0) {
+                    nominalLength *= (1.0-abs(u_creasePercent));
+                    if (deltaPLength < nominalLength) deltaP *= 0.0;
+                    else deltaP *= (1.0-nominalLength/deltaPLength);
+                } else {
+                    nodeError += abs(deltaPLength/nominalLength - 1.0);
+                    numErrorBeams++;
+                    deltaP *= (1.0-nominalLength/deltaPLength);
+                }
+
                 deltaP *= (1.0-nominalLength/deltaPLength);
                 nodeError += abs(deltaPLength/nominalLength - 1.0);
                 vec3 deltaV = neighborLastVelocity-lastVelocity;
@@ -457,7 +477,7 @@
 
                 force += _force;
             }
-            nodeError /= meta[1];
+            nodeError /= numErrorBeams;
 
             for (int j=0;j<100;j++){//for all creases (up to 100, had to put a const int in here)
                 if (j >= int(meta[3])) break;
