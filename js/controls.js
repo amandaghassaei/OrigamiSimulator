@@ -448,34 +448,34 @@ function initControls(globals){
         globals.materialHasChanged = true;
     });
 
-    var creasePercentNavSlider, creasePercentSlider;
-    creasePercentSlider = setSliderInput("#creasePercent", globals.creasePercent*100, -100, 100, 1, function(val){
+    var creasePercentSlider = setSliderInput("#creasePercent", globals.creasePercent*100, -100, 100, 1, function(val){
         globals.creasePercent = val/100;
         globals.shouldChangeCreasePercent = true;
-        creasePercentNavSlider.slider('value', val);
-        $('#currentFoldPercent').val(val);
+        updateCreasePercent();
     });
-    creasePercentNavSlider = setSlider("#creasePercentNav>div", globals.creasePercent*100, -100, 100, 1, function(val){
+    var creasePercentNavSlider = setSlider("#creasePercentNav>div", globals.creasePercent*100, -100, 100, 1, function(val){
         globals.creasePercent = val/100;
         globals.shouldChangeCreasePercent = true;
-        creasePercentSlider.slider('value', val);
-        $('#creasePercent>input').val(val);
-        $('#currentFoldPercent').val(val);
+        updateCreasePercent();
+    });
+    var creasePercentBottomSlider = setSlider("#creasePercentBottom>div", globals.creasePercent*100, 0, 100, 1, function(val){
+        globals.creasePercent = val/100;
+        globals.shouldChangeCreasePercent = true;
+        updateCreasePercent()
     });
     setInput("#currentFoldPercent", globals.creasePercent*100, function(val){
         globals.creasePercent = val/100;
         globals.shouldChangeCreasePercent = true;
-        creasePercentSlider.slider('value', val);
-        creasePercentNavSlider.slider('value', val);
-        $('#creasePercent>input').val(val);
+        updateCreasePercent();
     }, -100, 100);
 
     function updateCreasePercent(){
-        var val = (globals.creasePercent*100).toFixed(2);
+        var val = (globals.creasePercent*100);
         creasePercentSlider.slider('value', val);
         creasePercentNavSlider.slider('value', val);
-        $('#currentFoldPercent').val(val);
-        $('#creasePercent>input').val(val);
+        creasePercentBottomSlider.slider('value', val);
+        $('#currentFoldPercent').val(val.toFixed(0));
+        $('#creasePercent>input').val(val.toFixed(0));
     }
     // updateCreasePercent();
 
@@ -622,12 +622,7 @@ function initControls(globals){
         globals.model.reset();
     });
     setLink("#stepForward", function(){
-        var numSteps = $("#numSteps").val();
-        numSteps = parseInt(numSteps);
-        if (isNaN(numSteps)) return;
-        if (numSteps<=0) return;
-        $("#numSteps").val(numSteps);
-        globals.model.step(numSteps);
+        globals.model.step(globals.numSteps);
         $("#reset").css('display', 'inline-block');
     });
 
@@ -657,6 +652,33 @@ function initControls(globals){
 
     setLink("#aboutUserInteraction", function(){
         $('#aboutUserInteractionModal').modal('show');
+    });
+
+    setLink("#showAdvancedOptions", function(){
+        $("#showAdvancedOptions").hide();
+        $("#controlsBottom").animate({
+            bottom: "-80px"
+        }, function(){
+            $("#controls").animate({
+            right: 0
+            });
+            $("#controlsLeft").animate({
+                left: 0
+            });
+        });
+    });
+    setLink("#hideAdvancedOptions", function(){
+        $("#controls").animate({
+            right: "-400px"
+        }, function(){
+            $("#showAdvancedOptions").show();
+            $("#controlsBottom").animate({
+                bottom: 0
+            });
+        });
+        $("#controlsLeft").animate({
+            left: "-420px"
+        });
     });
 
     function setButtonGroup(id, callback){

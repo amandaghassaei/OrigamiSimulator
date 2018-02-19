@@ -1011,7 +1011,7 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">View <b class="caret"></b></a>
                 <span class="dropdown-arrow"></span>
                 <ul class="dropdown-menu">
-                    <li><a id="menuVis" href="#">Toggle Menu Visibility</a></li>
+                    <!--<li><a id="menuVis" href="#">Toggle Menu Visibility</a></li>-->
                     <li><a id="changeBackground" href="#">Change Background Color...</a></li>
                     <li class="dropdown-submenu">
                         <a tabindex="-1">Rotate Model<span class="pull-right fui-arrow-right"></span></a>
@@ -1059,21 +1059,13 @@
 
 <div  id="threeContainer"></div>
 <canvas id="gpuMathCanvas"></canvas>
+<a href="#" id="showAdvancedOptions">Show Advanced Options</a>
 <div id="controls">
+    <a href="#" id="hideAdvancedOptions">Hide Advanced Options</a><br/><br/>
     <div class="sliderInput floatRight" id="creasePercent">
         <span class="label-slider">Fold Percent : </span><div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
         <input value="" placeholder="" class="float form-control" type="text">&nbsp;&nbsp;%
     </div><br/><br/>
-    <div id="simButtons" class="alignRight">
-        <a href="#" id="start" class="paddingBottom btn btn-lg btn-success">Start Simulation</a>
-        <a href="#" id="pause" class="paddingBottom btn btn-lg btn-warning">Pause Simulation</a>
-        <a href="#" id="reset" class="paddingBottom btn btn-lg btn-default">Reset</a>
-        <div id="stepForwardOptions" class="floatRight">
-            <a href="#" id="stepForward" class="btn btn-lg btn-default">Step Forward</a>
-            <label>Num Steps:</label> &nbsp;&nbsp;<input id="numSteps" value="100" placeholder="" class="int form-control" type="text">
-            <br/><br/>
-        </div>
-    </div>
     <!--<b>Simulation Type:</b><br/>-->
     <!--<div class="indent">-->
         <!--<label class="radio">-->
@@ -1095,10 +1087,7 @@
             <input id="userInteractionEnabled" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
             Allow User Interaction
         </label>
-    </div><br/>
-    <div class="fullWidth alignRight">
-        <a href="#" id="shouldCenterGeo" class="displayBlock btn btn-lg btn-default">Re-center geometry</a>
-    </div><br/>
+    </div><br/><br/>
     <div class="fullWidth">
         <a href="#" class="seeMore closed" data-id="simulationSettings"><span class="fui-triangle-down"></span><b>Simulation Settings:</b></a><a class="about" href="#" id="aboutStiffness"><span class="fui-question-circle"></span></a><br/>
         <div id="simulationSettings" class="hide">
@@ -1138,9 +1127,20 @@
     <div class="fullWidth">
         <a href="#" class="seeMore closed" data-id="animationsSettings"><span class="fui-triangle-down"></span><b>Animation Settings:</b></a><a class="about" href="#" id="aboutAnimation"><span class="fui-question-circle"></span></a><br/>
         <div id="animationsSettings" class="fullWidth hide">
+            <div id="simButtons" class="alignRight">
+                <a href="#" id="start" class="paddingBottom btn btn-lg btn-success">Start Simulation</a>
+                <a href="#" id="pause" class="paddingBottom btn btn-lg btn-warning">Pause Simulation</a>
+                <a href="#" id="reset" class="paddingBottom btn btn-lg btn-default">Reset</a>
+                <div id="stepForwardOptions" class="floatRight">
+                    <a href="#" id="stepForward" class="btn btn-lg btn-default">Step Forward</a>
+                </div>
+            </div>
             <div class="doubleIndent">
                 <span class="smallTxt">&Delta;t = <span id="deltaT"></span> seconds</span><br/>
-                <span class="smallTxt">Num simulation steps per frame: &nbsp;&nbsp;<input value="" placeholder="" class="numStepsPerRender int form-control" type="text"></span>
+                <span class="smallTxt">Num simulation steps per frame: &nbsp;&nbsp;<input value="" placeholder="" class="numStepsPerRender int form-control" type="text"></span><br/><br/>
+                <div class="fullWidth alignRight">
+                    <a href="#" id="shouldCenterGeo" class="displayBlock btn btn-lg btn-default">Re-center geometry</a>
+                </div>
             </div>
         </div>
     </div><br/>
@@ -1155,6 +1155,19 @@
     <div class="extraSpace"></div>
 </div>
 <div id="svgViewer"></div>
+<div id="controlsBottom">
+    <div class="sliderInput floatRight" id="creasePercentBottom">
+        <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+    </div>
+    <div id="flatIndicator" class="smallTxt">
+        <img src="assets/flatcraneSmall.png"/>
+        Flat
+    </div>
+    <div id="foldedIndicator" class="smallTxt">
+        <img src="assets/foldedCraneSmall.png"/>
+        Folded
+    </div>
+</div>
 <div id="controlsLeft" class="flipped">
     <div>
         <b>View Settings:</b><br/><br/>
@@ -1643,7 +1656,7 @@
                     <a href="https://en.wikipedia.org/wiki/Deformation_(mechanics)#Engineering_strain" target="_blank">
                         Cauchy strain or engineering strain</a> is a unitless measurement of how much a material is being stretched or compressed under load.
                     The <b>Strain Visualization</b> illustrates the strain across an origami sheet by mapping it to a color from blue (no strain) to red (max strain).<br/><br/>
-                    <img style="width: 100%;" src="strain.jpg" />
+                    <img style="width: 100%;" src="assets/doc/strain.jpg" />
                 </p>
             </div>
         </div><!-- /.modal-content -->

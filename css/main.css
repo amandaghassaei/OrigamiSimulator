@@ -27,12 +27,72 @@ p{
     margin: 15px 0 15px 0;
 }
 
+#showAdvancedOptions{
+    position: absolute;
+    top: 53px;
+    font-size: 14px;
+    color: #34495e;
+    font-weight: 900;
+    text-align: right;
+    right: 0px;
+    width: 400px;
+    padding: 20px 20px;
+}
+#hideAdvancedOptions{
+    font-size: 14px;
+    color: #34495e;
+    font-weight: 900;
+    text-align: right;
+    width: 100%;
+    display: inline-block;
+}
+
+#controlsBottom{
+    width: 50%;
+    margin: auto;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    height: 80px;
+}
+#controlsBottom>.sliderInput{
+    width: 100%;
+    margin-top:20px;
+}
+#controlsBottom>.sliderInput>.flat-slider{
+    width: 100%;
+    margin: 0;
+    background: #e8e8e8;
+}
+#flatIndicator{
+    text-align: center;
+    width: 100px;
+    position: absolute;
+    top: 0;
+    left: -110px;
+    line-height: 10px;
+}
+#flatIndicator>img{
+    width:100%;
+}
+#foldedIndicator{
+    text-align: center;
+    width: 100px;
+    position: absolute;
+    top: 0;
+    right: -110px;
+    line-height: 10px;
+}
+#foldedIndicator>img{
+    width:100%;
+}
 
 #controls{
     position: absolute;
     top:53px;
     bottom: 0;
-    right:0;
+    right:-400px;
     width:400px;
     padding:20px 20px;
     overflow: auto;
@@ -44,7 +104,7 @@ p{
 #controlsLeft{
     position: absolute;
     bottom:0;
-    left:0;
+    left:-420px;
     width: 420px;
     top:53px;
     padding:20px 20px;
@@ -336,13 +396,13 @@ svg{
 #start, #stepForwardOptions{
     display: none;
 }
+#stepForwardOptions{
+    width: 100%;
+}
 #reset{
     margin-left: 20px;
 }
-#stepForward{
-    display: inline-block;
-    margin-right: 20px;
-}
+
 
 #creasePercentNav{
     margin-bottom: 0;
