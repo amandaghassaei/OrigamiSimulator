@@ -26,23 +26,27 @@ $(function() {
         //         }, dur);
         // }
 
-        window.setTimeout(function(){
+        if ($("body").innerWidth() > 770) {
 
-            setCookie('firsttime',true);
+            window.setTimeout(function(){
 
-            var $helper = $("#helper");
-            $helper.show();
-            window.setTimeout(function() {
-                $helper.css({opacity: 1});
-                window.setTimeout(function () {
-                    $helper.css({opacity: 0});
+                setCookie('firsttime',true);
+
+                var $helper = $("#helper");
+                $helper.show();
+                window.setTimeout(function() {
+                    $helper.css({opacity: 1});
                     window.setTimeout(function () {
-                        $helper.hide();
-                    }, 2000);
-                }, 10000);
-                // bounce($helper, 3, 500);
-            }, 500);
-        }, 7000);
+                        $helper.css({opacity: 0});
+                        window.setTimeout(function () {
+                            $helper.hide();
+                        }, 2000);
+                    }, 10000);
+                    // bounce($helper, 3, 500);
+                }, 500);
+            }, 7000);
+        }
+
     }
 
     globals = initGlobals();
