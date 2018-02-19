@@ -655,9 +655,9 @@ function initControls(globals){
     });
 
     setLink("#showAdvancedOptions", function(){
-        $("#showAdvancedOptions").hide();
+        $("#basicUI").hide();
         $("#controlsBottom").animate({
-            bottom: "-80px"
+            bottom: "-90px"
         }, function(){
             $("#controls").animate({
             right: 0
@@ -671,7 +671,7 @@ function initControls(globals){
         $("#controls").animate({
             right: "-400px"
         }, function(){
-            $("#showAdvancedOptions").show();
+            $("#basicUI").fadeIn();
             $("#controlsBottom").animate({
                 bottom: 0
             });
@@ -679,6 +679,10 @@ function initControls(globals){
         $("#controlsLeft").animate({
             left: "-420px"
         });
+    });
+
+    setLink("#exampleMenuButton", function(){
+        $("#helper").hide();
     });
 
     function setButtonGroup(id, callback){

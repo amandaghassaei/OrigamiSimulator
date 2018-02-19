@@ -27,16 +27,19 @@ p{
     margin: 15px 0 15px 0;
 }
 
-#showAdvancedOptions{
+#basicUI{
     position: absolute;
     top: 53px;
     font-size: 14px;
     color: #34495e;
-    font-weight: 900;
     text-align: right;
     right: 0px;
     width: 400px;
     padding: 20px 20px;
+}
+#showAdvancedOptions{
+    color: #34495e;
+    font-weight: 900;
 }
 #hideAdvancedOptions{
     font-size: 14px;
@@ -54,7 +57,8 @@ p{
     bottom: 0;
     right: 0;
     left: 0;
-    height: 80px;
+    height: 90px;
+    font-weight: 900;
 }
 #controlsBottom>.sliderInput{
     width: 100%;
@@ -366,7 +370,7 @@ svg{
     font-size: 18px;
     line-height: 18px;
 }
-#controls .about{
+#controls .about, #basicUI .about{
     position: absolute;
     line-height: 1.7;
     margin-top: 2px;
@@ -520,6 +524,41 @@ a.seeMore.closed>.fui-triangle-down{
     background: #f5f5f5;
     border-left:2px solid #a8a6ae;
     border-bottom:2px solid #a8a6ae;
+    -ms-transform: rotate(45deg); /* IE 9 */
+     -moz-transform:rotate(45deg);
+      -webkit-transform:rotate(45deg);
+    transform: rotate(45deg);
+}
+
+#helper{
+    display: none;
+    position: absolute;
+    padding: 10px 15px;
+    font-size: 14px;
+    background: #f5f5f5;
+    margin-top: 20px;
+    opacity:0;
+    top: 54px;
+    -webkit-transition: opacity 1s; /* For Safari 3.1 to 6.0 */
+    transition: opacity 1s;
+    left: 140px;
+    color:#34495e;
+    white-space: normal;
+    border: 2px solid #a8a6ae;
+    /*transition-timing-function: easeInOutCubic;*/
+}
+
+#helper:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: -12px;
+    left:105px;
+    width: 20px;
+    height: 20px;
+    background: #f5f5f5;
+    border-left:2px solid #a8a6ae;
+    border-top:2px solid #a8a6ae;
     -ms-transform: rotate(45deg); /* IE 9 */
      -moz-transform:rotate(45deg);
       -webkit-transform:rotate(45deg);

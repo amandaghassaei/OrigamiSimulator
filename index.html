@@ -893,7 +893,7 @@
                 </ul>
             </li>
             <li class="dropdown navDropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Examples <b class="caret"></b></a>
+                <a href="#" id="exampleMenuButton" class="dropdown-toggle" data-toggle="dropdown">Examples <b class="caret"></b></a>
                 <span class="dropdown-arrow"></span>
                 <ul class="dropdown-menu" style="min-width: 200px;">
                     <li class="dropdown-submenu">
@@ -1059,7 +1059,19 @@
 
 <div  id="threeContainer"></div>
 <canvas id="gpuMathCanvas"></canvas>
-<a href="#" id="showAdvancedOptions">Show Advanced Options</a>
+<div id="basicUI">
+    Drag to rotate, scroll to zoom.<br/><br/>
+    <!--<div class="inlineBlock fullWidth">-->
+        <!--<a class="about" href="#" id="aboutUserInteraction"><span class="fui-question-circle"></span></a>-->
+        <!--<label style="margin-right:40px" class="checkbox floatRight" for="userInteractionEnabled">-->
+            <!--<input id="userInteractionEnabled" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>-->
+            <!--Allow User Interaction-->
+        <!--</label>-->
+    <!--</div><br/><br/>-->
+    <a href="#" id="showAdvancedOptions">Show Advanced Options</a><br/><br/>
+
+</div>
+
 <div id="controls">
     <a href="#" id="hideAdvancedOptions">Hide Advanced Options</a><br/><br/>
     <div class="sliderInput floatRight" id="creasePercent">
@@ -1155,6 +1167,7 @@
     <div class="extraSpace"></div>
 </div>
 <div id="svgViewer"></div>
+<div id="helper">Load more origami patterns here!</div>
 <div id="controlsBottom">
     <div class="sliderInput floatRight" id="creasePercentBottom">
         <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
@@ -1306,7 +1319,7 @@
                     <ul>
                         <li>Before the model can enter the simulator, this tool will automatically triangulate regions in the pattern that form polygons with more than three sides.
                         To control the triangulations, draw lines in <b style="color:#cccc00">yellow</b> - rgb(255, 255, 0), hex #ffff00.  In general, patterns are more stable when their triangulation is symmetric and minimizes long, skinny triangles.  You can see
-                        how the app automatically triangulated your pattern by enabling "Facet Crease" visibility in the <b>Edges Visiblity</b>
+                        how the app automatically triangulated your pattern by enabling "Facet Crease" visibility in the <b>Advanced Options > Edges Visibility</b>
                             menu on the left side of the screen.  It may not be necessary to add triangulation lines on your pattern.</li>
                     </ul>
                         <object type="image/svg+xml" data="assets/doc/triangulations.svg">
@@ -1354,6 +1367,7 @@
                         <li>Create geometry using the <b>Line Segment</b>, <b>Rectangle</b>,  and <b>Polygon</b> tools.</li>
                         <li>Illustrator can help you select all lines of a particular type so that you can edit their color or opacity together.  Click the line,
                         then go to <b>Select > Same > Appearance</b> to select all similar lines in the pattern.
+                        <li>Be sure that <b>CSS Properties</b> is set to <b>Presentation Attributes</b> in the Advanced options.
                         <li>Finally hit <b>Save As</b> and select <b>.svg</b> extension. I'm using the default SVG 1.1 settings, but version 1.0 will work as well.</li>
                     </ul>
                 <img style="width:100%" src="assets/doc/illustratorSaveOptions.jpg"/>
@@ -1374,7 +1388,7 @@
                 For this to work, you must first use a <a href="https://webvr.info/" target="_blank">WebVR enabled browser</a>:
                 currently only <a href="https://webvr.info/get-chrome/" target="_blank">an experimental build of Chromium</a> (with enable-webvr and
                         -enable-gamepad-extensions flags) and <a href="https://webvr.rocks/firefox" target="_blank">the latest Firefox for Windows </a>
-                      are supported by this app.  Currently, Chromium seems to be more performant in my setup.
+                      are supported by this app.
                 <br/><br/>
                     When you open this page with the appropriate browser, you will see a button that says "<b>ENTER VR</b>".  Clicking this will
                 put the app into an interactive VR mode.  The hand controllers will allow you to grab the origami mesh and pull on it.
@@ -1383,7 +1397,7 @@
                 <br/><br/>
                     <b>Troubleshooting</b>:<br/>
                 <ul>
-                    <li>If the simulation looks choppy, consider lowering the <b>Num Steps Per Frame</b> setting.</li>
+                    <li>If the simulation looks choppy, consider lowering the <b>Animation Settings > Num Steps Per Frame</b> setting.</li>
                     <li>The origami should load up in the center of your playspace.  If things load way off in the distance, you may need to reboot your headset and controllers and refresh this app.  I do this through SteamVR.</li>
                     <li>If you hand controllers are not appearing, try clicking the System Button (Vive) to get them to wake up.  If you still have trouble connecting, try refreshing this app.</li>
                     <li>WebVR is changing rapidly, if you cannot connect be sure you have the latest browser version and install any firmware updates on your headset, controllers, and sensors.</li>
@@ -1673,7 +1687,7 @@
                     Toggle this control to enable/disable mouse interaction with the origami model.  When enabled,
                         mousing over the model will display a highlighter; clicking and dragging allows you to
                         interact with the model in real time.  Very vigorous interactions with the model may cause it
-                        to pop into a strange configuration that it can't escape - use the <b>Reset</b> button to start
+                        to pop into a strange configuration that it can't escape - use the <b>Animation Settings > Reset</b> button to start
                         the simulation again from a flat state.
                     </p>
             </div>
