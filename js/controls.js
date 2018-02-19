@@ -469,6 +469,17 @@ function initControls(globals){
         updateCreasePercent();
     }, -100, 100);
 
+    setLink("#flatIndicator", function(){
+        globals.creasePercent = 0;
+        globals.shouldChangeCreasePercent = true;
+        updateCreasePercent();
+    });
+    setLink("#foldedIndicator", function(){
+        globals.creasePercent = 1;
+        globals.shouldChangeCreasePercent = true;
+        updateCreasePercent();
+    });
+
     function updateCreasePercent(){
         var val = (globals.creasePercent*100);
         creasePercentSlider.slider('value', val);
@@ -684,6 +695,7 @@ function initControls(globals){
     setLink("#exampleMenuButton", function(){
         $("#helper").hide();
     });
+
 
     function setButtonGroup(id, callback){
         $(id+" a").click(function(e){

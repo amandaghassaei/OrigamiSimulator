@@ -76,6 +76,7 @@ p{
     top: 0;
     left: -110px;
     line-height: 10px;
+    color: #34495e;
 }
 #flatIndicator>img{
     width:100%;
@@ -87,6 +88,7 @@ p{
     top: 0;
     right: -110px;
     line-height: 10px;
+    color: #34495e;
 }
 #foldedIndicator>img{
     width:100%;
