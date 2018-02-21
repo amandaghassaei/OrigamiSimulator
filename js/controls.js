@@ -537,13 +537,30 @@ function initControls(globals){
     else $("#coloredMaterialOptions").hide();
     if (globals.colorMode == "axialStrain") $("#axialStrainMaterialOptions").show();
     else $("#axialStrainMaterialOptions").hide();
-    setRadio("colorMode", globals.colorMode, function(val){
+
+    function setColorMode(val){
         globals.colorMode = val;
-        if (val == "color") $("#coloredMaterialOptions").show();
-        else $("#coloredMaterialOptions").hide();
+        if (val == "color") {
+            $("#coloredMaterialOptions").show();
+            $("#colorToggle>div").addClass("active");
+            $("#strainToggle>div").removeClass("active");
+        }
+        else {
+            $("#coloredMaterialOptions").hide();
+            $("#colorToggle>div").removeClass("active");
+            $("#strainToggle>div").addClass("active");
+        }
         if (val == "axialStrain") $("#axialStrainMaterialOptions").show();
         else $("#axialStrainMaterialOptions").hide();
+        $(".radio>input[value="+val+"]").prop("checked", true);
         globals.model.setMeshMaterial();
+    }
+    setRadio("colorMode", globals.colorMode, setColorMode);
+    setLink("#colorToggle", function(){
+        setColorMode("color");
+    });
+    setLink("#strainToggle", function(){
+        setColorMode("axialStrain");
     });
 
     setHexInput("#color1", globals.color1, function(val){
@@ -632,6 +649,9 @@ function initControls(globals){
         if (!globals.simulationRunning) $("#reset").hide();
         globals.model.reset();
     });
+    setLink("#resetBottom", function(){
+        globals.model.reset();
+    });
     setLink("#stepForward", function(){
         globals.model.step(globals.numSteps);
         $("#reset").css('display', 'inline-block');
@@ -641,12 +661,26 @@ function initControls(globals){
         globals.strainClip = val;
     }, 0.0001, 100);
 
-    setCheckbox($("#userInteractionEnabled"), globals.userInteractionEnabled, function(val){
+    setCheckbox($("#userInteractionEnabled"), globals.userInteractionEnabled, enableInteraction);
+    function enableInteraction(val){
         globals.userInteractionEnabled = val;
+        $("#userInteractionEnabled").prop('checked', val);
         if (val) {
+            $("#grabToggle>div").addClass("active");
+            $("#orbitToggle>div").removeClass("active");
             globals.rotateModel = null;
             globals.threeView.resetModel();
-        } else globals.UI3D.hideHighlighters();
+        } else {
+            $("#grabToggle>div").removeClass("active");
+            $("#orbitToggle>div").addClass("active");
+            globals.UI3D.hideHighlighters();
+        }
+    }
+    setLink("#grabToggle", function(){
+        enableInteraction(true);
+    });
+    setLink("#orbitToggle", function(){
+        enableInteraction(false);
     });
 
     setCheckbox($("#foldUseAngles"), globals.foldUseAngles, function(val){
@@ -668,7 +702,7 @@ function initControls(globals){
     setLink("#showAdvancedOptions", function(){
         $("#basicUI").hide();
         $("#controlsBottom").animate({
-            bottom: "-90px"
+            bottom: "-140px"
         }, function(){
             $("#controls").animate({
             right: 0

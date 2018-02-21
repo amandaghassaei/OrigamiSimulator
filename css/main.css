@@ -1,5 +1,6 @@
 html{
     width:100%;
+    min-width: 775px;
     height:100%;
     overflow: hidden;
     padding:0;
@@ -9,6 +10,7 @@ html{
 
 body{
     width:100%;
+    min-width: 775px;
     height:100%;
     padding:0;
     margin:0;
@@ -51,48 +53,116 @@ p{
 }
 
 #controlsBottom{
-    width: 50%;
+    width:100%;
+    min-width: 775px;
+    max-width: 1000px;
     margin: auto;
     position: absolute;
     bottom: 0;
     right: 0;
     left: 0;
-    height: 90px;
+    height:110px;
     font-weight: 900;
 }
-#controlsBottom>.sliderInput{
-    width: 100%;
-    margin-top:20px;
+#controlsBottom>div{
+    display: inline-block;
 }
-#controlsBottom>.sliderInput>.flat-slider{
+#bottomSliderContainer{
+    position: absolute;
+    right:350px;
+    left:250px;
+        margin-top: 18px;
+}
+#creasePercentBottom{
+    width: 100%;
+    margin-top: 20px;
+}
+#creasePercentBottom>.flat-slider{
     width: 100%;
     margin: 0;
     background: #e8e8e8;
 }
-#flatIndicator{
+.sliderEndPt{
     text-align: center;
     width: 100px;
     position: absolute;
-    top: 0;
-    left: -110px;
-    line-height: 10px;
+    top: -30px;
     color: #34495e;
+    line-height: 18px;
 }
-#flatIndicator>img{
+#flatIndicator{
+    left: -50px;
+}
+.sliderEndPt>img{
     width:100%;
 }
 #foldedIndicator{
+    right: -50px;
+}
+.sliderEndPt>.fui-triangle-up{
+    display: block;
+    color: #34495e;
+    margin-top: 10px;
+}
+.sliderEndPtLabel{
+    color: #34495e;
+    display: block;
+    /*margin-top: 30px;*/
+}
+
+#viewToggle{
+    left: 30px;
+}
+#controlsToggle{
+    right: 140px;
+}
+.preserveAspect{
+    width: auto;
+}
+.bigToggle{
+    height:90px;
+    width:140px;
     text-align: center;
-    width: 100px;
     position: absolute;
-    top: 0;
-    right: -110px;
-    line-height: 10px;
+    font-size:14px;
+    /*border: 1px solid #34495e;*/
+}
+.bigToggle>div{
+    background: #e8e8e8;
+    height:70px;
+    overflow: hidden;
+    border-radius: 10px;
+    margin-bottom: 5px;
+}
+.bigToggle>div div{
+    padding: 5px;
+    width:50%;
+    height: 100%;
+    display: inline-block;
+    text-align: center;
+    font-size: 12px;
     color: #34495e;
 }
-#foldedIndicator>img{
+.bigToggle div.active{
+    background: #bdc3c7;
+}
+.bigToggle img{
+    display: inline-block;
+    height:40px;
+}
+.bigToggle span{
+    display: block;
     width:100%;
 }
+
+#resetBottom{
+    position: absolute;
+    right:30px;
+    top: 13px;
+    color: #34495e;
+    font-weight: 900;
+}
+
 
 #controls{
     position: absolute;

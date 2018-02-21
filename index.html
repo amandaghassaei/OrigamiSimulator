@@ -1062,7 +1062,6 @@
 <div  id="threeContainer"></div>
 <canvas id="gpuMathCanvas"></canvas>
 <div id="basicUI">
-    Drag to rotate, scroll to zoom.<br/><br/>
     <!--<div class="inlineBlock fullWidth">-->
         <!--<a class="about" href="#" id="aboutUserInteraction"><span class="fui-question-circle"></span></a>-->
         <!--<label style="margin-right:40px" class="checkbox floatRight" for="userInteractionEnabled">-->
@@ -1171,17 +1170,34 @@
 <div id="svgViewer"></div>
 <div id="helper">Load more origami patterns here!</div>
 <div id="controlsBottom">
-    <div class="sliderInput floatRight" id="creasePercentBottom">
-        <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+    <div id="viewToggle" class="bigToggle">
+        <div>
+            <a href="#" id="colorToggle"><div class="active"><img src="assets/hyparColorSmall.png"/><span>Material</span></div></a><a href="#" id="strainToggle"><div><img src="assets/hyparStrainSmall.png"/><span>Strain</span></div></a>
+        </div>
+        View Mode
     </div>
-    <a href="#" id="flatIndicator" class="smallTxt">
-        <img src="assets/flatcraneSmall.png"/>
-        Flat
-    </a>
-    <a href="#" id="foldedIndicator" class="smallTxt">
-        <img src="assets/foldedCraneSmall.png"/>
-        Folded
-    </a>
+    <div id="bottomSliderContainer">
+        <div class="sliderInput" id="creasePercentBottom">
+            <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+        </div>
+        <a href="#" id="flatIndicator" class="sliderEndPt smallTxt">
+            <img src="assets/flatcraneSmall.png"/>
+            <span class="fui-triangle-up"></span>
+            <span class="sliderEndPtLabel">Flat</span>
+        </a>
+        <a href="#" id="foldedIndicator" class="sliderEndPt smallTxt">
+            <img src="assets/foldedCraneSmall.png"/>
+            <span class="fui-triangle-up"></span>
+            <span class="sliderEndPtLabel">Folded</span>
+        </a>
+    </div>
+    <div id="controlsToggle" class="bigToggle">
+        <div>
+            <a href="#" id="orbitToggle"><div class="active"><img class="preserveAspect" src="assets/rotateSmall.png"/><span>Rotate 3D</span></div></a><a href="#" id="grabToggle"><div><img class="preserveAspect" src="assets/grabSmall.png"/><span>Grab</span></div></a>
+        </div>
+        Control Mode
+    </div>
+    <a href="#" id="resetBottom" class="btn btn-lg btn-default">Reset</a>
 </div>
 <div id="controlsLeft" class="flipped">
     <div>
@@ -1720,7 +1736,8 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
                 <p><b>BACKGROUND COLOR</b><br/><br/>
-                    Color (rgb hex) : &nbsp;&nbsp;<input id="backgroundColor" value="" placeholder="" class="hexVal form-control" type="text">
+                    Color (rgb hex) : &nbsp;&nbsp;<input id="backgroundColor" value="" placeholder="" class="hexVal form-control" type="text"><br/>
+                    <span class="smallTxt">Hex colors are 6 digit alphanumeric codes that specify different colors.  You can get these codes using a <a href="https://www.webpagefx.com/web-design/color-picker/" target="_blank">color picker</a>.</span>
                 </p>
             </div>
         </div><!-- /.modal-content -->
