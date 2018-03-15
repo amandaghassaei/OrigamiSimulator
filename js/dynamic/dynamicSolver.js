@@ -183,6 +183,8 @@ function initDynamicSolver(globals){
         return avgPosition;
     }
 
+    window.ke = [];
+
     function render(){
 
         // var vectorLength = 2;
@@ -242,6 +244,7 @@ function initDynamicSolver(globals){
                     colors[3*i+2] = color.b;
                 }
             }
+            window.ke.push(globalError);
             $errorOutput.html((globalError/nodes.length).toFixed(7) + " %");
         } else {
             console.log("shouldn't be here");

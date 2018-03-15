@@ -376,7 +376,7 @@
             }
 
             vec3 velocity = force*u_dt/mass[0] + lastVelocity;
-            gl_FragColor = vec4(velocity,nodeError);
+            gl_FragColor = vec4(velocity,length(velocity)*length(velocity));
         }
     </script>
 
