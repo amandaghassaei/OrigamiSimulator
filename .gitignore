@@ -1,3 +1,9 @@
 assets/attrib.txt
 .idea/
-todo.rtf
+/todo.rtf
+
+
+CreasePatternScripts/*.pdf
+CreasePatternScripts/*.svg
+CreasePatternScripts/**/*.pdf
+CreasePatternScripts/**/*.svg
