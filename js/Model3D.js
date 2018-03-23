@@ -4,7 +4,7 @@
 
 //model updates object3d geometry and materials
 
-function Model3D(params){
+function Model3D(params, warn){
 
     var material, material2, geometry;
     var frontside = new THREE.Mesh();//front face of mesh
@@ -191,19 +191,19 @@ function Model3D(params){
         if (fold.vertices_coords.length == 0) {
             var msg = "No geometry found.";
             console.warn(msg);
-            if (globals && globals.warn) globals.warn(msg);
+            if (warningCallback) warningCallback(msg);
             return;
         }
         if (fold.faces_vertices.length == 0) {
             var msg = "No faces found, try adjusting import vertex merge tolerance.";
             console.warn(msg);
-            if (globals && globals.warn) globals.warn(msg);
+            if (warningCallback) warningCallback(msg);
             return;
         }
         if (fold.edges_vertices.length == 0) {
             var msg = "No edges found.";
             console.warn(msg);
-            if (globals && globals.warn) globals.warn(msg);
+            if (warningCallback) warningCallback(msg);
             return;
         }
 

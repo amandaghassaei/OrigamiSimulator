@@ -405,6 +405,7 @@ function DynamicSolver($canvas){
                 }
             }
             $errorOutput.html((globalError/numVertices).toFixed(7) + " %");
+            return globalError;
         } else {
             console.log("shouldn't be here");
         }
@@ -412,7 +413,6 @@ function DynamicSolver($canvas){
 
     function setSolveParams(){
         var dt = calcDt();
-        $("#deltaT").html(dt);
         gpuMath.setProgram("thetaCalc");
         gpuMath.setUniformForProgram("thetaCalc", "u_dt", dt, "1f");
         gpuMath.setProgram("velocityCalc");
@@ -423,7 +423,6 @@ function DynamicSolver($canvas){
         gpuMath.setUniformForProgram("positionCalc", "u_dt", dt, "1f");
         gpuMath.setProgram("velocityCalcVerlet");
         gpuMath.setUniformForProgram("velocityCalcVerlet", "u_dt", dt, "1f");
-        // globals.controls.setDeltaT(dt);//todo fix this
     }
 
     function calcDt(){
@@ -917,6 +916,7 @@ function DynamicSolver($canvas){
         setForceAtIndex: setForceAtIndex,
 
         setAxialStiffness: setAxialStiffness,
+        calcDt: calcDt,
         setFacetStiffness: setFacetStiffness,
         setCreaseStiffness: setCreaseStiffness,
         setDamping: setDamping,

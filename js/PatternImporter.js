@@ -13,7 +13,7 @@ currently support FOLD and SVG import - though FOLD support needs some work/test
 dependencies: FOLD, THREEjs (will be removed), THREE.SVGLoader, underscore, path-data-polyfill (for svg path parsing)
 
  */
-function PatternImporter(){
+function PatternImporter(warningCallback, notSupportedCalback){
 
     var FOLD = require('fold');
 
@@ -143,7 +143,7 @@ function PatternImporter(){
             var pathVertices = [];
 
             if (path === undefined || path.getPathData === undefined){//mobile problem
-                if (globals && globals.notSupportedWarning) globals.notSupportedWarning();
+                if (notSupportedCalback) notSupportedCalback();
                 console.warn("path parser not supported on this device");
                 return;
             }
@@ -329,16 +329,16 @@ function PatternImporter(){
                 var msg = "Global styling found on SVG, this is currently ignored by the app.  This may cause some lines " +
                     "to be styled incorrectly and missed during import.  Please find a way to save this file without using global style tags.";
                 console.warn(msg, $style);
-                if (globals && globals.warn) globals.warn(msg + "<br/><br/>Global styling:<br/><br/><b>" + $style.html() + "</b>");
+                if (warningCallback) warningCallback(msg + "<br/><br/>Global styling:<br/><br/><b>" + $style.html() + "</b>");
             }
 
             //warn of groups
             var $groups = $svg.children("g");
             if ($groups.length>0){
                 var msg = "Grouped elements found in SVG, these are currently ignored by the app.  " +
-                    "Please ungroup all elements before importing.";
+                    "Please ungroup all elements and remove all layers before importing.";
                 console.warn(msg);
-                if (globals && globals.warn) globals.warn(msg);
+                if (warningCallback) warningCallback(msg);
             }
 
             //find all supported element types in svg
@@ -374,13 +374,13 @@ function PatternImporter(){
                 string +=  "<br/>These objects were ignored.<br/>  Please check that your file is set up correctly, <br/>" +
                     "see <b>File > File Import Tips</b> for more information.";
                 console.warn(string);
-                if (globals && globals.warn) globals.warn(string);
+                if (warningCallback) warningCallback(string);
             }
 
             if (fold.vertices_coords.length == 0 || fold.edges_vertices.length == 0){
                 var msg = "No valid geometry found in SVG, be sure to ungroup all and remove all clipping masks.";
                 console.warn(msg);
-                globals.warn(msg);
+                if (warningCallback) warningCallback(msg);
                 return;
             }
 
@@ -394,7 +394,7 @@ function PatternImporter(){
             },
             function(){},
             function(error){
-                if (globals && globals.warn) globals.warn("Error loading SVG " + url + " : " + error);
+                if (warningCallback) warningCallback("Error loading SVG " + url + " : " + error);
                 console.warn(error);
         });
     }
@@ -450,14 +450,14 @@ function PatternImporter(){
             var msg = "Invalid FOLD file, must contain all of: <br/>" +
                 "<br/>vertices_coords<br/>edges_vertices<br/>edges_assignment<br/>faces_vertices";
             console.warn(msg);
-            if (globals && globals.warn) globals.warn(msg);
+            if (warningCallback) warningCallback(msg);
             return;
         }
 
         if (fold.edges_assignment.length != fold.edges_vertices.length){
             var msg = "invalid fold file, invalid length for edges_assignment array";
             console.warn(msg);
-            if (globals && globals.warn) globals.warn(msg);
+            if (warningCallback) warningCallback(msg);
             return;
         }
 
@@ -512,7 +512,7 @@ function PatternImporter(){
         if (fold.edges_foldAngles.length != fold.edges_vertices.length){
             var msg = "invalid fold file, invalid length for edges_foldAngles array";
             console.warn(msg);
-            if (globals && globals.warn) globals.warn(msg);
+            if (warningCallback) warningCallback(msg);
             return;
         }
 
@@ -550,6 +550,7 @@ function PatternImporter(){
             }
         }
 
+        //todo do this externally
         $("#numMtns").html("(" + FOLD.filter.mountainEdges(fold).length + ")");
         $("#numValleys").html("(" + FOLD.filter.valleyEdges(fold).length + ")");
         $("#numFacets").html("(" + FOLD.filter.flatEdges(fold).length + ")");
@@ -558,8 +559,6 @@ function PatternImporter(){
 
         return fold;
     }
-
-
 
 
     /**

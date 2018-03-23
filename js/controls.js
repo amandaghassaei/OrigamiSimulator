@@ -425,7 +425,10 @@ function initControls(globals){
 
     setSliderInput("#axialStiffness", globals.axialStiffness, 10, 100, 1, function(val){
         globals.axialStiffness = val;
-        globals.Animator.getSolver().setAxialStiffness(val);
+        var solver = globals.Animator.getSolver();
+        solver.setAxialStiffness(val);
+        var dt = solver.calcDt();
+        $("#deltaT").html(dt.toFixed(4));
     });
 
     // setSliderInput("#triStiffness", globals.triStiffness, 0, 10, 0.01, function(val){
@@ -478,10 +481,6 @@ function initControls(globals){
         $('#creasePercent>input').val(val);
     }
     // updateCreasePercent();
-
-    function setDeltaT(val){
-        $("#deltaT").html(val.toFixed(4));
-    }
 
     setLink(".loadFile", function(e){
         $("#fileSelector").click();
@@ -846,7 +845,6 @@ function initControls(globals){
     }
 
     return {
-        setDeltaT: setDeltaT,
         updateCreasePercent: updateCreasePercent,
         setSliderInputVal: setSliderInputVal
     }

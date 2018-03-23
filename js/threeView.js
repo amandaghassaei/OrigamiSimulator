@@ -2,7 +2,7 @@
  * Created by ghassaei on 9/16/16.
  */
 
-function initThreeView(globals) {
+function initThreeView($container, globals) {
 
     var scene = new THREE.Scene();
     var modelWrapper = new THREE.Object3D();
@@ -17,10 +17,9 @@ function initThreeView(globals) {
 
     function init() {
 
-        var container = $("#threeContainer");
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize(window.innerWidth, window.innerHeight);
-        container.append(renderer.domElement);
+        $container.append(renderer.domElement);
 
         scene.background = new THREE.Color(0xffffff);//new THREE.Color(0xe6e6e6);
         setBackgroundColor();
