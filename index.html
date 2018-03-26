@@ -1100,7 +1100,12 @@
             <input id="userInteractionEnabled" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
             Allow User Interaction
         </label>
-    </div><br/><br/>
+    </div><br/>
+    <div id="simButtons" class="alignRight">
+        <a href="#" id="start" class="paddingBottom btn btn-lg btn-success">Start Simulation</a>
+        <a href="#" id="pause" class="paddingBottom btn btn-lg btn-warning">Pause Simulation</a>
+        <a href="#" id="reset" class="paddingBottom btn btn-lg btn-default">Reset</a>
+    </div>
     <div class="fullWidth">
         <a href="#" class="seeMore closed" data-id="simulationSettings"><span class="fui-triangle-down"></span><b>Simulation Settings:</b></a><a class="about" href="#" id="aboutStiffness"><span class="fui-question-circle"></span></a><br/>
         <div id="simulationSettings" class="hide">
@@ -1140,17 +1145,12 @@
     <div class="fullWidth">
         <a href="#" class="seeMore closed" data-id="animationsSettings"><span class="fui-triangle-down"></span><b>Animation Settings:</b></a><a class="about" href="#" id="aboutAnimation"><span class="fui-question-circle"></span></a><br/>
         <div id="animationsSettings" class="fullWidth hide">
-            <div id="simButtons" class="alignRight">
-                <a href="#" id="start" class="paddingBottom btn btn-lg btn-success">Start Simulation</a>
-                <a href="#" id="pause" class="paddingBottom btn btn-lg btn-warning">Pause Simulation</a>
-                <a href="#" id="reset" class="paddingBottom btn btn-lg btn-default">Reset</a>
-                <div id="stepForwardOptions" class="floatRight">
-                    <a href="#" id="stepForward" class="btn btn-lg btn-default">Step Forward</a>
-                </div>
-            </div>
             <div class="doubleIndent">
                 <span class="smallTxt">&Delta;t = <span id="deltaT"></span> seconds</span><br/>
                 <span class="smallTxt">Num simulation steps per frame: &nbsp;&nbsp;<input value="" placeholder="" class="numStepsPerRender int form-control" type="text"></span><br/><br/>
+                <div id="stepForwardOptions" class="floatRight">
+                    <a href="#" id="stepForward" class="floatRight btn btn-lg btn-default">Step Forward</a><br/><br/>
+                </div>
                 <div class="fullWidth alignRight">
                     <a href="#" id="shouldCenterGeo" class="displayBlock btn btn-lg btn-default">Re-center geometry</a>
                 </div>

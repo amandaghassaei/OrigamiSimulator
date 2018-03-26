@@ -81,7 +81,7 @@ function initGlobals(){
         userInteractionEnabled: false,
         vrEnabled: false,
 
-        numSteps: 10,
+        numSteps: 100,
 
         rotateModel: null,
         rotationSpeed: 0.01,
