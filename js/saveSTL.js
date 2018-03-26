@@ -101,10 +101,51 @@ function saveSTL(){
 }
 
 function saveOBJ(){
-    var exporter = new THREE.OBJExporter();
-    var result = exporter.parse (new THREE.Mesh(makeSaveGEO(globals.doublesidedOBJ)));
-    if (!result) return;
-    var blob = new Blob([result], {type: 'application/octet-binary'});
+    //custom export to be compatible with freeform origami
+    var geo = new THREE.Geometry().fromBufferGeometry( globals.model.getGeometry() );
+
+    if (geo.vertices.length == 0 || geo.faces.length == 0) {
+        globals.warn("No geometry to save.");
+        return;
+    }
+
+    for (var i=0;i<geo.vertices.length;i++){
+        geo.vertices[i].multiplyScalar(globals.exportScale/globals.scale);
+    }
+
+    var fold = globals.pattern.getFoldData(false);
+    var obj = "#output from http://apps.amandaghassaei.com/OrigamiSimulator/\n";
+    obj += "# "+ geo.vertices.length + "vertices\n";
+    for (var i=0;i<geo.vertices.length;i++){
+        var vertex = geo.vertices[i];
+        obj += "v " + vertex.x + " " + vertex.y + " " + vertex.z + "\n"
+    }
+    obj += "# "+ fold.faces_vertices.length + " faces\n";
+    for (var i=0;i<fold.faces_vertices.length;i++){
+        var face = fold.faces_vertices[i];//triangular faces
+        obj += "f " + (face[0]+1) + " " + (face[1]+1) + " " + (face[2]+1) + "\n"
+    }
+
+    obj += "# "+ fold.edges_vertices.length + " edges\n";
+    for (var i=0;i<fold.edges_vertices.length;i++){
+        var edge = fold.edges_vertices[i];//triangular faces
+        obj += "#e " + (edge[0]+1) + " " + (edge[1]+1) + " ";
+        if (fold.edges_assignment[i] == "F") obj += 0;
+        else if (fold.edges_assignment[i] == "B") obj += 0;
+        else if (fold.edges_assignment[i] == "M") obj += 2;
+        else if (fold.edges_assignment[i] == "V") obj += 3;
+        else {
+            console.log("don't know how to convert type " + fold.edges_assignment[i]);
+            obj += 0;
+        }
+        //todo fold angle
+        obj += " 0\n";
+    }
+
+    // var exporter = new THREE.OBJExporter();
+    // var result = exporter.parse (new THREE.Mesh(makeSaveGEO(globals.doublesidedOBJ)));
+    // if (!result) return;
+    var blob = new Blob([obj], {type: 'application/octet-binary'});
     var filename = $("#objFilename").val();
     if (filename == "") filename = globals.filename;
     saveAs(blob, filename + ".obj");

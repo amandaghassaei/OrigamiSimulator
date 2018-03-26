@@ -137,6 +137,9 @@ function initControls(globals){
     setCheckbox("#doublesidedOBJ", globals.doublesidedOBJ, function(val){
         globals.doublesidedOBJ = val;
     });
+    setCheckbox("#polyFacesOBJ", globals.polyFacesOBJ, function(val){
+        globals.polyFacesOBJ = val;
+    });
     setLink(".units", function(e){
         var units = $(e.target).data("id");
         globals.foldUnits = units;

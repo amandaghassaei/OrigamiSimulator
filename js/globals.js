@@ -70,6 +70,7 @@ function initGlobals(){
         exportScale: 1,
         thickenModel: true,
         thickenOffset: 5,
+        polyFacesOBJ: true,
 
         //save fold settings
         foldUnits: "unit",
