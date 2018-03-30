@@ -1172,7 +1172,7 @@
 <div id="controlsBottom">
     <div id="viewToggle" class="bigToggle">
         <div>
-            <a href="#" id="colorToggle"><div class="active"><img src="assets/hyparColorSmall.png"/><span>Material</span></div></a><a href="#" id="strainToggle"><div><img src="assets/hyparStrainSmall.png"/><span>Strain</span></div></a>
+            <a href="#" id="colorToggle"><div class="active"><img src="assets/hyparColorSmall.png"/><span>Material</span></div></a><div class="separator"></div><a href="#" id="strainToggle"><div><img src="assets/hyparStrainSmall.png"/><span>Strain</span></div></a>
         </div>
         View Mode
     </div>
@@ -1181,19 +1181,20 @@
             <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
         </div>
         <a href="#" id="flatIndicator" class="sliderEndPt smallTxt">
-            <img src="assets/flatcraneSmall.png"/>
-            <span class="fui-triangle-up"></span>
+            <!--<img src="assets/flatcraneSmall.png"/>-->
             <span class="sliderEndPtLabel">Flat</span>
+            <span class="fui-triangle-down"></span>
         </a>
         <a href="#" id="foldedIndicator" class="sliderEndPt smallTxt">
-            <img src="assets/foldedCraneSmall.png"/>
-            <span class="fui-triangle-up"></span>
+            <!--<img src="assets/foldedCraneSmall.png"/>-->
             <span class="sliderEndPtLabel">Folded</span>
+            <span class="fui-triangle-down"></span>
         </a>
+        <span>Fold Percent: <span id="foldPercentSimple"></span>%</span>
     </div>
     <div id="controlsToggle" class="bigToggle">
         <div>
-            <a href="#" id="orbitToggle"><div class="active"><img class="preserveAspect" src="assets/rotateSmall.png"/><span>Rotate 3D</span></div></a><a href="#" id="grabToggle"><div><img class="preserveAspect" src="assets/grabSmall.png"/><span>Grab</span></div></a>
+            <a href="#" id="orbitToggle"><div class="active"><img class="preserveAspect" src="assets/rotateSmall.png"/><span>Rotate 3D</span></div></a><div class="separator"></div><a href="#" id="grabToggle"><div><img class="preserveAspect" src="assets/grabSmall.png"/><span>Grab</span></div></a>
         </div>
         Control Mode
     </div>
@@ -1711,7 +1712,7 @@
                     Toggle this control to enable/disable mouse interaction with the origami model.  When enabled,
                         mousing over the model will display a highlighter; clicking and dragging allows you to
                         interact with the model in real time.  Very vigorous interactions with the model may cause it
-                        to pop into a strange configuration that it can't escape - use the <b>Animation Settings > Reset</b> button to start
+                        to pop into a strange configuration that it can't escape - use the <b>Reset</b> button to start
                         the simulation again from a flat state.
                     </p>
             </div>

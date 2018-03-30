@@ -490,8 +490,9 @@ function initControls(globals){
         creasePercentBottomSlider.slider('value', val);
         $('#currentFoldPercent').val(val.toFixed(0));
         $('#creasePercent>input').val(val.toFixed(0));
+        $("#foldPercentSimple").html(val.toFixed(0));
     }
-    // updateCreasePercent();
+    updateCreasePercent();
 
     function setDeltaT(val){
         $("#deltaT").html(val.toFixed(4));
