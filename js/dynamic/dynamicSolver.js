@@ -440,7 +440,7 @@ function initDynamicSolver(globals){
             for (var j=0;j<nodes[i].beams.length;j++){
                 var beam = nodes[i].beams[j];
                 beamMeta[4*index] = beam.getK();
-                beamMeta[4*index+1] = beam.getD()*0.5;//why 0.5?
+                beamMeta[4*index+1] = beam.getD();
                 if (initing) {
                     beamMeta[4*index+2] = beam.getLength();
                     beamMeta[4*index+3] = beam.getOtherNode(nodes[i]).getIndex();

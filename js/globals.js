@@ -52,7 +52,7 @@ function initGlobals(){
         triStiffness: 1,
 
         //dynamic sim settings
-        percentDamping: 0.85,
+        percentDamping: 0.45,
         density: 1,
         integrationType: "euler",
 
