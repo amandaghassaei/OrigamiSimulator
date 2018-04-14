@@ -203,9 +203,14 @@ function initPattern(globals){
                 switch(type){
 
                     case "m"://dx, dy
-                        var vertex = _verticesRaw[_verticesRaw.length-1].clone();
-                        vertex.x += segment.values[0];
-                        vertex.z += segment.values[1];
+                        var vertex;
+                        if (j === 0){//problem with inkscape files
+                            vertex = new THREE.Vector3(segment.values[0], 0, segment.values[1]);
+                        } else {
+                            vertex = _verticesRaw[_verticesRaw.length-1].clone();
+                            vertex.x += segment.values[0];
+                            vertex.z += segment.values[1];
+                        }
                         _verticesRaw.push(vertex);
                         pathVertices.push(vertex);
                         break;
