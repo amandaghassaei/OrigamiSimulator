@@ -626,7 +626,7 @@ function initPattern(globals){
     function splitCuts(fold){
         fold = sortVerticesEdges(fold);
         fold = facesVerticesToVerticesFaces(fold);
-        //go around each vertex and split cut in counter-clockwise order
+        //go around each vertex and split cut in clockwise order
         for (var i=0;i<fold.vertices_edges.length;i++){
             var groups = [[]];
             var groupIndex = 0;
@@ -684,7 +684,7 @@ function initPattern(globals){
             for (var j=1;j<groups.length;j++){//for each extra group, assign new vertex
                 var currentVertex = fold.vertices_coords[i];
                 var vertIndex = fold.vertices_coords.length;
-                fold.vertices_coords.push(currentVertex.slice());
+                fold.vertices_coords.push(currentVertex.slice());//make a copy
                 var connectingIndices = [];
                 for (var k=0;k<groups[j].length;k++){//update edges_vertices
                     var edgeIndex = groups[j][k];
@@ -708,11 +708,12 @@ function initPattern(globals){
                             var face = fold.faces_vertices[verticesFaces[a]];
                             var index1 = face.indexOf(thisConnectingVertIndex);
                             var index2 = face.indexOf(previousConnectingVertIndex);
-                            if (index1 >= 0 && index2 >= 0 && (index1-index2 == 2 || index1-index2 == -(face.length-2))){
+                            var index3 = face.indexOf(i);
+                            if (index1 >= 0 && index2 >= 0 && index3>=0 &&
+                                (Math.abs(index1-index3) === 1 || Math.abs(index1-index3) === face.length-1) &&
+                                (Math.abs(index2-index3) === 1 || Math.abs(index2-index3) === face.length-1)){
                                 found = true;
-                                var b = face.indexOf(i);
-                                if (b<0) console.warn("problem here");
-                                else face[b] = vertIndex;
+                                face[index3] = vertIndex;
                                 break;
                             }
                         }
