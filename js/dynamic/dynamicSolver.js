@@ -344,6 +344,7 @@ function initDynamicSolver(globals){
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimNodeFaces", [textureDimNodeFaces, textureDimNodeFaces], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_creasePercent", globals.creasePercent, "1f");
         gpuMath.setUniformForProgram("velocityCalc", "u_axialStiffness", globals.axialStiffness, "1f");
+        gpuMath.setUniformForProgram("velocityCalc", "u_faceStiffness", globals.faceStiffness, "1f");
 
         gpuMath.createProgram("positionCalcVerlet", vertexShader, document.getElementById("positionCalcVerletShader").text);
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_lastPosition", 0, "1i");
@@ -370,6 +371,7 @@ function initDynamicSolver(globals){
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_textureDimNodeFaces", [textureDimNodeFaces, textureDimNodeFaces], "2f");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_creasePercent", globals.creasePercent, "1f");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_axialStiffness", globals.axialStiffness, "1f");
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_faceStiffness", globals.faceStiffness, "1f");
 
         gpuMath.createProgram("thetaCalc", vertexShader, document.getElementById("thetaCalcShader").text);
         gpuMath.setUniformForProgram("thetaCalc", "u_normals", 0, "1i");
@@ -454,8 +456,10 @@ function initDynamicSolver(globals){
         if (programsInited) {
             globals.gpuMath.setProgram("velocityCalc");
             globals.gpuMath.setUniformForProgram("velocityCalc", "u_axialStiffness", globals.axialStiffness, "1f");
+            globals.gpuMath.setUniformForProgram("velocityCalc", "u_faceStiffness", globals.faceStiffness, "1f");
             globals.gpuMath.setProgram("positionCalcVerlet");
             globals.gpuMath.setUniformForProgram("positionCalcVerlet", "u_axialStiffness", globals.axialStiffness, "1f");
+            globals.gpuMath.setUniformForProgram("positionCalcVerlet", "u_faceStiffness", globals.faceStiffness, "1f");
             setSolveParams();//recalc dt
         }
     }

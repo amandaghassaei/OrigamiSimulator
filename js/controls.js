@@ -431,10 +431,10 @@ function initControls(globals){
         globals.materialHasChanged = true;
     });
 
-    // setSliderInput("#triStiffness", globals.triStiffness, 0, 10, 0.01, function(val){
-    //     globals.triStiffness = val;
-    //     // globals.materialHasChanged = true;
-    // });
+    setSliderInput("#faceStiffness", globals.faceStiffness, 0, 5, 0.01, function(val){
+        globals.faceStiffness = val;
+        globals.materialHasChanged = true;
+    });
 
     setSliderInput("#creaseStiffness", globals.creaseStiffness, 0, 3, 0.01, function(val){
         globals.creaseStiffness = val;
@@ -718,7 +718,7 @@ function initControls(globals){
     });
     setLink("#hideAdvancedOptions", function(){
         $("#controls").animate({
-            right: "-400px"
+            right: "-430px"
         }, function(){
             $("#basicUI").fadeIn();
             $("#controlsBottom").animate({
