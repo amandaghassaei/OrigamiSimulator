@@ -353,22 +353,22 @@ function initPattern(globals){
             }
 
             //warn of groups
-            var $groups = _$svg.children("g");
-            if ($groups.length>0){
-                globals.warn("Grouped elements found in SVG, these are currently ignored by the app.  " +
-                    "Please ungroup all elements before importing.");
-            }
+            // var $groups = _$svg.children("g");
+            // if ($groups.length>0){
+            //     globals.warn("Grouped elements found in SVG, these are currently ignored by the app.  " +
+            //         "Please ungroup all elements before importing.");
+            // }
 
             //format all appropriate svg elements
-            var $paths = _$svg.children("path");
+            var $paths = _$svg.find("path");
+            var $lines = _$svg.find("line");
+            var $rects = _$svg.find("rect");
+            var $polygons = _$svg.find("polygon");
+            var $polylines = _$svg.find("polyline");
             $paths.css({fill:"none", 'stroke-dasharray':"none"});
-            var $lines = _$svg.children("line");
             $lines.css({fill:"none", 'stroke-dasharray':"none"});
-            var $rects = _$svg.children("rect");
             $rects.css({fill:"none", 'stroke-dasharray':"none"});
-            var $polygons = _$svg.children("polygon");
             $polygons.css({fill:"none", 'stroke-dasharray':"none"});
-            var $polylines = _$svg.children("polyline");
             $polylines.css({fill:"none", 'stroke-dasharray':"none"});
 
             findType(verticesRaw, bordersRaw, borderFilter, $paths, $lines, $rects, $polygons, $polylines);
