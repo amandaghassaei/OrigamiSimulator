@@ -52,7 +52,7 @@ function initGlobals(){
         faceStiffness: 0.2,
 
         //dynamic sim settings
-        percentDamping: 0.45,
+        percentDamping: 0.45,//damping ratio
         density: 1,
         integrationType: "euler",
 

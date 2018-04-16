@@ -130,7 +130,7 @@ function saveOBJ(){
     for (var i=0;i<fold.edges_vertices.length;i++){
         var edge = fold.edges_vertices[i];//triangular faces
         obj += "#e " + (edge[0]+1) + " " + (edge[1]+1) + " ";
-        if (fold.edges_assignment[i] == "F") obj += 0;
+        if (fold.edges_assignment[i] == "F") obj += 1;
         else if (fold.edges_assignment[i] == "B") obj += 0;
         else if (fold.edges_assignment[i] == "M") obj += 2;
         else if (fold.edges_assignment[i] == "V") obj += 3;
