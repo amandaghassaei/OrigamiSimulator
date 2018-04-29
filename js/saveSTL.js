@@ -132,8 +132,8 @@ function saveOBJ(){
         obj += "#e " + (edge[0]+1) + " " + (edge[1]+1) + " ";
         if (fold.edges_assignment[i] == "F") obj += 1;
         else if (fold.edges_assignment[i] == "B") obj += 0;
-        else if (fold.edges_assignment[i] == "M") obj += 2;
-        else if (fold.edges_assignment[i] == "V") obj += 3;
+        else if (fold.edges_assignment[i] == "M") obj += 3;
+        else if (fold.edges_assignment[i] == "V") obj += 2;
         else {
             console.log("don't know how to convert type " + fold.edges_assignment[i]);
             obj += 0;

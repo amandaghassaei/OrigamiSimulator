@@ -12,6 +12,7 @@ function initGlobals(){
 
         //view
         colorMode: "color",
+        calcFaceStrain: false,
         color1: "ec008b",
         color2: "dddddd",
         edgesVisible: true,

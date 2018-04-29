@@ -203,6 +203,7 @@
         uniform sampler2D u_meta2;//[nodesFaceIndex, numFaces]
         uniform sampler2D u_nodeFaceMeta;//[faceIndex, a, b, c]
         uniform sampler2D u_nominalTriangles;//[angleA, angleB, angleC]
+        uniform bool u_calcFaceStrain;
 
         vec4 getFromArray(float index1D, vec2 dimensions, sampler2D tex){
             vec2 index = vec2(mod(index1D, dimensions.x)+0.5, floor(index1D/dimensions.x)+0.5);
@@ -252,13 +253,13 @@
                 vec3 deltaP = neighborLastPosition-lastPosition+nominalDist;
                 float deltaPLength = length(deltaP);
                 deltaP -= deltaP*(beamMeta[2]/deltaPLength);
-                nodeError += abs(deltaPLength/length(nominalDist) - 1.0);
+                if (!u_calcFaceStrain) nodeError += abs(deltaPLength/length(nominalDist) - 1.0);
                 vec3 deltaV = neighborLastVelocity-lastVelocity;
 
                 vec3 _force = deltaP*beamMeta[0] + deltaV*beamMeta[1];
                 force += _force;
             }
-            nodeError /= meta[1];
+            if (!u_calcFaceStrain) nodeError /= meta[1];
 
             for (int j=0;j<100;j++){//for all creases (up to 100, had to put a const int in here)
                 if (j >= int(meta[3])) break;
@@ -358,6 +359,7 @@
                     vec3 normalCrossAC = cross(normal, ac)/lengthAC;
                     vec3 normalCrossAB = cross(normal, ab)/lengthAB;
                     force -= anglesDiff[0]*(normalCrossAC - normalCrossAB);
+                    if (u_calcFaceStrain) nodeError += abs((nominalAngles[0]-angles[0])/nominalAngles[0]);
                     force -= anglesDiff[1]*normalCrossAB;
                     force += anglesDiff[2]*normalCrossAC;
                 } else if (faceIndex == 1){
@@ -365,6 +367,7 @@
                     vec3 normalCrossBC = cross(normal, bc)/lengthBC;
                     force -= anglesDiff[0]*normalCrossAB;
                     force += anglesDiff[1]*(normalCrossAB + normalCrossBC);
+                    if (u_calcFaceStrain) nodeError += abs((nominalAngles[1]-angles[1])/nominalAngles[1]);
                     force -= anglesDiff[2]*normalCrossBC;
                 } else if (faceIndex == 2){
                     vec3 normalCrossAC = cross(normal, ac)/lengthAC;
@@ -372,9 +375,11 @@
                     force += anglesDiff[0]*normalCrossAC;
                     force -= anglesDiff[1]*normalCrossBC;
                     force += anglesDiff[2]*(normalCrossBC - normalCrossAC);
+                    if (u_calcFaceStrain) nodeError += abs((nominalAngles[2]-angles[2])/nominalAngles[2]);
                 }
 
             }
+            if (u_calcFaceStrain) nodeError /= meta2[1];
 
             vec3 velocity = force*u_dt/mass[0] + lastVelocity;
             gl_FragColor = vec4(velocity,nodeError);
@@ -1197,7 +1202,7 @@
     </div>
     <div id="controlsToggle" class="bigToggle">
         <div>
-            <a href="#" id="orbitToggle"><div class="active"><img class="preserveAspect" src="assets/rotateSmall.png"/><span>Rotate 3D</span></div></a><div class="separator"></div><a href="#" id="grabToggle"><div><img class="preserveAspect" src="assets/grabSmall.png"/><span>Grab</span></div></a>
+            <a href="#" id="orbitToggle"><div class="active"><img class="preserveAspect" src="assets/rotateSmall.png"/><span>Rotate</span></div></a><div class="separator"></div><a href="#" id="grabToggle"><div><img class="preserveAspect" src="assets/grabSmall.png"/><span>Grab</span></div></a>
         </div>
         Control Mode
     </div>
