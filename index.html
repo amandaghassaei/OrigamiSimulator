@@ -746,7 +746,7 @@
     <script type="text/javascript" src="dependencies/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="dependencies/jquery-ui.min.js"></script>
     <script type="text/javascript" src="dependencies/flat-ui.min.js"></script>
-    <script type="text/javascript" src="dependencies/three.min.js"></script><!--todo .min-->
+    <script type="text/javascript" src="dependencies/three.min.js"></script>
     <script type="text/javascript" src="dependencies/binary_stl_writer.js"></script>
     <script type="text/javascript" src="dependencies/TrackballControls.js"></script>
     <!--<script type="text/javascript" src="dependencies/Projector.js"></script>-->
@@ -1617,11 +1617,12 @@
                 <p><b>SIMULATION SETTINGS</b><br/><br/>
                     This app uses a compliant dynamic simulation method to solve for the geometry of an origami pattern
                     at a given fold angle.  The simulation sets up several types of constraints: distance constraints prevent the
-                    sheet from stretching or compressing, and angular constraints fold or flatten the sheet.  Each of these constraints is weighted by a stiffness - the stiffer the constraint, the better it is enforced
+                    sheet from stretching or compressing, face constraints prevent the sheet from <a href="https://en.wikipedia.org/wiki/Shear_stress" target="_blank">shearing</a>, and angular constraints fold or flatten the sheet.  Each of these constraints is weighted by a stiffness - the stiffer the constraint, the better it is enforced
                     in the simulation.  <br/>
                     <br/>
                     <b>Axial Stiffness</b> is the stiffness of the distance constraints.  Increasing axial
-                    stiffness will decrease the stretching/compression (strain) in the simulation, but it will also slow down the solver.  <br/>
+                    stiffness will decrease the stretching/compression (strain) in the simulation, but it will also slow down the solver.
+                    <b>Face Stiffness</b> is the stiffness of the face constraints, which help the axial constraints prevent deformation of the sheet's surface between the creases.<br/>
                     <br/>
                     Fold and facet stiffnesses correspond to two types of angular constraints.  <b>Fold Stiffness</b> is the stiffness of the mountain
                     and valley creases in the origami pattern.  <b>Facet Stiffness</b> is the stiffness of the triangulated faces between
@@ -1635,7 +1636,7 @@
                     Since this is a dynamic simulation, vertices of the origami move with some notion of acceleration and velocity.  In order to
                     keep the system stable and help it converge to a static solution, <a target="_blank" href="https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator">
                         damping</a> is applied to slow the motion of the vertices.  The <b>Damping</b> slider allows you to control the amount of damping
-                    present in the simulation, from 0 (no damping) to 1 (critical damping).  Decreasing damping makes the simulation more "springy".
+                    present in the simulation.  Decreasing damping makes the simulation more "springy".
                     It may be useful to temporarily turn down damping to help the simulation more quickly converge towards its static solution - especially
                     for patterns that take a long time to curl.<br/>
                     <br/>
