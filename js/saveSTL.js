@@ -103,6 +103,7 @@ function saveSTL(){
 function saveOBJ(){
     //custom export to be compatible with freeform origami
     var geo = new THREE.Geometry().fromBufferGeometry( globals.model.getGeometry() );
+    var flatGeo = globals.pattern.getFoldData(false);
 
     if (geo.vertices.length == 0 || geo.faces.length == 0) {
         globals.warn("No geometry to save.");
@@ -119,6 +120,11 @@ function saveOBJ(){
     for (var i=0;i<geo.vertices.length;i++){
         var vertex = geo.vertices[i];
         obj += "v " + vertex.x + " " + vertex.y + " " + vertex.z + "\n"
+    }
+    obj += "# uv texture coords\n";
+    for (var i=0;i<geo.vertices.length;i++){
+        var vertex = flatGeo.vertices_coords[i];
+        obj += "vt " + vertex[0] + " " + vertex[2] + "\n"
     }
     obj += "# "+ fold.faces_vertices.length + " faces\n";
     for (var i=0;i<fold.faces_vertices.length;i++){
