@@ -862,7 +862,7 @@
                     </ul>
                 <p>
                     <br/>
-                    More documentation about the simulation methods in this <a href="http://www.amandaghassaei.com/files/projects/origami_simulator/FastInteractiveOrigamiSim.pdf" target="_blank"></a>paper</a>.
+                    More documentation about the simulation methods in this <a href="http://www.amandaghassaei.com/files/projects/origami_simulator/FastInteractiveOrigamiSimGPU.pdf" target="_blank">paper</a>.
                     Additional info can also be found <a href="http://www.amandaghassaei.com/projects/origami_simulator/" target="_blank">here</a>.<br/>
                     <br/>
                 </p>
@@ -1318,10 +1318,14 @@
                         <li>edges_assignment</li>
                         <li>faces_vertices</li>
                     </ul>
-                    You may specify the target fold angle of each crease using the edges_foldAngles field.<br/><br/>
+                    You may specify the target fold angle of each crease using the edges_foldAngles field. 
+                    Note that fold angle is a number in degrees lying in the range [−180, 180]. 
+                    The fold angle is positive for valley folds, negative for mountain folds, and zero for flat, unassigned, and border folds.
+                    Accordingly, the sign of edges_foldAngle should match edges_assignment if both are specified.<br/><br/>
                     If you are unsure whether your FOLD file is valid, you can inspect it using the
-                    <a target="_blank" href="https://edemaine.github.io/fold/examples/foldviewer.html">FOLD Viewer</a>.<br/>
-                    <br/>
+                    <a target="_blank" href="https://edemaine.github.io/fold/examples/foldviewer.html">FOLD Viewer</a>. 
+                    If you are having trouble, please refer to the <a target=_blank href="https://github.com/edemaine/fold/blob/master/doc/spec.md">FOLD spec</a>.
+                    <br/><br/>
                     <b>Importing SVG:</b><br/><br/>
                     <ul>
                         <li>The SVG importer supports path, line, rect, polygon, and polyline objects with the appropriate
