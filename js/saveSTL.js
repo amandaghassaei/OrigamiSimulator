@@ -122,9 +122,21 @@ function saveOBJ(){
         obj += "v " + vertex.x + " " + vertex.y + " " + vertex.z + "\n"
     }
     obj += "# uv texture coords\n";
-    for (var i=0;i<geo.vertices.length;i++){
+    // first get bounds for normalization
+    var min = [Infinity, Infinity];
+    var max = [-Infinity, -Infinity];
+    for (var i=0;i<flatGeo.vertices.length;i++){
         var vertex = flatGeo.vertices_coords[i];
-        obj += "vt " + vertex[0] + " " + vertex[2] + "\n"
+        if (vertex[0] < min[0]) min[0] = vertex[0];
+        if (vertex[2] < min[1]) min[1] = vertex[2];
+        if (vertex[0] > max[0]) max[0] = vertex[0];
+        if (vertex[2] > max[1]) max[1] = vertex[2];
+    }
+    var scale = max[0] - min[0];
+    if (max[1] - min[1] > scale) scale = max[1] - min[1];
+    for (var i=0;i<flatGeo.vertices.length;i++){
+        var vertex = flatGeo.vertices_coords[i];
+        obj += "vt " + (vertex[0] - min[0]) / scale + " " + (vertex[2] - min[1]) / scale + "\n"
     }
     obj += "# "+ fold.faces_vertices.length + " faces\n";
     for (var i=0;i<fold.faces_vertices.length;i++){
