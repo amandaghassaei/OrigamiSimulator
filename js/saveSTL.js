@@ -125,7 +125,7 @@ function saveOBJ(){
     // first get bounds for normalization
     var min = [Infinity, Infinity];
     var max = [-Infinity, -Infinity];
-    for (var i=0;i<flatGeo.vertices.length;i++){
+    for (var i=0;i<flatGeo.vertices_coords.length;i++){
         var vertex = flatGeo.vertices_coords[i];
         if (vertex[0] < min[0]) min[0] = vertex[0];
         if (vertex[2] < min[1]) min[1] = vertex[2];
@@ -134,14 +134,15 @@ function saveOBJ(){
     }
     var scale = max[0] - min[0];
     if (max[1] - min[1] > scale) scale = max[1] - min[1];
-    for (var i=0;i<flatGeo.vertices.length;i++){
+    for (var i=0;i<flatGeo.vertices_coords.length;i++){
         var vertex = flatGeo.vertices_coords[i];
         obj += "vt " + (vertex[0] - min[0]) / scale + " " + (vertex[2] - min[1]) / scale + "\n"
     }
     obj += "# "+ fold.faces_vertices.length + " faces\n";
     for (var i=0;i<fold.faces_vertices.length;i++){
         var face = fold.faces_vertices[i];//triangular faces
-        obj += "f " + (face[0]+1) + " " + (face[1]+1) + " " + (face[2]+1) + "\n"
+        obj += "f " + (face[0]+1) + "/" + (face[0]+1) + " " + (face[1]+1) + "/" + (face[1]+1)+ " " +
+         (face[2]+1) + "/" + (face[2]+1) + "\n"
     }
 
     obj += "# "+ fold.edges_vertices.length + " edges\n";
