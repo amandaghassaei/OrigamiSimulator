@@ -2,6 +2,8 @@
  * Created by ghassaei on 9/16/16.
  */
 
+// const THREE = require("three");
+
 function initThreeView(globals) {
   // todo, make sure whatever is calling this is waiting for DOM to load
   // to get the client rect below
@@ -81,8 +83,8 @@ function initThreeView(globals) {
     controls.maxDistance = 30;
 
 
-    renderer.shadowMapEnabled = true;
-    renderer.shadowMapType = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     // spotLight1.castShadow = true;
     // spotLight1.shadowDarkness = 0.5;
@@ -95,8 +97,12 @@ function initThreeView(globals) {
     directionalLight1.castShadow = true;
     // directionalLight1.shadowMapWidth = 4096; // default is 512
     // directionalLight1.shadowMapHeight = 4096; // default is 512
-    directionalLight1.shadowMapWidth = 8192; // default is 512
-    directionalLight1.shadowMapHeight = 8192; // default is 512
+    // directionalLight1.shadow.mapSize.Width = 8192; // default is 512
+    // directionalLight1.shadow.mapSize.Height = 8192; // default is 512
+    directionalLight1.shadow.mapSize.width = 4096;
+    directionalLight1.shadow.mapSize.height = 4096;
+    directionalLight1.shadow.camera.near = 0.5;
+    directionalLight1.shadow.camera.far = 500;
 
     // directionalLight2.castShadow = true;
     // directionalLight3.castShadow = true;

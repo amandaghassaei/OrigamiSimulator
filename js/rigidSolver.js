@@ -2,6 +2,9 @@
  * Created by amandaghassaei on 5/26/17.
  */
 
+// const numeric = require("numeric"); // this is not the correct npm name.
+// search npm for the right package, or rewrite to match a new package
+
 function initRigidSolver() {
 
   let nodes;

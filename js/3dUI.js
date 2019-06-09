@@ -17,9 +17,6 @@ function init3DUI(globals) {
   highlighter1.setTransparent();
   globals.threeView.scene.add(highlighter1.getObject3D());
 
-  // $(document).dblclick(function () {
-  // });
-
   function setHighlightedObj(object) {
     if (highlightedObj && (object != highlightedObj)) {
       // highlightedObj.unhighlight();

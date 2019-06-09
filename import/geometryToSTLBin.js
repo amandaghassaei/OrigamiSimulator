@@ -1,7 +1,7 @@
 // Written by Paul Kaplan
 
 
-var geometryToSTLBin = function(geometryArray) {
+export default function(geometryArray) {
 
     var writeVector = function(dataview, bufferIndex, vector, offset, orientation, isLittleEndian) {
         vector = vector.clone();
@@ -77,4 +77,3 @@ var geometryToSTLBin = function(geometryArray) {
 
     return dv;
 };
-

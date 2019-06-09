@@ -11,9 +11,7 @@ function initGlobals() {
     // view
     colorMode: "color",
     calcFaceStrain: false,
-    // color1: "ec008b",
-    // color1: "000000",
-    color1: "e64e1e",
+    color1: "ec008b",
     color2: "ffffff",
     edgesVisible: true,
     mtnsVisible: true,
@@ -85,7 +83,7 @@ function initGlobals() {
 
     numSteps: 100,
 
-    backgroundColor: "158",
+    backgroundColor: "EEE",
 
     capturer: null,
     capturerQuality: 63,

@@ -89,7 +89,7 @@ function initImporter(globals) {
               return;
             }
 
-            if (fold.edges_foldAngles) {
+            if (fold.edges_foldAngle) {
               globals.pattern.setFoldData(fold);
               return;
             }
@@ -104,7 +104,7 @@ function initImporter(globals) {
                   if (assignment === "F") foldAngles.push(0);
                   else foldAngles.push(null);
                 }
-                fold.edges_foldAngles = foldAngles;
+                fold.edges_foldAngle = foldAngles;
 
                 const allCreaseParams = globals.pattern.setFoldData(fold, true);
                 let j = 0;
@@ -123,7 +123,7 @@ function initImporter(globals) {
                   const normal2 = (vec2.cross(vec1)).normalize();
                   let angle = Math.abs(normal1.angleTo(normal2));
                   if (assignment == "M") angle *= -1;
-                  fold.edges_foldAngles[i] = angle;
+                  fold.edges_foldAngle[i] = angle;
                   creaseParams[5] = angle;
                   j++;
                 }
@@ -138,7 +138,7 @@ function initImporter(globals) {
                 else if (assignment === "F") foldAngles.push(0);
                 else foldAngles.push(null);
               }
-              fold.edges_foldAngles = foldAngles;
+              fold.edges_foldAngle = foldAngles;
               globals.pattern.setFoldData(fold);
             });
           } catch (err) {
