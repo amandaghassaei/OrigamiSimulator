@@ -2,9 +2,10 @@
  * Created by amandaghassaei on 3/27/17.
  */
 
+// const numeric = require("numeric"); // this is not the correct npm name.
+// search npm for the right package, or rewrite to match a new package
 
 function initStaticSolver() {
-
   let nodes;
   let edges;
   let faces;

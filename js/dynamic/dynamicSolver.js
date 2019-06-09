@@ -237,7 +237,7 @@ function initDynamicSolver(globals) {
     globals.gpuMath.setUniformForProgram("positionCalc", "u_dt", dt, "1f");
     globals.gpuMath.setProgram("velocityCalcVerlet");
     globals.gpuMath.setUniformForProgram("velocityCalcVerlet", "u_dt", dt, "1f");
-    globals.controls.setDeltaT(dt);
+    // globals.controls.setDeltaT(dt);
   }
 
   function calcDt() {

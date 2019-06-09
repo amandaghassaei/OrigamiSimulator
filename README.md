@@ -2,7 +2,7 @@
 
 Live demo at <a href="http://apps.amandaghassaei.com/OrigamiSimulator">apps.amandaghassaei.com/OrigamiSimulator</a><br/>
 
-<img src="assets/doc/crane.gif" />
+<img src="http://apps.amandaghassaei.com/OrigamiSimulator/assets/doc/crane.gif" />
 
 This app allows you to simulate how any origami crease pattern will fold.  It may look a little different
 from what you typically think of as "origami" - rather than folding paper in a set of sequential steps,
@@ -14,7 +14,7 @@ exerted by creases.  This solver extends work from the following sources: <br/><
 All simulation methods were written from scratch and are executed in parallel in several GPU fragment shaders for fast performance.
 </p><br/>
 <b>Instructions:</b><br/><br/>
-<img style="width: 100%; max-width:600px" src="assets/doc/demoui.gif" /><br/>
+<img style="width: 100%; max-width:600px" src="http://apps.amandaghassaei.com/OrigamiSimulator/assets/doc/demoui.gif" /><br/>
 <ul>
     <li>Slide the <b>Fold Percent</b> slider to control the degree of folding of the pattern (100% is fully folded, 0% is unfolded,
         and -100% is fully folded with the opposite mountain/valley assignments).</li>
@@ -23,11 +23,11 @@ All simulation methods were written from scratch and are executed in parallel in
     <li>Upload your own crease patterns in SVG or <a href="https://github.com/edemaine/fold" target="_blank">FOLD</a> formats, following the instructions under <b>File > File Import Tips</b>.</li>
     <li>Export FOLD files or 3D models ( STL or OBJ ) of the folded state of your design ( <b>File > Save Simulation as...</b> ).</li>
     </ul>
-        <img style="width: 100%;" src="assets/doc/strain.jpg" />
+        <img style="width: 100%;" src="http://apps.amandaghassaei.com/OrigamiSimulator/assets/doc/strain.jpg" />
     <ul>
     <li>Visualize the internal strain of the origami as it folds using the <b>Strain Visualization</b> in the left menu.</li>
     </ul>
-        <img src="assets/doc/huffmanvr.jpg" /><br/>
+        <img src="http://apps.amandaghassaei.com/OrigamiSimulator/assets/doc/huffmanvr.jpg" /><br/>
     <ul>
     <li>If you are working from a computer connected to a Vive, follow the instructions near the <b>VR</b> menu
         to use this app in an interactive virtual reality mode.</li>

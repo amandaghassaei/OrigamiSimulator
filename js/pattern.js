@@ -2,6 +2,9 @@
  * Created by amandaghassaei on 2/25/17.
  */
 
+// const earcut = require("earcut");
+// const Segmentize = require("svg-segmentize");
+
 function initPattern(globals) {
 
   const FOLD = require("fold");
@@ -14,7 +17,7 @@ function initPattern(globals) {
     foldData.edges_vertices = [];
     // B = boundary, M = mountain, V = valley, C = cut, F = facet, U = hinge
     foldData.edges_assignment = [];
-    foldData.edges_foldAngles = []; // target angles
+    foldData.edges_foldAngle = []; // target angles
     delete foldData.vertices_vertices;
     delete foldData.faces_vertices;
     delete foldData.vertices_edges;
@@ -61,79 +64,7 @@ function initPattern(globals) {
 
   clearAll();
 
-  const SVGloader = new THREE.SVGLoader();
-
-  // filter for svg parsing
-  function borderFilter() {
-    const stroke = getStroke($(this));
-    return typeForStroke(stroke) === "border";
-  }
-  function mountainFilter() {
-    const $this = $(this);
-    const stroke = getStroke($this);
-    if (typeForStroke(stroke) === "mountain") {
-      const opacity = getOpacity($this);
-      this.targetAngle = -opacity * Math.PI;
-      return true;
-    }
-    return false;
-  }
-  function valleyFilter() {
-    const $this = $(this);
-    const stroke = getStroke($this);
-    if (typeForStroke(stroke) == "valley") {
-      const opacity = getOpacity($this);
-      this.targetAngle = opacity*Math.PI;
-      return true;
-    }
-    return false;
-  }
-  function cutFilter() {
-    const stroke = getStroke($(this));
-    return typeForStroke(stroke) == "cut";
-  }
-  function triangulationFilter() {
-    const stroke = getStroke($(this));
-    return typeForStroke(stroke) == "triangulation";
-  }
-  function hingeFilter() {
-    const stroke = getStroke($(this));
-    return typeForStroke(stroke) == "hinge";
-  }
-
-  function getOpacity(obj) {
-    let opacity = obj.attr("opacity");
-    if (opacity === undefined) {
-      if (obj.attr("style") && $(obj)[0].style.opacity) {
-        opacity = $(obj)[0].style.opacity;
-      }
-      if (opacity === undefined) {
-        opacity = obj.attr("stroke-opacity");
-        if (opacity === undefined) {
-          if (obj.attr("style") && $(obj)[0].style["stroke-opacity"]) {
-            opacity = $(obj)[0].style["stroke-opacity"];
-          }
-        }
-      }
-    }
-    opacity = parseFloat(opacity);
-    if (isNaN(opacity)) return 1;
-    return opacity;
-  }
-
-  function getStroke(obj) {
-    let stroke = obj.attr("stroke");
-    if (stroke === undefined) {
-      if (obj.attr("style") && $(obj)[0].style.stroke) {
-        stroke = ($(obj)[0].style.stroke).toLowerCase();
-        stroke = stroke.replace(/\s/g, ""); // remove all whitespace
-        return stroke;
-      }
-      return null;
-    }
-    stroke = stroke.replace(/\s/g, ""); // remove all whitespace
-    return stroke.toLowerCase();
-  }
+  // const SVGloader = new THREE.SVGLoader();
 
   function getOpacity_DOM(obj) {
     let opacity = obj.getAttribute("opacity");
@@ -195,292 +126,30 @@ function initPattern(globals) {
     return Math.abs(angle) / Math.PI;
   }
 
-  function findType(_verticesRaw, _segmentsRaw, filter, $paths, $lines, $rects, $polygons, $polylines) {
-    parsePath(_verticesRaw, _segmentsRaw, $paths.filter(filter));
-    parseLine(_verticesRaw, _segmentsRaw, $lines.filter(filter));
-    parseRect(_verticesRaw, _segmentsRaw, $rects.filter(filter));
-    parsePolygon(_verticesRaw, _segmentsRaw, $polygons.filter(filter));
-    parsePolyline(_verticesRaw, _segmentsRaw, $polylines.filter(filter));
-  }
+  const multiply_vector2_matrix2 = function (vector, matrix) {
+    return [
+      vector[0] * matrix[0] + vector[1] * matrix[2] + matrix[4],
+      vector[0] * matrix[1] + vector[1] * matrix[3] + matrix[5],
+    ];
+  };
 
   function applyTransformation(vertex, transformations) {
     if (transformations === undefined) { return; }
     transformations = transformations.baseVal;
     for (let i = 0; i < transformations.length; i += 1) {
       const t = transformations[i];
-      const M = [[t.matrix.a, t.matrix.c, t.matrix.e], [t.matrix.b, t.matrix.d, t.matrix.f], [0, 0, 1]];
-      const out = numeric.dot(M, [vertex.x, vertex.z, 1]);
+      // const M = [[t.matrix.a, t.matrix.c, t.matrix.e], [t.matrix.b, t.matrix.d, t.matrix.f], [0, 0, 1]];
+      // const out = numeric.dot(M, [vertex.x, vertex.z, 1]);
+      // vertex.x = out[0];
+      // vertex.z = out[1];
+      const m = t.matrix;
+      const out = multiply_vector2_matrix2(
+        [vertex.x, vertex.z],
+        [m.a, m.b, m.c, m.d, m.e, m.f]
+      );
       vertex.x = out[0];
       vertex.z = out[1];
     }
-  }
-
-  function parsePath(_verticesRaw, _segmentsRaw, $elements) {
-    for (let i = 0; i < $elements.length; i += 1) {
-      const path = $elements[i];
-      const pathVertices = [];
-      if (path === undefined || path.getPathData === undefined) { // mobile problem
-        const elm = '<div id="coverImg" ' +
-          'style="background: url(assets/doc/crane.gif) no-repeat center center fixed;' +
-          '-webkit-background-size: cover;' +
-          '-moz-background-size: cover;' +
-          '-o-background-size: cover;' +
-          'background-size: cover;">'+
-          '</div>';
-        $(elm).appendTo($("body"));
-        $("#noSupportModal").modal("show");
-        console.warn("path parser not supported");
-        return;
-      }
-      const segments = path.getPathData();
-      for (let j = 0; j < segments.length; j += 1) {
-        const segment = segments[j];
-        const { type } = segment;
-        let vertex;
-        switch (type) {
-          case "m": // dx, dy
-            if (j === 0) { // problem with inkscape files
-              vertex = new THREE.Vector3(segment.values[0], 0, segment.values[1]);
-            } else {
-              vertex = _verticesRaw[_verticesRaw.length - 1].clone();
-              vertex.x += segment.values[0];
-              vertex.z += segment.values[1];
-            }
-            _verticesRaw.push(vertex);
-            pathVertices.push(vertex);
-            break;
-
-          case "l": // dx, dy
-            _segmentsRaw.push([_verticesRaw.length - 1, _verticesRaw.length]);
-            if (path.targetAngle && _segmentsRaw.length > 0) _segmentsRaw[_segmentsRaw.length - 1].push(path.targetAngle);
-            vertex = _verticesRaw[_verticesRaw.length - 1].clone();
-            vertex.x += segment.values[0];
-            vertex.z += segment.values[1];
-            _verticesRaw.push(vertex);
-            pathVertices.push(vertex);
-            break;
-
-          case "v": // dy
-            _segmentsRaw.push([_verticesRaw.length - 1, _verticesRaw.length]);
-            if (path.targetAngle && _segmentsRaw.length > 0) _segmentsRaw[_segmentsRaw.length - 1].push(path.targetAngle);
-            vertex = _verticesRaw[_verticesRaw.length - 1].clone();
-            vertex.z += segment.values[0];
-            _verticesRaw.push(vertex);
-            pathVertices.push(vertex);
-            break;
-
-          case "h": // dx
-            _segmentsRaw.push([_verticesRaw.length - 1, _verticesRaw.length]);
-            if (path.targetAngle && _segmentsRaw.length > 0) _segmentsRaw[_segmentsRaw.length - 1].push(path.targetAngle);
-            vertex = _verticesRaw[_verticesRaw.length - 1].clone();
-            vertex.x += segment.values[0];
-            _verticesRaw.push(vertex);
-            pathVertices.push(vertex);
-            break;
-
-          case "M": // x, y
-            vertex = new THREE.Vector3(segment.values[0], 0, segment.values[1]);
-            _verticesRaw.push(vertex);
-            pathVertices.push(vertex);
-            break;
-
-          case "L": // x, y
-            _segmentsRaw.push([_verticesRaw.length - 1, _verticesRaw.length]);
-            if (path.targetAngle && _segmentsRaw.length > 0) _segmentsRaw[_segmentsRaw.length - 1].push(path.targetAngle);
-            _verticesRaw.push(new THREE.Vector3(segment.values[0], 0, segment.values[1]));
-            pathVertices.push(vertex);
-            break;
-
-          case "V": // y
-            _segmentsRaw.push([_verticesRaw.length - 1, _verticesRaw.length]);
-            if (path.targetAngle && _segmentsRaw.length > 0) _segmentsRaw[_segmentsRaw.length - 1].push(path.targetAngle);
-            vertex = _verticesRaw[_verticesRaw.length - 1].clone();
-            vertex.z = segment.values[0];
-            _verticesRaw.push(vertex);
-            pathVertices.push(vertex);
-            break;
-
-          case "H": // x
-            _segmentsRaw.push([_verticesRaw.length - 1, _verticesRaw.length]);
-            if (path.targetAngle && _segmentsRaw.length > 0) _segmentsRaw[_segmentsRaw.length - 1].push(path.targetAngle);
-            vertex = _verticesRaw[_verticesRaw.length - 1].clone();
-            vertex.x = segment.values[0];
-            _verticesRaw.push(vertex);
-            pathVertices.push(vertex);
-            break;
-
-          // this wasn't defined
-          default:
-            break;
-        }
-      }
-      for (let j = 0; j < pathVertices.length; j += 1) {
-        applyTransformation(pathVertices[j], path.transform);
-      }
-    }
-  }
-
-  function parseLine(_verticesRaw, _segmentsRaw, $elements) {
-    for (let i = 0; i < $elements.length; i += 1) {
-      const element = $elements[i];
-      _verticesRaw.push(new THREE.Vector3(element.x1.baseVal.value, 0, element.y1.baseVal.value));
-      _verticesRaw.push(new THREE.Vector3(element.x2.baseVal.value, 0, element.y2.baseVal.value));
-      _segmentsRaw.push([_verticesRaw.length - 2, _verticesRaw.length - 1]);
-      if (element.targetAngle) _segmentsRaw[_segmentsRaw.length - 1].push(element.targetAngle);
-      applyTransformation(_verticesRaw[_verticesRaw.length - 2], element.transform);
-      applyTransformation(_verticesRaw[_verticesRaw.length - 1], element.transform);
-    }
-  }
-
-  function parseRect(_verticesRaw, _segmentsRaw, $elements) {
-    for (let i = 0; i < $elements.length; i += 1) {
-      const element = $elements[i];
-      const x = element.x.baseVal.value;
-      const y = element.y.baseVal.value;
-      const width = element.width.baseVal.value;
-      const height = element.height.baseVal.value;
-      _verticesRaw.push(new THREE.Vector3(x, 0, y));
-      _verticesRaw.push(new THREE.Vector3(x + width, 0, y));
-      _verticesRaw.push(new THREE.Vector3(x + width, 0, y + height));
-      _verticesRaw.push(new THREE.Vector3(x, 0, y + height));
-      _segmentsRaw.push([_verticesRaw.length-4, _verticesRaw.length-3]);
-      _segmentsRaw.push([_verticesRaw.length-3, _verticesRaw.length-2]);
-      _segmentsRaw.push([_verticesRaw.length-2, _verticesRaw.length-1]);
-      _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-4]);
-      for (let j = 1; j <= 4; j += 1) {
-        if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle);
-        applyTransformation(_verticesRaw[_verticesRaw.length-j], element.transform);
-      }
-    }
-  }
-
-  function parsePolygon(_verticesRaw, _segmentsRaw, $elements) {
-    for (let i = 0; i < $elements.length; i += 1) {
-      let element = $elements[i];
-      for (let j = 0; j < element.points.length; j += 1) {
-        _verticesRaw.push(new THREE.Vector3(element.points[j].x, 0, element.points[j].y));
-        applyTransformation(_verticesRaw[_verticesRaw.length-1], element.transform);
-
-        if (j<element.points.length-1) _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-        else _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-element.points.length]);
-
-        if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
-      }
-    }
-  }
-
-  function parsePolyline(_verticesRaw, _segmentsRaw, $elements) {
-    for (let i = 0; i < $elements.length; i += 1) {
-      const element = $elements[i];
-      for (let j = 0; j < element.points.length; j += 1) {
-        _verticesRaw.push(new THREE.Vector3(element.points[j].x, 0, element.points[j].y));
-        applyTransformation(_verticesRaw[_verticesRaw.length - 1], element.transform);
-        if (j > 0) _segmentsRaw.push([_verticesRaw.length - 1, _verticesRaw.length - 2]);
-        if (element.targetAngle) _segmentsRaw[_segmentsRaw.length - 1].push(element.targetAngle);
-      }
-    }
-  }
-
-  function loadSVG(url) {
-    SVGloader.load(url, (svg) => {
-      const _$svg = $(svg);
-      clearAll();
-      // warn of global styling
-      const $style = _$svg.children("style");
-      if ($style.length > 0) {
-        globals.warn(`Global styling found on SVG, this is currently ignored by the app.  This may cause some lines to be styled incorrectly and missed during import.  Please find a way to save this file without using global style tags.<br/><br/>Global styling:<br/><br/><b>${$style.html()}</b>`);
-      }
-      // warn of groups
-      // let $groups = _$svg.children("g");
-      // if ($groups.length>0) {
-      //     globals.warn("Grouped elements found in SVG, these are currently ignored by the app.  " +
-      //         "Please ungroup all elements before importing.");
-      // }
-
-      // format all appropriate svg elements
-      const $paths = _$svg.find("path");
-      const $lines = _$svg.find("line");
-      const $rects = _$svg.find("rect");
-      const $polygons = _$svg.find("polygon");
-      const $polylines = _$svg.find("polyline");
-      $paths.css({ fill: "none", "stroke-dasharray": "none" });
-      $lines.css({ fill: "none", "stroke-dasharray": "none" });
-      $rects.css({ fill: "none", "stroke-dasharray": "none" });
-      $polygons.css({ fill: "none", "stroke-dasharray": "none" });
-      $polylines.css({ fill: "none", "stroke-dasharray": "none" });
-
-      findType(verticesRaw, bordersRaw, borderFilter, $paths, $lines, $rects, $polygons, $polylines);
-      findType(verticesRaw, mountainsRaw, mountainFilter, $paths, $lines, $rects, $polygons, $polylines);
-      findType(verticesRaw, valleysRaw, valleyFilter, $paths, $lines, $rects, $polygons, $polylines);
-      findType(verticesRaw, cutsRaw, cutFilter, $paths, $lines, $rects, $polygons, $polylines);
-      findType(verticesRaw, triangulationsRaw, triangulationFilter, $paths, $lines, $rects, $polygons, $polylines);
-      findType(verticesRaw, hingesRaw, hingeFilter, $paths, $lines, $rects, $polygons, $polylines);
-
-      if (badColors.length > 0) {
-        // badColors = _.uniq(badColors);
-        badColors = [...(new Set(badColors))];
-        let string = "Some objects found with the following stroke colors:<br/><br/>";
-        badColors.forEach((color) => {
-          string += "<span style='background:" + color + "' class='colorSwatch'></span>" + color + "<br/>";
-        });
-        string +=  "<br/>These objects were ignored.<br/>  Please check that your file is set up correctly, <br/>" +
-          "see <b>File > File Import Tips</b> for more information.";
-        globals.warn(string);
-      }
-
-      // todo revert back to old pattern if bad import
-      const success = parseSVG(verticesRaw, bordersRaw, mountainsRaw, valleysRaw, cutsRaw, triangulationsRaw, hingesRaw);
-      if (!success) return;
-
-      // find max and min vertices
-      const max = new THREE.Vector3(-Infinity, -Infinity, -Infinity);
-      const min = new THREE.Vector3(Infinity, Infinity, Infinity);
-      for (let i = 0; i < rawFold.vertices_coords.length; i += 1) {
-        const vertex = new THREE.Vector3(rawFold.vertices_coords[i][0], rawFold.vertices_coords[i][1], rawFold.vertices_coords[i][2]);
-        max.max(vertex);
-        min.min(vertex);
-      }
-      if (min.x === Infinity) {
-        if (badColors.length === 0) globals.warn("no geometry found in file");
-        return;
-      }
-      max.sub(min);
-      const border = new THREE.Vector3(0.1, 0, 0.1);
-      let scale = max.x;
-      if (max.z < scale) scale = max.z;
-      if (scale === 0) return;
-
-      const strokeWidth = scale / 300;
-      border.multiplyScalar(scale);
-      min.sub(border);
-      max.add(border.multiplyScalar(2));
-      const viewBoxTxt = [min.x, min.z, max.x, max.z].join(" ");
-
-      const ns = "http://www.w3.org/2000/svg";
-      const newSVG = document.createElementNS(ns, "svg");
-      newSVG.setAttribute("viewBox", viewBoxTxt);
-      for (let i = 0; i < rawFold.edges_vertices.length; i += 1) {
-        const line = document.createElementNS(ns, "line");
-        const edge = rawFold.edges_vertices[i];
-        let vertex = rawFold.vertices_coords[edge[0]];
-        line.setAttribute("stroke", colorForAssignment(rawFold.edges_assignment[i]));
-        line.setAttribute("opacity", opacityForAngle(rawFold.edges_foldAngles[i], rawFold.edges_assignment[i]));
-        line.setAttribute("x1", vertex[0]);
-        line.setAttribute("y1", vertex[2]);
-        vertex = rawFold.vertices_coords[edge[1]];
-        line.setAttribute("x2", vertex[0]);
-        line.setAttribute("y2", vertex[2]);
-        line.setAttribute("stroke-width", strokeWidth);
-        newSVG.appendChild(line);
-      }
-      // $("#svgViewer").html(newSVG);
-      // document.querySelector("#svgViewer").innerHTML = newSVG;
-      },
-      function () {},
-      function (error) {
-        globals.warn("Error loading SVG " + url + " : " + error);
-        console.warn(error);
-    });
   }
 
   function loadSegmentedSVG(svg) {
@@ -545,13 +214,6 @@ function initPattern(globals) {
     svg_triangulations.forEach(m => add_to_array(m, triangulationsRaw));
     svg_hinges.forEach(m => add_to_array(m, hingesRaw));
 
-    // findType(verticesRaw, bordersRaw, borderFilter, [], $lines, [], [], []);
-    // findType(verticesRaw, mountainsRaw, mountainFilter, [], $lines, [], [], []);
-    // findType(verticesRaw, valleysRaw, valleyFilter, [], $lines, [], [], []);
-    // findType(verticesRaw, cutsRaw, cutFilter, [], $lines, [], [], []);
-    // findType(verticesRaw, triangulationsRaw, triangulationFilter, [], $lines, [], [], []);
-    // findType(verticesRaw, hingesRaw, hingeFilter, [], $lines, [], [], []);
-
     if (badColors.length > 0) {
       // badColors = _.uniq(badColors);
       badColors = [...(new Set(badColors))];
@@ -600,7 +262,7 @@ function initPattern(globals) {
       const edge = rawFold.edges_vertices[i];
       let vertex = rawFold.vertices_coords[edge[0]];
       line.setAttribute("stroke", colorForAssignment(rawFold.edges_assignment[i]));
-      line.setAttribute("opacity", opacityForAngle(rawFold.edges_foldAngles[i], rawFold.edges_assignment[i]));
+      line.setAttribute("opacity", opacityForAngle(rawFold.edges_foldAngle[i], rawFold.edges_assignment[i]));
       line.setAttribute("x1", vertex[0]);
       line.setAttribute("y1", vertex[2]);
       vertex = rawFold.vertices_coords[edge[1]];
@@ -613,6 +275,11 @@ function initPattern(globals) {
     // document.querySelector("#svgViewer").innerHTML = newSVG;
   }
 
+  function loadSVG(svg) {
+    const segmentized = Segmentize.svg(svg);
+    loadSegmentedSVG(segmentized);
+  }
+
   function parseSVG(_verticesRaw, _bordersRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw, _hingesRaw) {
 
     _verticesRaw.forEach((vertex) => {
@@ -621,32 +288,32 @@ function initPattern(globals) {
     _bordersRaw.forEach((edge) => {
       foldData.edges_vertices.push([edge[0], edge[1]]);
       foldData.edges_assignment.push("B");
-      foldData.edges_foldAngles.push(null);
+      foldData.edges_foldAngle.push(null);
     });
     _mountainsRaw.forEach((edge) => {
       foldData.edges_vertices.push([edge[0], edge[1]]);
       foldData.edges_assignment.push("M");
-      foldData.edges_foldAngles.push(edge[2]);
+      foldData.edges_foldAngle.push(edge[2]);
     });
     _valleysRaw.forEach((edge) => {
       foldData.edges_vertices.push([edge[0], edge[1]]);
       foldData.edges_assignment.push("V");
-      foldData.edges_foldAngles.push(edge[2]);
+      foldData.edges_foldAngle.push(edge[2]);
     });
     _triangulationsRaw.forEach((edge) => {
       foldData.edges_vertices.push([edge[0], edge[1]]);
       foldData.edges_assignment.push("F");
-      foldData.edges_foldAngles.push(0);
+      foldData.edges_foldAngle.push(0);
     });
     _hingesRaw.forEach((edge) => {
       foldData.edges_vertices.push([edge[0], edge[1]]);
       foldData.edges_assignment.push("U");
-      foldData.edges_foldAngles.push(null);
+      foldData.edges_foldAngle.push(null);
     });
     _cutsRaw.forEach((edge) => {
       foldData.edges_vertices.push([edge[0], edge[1]]);
       foldData.edges_assignment.push("C");
-      foldData.edges_foldAngles.push(null);
+      foldData.edges_foldAngle.push(null);
     });
 
     if (foldData.vertices_coords.length === 0 || foldData.edges_vertices.length === 0) {
@@ -808,7 +475,7 @@ function initPattern(globals) {
           const edge = fold.edges_vertices[edgeIndex];
           fold.edges_vertices.push([edge[0], edge[1]]);
           fold.edges_assignment[edgeIndex] = "B";
-          fold.edges_foldAngles.push(null);
+          fold.edges_foldAngle.push(null);
           fold.edges_assignment.push("B");
           // add new boundary edge to other vertex
           let otherVertex = edge[0];
@@ -970,7 +637,7 @@ function initPattern(globals) {
                 creaseParams = [creaseParams[2], creaseParams[3], creaseParams[0], creaseParams[1]];
               }
               creaseParams.push(i);
-              const angle = fold.edges_foldAngles[i];
+              const angle = fold.edges_foldAngle[i];
               creaseParams.push(angle);
               allCreaseParams.push(creaseParams);
               break;
@@ -1050,7 +717,7 @@ function initPattern(globals) {
           console.warn("different edge assignments");
           return false;
         }
-        var angle = fold.edges_foldAngles[i];
+        var angle = fold.edges_foldAngle[i];
         if (isNaN(angle)) console.log(i);
         angles.push(angle);
         if (angle) {
@@ -1067,12 +734,12 @@ function initPattern(globals) {
       let index = edgeIndices[i];
       fold.edges_vertices.splice(index, 1);
       fold.edges_assignment.splice(index, 1);
-      fold.edges_foldAngles.splice(index, 1);
+      fold.edges_foldAngle.splice(index, 1);
     }
     fold.edges_vertices.push([v1, v3]);
     fold.edges_assignment.push(edgeAssignment);
-    if (avgSum > 0) fold.edges_foldAngles.push(angleAvg / avgSum);
-    else fold.edges_foldAngles.push(null);
+    if (avgSum > 0) fold.edges_foldAngle.push(angleAvg / avgSum);
+    else fold.edges_foldAngle.push(null);
     let index = fold.vertices_vertices[v1].indexOf(v2);
     fold.vertices_vertices[v1].splice(index, 1);
     fold.vertices_vertices[v1].push(v3);
@@ -1105,7 +772,7 @@ function initPattern(globals) {
     const vertices = fold.vertices_coords;
     const faces = fold.faces_vertices;
     const edges = fold.edges_vertices;
-    const foldAngles = fold.edges_foldAngles;
+    const foldAngles = fold.edges_foldAngle;
     const assignments = fold.edges_assignment;
     const triangulatedFaces = [];
     for (let i = 0; i < faces.length; i+= 1) {
@@ -1157,7 +824,7 @@ function initPattern(globals) {
         if (!is2d) faceVert.push(vertex[2]);
       }
 
-      let triangles = earcut(faceVert, null, is2d? 2:3);
+      let triangles = earcut(faceVert, null, is2d ? 2 : 3);
 
       for (let j = 0; j < triangles.length; j += 3) {
         let tri = [face[triangles[j + 2]], face[triangles[j + 1]], face[triangles[j]]];
@@ -1222,7 +889,12 @@ function initPattern(globals) {
       return;
     }
     const serializer = new XMLSerializer();
-    const source = serializer.serializeToString($("#svgViewer>svg").get(0));
+    console.log("pattern.js saveSVG needs testing, check out these 2 lines");
+    const getSVG = document.querySelector("#svgViewer>svg");
+    const source = serializer.serializeToString(getSVG);
+    // const source = serializer.serializeToString(getSVG[0]);
+    
+    // const source = serializer.serializeToString($("#svgViewer>svg").get(0));
     const svgBlob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
     const svgUrl = URL.createObjectURL(svgBlob);
     const downloadLink = document.createElement("a");
@@ -1236,7 +908,7 @@ function initPattern(globals) {
   function findIntersections(fold, tol) {
     let vertices = fold.vertices_coords;
     let edges = fold.edges_vertices;
-    let foldAngles = fold.edges_foldAngles;
+    let foldAngles = fold.edges_foldAngle;
     let assignments = fold.edges_assignment;
     for (let i = edges.length - 1; i >= 0; i -= 1) {
       for (let j = i - 1; j >= 0; j -= 1) {
@@ -1348,7 +1020,6 @@ function initPattern(globals) {
 
   return {
     loadSVG,
-    loadSegmentedSVG,
     saveSVG,
     getFoldData,
     getTriangulatedFaces,

@@ -51,7 +51,7 @@ function saveFOLD() {
   json.faces_vertices = fold.faces_vertices;
 
   if (globals.exportFoldAngle) {
-    json.edges_foldAngles = fold.edges_foldAngles;
+    json.edges_foldAngle = fold.edges_foldAngle;
   }
 
   const blob = new Blob([JSON.stringify(json, null, 4)], { type: "application/octet-binary" });

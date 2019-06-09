@@ -23,7 +23,7 @@ function initViveInterface(globals){
 
     //vis
     var highlighters = [new Node(new THREE.Vector3()), new Node(new THREE.Vector3())];
-    _.each(highlighters, function(highlighter){
+    highlighters.forEach(function(highlighter){
         highlighter.setTransparentVR();
         scene.add(highlighter.getObject3D());
     });
@@ -167,7 +167,8 @@ function initViveInterface(globals){
         }
     };
 
-    _.each(examples, function(object, key){
+    Object.keys(examples).forEach(function(key){
+        const object = examples[key];
         examplesMenu.add(examples, key, _.values(object)).onChange(function(val){
             var index = _.values(object).indexOf(val);
             if (index<0) {

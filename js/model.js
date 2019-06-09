@@ -182,8 +182,8 @@ function initModel(globals) {
 
     frontside.castShadow = true;
     frontside.receiveShadow = true;
-    backside.castShadow = true;
-    backside.receiveShadow = true;
+    // backside.castShadow = true;
+    // backside.receiveShadow = true;
   }
 
   function updateEdgeVisibility() {
