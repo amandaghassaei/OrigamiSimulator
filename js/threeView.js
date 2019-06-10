@@ -296,3 +296,5 @@ function initThreeView(globals) {
     setBackgroundColor
   };
 }
+
+export default initThreeView;

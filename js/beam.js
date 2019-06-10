@@ -118,3 +118,5 @@ Beam.prototype.destroy = function () {
   // this.object3D = null;
   this.nodes = null;
 };
+
+export default Beam;

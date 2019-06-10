@@ -2,7 +2,6 @@
  * Created by amandaghassaei on 5/5/17.
  */
 
-
 function init3DUI(globals) {
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
@@ -144,3 +143,5 @@ function init3DUI(globals) {
     hideHighlighters
   };
 }
+
+export default init3DUI;

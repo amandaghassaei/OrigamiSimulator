@@ -1,0 +1,37 @@
+{
+  "name": "origami-simulator",
+  "version": "0.0.1",
+  "description": "",
+  "main": "origami-simulator.js",
+  "keywords": [
+    "svg",
+    "line",
+    "segment",
+    "path",
+    "simplify",
+    "divide",
+    "convert",
+    "fragment",
+    "vector"
+  ],
+  "author": "Amanda Ghassaei",
+  "license": "MIT",
+  "repository": "https://github.com/amandaghassaei/OrigamiSimulator",
+  "dependencies": {
+    "earcut": "^2.1.5",
+    "fold": "^0.10.4",
+    "svg-segmentize": "^0.1.1",
+    "three-full": "^17.1.0",
+    "three-trackballcontrols": "0.0.8",
+    "xmldom": "^0.1.27"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.17.3",
+    "rollup": "^1.12.4",
+    "rollup-plugin-babel-minify": "^8.0.0",
+    "rollup-plugin-string": "^3.0.0",
+    "rollup-plugin-cleanup": "^3.1.1"
+  }
+}

@@ -296,3 +296,5 @@ function initStaticSolver() {
     reset
   };
 }
+
+export default initStaticSolver;

@@ -158,3 +158,5 @@ function initImporter(globals) {
     importDemoFile
   };
 }
+
+export default initImporter;

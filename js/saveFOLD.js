@@ -57,3 +57,5 @@ function saveFOLD() {
   const blob = new Blob([JSON.stringify(json, null, 4)], { type: "application/octet-binary" });
   saveAs(blob, filename + ".fold");
 }
+
+export default saveFOLD;

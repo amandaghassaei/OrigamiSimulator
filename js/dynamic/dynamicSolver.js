@@ -3,7 +3,6 @@
  */
 
 function initDynamicSolver(globals) {
-  globals.gpuMath = initGPUMath();
 
   let nodes;
   let edges;
@@ -661,3 +660,5 @@ function initDynamicSolver(globals) {
     reset
   };
 }
+
+export default initDynamicSolver;

@@ -4,6 +4,8 @@
 
 // model updates object3d geometry and materials
 
+const THREE = require("three-full");
+
 function initModel(globals) {
 
   let material;
@@ -472,3 +474,5 @@ function initModel(globals) {
     getDimensions // for save stl
   };
 }
+
+export default initModel;

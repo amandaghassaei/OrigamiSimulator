@@ -118,3 +118,5 @@ function GLBoilerPlate() {
     makeTexture
   };
 }
+
+export default GLBoilerPlate;

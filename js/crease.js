@@ -133,3 +133,5 @@ Crease.prototype.destroy = function () {
   this.node2 = null;
   this.index = null;
 };
+
+export default Crease;

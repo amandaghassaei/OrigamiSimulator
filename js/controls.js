@@ -651,3 +651,4 @@ function initControls(globals) {
   }
 }
 
+export default initControls;

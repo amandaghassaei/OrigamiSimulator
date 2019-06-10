@@ -2,6 +2,8 @@
  * Created by ghassaei on 2/24/16.
  */
 
+import GLBoilerPlate from "./GLBoilerplate";
+
 function initGPUMath() {
   const glBoilerplate = GLBoilerPlate();
 
@@ -167,3 +169,5 @@ function initGPUMath() {
 
   return new GPUMath();
 }
+
+export default initGPUMath;

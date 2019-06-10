@@ -248,3 +248,5 @@ function initRigidSolver() {
     reset
   };
 }
+
+export default initRigidSolver;

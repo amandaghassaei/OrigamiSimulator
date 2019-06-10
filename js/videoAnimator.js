@@ -172,3 +172,5 @@ function initVideoAnimator(globals) {
     nextFoldAngle: nextFoldAngle
   }
 }
+
+export default initVideoAnimator;

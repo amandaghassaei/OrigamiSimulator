@@ -208,3 +208,5 @@ Node.prototype.destroy = function () {
   this.invCreases = null;
   this.externalForce = null;
 };
+
+export default Node;

@@ -2,12 +2,11 @@
  * Created by amandaghassaei on 2/25/17.
  */
 
-// const earcut = require("earcut");
-// const Segmentize = require("svg-segmentize");
+const earcut = require("earcut");
+const Segmentize = require("svg-segmentize");
+const FOLD = require("fold");
 
 function initPattern(globals) {
-
-  const FOLD = require("fold");
 
   let foldData = {};
   let rawFold = {};
@@ -1026,3 +1025,5 @@ function initPattern(globals) {
     setFoldData
   };
 }
+
+export default initPattern;
