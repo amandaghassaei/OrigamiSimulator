@@ -2,6 +2,22 @@
  * Created by ghassaei on 10/7/16.
  */
 
+import * as THREE from "../../import/three.module";
+
+import vertexShader from "../shaders/vertexShader.vert";
+import positionCalcShader from "../shaders/positionCalcShader.frag";
+import velocityCalcVerletShader from "../shaders/velocityCalcVerletShader.frag";
+import velocityCalcShader from "../shaders/velocityCalcShader.frag";
+import positionCalcVerletShader from "../shaders/positionCalcVerletShader.frag";
+import thetaCalcShader from "../shaders/thetaCalcShader.frag";
+import normalCalc from "../shaders/normalCalc.frag";
+import packToBytesShader from "../shaders/packToBytesShader.frag";
+import zeroTexture from "../shaders/zeroTexture.frag";
+import zeroThetaTexture from "../shaders/zeroThetaTexture.frag";
+import centerTexture from "../shaders/centerTexture.frag";
+import copyTexture from "../shaders/copyTexture.frag";
+import updateCreaseGeo from "../shaders/updateCreaseGeo.frag";
+
 function initDynamicSolver(globals) {
 
   let nodes;
@@ -248,8 +264,6 @@ function initDynamicSolver(globals) {
   }
 
   function initTexturesAndPrograms(gpuMath) {
-    let vertexShader = document.getElementById("vertexShader").text;
-
     gpuMath.initTextureFromData("u_position", textureDim, textureDim, "FLOAT", position, true);
     gpuMath.initTextureFromData("u_lastPosition", textureDim, textureDim, "FLOAT", lastPosition, true);
     gpuMath.initTextureFromData("u_lastLastPosition", textureDim, textureDim, "FLOAT", lastLastPosition, true);
@@ -279,19 +293,19 @@ function initDynamicSolver(globals) {
     gpuMath.initTextureFromData("u_faceVertexIndices", textureDimFaces, textureDimFaces, "FLOAT", faceVertexIndices, true);
     gpuMath.initTextureFromData("u_nominalTriangles", textureDimFaces, textureDimFaces, "FLOAT", nominalTriangles, true);
 
-    gpuMath.createProgram("positionCalc", vertexShader, document.getElementById("positionCalcShader").text);
+    gpuMath.createProgram("positionCalc", vertexShader, positionCalcShader);
     gpuMath.setUniformForProgram("positionCalc", "u_velocity", 0, "1i");
     gpuMath.setUniformForProgram("positionCalc", "u_lastPosition", 1, "1i");
     gpuMath.setUniformForProgram("positionCalc", "u_mass", 2, "1i");
     gpuMath.setUniformForProgram("positionCalc", "u_textureDim", [textureDim, textureDim], "2f");
 
-    gpuMath.createProgram("velocityCalcVerlet", vertexShader, document.getElementById("velocityCalcVerletShader").text);
+    gpuMath.createProgram("velocityCalcVerlet", vertexShader, velocityCalcVerletShader);
     gpuMath.setUniformForProgram("velocityCalcVerlet", "u_position", 0, "1i");
     gpuMath.setUniformForProgram("velocityCalcVerlet", "u_lastPosition", 1, "1i");
     gpuMath.setUniformForProgram("velocityCalcVerlet", "u_mass", 2, "1i");
     gpuMath.setUniformForProgram("velocityCalcVerlet", "u_textureDim", [textureDim, textureDim], "2f");
 
-    gpuMath.createProgram("velocityCalc", vertexShader, document.getElementById("velocityCalcShader").text);
+    gpuMath.createProgram("velocityCalc", vertexShader, velocityCalcShader);
     gpuMath.setUniformForProgram("velocityCalc", "u_lastPosition", 0, "1i");
     gpuMath.setUniformForProgram("velocityCalc", "u_lastVelocity", 1, "1i");
     gpuMath.setUniformForProgram("velocityCalc", "u_originalPosition", 2, "1i");
@@ -318,7 +332,7 @@ function initDynamicSolver(globals) {
     gpuMath.setUniformForProgram("velocityCalc", "u_faceStiffness", globals.faceStiffness, "1f");
     gpuMath.setUniformForProgram("velocityCalc", "u_calcFaceStrain", globals.calcFaceStrain, "1f");
 
-    gpuMath.createProgram("positionCalcVerlet", vertexShader, document.getElementById("positionCalcVerletShader").text);
+    gpuMath.createProgram("positionCalcVerlet", vertexShader, positionCalcVerletShader);
     gpuMath.setUniformForProgram("positionCalcVerlet", "u_lastPosition", 0, "1i");
     gpuMath.setUniformForProgram("positionCalcVerlet", "u_lastLastPosition", 1, "1i");
     gpuMath.setUniformForProgram("positionCalcVerlet", "u_lastVelocity", 2, "1i");
@@ -346,7 +360,7 @@ function initDynamicSolver(globals) {
     gpuMath.setUniformForProgram("positionCalcVerlet", "u_faceStiffness", globals.faceStiffness, "1f");
     gpuMath.setUniformForProgram("positionCalcVerlet", "u_calcFaceStrain", globals.calcFaceStrain, "1f");
 
-    gpuMath.createProgram("thetaCalc", vertexShader, document.getElementById("thetaCalcShader").text);
+    gpuMath.createProgram("thetaCalc", vertexShader, thetaCalcShader);
     gpuMath.setUniformForProgram("thetaCalc", "u_normals", 0, "1i");
     gpuMath.setUniformForProgram("thetaCalc", "u_lastTheta", 1, "1i");
     gpuMath.setUniformForProgram("thetaCalc", "u_creaseVectors", 2, "1i");
@@ -356,33 +370,33 @@ function initDynamicSolver(globals) {
     gpuMath.setUniformForProgram("thetaCalc", "u_textureDimFaces", [textureDimFaces, textureDimFaces], "2f");
     gpuMath.setUniformForProgram("thetaCalc", "u_textureDimCreases", [textureDimCreases, textureDimCreases], "2f");
 
-    gpuMath.createProgram("normalCalc", vertexShader, document.getElementById("normalCalc").text);
+    gpuMath.createProgram("normalCalc", vertexShader, normalCalc);
     gpuMath.setUniformForProgram("normalCalc", "u_faceVertexIndices", 0, "1i");
     gpuMath.setUniformForProgram("normalCalc", "u_lastPosition", 1, "1i");
     gpuMath.setUniformForProgram("normalCalc", "u_originalPosition", 2, "1i");
     gpuMath.setUniformForProgram("normalCalc", "u_textureDim", [textureDim, textureDim], "2f");
     gpuMath.setUniformForProgram("normalCalc", "u_textureDimFaces", [textureDimFaces, textureDimFaces], "2f");
 
-    gpuMath.createProgram("packToBytes", vertexShader, document.getElementById("packToBytesShader").text);
+    gpuMath.createProgram("packToBytes", vertexShader, packToBytesShader);
     gpuMath.initTextureFromData("outputBytes", textureDim * 4, textureDim, "UNSIGNED_BYTE", null, true);
     gpuMath.initFrameBufferForTexture("outputBytes", true);
     gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDim, textureDim], "2f");
     gpuMath.setUniformForProgram("packToBytes", "u_floatTexture", 0, "1i");
 
-    gpuMath.createProgram("zeroTexture", vertexShader, document.getElementById("zeroTexture").text);
-    gpuMath.createProgram("zeroThetaTexture", vertexShader, document.getElementById("zeroThetaTexture").text);
+    gpuMath.createProgram("zeroTexture", vertexShader, zeroTexture);
+    gpuMath.createProgram("zeroThetaTexture", vertexShader, zeroThetaTexture);
     gpuMath.setUniformForProgram("zeroThetaTexture", "u_theta", 0, "1i");
     gpuMath.setUniformForProgram("zeroThetaTexture", "u_textureDimCreases", [textureDimCreases, textureDimCreases], "2f");
 
-    gpuMath.createProgram("centerTexture", vertexShader, document.getElementById("centerTexture").text);
+    gpuMath.createProgram("centerTexture", vertexShader, centerTexture);
     gpuMath.setUniformForProgram("centerTexture", "u_lastPosition", 0, "1i");
     gpuMath.setUniformForProgram("centerTexture", "u_textureDim", [textureDim, textureDim], "2f");
 
-    gpuMath.createProgram("copyTexture", vertexShader, document.getElementById("copyTexture").text);
+    gpuMath.createProgram("copyTexture", vertexShader, copyTexture);
     gpuMath.setUniformForProgram("copyTexture", "u_orig", 0, "1i");
     gpuMath.setUniformForProgram("copyTexture", "u_textureDim", [textureDim, textureDim], "2f");
 
-    gpuMath.createProgram("updateCreaseGeo", vertexShader, document.getElementById("updateCreaseGeo").text);
+    gpuMath.createProgram("updateCreaseGeo", vertexShader, updateCreaseGeo);
     gpuMath.setUniformForProgram("updateCreaseGeo", "u_lastPosition", 0, "1i");
     gpuMath.setUniformForProgram("updateCreaseGeo", "u_originalPosition", 1, "1i");
     gpuMath.setUniformForProgram("updateCreaseGeo", "u_creaseMeta2", 2, "1i");

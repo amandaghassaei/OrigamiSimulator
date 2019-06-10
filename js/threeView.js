@@ -3,7 +3,7 @@
  */
 
 import * as THREE from "../import/three.module";
-import {TrackballControls} from "../import/trackballcontrols";
+import { TrackballControls } from "../import/trackballcontrols";
 
 function initThreeView(globals) {
   // todo, make sure whatever is calling this is waiting for DOM to load
@@ -145,7 +145,7 @@ function initThreeView(globals) {
 
   function startAnimation() {
     console.log("starting animation");
-    renderer.animate(_loop);
+    renderer.setAnimationLoop(_loop);
   }
 
   function pauseSimulation() {

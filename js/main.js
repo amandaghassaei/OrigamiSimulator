@@ -14,9 +14,12 @@ import Pattern from "./pattern";
 // import Vive from "./VRInterface";
 // import VideoAnimator from "./videoAnimator";
 
-const validateOptions = function (options) {
+/**
+ * return a copy of the user's options object that contains only keys
+ * matching valid options parameters, taken from "globals.js"
+ */
+const validateUserOptions = function (options) {
   if (options == null) { return {}; }
-  // filter out all keys in options which aren't contained on the global defaults object
   const validKeys = Object.keys(defaults);
   const validatedOptions = {};
   Object.keys(options)
@@ -25,10 +28,11 @@ const validateOptions = function (options) {
   return validatedOptions;
 };
 
+
 const OrigamiSimulator = function (options) {
   const app = Object.assign(
     JSON.parse(JSON.stringify(defaults)),
-    validateOptions(options)
+    validateUserOptions(options)
   );
 
   const init = function () {
@@ -44,6 +48,7 @@ const OrigamiSimulator = function (options) {
     // app.videoAnimator = VideoAnimator(app);
   };
 
+  // object methods
   const loadSVG = function (svgAsDomNode) {
     app.threeView.resetModel();
     app.pattern.loadSVG(svgAsDomNode);
@@ -53,34 +58,16 @@ const OrigamiSimulator = function (options) {
     const svg = new DOMParser().parseFromString(svgAsString, "text/xml").childNodes[0];
     app.pattern.loadSVG(svg);
   };
-
-  const warn = function (msg) {
-    console.warn(msg);
-  };
-
-  // const setCreasePercent = function (percent) {
-  //   app.creasePercent = percent;
-  // };
-
-  function noCreasePatternAvailable() {
-    return app.extension === "fold";
-  }
-  app.noCreasePatternAvailable = noCreasePatternAvailable;
-
-  // boot app
-  window.addEventListener("load", () => { init(); });
-  if (document.readyState === "loading") {
-    // wait until after the <body> has rendered
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
-    init();
-  }
+  const warn = msg => console.warn(msg);
+  const noCreasePatternAvailable = () => app.extension === "fold";
 
   Object.defineProperty(app, "loadSVG", { value: loadSVG });
   Object.defineProperty(app, "loadSVGString", { value: loadSVGString });
+  Object.defineProperty(app, "warn", { value: warn });
+  Object.defineProperty(app, "noCreasePatternAvailable", { value: noCreasePatternAvailable });
 
-  // app.setCreasePercent = setCreasePercent;
-  app.warn = warn;
+  // boot app
+  init();
 
   return app;
 };

@@ -5,6 +5,9 @@
 // model updates object3d geometry and materials
 
 import * as THREE from "../import/three.module";
+import Node from "./node";
+import Beam from "./beam";
+import Crease from "./crease";
 
 function initModel(globals) {
 
@@ -311,14 +314,14 @@ function initModel(globals) {
     // _nodes[_faces[0][2]].setFixed(true);
 
     for (let i = 0; i < _edges.length; i += 1) {
-      edges.push(new Beam([nodes[_edges[i][0]], nodes[_edges[i][1]]]));
+      edges.push(new Beam(globals, [nodes[_edges[i][0]], nodes[_edges[i][1]]]));
     }
 
     for (let i = 0; i < creaseParams.length; i += 1) { // allCreaseParams.length
       const _creaseParams = creaseParams[i]; // face1Ind, vert1Ind, face2Ind, ver2Ind, edgeInd, angle
       const type = _creaseParams[5] !== 0 ? 1 : 0;
       // edge, face1Index, face2Index, targetTheta, type, node1, node2, index
-      creases.push(new Crease(edges[_creaseParams[4]], _creaseParams[0], _creaseParams[2], _creaseParams[5], type, nodes[_creaseParams[1]], nodes[_creaseParams[3]], creases.length));
+      creases.push(new Crease(globals, edges[_creaseParams[4]], _creaseParams[0], _creaseParams[2], _creaseParams[5], type, nodes[_creaseParams[1]], nodes[_creaseParams[3]], creases.length));
     }
 
     vertices = [];

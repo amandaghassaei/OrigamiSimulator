@@ -40,7 +40,7 @@ canvas, #simulator-container {
     <span>Fold: <span id="fold-percent-label">50</span>%</span>
   </div>
 
-<svg id="two-fold" display="none" version="1.1" xmlns="http://www.w3.org/2000/svg" width="1" height="1" viewBox="0 0 1 1"><rect width="1" height="1" fill="white" stroke="black"></rect><line x2="1" y2="1" stroke="red"></line><line y1="1" x2="0.5" y2="0.5" stroke="red"></line><line x1="1" x2="0.5" y2="0.5" stroke="blue"></line></svg>
+  <svg id="two-fold" display="none" version="1.1" xmlns="http://www.w3.org/2000/svg" width="1" height="1" viewBox="0 0 1 1"><rect width="1" height="1" fill="white" stroke="black"></rect><line x1="0" y1="0" x2="0.5" y2="0.5" stroke="red"></line><line x1="0.5" y1="0.5" x2="1" y2="1" stroke="red"></line><line y1="1" x2="0.5" y2="0.5" stroke="red"></line><line x1="1" x2="0.5" y2="0.5" stroke="blue"></line></svg>
 
 <script>
 let app = OrigamiSimulator();
@@ -52,26 +52,26 @@ window.addEventListener("load", () => {
 document.getElementById("fold-percent-slider").oninput = function (e) {
   const valueString = document.getElementById("fold-percent-slider").value;
   const val = parseInt(valueString, 10);
-  // globals.creasePercent = val / 100;
-  // globals.shouldChangeCreasePercent = true;
+  app.creasePercent = val / 100;
+  app.shouldChangeCreasePercent = true;
   document.getElementById("fold-percent-label").innerHTML = valueString;
 };
 
-document.getElementById("button-material-color").onclick = function() {
-  // globals.colorMode = "color";
-  // globals.model.setMeshMaterial();
+document.getElementById("button-material-color").onclick = function () {
+  app.colorMode = "color";
+  app.model.setMeshMaterial();
 };
-document.getElementById("button-material-strain").onclick = function() {
-  // globals.colorMode = "axialStrain";
-  // globals.model.setMeshMaterial();
+document.getElementById("button-material-strain").onclick = function () {
+  app.colorMode = "axialStrain";
+  app.model.setMeshMaterial();
 };
-document.getElementById("button-control-rotate").onclick = function() {
-  // globals.userInteractionEnabled = false;
-  // globals.UI3D.hideHighlighters();
+document.getElementById("button-control-rotate").onclick = function () {
+  app.userInteractionEnabled = false;
+  app.UI3D.hideHighlighters();
 };
-document.getElementById("button-control-grab").onclick = function() {
-  // globals.userInteractionEnabled = true;
-  // globals.threeView.resetModel();
+document.getElementById("button-control-grab").onclick = function () {
+  app.userInteractionEnabled = true;
+  app.threeView.resetModel();
 };
 </script>
 

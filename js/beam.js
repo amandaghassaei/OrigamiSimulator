@@ -5,8 +5,9 @@
 // var beamMaterialHighlight = new THREE.LineBasicMaterial({color: 0xff0000, linewidth: 1});
 // var beamMaterial = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1});
 
-function Beam(nodes) {
+function Beam(globals, nodes) {
   this.type = "beam";
+  this.globals = globals;
 
   nodes[0].addBeam(this);
   nodes[1].addBeam(this);
@@ -59,11 +60,11 @@ Beam.prototype.getVector = function (fromNode) {
 // dynamic solve
 
 Beam.prototype.getK = function () {
-  return globals.axialStiffness / this.getLength();
+  return this.globals.axialStiffness / this.getLength();
 };
 
 Beam.prototype.getD = function () {
-  return globals.percentDamping * 2 * Math.sqrt(this.getK() * this.getMinMass());
+  return this.globals.percentDamping * 2 * Math.sqrt(this.getK() * this.getMinMass());
 };
 
 Beam.prototype.getNaturalFrequency = function () {

@@ -276,10 +276,8 @@ function initPattern(globals) {
   }
 
   function loadSVG(svg) {
-    console.log("loadSVG", svg);
     const segmentizedString = Segmentize.svg(svg);
     const segmentized = new DOMParser().parseFromString(segmentizedString, "text/xml").childNodes[0];
-    console.log("segmentized", segmentized);
     loadSegmentedSVG(segmentized);
   }
 
@@ -324,40 +322,27 @@ function initPattern(globals) {
       return false;
     }
 
-    console.log("globals", globals);
-    console.log("1", foldData);
     foldData = FOLD.filter.collapseNearbyVertices(foldData, globals.vertTol);
-    console.log("2", foldData);
     // foldData = FOLD.filter.removeLoopEdges(foldData); // remove edges that points to same vertex
-    foldData.edges_vertices = FOLD.filter.removeLoopEdges(foldData); // remove edges that points to same vertex
-    console.log("3", foldData);
+    FOLD.filter.removeLoopEdges(foldData); // remove edges that points to same vertex
     // foldData = FOLD.filter.removeDuplicateEdges_vertices(foldData); // remove duplicate edges
-    foldData = FOLD.filter.subdivideCrossingEdges_vertices(foldData, globals.vertTol);//find intersections and add vertices/edges
-    console.log("4", foldData);
+    // foldData = FOLD.filter.subdivideCrossingEdges_vertices(foldData, globals.vertTol);//find intersections and add vertices/edges
+    FOLD.filter.subdivideCrossingEdges_vertices(foldData, globals.vertTol);//find intersections and add vertices/edges
     foldData = findIntersections(foldData, globals.vertTol);
      // cleanup after intersection operation
-    console.log("5", foldData);
     foldData = FOLD.filter.collapseNearbyVertices(foldData, globals.vertTol);
-    console.log("6", foldData);
-    foldData = FOLD.filter.removeLoopEdges(foldData); // remove edges that points to same vertex
-    console.log("7", foldData);
-    foldData = FOLD.filter.removeDuplicateEdges_vertices(foldData); // remove duplicate edges
-    console.log("8", foldData);
+    // foldData = FOLD.filter.removeLoopEdges(foldData); // remove edges that points to same vertex
+    FOLD.filter.removeLoopEdges(foldData); // remove edges that points to same vertex
+    // foldData = FOLD.filter.removeDuplicateEdges_vertices(foldData); // remove duplicate edges
+    FOLD.filter.removeDuplicateEdges_vertices(foldData); // remove duplicate edges
     foldData = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(foldData);
     foldData = removeStrayVertices(foldData); // delete stray anchors
-    console.log("9", foldData);
     foldData = removeRedundantVertices(foldData, 0.01); // remove vertices that split edge
-    console.log("10", foldData);
-    foldData.vertices_vertices = FOLD.convert.sort_vertices_vertices(foldData);
-    console.log("11", foldData);
+    FOLD.convert.sort_vertices_vertices(foldData);
     foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
-    console.log("12", foldData);
     foldData = edgesVerticesToVerticesEdges(foldData);
-    console.log("13", foldData);
     foldData = removeBorderFaces(foldData); // expose holes surrounded by all border edges
-    console.log("14", foldData);
     foldData = reverseFaceOrder(foldData); // set faces to counter clockwise
-    console.log("15", foldData);
     return processFold(foldData);
   }
 
@@ -371,8 +356,8 @@ function initPattern(globals) {
         rawFold.vertices_coords[i] = [vertex[0], 0, vertex[1]];
       }
     }
-
-    const cuts = FOLD.filter.cutEdges(fold);
+    // const cuts = FOLD.filter.cutEdges(fold);
+    const cuts = [];
     if (cuts.length > 0) {
       fold = splitCuts(fold);
       fold = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(fold);

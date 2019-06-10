@@ -2,9 +2,9 @@
  * Created by amandaghassaei on 2/25/17.
  */
 
-function Crease(edge, face1Index, face2Index, targetTheta, type, node1, node2, index) {
+function Crease(globals, edge, face1Index, face2Index, targetTheta, type, node1, node2, index) {
   // type = 0 panel, 1 crease
-
+  this.globals = globals;
   // face1 corresponds to node1, face2 to node2
   this.edge = edge;
   for (let i = 0; i < edge.nodes.length; i += 1) {
@@ -43,12 +43,12 @@ Crease.prototype.getTargetTheta = function () {
 
 Crease.prototype.getK = function () {
   const length = this.getLength();
-  if (this.type === 0) return globals.panelStiffness * length;
-  return globals.creaseStiffness * length;
+  if (this.type === 0) return this.globals.panelStiffness * length;
+  return this.globals.creaseStiffness * length;
 };
 
 Crease.prototype.getD = function () {
-  return globals.percentDamping * 2 * Math.sqrt(this.getK());
+  return this.globals.percentDamping * 2 * Math.sqrt(this.getK());
 };
 
 Crease.prototype.getIndex = function () {
@@ -109,9 +109,9 @@ Crease.prototype.getNodeIndex = function (node) {
 
 Crease.prototype.setVisibility = function () {
   let vis = false;
-  if (this.type === 0) vis = globals.panelsVisible;
+  if (this.type === 0) vis = this.globals.panelsVisible;
   else {
-    vis = (this.targetTheta > 0 && globals.mtnsVisible) || (this.targetTheta < 0 && globals.valleysVisible);
+    vis = (this.targetTheta > 0 && this.globals.mtnsVisible) || (this.targetTheta < 0 && this.globals.valleysVisible);
   }
   this.edge.setVisibility(vis);
 };
