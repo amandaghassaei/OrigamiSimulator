@@ -9,15 +9,27 @@ import GPUMath from "./dynamic/GPUMath";
 import DynamicSolver from "./dynamic/dynamicSolver";
 import Model from "./model";
 import Pattern from "./pattern";
-// import Controls from "./controls";
+// import Controls from "./controls"; // this file is all kinds of front-end hardcoded
 // import Importer from "./importer";
 // import Vive from "./VRInterface";
 // import VideoAnimator from "./videoAnimator";
 
-const OrigamiSimulator = function (options) {
-  // todo: handle options argument
+const validateOptions = function (options) {
+  if (options == null) { return {}; }
+  // filter out all keys in options which aren't contained on the global defaults object
+  const validKeys = Object.keys(defaults);
+  const validatedOptions = {};
+  Object.keys(options)
+    .filter(key => validKeys.includes(key))
+    .forEach((key) => { validatedOptions[key] = options[key]; });
+  return validatedOptions;
+};
 
-  const app = JSON.parse(JSON.stringify(defaults));
+const OrigamiSimulator = function (options) {
+  const app = Object.assign(
+    JSON.parse(JSON.stringify(defaults)),
+    validateOptions(options)
+  );
 
   const init = function () {
     app.threeView = ThreeView(app);
@@ -32,27 +44,28 @@ const OrigamiSimulator = function (options) {
     // app.videoAnimator = VideoAnimator(app);
   };
 
-  const warn = function (msg) {
-    console.warn(msg);
-    // if (($("#warningMessage").html()) != "") $("#warningMessage").append("<br/><hr>" + msg);
-    // else $("#warningMessage").html(msg);
-    // if (!$('#warningModal').hasClass('show')) $("#warningModal").modal("show");
+  const loadSVG = function (svgAsDomNode) {
+    app.threeView.resetModel();
+    app.pattern.loadSVG(svgAsDomNode);
+  };
+  const loadSVGString = function (svgAsString) {
+    app.threeView.resetModel();
+    const svg = new DOMParser().parseFromString(svgAsString, "text/xml").childNodes[0];
+    app.pattern.loadSVG(svg);
   };
 
-  const setCreasePercent = function (percent) {
-    // app.creasePercent = percent;
-    // percent *= 100;
-    // $("#creasePercent>div").slider({value:percent});
-    // $("#creasePercent>input").val(percent.toFixed(0));
-    // $("#creasePercentNav>div").slider({value:percent});
-    // $("#creasePercentBottom>div").slider({value:percent});
+  const warn = function (msg) {
+    console.warn(msg);
   };
+
+  // const setCreasePercent = function (percent) {
+  //   app.creasePercent = percent;
+  // };
 
   function noCreasePatternAvailable() {
     return app.extension === "fold";
   }
   app.noCreasePatternAvailable = noCreasePatternAvailable;
-
 
   // boot app
   window.addEventListener("load", () => { init(); });
@@ -63,7 +76,10 @@ const OrigamiSimulator = function (options) {
     init();
   }
 
-  app.setCreasePercent = setCreasePercent;
+  Object.defineProperty(app, "loadSVG", { value: loadSVG });
+  Object.defineProperty(app, "loadSVGString", { value: loadSVGString });
+
+  // app.setCreasePercent = setCreasePercent;
   app.warn = warn;
 
   return app;

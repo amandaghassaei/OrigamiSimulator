@@ -4,7 +4,7 @@
 
 // model updates object3d geometry and materials
 
-const THREE = require("three-full");
+import * as THREE from "../import/three.module";
 
 function initModel(globals) {
 

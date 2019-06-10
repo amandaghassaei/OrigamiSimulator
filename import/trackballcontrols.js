@@ -5,7 +5,9 @@
  * @author Luca Antiga 	/ http://lantiga.github.io
  */
 
-THREE.TrackballControls = function ( object, domElement ) {
+import { Vector2, Vector3, Quaternion, EventDispatcher, Camera } from "./three.module";
+
+var TrackballControls = function ( object, domElement ) {
 
 	var _this = this;
 	var STATE = { NONE: - 1, ROTATE: 0, ZOOM: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_ZOOM_PAN: 4 };
@@ -31,37 +33,37 @@ THREE.TrackballControls = function ( object, domElement ) {
 	this.dynamicDampingFactor = 0.2;
 
 	this.minDistance = 0;
-	this.maxDistance = 400;
+	this.maxDistance = Infinity;
 
 	this.keys = [ 65 /*A*/, 83 /*S*/, 68 /*D*/ ];
 
 	// internals
 
-	this.target = new THREE.Vector3();
+	this.target = new Vector3();
 
 	var EPS = 0.000001;
 
-	var lastPosition = new THREE.Vector3();
+	var lastPosition = new Vector3();
 
 	var _state = STATE.NONE,
 	_prevState = STATE.NONE,
 
-	_eye = new THREE.Vector3(),
+	_eye = new Vector3(),
 
-	_movePrev = new THREE.Vector2(),
-	_moveCurr = new THREE.Vector2(),
+	_movePrev = new Vector2(),
+	_moveCurr = new Vector2(),
 
-	_lastAxis = new THREE.Vector3(),
+	_lastAxis = new Vector3(),
 	_lastAngle = 0,
 
-	_zoomStart = new THREE.Vector2(),
-	_zoomEnd = new THREE.Vector2(),
+	_zoomStart = new Vector2(),
+	_zoomEnd = new Vector2(),
 
 	_touchZoomDistanceStart = 0,
 	_touchZoomDistanceEnd = 0,
 
-	_panStart = new THREE.Vector2(),
-	_panEnd = new THREE.Vector2();
+	_panStart = new Vector2(),
+	_panEnd = new Vector2();
 
 	// for reset
 
@@ -113,7 +115,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	var getMouseOnScreen = ( function () {
 
-		var vector = new THREE.Vector2();
+		var vector = new Vector2();
 
 		return function getMouseOnScreen( pageX, pageY ) {
 
@@ -130,7 +132,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	var getMouseOnCircle = ( function () {
 
-		var vector = new THREE.Vector2();
+		var vector = new Vector2();
 
 		return function getMouseOnCircle( pageX, pageY ) {
 
@@ -147,12 +149,12 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	this.rotateCamera = ( function() {
 
-		var axis = new THREE.Vector3(),
-			quaternion = new THREE.Quaternion(),
-			eyeDirection = new THREE.Vector3(),
-			objectUpDirection = new THREE.Vector3(),
-			objectSidewaysDirection = new THREE.Vector3(),
-			moveDirection = new THREE.Vector3(),
+		var axis = new Vector3(),
+			quaternion = new Quaternion(),
+			eyeDirection = new Vector3(),
+			objectUpDirection = new Vector3(),
+			objectSidewaysDirection = new Vector3(),
+			moveDirection = new Vector3(),
 			angle;
 
 		return function rotateCamera() {
@@ -211,12 +213,12 @@ THREE.TrackballControls = function ( object, domElement ) {
 			_touchZoomDistanceStart = _touchZoomDistanceEnd;
 			_eye.multiplyScalar( factor );
 
-
 		} else {
 
 			factor = 1.0 + ( _zoomEnd.y - _zoomStart.y ) * _this.zoomSpeed;
 
 			if ( factor !== 1.0 && factor > 0.0 ) {
+
 				_eye.multiplyScalar( factor );
 
 			}
@@ -237,9 +239,9 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	this.panCamera = ( function() {
 
-		var mouseChange = new THREE.Vector2(),
-			objectUp = new THREE.Vector3(),
-			pan = new THREE.Vector3();
+		var mouseChange = new Vector2(),
+			objectUp = new Vector3(),
+			pan = new Vector3();
 
 		return function panCamera() {
 
@@ -331,15 +333,13 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	};
 
-	this.reset = function (position) {
+	this.reset = function () {
 
 		_state = STATE.NONE;
 		_prevState = STATE.NONE;
 
 		_this.target.copy( _this.target0 );
-		if (position === undefined) position = _this.position0;
-		else position.normalize().multiplyScalar(_this.object.position.length());
-		_this.object.position.copy( position );
+		_this.object.position.copy( _this.position0 );
 		_this.object.up.copy( _this.up0 );
 
 		_eye.subVectors( _this.object.position, _this.target );
@@ -396,8 +396,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		if ( _this.enabled === false ) return;
 
-		// event.preventDefault();
-		// event.stopPropagation();
+		event.preventDefault();
+		event.stopPropagation();
 
 		if ( _state === STATE.NONE ) {
 
@@ -621,5 +621,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 };
 
-THREE.TrackballControls.prototype = Object.create( THREE.EventDispatcher.prototype );
-THREE.TrackballControls.prototype.constructor = THREE.TrackballControls;
+TrackballControls.prototype = Object.create( EventDispatcher.prototype );
+TrackballControls.prototype.constructor = TrackballControls;
+
+export {TrackballControls}

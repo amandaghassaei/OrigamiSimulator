@@ -2,6 +2,9 @@
  * Created by amandaghassaei on 5/5/17.
  */
 
+import * as THREE from "../import/three.module";
+import Node from "./node";
+
 function init3DUI(globals) {
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();

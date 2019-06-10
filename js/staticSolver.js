@@ -5,6 +5,8 @@
 // const numeric = require("numeric"); // this is not the correct npm name.
 // search npm for the right package, or rewrite to match a new package
 
+import { Vector3 } from "../import/three.module";
+
 function initStaticSolver() {
   let nodes;
   let edges;
@@ -65,7 +67,7 @@ function initStaticSolver() {
       _F[i] += F_rxn[i];
     }
     const X = numeric.solve(Ctrans_Q_C, _F);
-    // var sum = new THREE.Vector3();
+    // var sum = new Vector3();
     // for (var i = 0; i < _F.length;i+=3) {
     //     sum.x += _F[i];
     //     sum.y += _F[i+1];
@@ -79,7 +81,7 @@ function initStaticSolver() {
   function render(X) {
     for (let i = 0; i < numVerticesFree; i += 1) {
       const index = indicesMapping[i];
-      const nodePosition = new THREE.Vector3(X[3*i], X[3*i+1], X[3*i+2]);
+      const nodePosition = new Vector3(X[3*i], X[3*i+1], X[3*i+2]);
       const nexPos = nodes[index].renderDelta(nodePosition);
       positions[3 * index] = nexPos.x;
       positions[3 * index + 1] = nexPos.y;
@@ -87,7 +89,7 @@ function initStaticSolver() {
     }
     for (let i = 0; i < numVerticesFixed; i += 1) { // todo necessary?
       const index = fixedIndicesMapping[i];
-      const nodePosition = new THREE.Vector3(0, 0, 0);
+      const nodePosition = new Vector3(0, 0, 0);
       const nexPos = nodes[index].render(nodePosition);
       positions[3 * index] = nexPos.x;
       positions[3 * index + 1] = nexPos.y;
@@ -206,15 +208,15 @@ function initStaticSolver() {
     const normals = [];
 
     // compute all normals
-    const cb = new THREE.Vector3();
-    const ab = new THREE.Vector3();
+    const cb = new Vector3();
+    const ab = new Vector3();
     for (let j = 0; j < indices.length; j += 3) {
       let index = 3 * indices[j];
-      const vA = new THREE.Vector3(positions[index], positions[index + 1], positions[index + 2]);
+      const vA = new Vector3(positions[index], positions[index + 1], positions[index + 2]);
       index = 3 * indices[j + 1];
-      const vB = new THREE.Vector3(positions[index], positions[index + 1], positions[index + 2]);
+      const vB = new Vector3(positions[index], positions[index + 1], positions[index + 2]);
       index = 3 * indices[j + 2];
-      const vC = new THREE.Vector3(positions[index], positions[index + 1], positions[index + 2]);
+      const vC = new Vector3(positions[index], positions[index + 1], positions[index + 2]);
       cb.subVectors(vC, vB);
       ab.subVectors(vA, vB);
       cb.cross(ab);

@@ -1,19 +1,9 @@
 {
-  "name": "origami-simulator",
+  "name": "OrigamiSimulator",
   "version": "0.0.1",
   "description": "",
   "main": "origami-simulator.js",
-  "keywords": [
-    "svg",
-    "line",
-    "segment",
-    "path",
-    "simplify",
-    "divide",
-    "convert",
-    "fragment",
-    "vector"
-  ],
+  "keywords": [],
   "author": "Amanda Ghassaei",
   "license": "MIT",
   "repository": "https://github.com/amandaghassaei/OrigamiSimulator",

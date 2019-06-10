@@ -2,6 +2,8 @@
  * Created by amandaghassaei on 5/10/17.
  */
 
+import * as THREE from "../import/three.module";
+
 function initViveInterface(globals){
 
   var $status = $("#VRstatus");

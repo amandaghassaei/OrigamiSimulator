@@ -2,6 +2,8 @@
  * Created by ghassaei on 9/16/16.
  */
 
+import * as THREE from "../import/three.module";
+
 const nodeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, side:THREE.DoubleSide });
 const transparentMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.5, transparent: true });
 const transparentVRMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.8, transparent: true });

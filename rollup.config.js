@@ -2,7 +2,7 @@
 module.exports = {
   input: "js/main.js",
   output: {
-    name: "Origami Simulator",
+    name: "OrigamiSimulator",
     file: "origami-simulator.js",
     format: "umd",
     // format: "es6",

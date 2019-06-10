@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>Origami Simulator</title>
+
+<style type="text/css">
+html, body{ height: 100%; }
+body { margin: 0px; }
+canvas, #simulator-container {
+  width: 100%;
+  height: 100%;
+}
+#gpuMathCanvas, #fileSelector { display: none; }
+#fold-percent-slider { width: 100px; }
+#simulator-controls {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+  text-align: center;
+}
+</style>
+
+</head>
+<body>
+  <script type="text/javascript" src="../origami-simulator.js"></script>
+
+  <canvas id="gpuMathCanvas"></canvas>
+  <input id="fileSelector" type="file">
+  <!-- end origami simulator -->
+
+  <div id="simulator-container"></div>
+  <div id="simulator-controls">
+    <button id="button-material-color">material</button>
+    <button id="button-material-strain">strain</button>
+    <button id="button-control-rotate">rotate</button>
+    <button id="button-control-grab">grab</button>
+    <input type="range" id="fold-percent-slider" min="0" max="100">
+    <span>Fold: <span id="fold-percent-label">50</span>%</span>
+  </div>
+
+<svg id="two-fold" display="none" version="1.1" xmlns="http://www.w3.org/2000/svg" width="1" height="1" viewBox="0 0 1 1"><rect width="1" height="1" fill="white" stroke="black"></rect><line x2="1" y2="1" stroke="red"></line><line y1="1" x2="0.5" y2="0.5" stroke="red"></line><line x1="1" x2="0.5" y2="0.5" stroke="blue"></line></svg>
+
+<script>
+let app = OrigamiSimulator();
+
+window.addEventListener("load", () => {
+  app.loadSVG(document.querySelector("#two-fold"));
+});
+
+document.getElementById("fold-percent-slider").oninput = function (e) {
+  const valueString = document.getElementById("fold-percent-slider").value;
+  const val = parseInt(valueString, 10);
+  // globals.creasePercent = val / 100;
+  // globals.shouldChangeCreasePercent = true;
+  document.getElementById("fold-percent-label").innerHTML = valueString;
+};
+
+document.getElementById("button-material-color").onclick = function() {
+  // globals.colorMode = "color";
+  // globals.model.setMeshMaterial();
+};
+document.getElementById("button-material-strain").onclick = function() {
+  // globals.colorMode = "axialStrain";
+  // globals.model.setMeshMaterial();
+};
+document.getElementById("button-control-rotate").onclick = function() {
+  // globals.userInteractionEnabled = false;
+  // globals.UI3D.hideHighlighters();
+};
+document.getElementById("button-control-grab").onclick = function() {
+  // globals.userInteractionEnabled = true;
+  // globals.threeView.resetModel();
+};
+</script>
+
+</body>

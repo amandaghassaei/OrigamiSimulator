@@ -2,6 +2,9 @@
  * Created by amandaghassaei on 5/6/17.
  */
 
+// try to get rid of this import
+import * as THREE from "../import/three.module";
+
 function saveFOLD() {
 
   const geo = new THREE.Geometry().fromBufferGeometry(globals.model.getGeometry());

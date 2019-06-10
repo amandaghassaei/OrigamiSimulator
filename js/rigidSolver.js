@@ -5,6 +5,8 @@
 // const numeric = require("numeric"); // this is not the correct npm name.
 // search npm for the right package, or rewrite to match a new package
 
+import { Vector3 } from "../import/three.module";
+
 function initRigidSolver() {
 
   let nodes;
@@ -64,7 +66,7 @@ function initRigidSolver() {
       numeric.dot(numeric.transpose(pinv(numeric.transpose(C))), C)),
       F
     ); // todo valid psuedoinv?
-    // let sum = new THREE.Vector3();
+    // let sum = new Vector3();
     // for (let i=0;i<_F.length;i+=3) {
     //     sum.x += _F[i];
     //     sum.y += _F[i+1];
@@ -78,7 +80,7 @@ function initRigidSolver() {
   function render(X) {
 
     for (let i = 0; i < nodes.length; i += 1) {
-      const nodePosition = new THREE.Vector3(X[3 * i], X[3 * i + 1], X[3 * i + 2]);
+      const nodePosition = new Vector3(X[3 * i], X[3 * i + 1], X[3 * i + 2]);
       const nexPos = nodes[i].renderDelta(nodePosition);
       positions[3 * i] = nexPos.x;
       positions[3 * i + 1] = nexPos.y;
@@ -156,23 +158,23 @@ function initRigidSolver() {
     const normals = [];
 
     // compute all normals
-    const cb = new THREE.Vector3();
-    const ab = new THREE.Vector3();
+    const cb = new Vector3();
+    const ab = new Vector3();
     for (let j = 0; j < indices.length; j += 3) {
       let index = 3 * indices[j];
-      const vA = new THREE.Vector3(
+      const vA = new Vector3(
         positions[index],
         positions[index + 1],
         positions[index + 2]
       );
       index = 3 * indices[j + 1];
-      const vB = new THREE.Vector3(
+      const vB = new Vector3(
         positions[index],
         positions[index + 1],
         positions[index + 2]
       );
       index = 3 * indices[j + 2];
-      const vC = new THREE.Vector3(
+      const vC = new Vector3(
         positions[index],
         positions[index + 1],
         positions[index + 2]
