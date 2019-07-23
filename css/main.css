@@ -562,7 +562,7 @@ a.seeMore.closed>.fui-triangle-down{
     width: 100%;
 }
 
-#simulationSettings, #errorInfo,  #animationsSettings, #cameraAngle, #edgeVisiblity, #virtualReality, #materialSettings{
+#simulationSettings, #errorInfo,  #animationsSettings, #cameraAngle, #edgeVisibility, #virtualReality, #materialSettings{
     margin-top: 15px;
 }
 .modal-body img{
