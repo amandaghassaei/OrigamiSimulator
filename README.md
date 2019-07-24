@@ -1,6 +1,6 @@
 # OrigamiSimulator
 
-Live demo at <a href="http://apps.amandaghassaei.com/OrigamiSimulator">apps.amandaghassaei.com/OrigamiSimulator</a><br/>
+Live demo at <a href="https://origamisimulator.org/">origamisimulator.org</a><br/>
 
 <img src="assets/doc/crane.gif" />
 
