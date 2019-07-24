@@ -115,7 +115,7 @@ function saveOBJ(){
     }
 
     var fold = globals.pattern.getFoldData(false);
-    var obj = "#output from http://apps.amandaghassaei.com/OrigamiSimulator/\n";
+    var obj = "#output from https://origamisimulator.org/\n";
     obj += "# "+ geo.vertices.length + "vertices\n";
     for (var i=0;i<geo.vertices.length;i++){
         var vertex = geo.vertices[i];

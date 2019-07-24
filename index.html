@@ -8,13 +8,13 @@
 
     <meta property="og:title" content="Origami Simulator ">
     <meta property="og:description" content=" Real-time WebGL origami simulator app">
-    <meta property="og:image" content="http://apps.amandaghassaei.com/OrigamiSimulator/assets/doc/strain.jpg">
-    <meta property="og:url" content="http://apps.amandaghassaei.com/OrigamiSimulator/">
+    <meta property="og:image" content="https://origamisimulator.org/assets/doc/strain.jpg">
+    <meta property="og:url" content="https://origamisimulator.org/">
 
     <meta name="twitter:title" content="Origami Simulator ">
     <meta name="twitter:description" content=" Real-time WebGL origami simulator app">
-    <meta name="twitter:image" content="http://apps.amandaghassaei.com/OrigamiSimulator/assets/doc/strain.jpg">
-    <meta name="twitter:card" content="http://apps.amandaghassaei.com/OrigamiSimulator/assets/doc/strain.jpg">
+    <meta name="twitter:image" content="https://origamisimulator.org/assets/doc/strain.jpg">
+    <meta name="twitter:card" content="https://origamisimulator.org/assets/doc/strain.jpg">
 
     <link href="dependencies/bootstrap.min.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" type="text/css" href="dependencies/flat-ui.min.css"/>
@@ -812,12 +812,20 @@
                     This app allows you to simulate how any origami crease pattern will fold.  It may look a little different
                     from what you typically think of as "origami" - rather than folding paper in a set of sequential steps,
                     this simulation attempts to fold every crease simultaneously. It does this by iteratively solving for small displacements in the geometry of an initially flat sheet due to forces
-                    exerted by creases.  This solver extends work from the following sources: <br/><br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="http://www2.eng.cam.ac.uk/~sdg/preprint/5OSME.pdf">Origami Folding: A Structural Engineering Approach</a> by Mark Schenk and Simon D. Guest<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="http://www.tsg.ne.jp/TT/cg/TachiFreeformOrigami2010.pdf">Freeform Variations of Origami</a> by Tomohiro Tachi<br/>
-                    <br/>
+                    exerted by creases.
+                    You can read more about it in our paper:
+                    <ul>
+                    <li><a target="_blank" href="http://erikdemaine.org/papers/OrigamiSimulator_Origami7/">Fast, Interactive Origami Simulation using GPU Computation</a> by Amanda Ghassaei, Erik Demaine, and Neil Gershenfeld (7OSME)
+                    </ul>
+
                     All simulation methods were written from scratch and are executed in parallel in several GPU fragment shaders for fast performance.
-                    <br/><br/>
+                    The solver extends work from the following sources:
+                    <ul>
+                    <li><a target="_blank" href="http://www2.eng.cam.ac.uk/~sdg/preprint/5OSME.pdf">Origami Folding: A Structural Engineering Approach</a> by Mark Schenk and Simon D. Guest<br/>
+                    <li><a target="_blank" href="http://www.tsg.ne.jp/TT/cg/TachiFreeformOrigami2010.pdf">Freeform Variations of Origami</a> by Tomohiro Tachi<br/>
+                    </ul>
+
+                    <p>
                     Built by <a href="http://www.amandaghassaei.com/" target="_blank">Amanda Ghassaei</a> as a final project for <a href="http://courses.csail.mit.edu/6.849/spring17/" target="_blank">Geometric Folding Algorithms</a>.
                     Code available on <a href="https://github.com/amandaghassaei/OrigamiSimulator" target="_blank">Github</a>.  If you have interesting crease patterns that would
                     make good demo files, please send them to me (Amanda) so I can add them to the <b>Examples</b> menu.  My email address is on my website.  Thanks!<br/>
@@ -862,8 +870,7 @@
                     </ul>
                 <p>
                     <br/>
-                    More documentation about the simulation methods in this <a href="http://www.amandaghassaei.com/files/projects/origami_simulator/FastInteractiveOrigamiSimGPU.pdf" target="_blank">paper</a>.
-                    Additional info can also be found <a href="http://www.amandaghassaei.com/projects/origami_simulator/" target="_blank">here</a>.<br/>
+                    You can find additional information in <a href="http://erikdemaine.org/papers/OrigamiSimulator_Origami7/" target="_blank">our 7OSME paper</a> and <a href="http://www.amandaghassaei.com/projects/origami_simulator/" target="_blank">this website</a>.<br/>
                     <br/>
                 </p>
             </div>
