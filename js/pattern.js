@@ -195,6 +195,7 @@ function initPattern(globals){
                 console.warn("path parser not supported");
                 return;
             }
+            var startVertex = null;
             var segments = path.getPathData();
             for (var j=0;j<segments.length;j++){
                 var segment = segments[j];
@@ -210,6 +211,7 @@ function initPattern(globals){
                             vertex.x += segment.values[0];
                             vertex.z += segment.values[1];
                         }
+                        startVertex = _verticesRaw.length;
                         _verticesRaw.push(vertex);
                         pathVertices.push(vertex);
                         break;
@@ -244,6 +246,7 @@ function initPattern(globals){
 
                     case "M"://x, y
                         var vertex = new THREE.Vector3(segment.values[0], 0, segment.values[1]);
+                        startVertex = _verticesRaw.length;
                         _verticesRaw.push(vertex);
                         pathVertices.push(vertex);
                         break;
@@ -271,6 +274,14 @@ function initPattern(globals){
                         vertex.x = segment.values[0];
                         _verticesRaw.push(vertex);
                         pathVertices.push(vertex);
+                        break;
+
+                    case "z":
+                    case "Z":
+                        if (startVertex != null) {
+                            _segmentsRaw.push([_verticesRaw.length-1, startVertex]);
+                            startVertex = null;
+                        }
                         break;
                 }
             }
