@@ -101,33 +101,32 @@ function initPattern(globals){
     }
 
     function getOpacity(obj){
-        var opacity = obj.attr("opacity");
-        if (opacity === undefined) {
-            if (obj.attr("style") && $(obj)[0].style.opacity) {
-                opacity = $(obj)[0].style.opacity;
-            }
-            if (opacity === undefined){
-                opacity = obj.attr("stroke-opacity");
-                if (opacity === undefined) {
-                    if (obj.attr("style") && $(obj)[0].style["stroke-opacity"]) {
-                        opacity = $(obj)[0].style["stroke-opacity"];
-                    }
-                }
-            }
-        }
+        // Check rendered style first (most browsers, supporting CSS styling),
+        // then opacity attribute, then opacity:... spec in style attribute.
+        // Ditto for stroke-opacity.  Both default to 1 (full opacity).
+        // If both are present, they get multiplied together.
+        var opacity = obj.css('opacity') || obj.attr('opacity') ||
+            (obj[0].style && obj[0].style.opacity);
+        var strokeOpacity = obj.css('stroke-opacity') ||
+            obj.attr('stroke-opacity') ||
+            (obj[0].style && obj[0].style.strokeOpacity);
         opacity = parseFloat(opacity);
-        if (isNaN(opacity)) return 1;
-        return opacity;
+        strokeOpacity = parseFloat(strokeOpacity);
+        if (isNaN(opacity)) {
+            opacity = 1;
+        }
+        if (isNaN(strokeOpacity)) {
+            opacity = 1;
+        }
+        return opacity * strokeOpacity;
     }
 
     function getStroke(obj){
-        var stroke = obj.attr("stroke");
+        // Check rendered style first (most browsers, supporting CSS styling),
+        // then stroke attribute, then stroke:... spec in style attribute.
+        var stroke = obj.css('stroke') || obj.attr("stroke") ||
+            (obj[0].style && obj[0].style.stroke);
         if (stroke === undefined) {
-            if (obj.attr("style") && $(obj)[0].style.stroke) {
-                stroke = ($(obj)[0].style.stroke).toLowerCase();
-                stroke = stroke.replace(/\s/g,'');//remove all whitespace
-                return stroke;
-            }
             return null;
         }
         stroke = stroke.replace(/\s/g,'');//remove all whitespace
@@ -346,16 +345,10 @@ function initPattern(globals){
         SVGloader.load(url, function(svg){
 
             var _$svg = $(svg);
+            // Add SVG to page dom to reveal rendered styles (including CSS).
+            $(svg).appendTo('body');
 
             clearAll();
-
-            //warn of global styling
-            var $style = _$svg.children("style");
-            if ($style.length>0){
-                globals.warn("Global styling found on SVG, this is currently ignored by the app.  This may cause some lines " +
-                    "to be styled incorrectly and missed during import.  Please find a way to save this file without using global style tags." +
-                    "<br/><br/>Global styling:<br/><br/><b>" + $style.html() + "</b>");
-            }
 
             //warn of groups
             // var $groups = _$svg.children("g");
@@ -393,6 +386,9 @@ function initPattern(globals){
                     "see <b>File > File Import Tips</b> for more information.";
                 globals.warn(string);
             }
+
+            // Now that loading is done, remove SVG from page DOM.
+            _$svg.remove();
 
             //todo revert back to old pattern if bad import
             var success = parseSVG(verticesRaw, bordersRaw, mountainsRaw, valleysRaw, cutsRaw, triangulationsRaw, hingesRaw);
