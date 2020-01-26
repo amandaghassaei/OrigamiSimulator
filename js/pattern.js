@@ -1002,7 +1002,9 @@ function initPattern(globals){
             var triangles = earcut(faceVert, null, is2d? 2:3);
 
             for (var j=0;j<triangles.length;j+=3){
-                var tri = [face[triangles[j+2]], face[triangles[j+1]], face[triangles[j]]];
+                // this fixes a bug where triangles from earcut() have backwards winding
+                // var tri = [face[triangles[j+2]], face[triangles[j+1]], face[triangles[j]]];
+                var tri = [face[triangles[j+1]], face[triangles[j+2]], face[triangles[j]]];
                 var foundEdges = [false, false, false];//ab, bc, ca
 
                 for (var k=0;k<faceEdges.length;k++){
