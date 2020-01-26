@@ -75,6 +75,11 @@ function initImporter(globals){
                             return;
                         }
 
+                        // spec 1.0 backwards compatibility
+                        if (fold.edges_foldAngles){
+                            fold.edges_foldAngle = fold.edges_foldAngles;
+                            delete fold.edges_foldAngles;
+                        }
                         if (fold.edges_foldAngle){
                             globals.pattern.setFoldData(fold);
                             return;
