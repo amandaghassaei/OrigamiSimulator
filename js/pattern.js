@@ -72,7 +72,7 @@ function initPattern(globals){
         var stroke = getStroke($this);
         if (typeForStroke(stroke) == "mountain"){
             var opacity = getOpacity($this);
-            this.targetAngle = -opacity*Math.PI;
+            this.targetAngle = -opacity*180;
             return true;
         }
         return false;
@@ -82,7 +82,7 @@ function initPattern(globals){
         var stroke = getStroke($this);
         if (typeForStroke(stroke) == "valley"){
             var opacity = getOpacity($this);
-            this.targetAngle = opacity*Math.PI;
+            this.targetAngle = opacity*180;
             return true;
         }
         return false;
@@ -155,7 +155,7 @@ function initPattern(globals){
     }
     function opacityForAngle(angle, assignment){
         if (angle === null || assignment == "F") return 1;
-        return Math.abs(angle)/Math.PI;
+        return Math.abs(angle)/180;
     }
 
     function findType(_verticesRaw, _segmentsRaw, filter, $paths, $lines, $rects, $polygons, $polylines){
