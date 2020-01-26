@@ -21,7 +21,7 @@ function saveFOLD(){
     if (filename == "") filename = globals.filename;
 
     var json = {
-        file_spec: 1,
+        file_spec: 1.1,
         file_creator: "Origami Simulator: http://git.amandaghassaei.com/OrigamiSimulator/",
         file_author: $("#foldAuthor").val(),
         file_classes: ["singleModel"],
@@ -52,7 +52,7 @@ function saveFOLD(){
     json.faces_vertices = fold.faces_vertices;
 
     if (globals.exportFoldAngle){
-        json.edges_foldAngles = fold.edges_foldAngles;
+        json.edges_foldAngle = fold.edges_foldAngle;
     }
 
     var blob = new Blob([JSON.stringify(json, null, 4)], {type: 'application/octet-binary'});
