@@ -1003,6 +1003,7 @@ function initPattern(globals){
 
             for (var j=0;j<triangles.length;j+=3){
                 // this fixes a bug where triangles from earcut() have backwards winding
+                // [https://github.com/mapbox/earcut/issues/44]
                 // var tri = [face[triangles[j+2]], face[triangles[j+1]], face[triangles[j]]];
                 var tri = [face[triangles[j+1]], face[triangles[j+2]], face[triangles[j]]];
                 var foundEdges = [false, false, false];//ab, bc, ca
