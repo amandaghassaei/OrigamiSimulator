@@ -520,7 +520,7 @@ filter.subdivideCrossingEdges_vertices = function(fold, epsilon) {
       if (geom.pointStrictlyInSegment(p, s)) {
         fold.edges_vertices.push([v, e[1]]);
         fold.edges_assignment.push(fold.edges_assignment[i]);
-        fold.edges_foldAngles.push(fold.edges_foldAngles[i]);
+        fold.edges_foldAngle.push(fold.edges_foldAngle[i]);
         e[1] = v;
       }
     }
@@ -559,13 +559,13 @@ filter.subdivideCrossingEdges_vertices = function(fold, epsilon) {
           if (indexOf.call(e1, crossI) < 0) {
             fold.edges_vertices.push([crossI, e1[1]]);
             fold.edges_assignment.push(fold.edges_assignment[i1]);
-            fold.edges_foldAngles.push(fold.edges_foldAngles[i1]);
+            fold.edges_foldAngle.push(fold.edges_foldAngle[i1]);
             e1[1] = crossI;
           }
           if (indexOf.call(e2, crossI) < 0) {
             fold.edges_vertices.push([crossI, e2[1]]);
             fold.edges_assignment.push(fold.edges_assignment[i2]);
-            fold.edges_foldAngles.push(fold.edges_foldAngles[i2]);
+            fold.edges_foldAngle.push(fold.edges_foldAngle[i2]);
             e2[1] = crossI;
           }
         }
