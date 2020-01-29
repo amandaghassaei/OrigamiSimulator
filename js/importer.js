@@ -75,7 +75,12 @@ function initImporter(globals){
                             return;
                         }
 
+                        // spec 1.0 backwards compatibility
                         if (fold.edges_foldAngles){
+                            fold.edges_foldAngle = fold.edges_foldAngles;
+                            delete fold.edges_foldAngles;
+                        }
+                        if (fold.edges_foldAngle){
                             globals.pattern.setFoldData(fold);
                             return;
                         }
@@ -90,7 +95,7 @@ function initImporter(globals){
                                     if (assignment == "F") foldAngles.push(0);
                                     else foldAngles.push(null);
                                 }
-                                fold.edges_foldAngles = foldAngles;
+                                fold.edges_foldAngle = foldAngles;
 
                                 var allCreaseParams = globals.pattern.setFoldData(fold, true);
                                 var j = 0;
@@ -109,7 +114,7 @@ function initImporter(globals){
                                     var normal2 = (vec2.cross(vec1)).normalize();
                                     var angle = Math.abs(normal1.angleTo(normal2));
                                     if (assignment == "M") angle *= -1;
-                                    fold.edges_foldAngles[i] = angle;
+                                    fold.edges_foldAngle[i] = angle * 180 / Math.PI;
                                     creaseParams[5] = angle;
                                     j++;
                                 }
@@ -119,12 +124,12 @@ function initImporter(globals){
                             var foldAngles = [];
                             for (var i=0;i<fold.edges_assignment.length;i++){
                                 var assignment = fold.edges_assignment[i];
-                                if (assignment == "M") foldAngles.push(-Math.PI);
-                                else if (assignment == "V") foldAngles.push(Math.PI);
+                                if (assignment == "M") foldAngles.push(-180);
+                                else if (assignment == "V") foldAngles.push(180);
                                 else if (assignment == "F") foldAngles.push(0);
                                 else foldAngles.push(null);
                             }
-                            fold.edges_foldAngles = foldAngles;
+                            fold.edges_foldAngle = foldAngles;
                             globals.pattern.setFoldData(fold);
                         });
                     } catch(err) {
