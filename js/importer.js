@@ -23,6 +23,22 @@ function initImporter(globals){
         }
     }
 
+    window.addEventListener('message', function(e) {
+        if (e.data && e.data.op === 'importFold' && e.data.fold) {
+            globals.filename = e.data.fold.file_title || 'message';
+            globals.extension = 'fold';
+            globals.url = null;
+            globals.pattern.setFoldData(e.data.fold);
+        }
+    });
+    // Tell parent/opening window that we're ready for messages now.
+    var readyMessage = {from: 'OrigamiSimulator', status: 'ready'};
+    if (window.parent) {
+        window.opener.postMessage(readyMessage, '*');
+    } else if (window.opener) {
+        window.opener.postMessage(readyMessage, '*');
+    }
+
     $("#fileSelector").change(function(e) {
         var files = e.target.files; // FileList object
         if (files.length < 1) {
