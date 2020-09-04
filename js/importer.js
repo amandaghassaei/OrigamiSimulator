@@ -34,7 +34,7 @@ function initImporter(globals){
     // Tell parent/opening window that we're ready for messages now.
     var readyMessage = {from: 'OrigamiSimulator', status: 'ready'};
     if (window.parent) {
-        window.opener.postMessage(readyMessage, '*');
+        window.parent.postMessage(readyMessage, '*');
     } else if (window.opener) {
         window.opener.postMessage(readyMessage, '*');
     }
