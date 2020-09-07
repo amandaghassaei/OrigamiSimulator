@@ -353,9 +353,19 @@ function initPattern(globals){
     }
 
     function loadSVG(url){
+        // Some SVG files start with UTF-8 byte order mark (BOM) EF BB BF,
+        // which encodes in Base64 to 77u/ -- remove this, as it breaks the
+        // XML/SVG parser.
+        url = url.replace(/^(data:image\/svg\+xml;base64,)77u\//, '$1');
+
         SVGloader.load(url, function(svg){
 
             var _$svg = $(svg);
+            if (_$svg.find('parsererror').length) {
+                globals.warn("Error parsing SVG: " + svg.innerText);
+                return console.warn(_$svg.find('parsererror')[0]);
+            }
+
             // Add SVG to page dom to reveal rendered styles (including CSS).
             $(svg).appendTo('body');
 
