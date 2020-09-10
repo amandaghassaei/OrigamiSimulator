@@ -204,7 +204,11 @@ function initPattern(globals){
 
                     case "m"://dx, dy
                         var vertex;
-                        if (j === 0){//problem with inkscape files
+                        if (j === 0){
+                            // "If a relative moveto (m) appears as the first
+                            // element of the path, then it is treated as a
+                            // pair of absolute coordinates"
+                            // [https://www.w3.org/TR/SVG/paths.html#PathDataMovetoCommands]
                             vertex = new THREE.Vector3(segment.values[0], 0, segment.values[1]);
                         } else {
                             vertex = _verticesRaw[_verticesRaw.length-1].clone();
