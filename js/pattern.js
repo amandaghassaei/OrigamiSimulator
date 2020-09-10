@@ -383,6 +383,8 @@ function initPattern(globals){
             // }
 
             //format all appropriate svg elements
+            _$svg.find("symbol").remove();
+            _$svg.find("defs > :not(style)").remove();
             var $paths = _$svg.find("path");
             var $lines = _$svg.find("line");
             var $rects = _$svg.find("rect");
