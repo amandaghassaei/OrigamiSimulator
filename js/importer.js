@@ -24,16 +24,25 @@ function initImporter(globals){
     }
 
     window.addEventListener('message', function(e) {
-        if (e.data && e.data.op === 'importFold' && e.data.fold) {
+        if (!e.data) return;
+        if (e.data.op === 'importFold' && e.data.fold) {
             globals.filename = e.data.fold.file_title || 'message';
             globals.extension = 'fold';
             globals.url = null;
             globals.pattern.setFoldData(e.data.fold);
+        } else if (e.data.op === 'importSVG' && e.data.svg) {
+            globals.filename = e.data.filename || 'message';
+            globals.extension = 'svg';
+            globals.url = null;
+            if (e.data.vertTol) {
+                globals.vertTol = e.data.vertTol;
+            }
+            globals.pattern.loadSVG(URL.createObjectURL(new Blob([e.data.svg])));
         }
     });
     // Tell parent/opening window that we're ready for messages now.
     var readyMessage = {from: 'OrigamiSimulator', status: 'ready'};
-    if (window.parent) {
+    if (window.parent && window.parent !== window) {
         window.parent.postMessage(readyMessage, '*');
     } else if (window.opener) {
         window.opener.postMessage(readyMessage, '*');
