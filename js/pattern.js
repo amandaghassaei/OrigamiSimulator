@@ -420,7 +420,16 @@ function initPattern(globals){
             //todo revert back to old pattern if bad import
             var success = parseSVG(verticesRaw, bordersRaw, mountainsRaw, valleysRaw, cutsRaw, triangulationsRaw, hingesRaw);
             if (!success) return;
+            generateSvg();
+        },
+        function(){},
+        function(error){
+            globals.warn("Error loading SVG " + url + " : " + error);
+            console.warn(error);
+        });
+    }
 
+    function generateSvg() {
             //find max and min vertices
             var max = new THREE.Vector3(-Infinity,-Infinity,-Infinity);
             var min = new THREE.Vector3(Infinity,Infinity,Infinity);
@@ -463,13 +472,6 @@ function initPattern(globals){
                 svg.appendChild(line);
             }
             $("#svgViewer").html(svg);
-
-            },
-            function(){},
-            function(error){
-                globals.warn("Error loading SVG " + url + " : " + error);
-                console.warn(error);
-        });
     }
 
     function parseSVG(_verticesRaw, _bordersRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw, _hingesRaw){
@@ -1074,9 +1076,8 @@ function initPattern(globals){
     }
 
     function saveSVG(){
-        if (globals.extension == "fold"){
-            //todo solve for crease pattern
-            globals.warn("No crease pattern available for files imported from FOLD format.");
+        if (globals.noCreasePatternAvailable()){
+            globals.warn("No crease pattern available.");
             return;
         }
         var serializer = new XMLSerializer();
