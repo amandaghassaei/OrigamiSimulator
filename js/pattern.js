@@ -430,6 +430,8 @@ function initPattern(globals){
     }
 
     function generateSvg() {
+            $("#svgViewer").empty();
+
             //find max and min vertices
             var max = new THREE.Vector3(-Infinity,-Infinity,-Infinity);
             var min = new THREE.Vector3(Infinity,Infinity,Infinity);
@@ -444,9 +446,14 @@ function initPattern(globals){
             }
             max.sub(min);
             var border = new THREE.Vector3(0.1, 0, 0.1);
-            var scale = max.x;
-            if (max.z < scale) scale = max.z;
+            var scale = Math.max(max.x, max.y, max.z);
             if (scale == 0) return;
+
+            var isCreasePattern = rawFold.frame_classes ? rawFold.frame_classes.includes('creasePattern') : max.y < scale / 100;
+            if (!isCreasePattern) {
+                console.log('Fold data is not a crease pattern, skipping SVG generation');
+                return; // TODO try to flatten the folded state if possible
+            }
 
             var strokeWidth = scale/300;
             border.multiplyScalar(scale);
@@ -1199,7 +1206,9 @@ function initPattern(globals){
 
     function setFoldData(fold, returnCreaseParams){
         clearAll();
-        return processFold(fold, returnCreaseParams);
+        var allCreaseParams = processFold(fold, returnCreaseParams);
+        generateSvg();
+        return allCreaseParams;
     }
 
     function getTriangulatedFaces(){
