@@ -350,8 +350,10 @@ function initPattern(globals){
             for (var j=0;j<element.points.length;j++){
                 _verticesRaw.push(new THREE.Vector3(element.points[j].x, 0, element.points[j].y));
                 applyTransformation(_verticesRaw[_verticesRaw.length-1], element.transform);
-                if (j>0) _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-2]);
-                if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
+                if (j>0) {
+                    _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-2]);
+                    if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
+                }
             }
         }
     }
