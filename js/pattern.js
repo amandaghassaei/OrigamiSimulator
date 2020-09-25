@@ -258,7 +258,8 @@ function initPattern(globals){
                     case "L"://x, y
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
                         if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
-                        _verticesRaw.push(new THREE.Vector3(segment.values[0], 0, segment.values[1]));
+                        var vertex = new THREE.Vector3(segment.values[0], 0, segment.values[1]);
+                        _verticesRaw.push(vertex);
                         pathVertices.push(vertex);
                         break;
 
