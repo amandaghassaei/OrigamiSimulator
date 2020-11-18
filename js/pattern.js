@@ -562,7 +562,7 @@ function initPattern(globals){
         delete fold.vertices_vertices;
         delete fold.vertices_edges;
 
-        foldData = triangulatePolys(fold, true);
+        foldData = triangulatePolys(fold, false);
 
         for (var i=0;i<foldData.vertices_coords.length;i++){
             var vertex = foldData.vertices_coords[i];
@@ -1020,8 +1020,28 @@ function initPattern(globals){
 
             var triangles = earcut(faceVert, null, is2d? 2:3);
 
+            // this fixes a bug where triangles from earcut() have backwards winding
+            // [https://github.com/mapbox/earcut/issues/44]
+            // we check if the first triangle contains any edge with the exact same orientation of the original face
+            // if not, we flip all of the triangles
+            var needsFlip = true;
+            for (var j=0; j<faceEdges.length; j++) {
+              for (var k=0; k<3; k++) {
+                if (edges[faceEdges[j]][0] == face[triangles[k]] && edges[faceEdges[j]][1] == face[triangles[(k + 1) % 3]]) {
+                  needsFlip = false;
+                  break;
+                }
+              }
+              if (!needsFlip) break;
+            }
+
             for (var j=0;j<triangles.length;j+=3){
-                var tri = [face[triangles[j+2]], face[triangles[j+1]], face[triangles[j]]];
+                var tri;
+                if (needsFlip) {
+                  tri = [face[triangles[j+1]], face[triangles[j+2]], face[triangles[j]]];
+                } else {
+                  tri = [face[triangles[j+2]], face[triangles[j+1]], face[triangles[j]]];
+                }
                 var foundEdges = [false, false, false];//ab, bc, ca
 
                 for (var k=0;k<faceEdges.length;k++){
