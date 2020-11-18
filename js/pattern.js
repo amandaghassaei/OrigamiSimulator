@@ -545,10 +545,14 @@ function initPattern(globals){
     function processFold(fold, returnCreaseParams){
 
         rawFold = JSON.parse(JSON.stringify(fold));//save pre-triangulated for for save later
+
+        var is2d = false;
+
         //make 3d
         for (var i=0;i<rawFold.vertices_coords.length;i++){
             var vertex = rawFold.vertices_coords[i];
             if (vertex.length === 2) {//make vertices_coords 3d
+                is2d = true;
                 rawFold.vertices_coords[i] = [vertex[0], 0, vertex[1]];
             }
         }
@@ -562,7 +566,7 @@ function initPattern(globals){
         delete fold.vertices_vertices;
         delete fold.vertices_edges;
 
-        foldData = triangulatePolys(fold, false);
+        foldData = triangulatePolys(fold, is2d);
 
         for (var i=0;i<foldData.vertices_coords.length;i++){
             var vertex = foldData.vertices_coords[i];

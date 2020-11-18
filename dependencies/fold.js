@@ -99,6 +99,7 @@ convert.vertices_vertices_to_faces_vertices = function(fold) {
     if ((w != null) && geom.polygonOrientation((function() {
       var l, len2, results;
       results = [];
+
       for (l = 0, len2 = face.length; l < len2; l++) {
         x = face[l];
         results.push(fold.vertices_coords[x]);
