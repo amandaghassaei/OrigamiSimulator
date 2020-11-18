@@ -1029,9 +1029,9 @@ function initPattern(globals){
             // we check if the first triangle contains any edge with the exact same orientation of the original face
             // if not, we flip all of the triangles
             var needsFlip = true;
-            for (var j=0; j<faceEdges.length; j++) {
+            for (var j=0; j< face.length; j++) {
               for (var k=0; k<3; k++) {
-                if (edges[faceEdges[j]][0] == face[triangles[k]] && edges[faceEdges[j]][1] == face[triangles[(k + 1) % 3]]) {
+                if (face[j] == face[triangles[k]] && face[(j + 1) % face.length] == face[triangles[(k + 1) % 3]]) {
                   needsFlip = false;
                   break;
                 }
@@ -1042,9 +1042,9 @@ function initPattern(globals){
             for (var j=0;j<triangles.length;j+=3){
                 var tri;
                 if (needsFlip) {
-                  tri = [face[triangles[j+1]], face[triangles[j+2]], face[triangles[j]]];
-                } else {
                   tri = [face[triangles[j+2]], face[triangles[j+1]], face[triangles[j]]];
+                } else {
+                  tri = [face[triangles[j+1]], face[triangles[j+2]], face[triangles[j]]];
                 }
                 var foundEdges = [false, false, false];//ab, bc, ca
 
