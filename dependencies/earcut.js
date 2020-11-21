@@ -4,14 +4,23 @@
 
 function earcut(data, holeIndices, dim) {
 
+
+
     dim = dim || 2;
+
+    console.log(dim);
 
     var hasHoles = holeIndices && holeIndices.length,
         outerLen = hasHoles ? holeIndices[0] * dim : data.length,
         outerNode = linkedList(data, 0, outerLen, dim, true),
         triangles = [];
 
-    if (!outerNode) return triangles;
+    if (!outerNode) {
+      console.log("outerNode");
+      return triangles;
+    }
+    console.log("start");
+    console.log(outerNode);
 
     var minX, minY, maxX, maxY, x, y, size;
 
