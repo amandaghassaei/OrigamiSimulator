@@ -1015,56 +1015,32 @@ function initPattern(globals){
             }
 
             var faceVert = [];
+            var triangles = [];
             if (is2d) {
               for (var j=0;j<face.length;j++){
                 var vertex = vertices[face[j]];
                 faceVert.push(vertex[0]);
                 faceVert.push(vertex[1]);
               }
+              triangles = earcut(faceVert, null, 2);
             } else {
               // earcut only uses the two first coordinates for triangulation...
-              // as a fix, we check which two coordinates are the least co-linear
-              // and re-assign those as the first two
-              var ex = [0, 0, 0];
-              var ex2 = [0, 0, 0];
-              for (var j=0;j<face.length;j++){
-                var vertex = vertices[face[j]];
-                for (var k=0; k<3; k++) {
-                  ex[k] += vertex[k];
-                  ex2[k] += Math.pow(vertex[k], 2);
+              // as a fix, we try each of the dimension combinations until we get a result
+              for (var j=0; j<3; j++) {
+                faceVert = [];
+                for (var k=0;k<face.length;k++){
+                  var vertex = vertices[face[k]];
+                  faceVert.push(vertex[j]);
+                  faceVert.push(vertex[(j + 1) % 3]);
+                  faceVert.push(vertex[(j + 2) % 3]);
+                }
+                triangles = earcut(faceVert, null, 3);
+
+                if (triangles.length > 0) {
+                  break;
                 }
               }
-              for (var k=0; k<3; k++) {
-                ex[k] /= face.length ;
-                ex2[k] /= face.length;
-              }
-              var variances = [];
-              for (var k=0; k<3; k++) {
-                variances.push(Math.abs(Math.pow(ex[k], 2) - ex2[k]));
-              }
-              var a, b, c;
-              if (variances[2] < variances[1] && variances[2] < variances[0]) {
-                a = 0;
-                b = 1;
-                c = 2;
-              } else if (variances[1] < variances[0]) {
-                a = 0;
-                b = 2;
-                c = 1;
-              } else {
-                a = 2;
-                b = 0;
-                c = 1;
-              }
-              for (var j=0;j<face.length;j++){
-                var vertex = vertices[face[j]];
-                faceVert.push(vertex[a]);
-                faceVert.push(vertex[b]);
-                faceVert.push(vertex[c]);
-              }
             }
-
-            var triangles = earcut(faceVert, null, is2d? 2:3);
 
             // this fixes a bug where triangles from earcut() have backwards winding
             // [https://github.com/mapbox/earcut/issues/44]
