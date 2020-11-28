@@ -1017,29 +1017,29 @@ function initPattern(globals){
             var faceVert = [];
             var triangles = [];
             if (is2d) {
-              for (var j=0;j<face.length;j++){
-                var vertex = vertices[face[j]];
-                faceVert.push(vertex[0]);
-                faceVert.push(vertex[1]);
-              }
-              triangles = earcut(faceVert, null, 2);
+                for (var j=0;j<face.length;j++){
+                    var vertex = vertices[face[j]];
+                    faceVert.push(vertex[0]);
+                    faceVert.push(vertex[1]);
+                }
+                triangles = earcut(faceVert, null, 2);
             } else {
-              // earcut only uses the two first coordinates for triangulation...
-              // as a fix, we try each of the dimension combinations until we get a result
-              for (var j=0; j<3; j++) {
-                faceVert = [];
-                for (var k=0;k<face.length;k++){
-                  var vertex = vertices[face[k]];
-                  faceVert.push(vertex[j]);
-                  faceVert.push(vertex[(j + 1) % 3]);
-                  faceVert.push(vertex[(j + 2) % 3]);
-                }
-                triangles = earcut(faceVert, null, 3);
+                // earcut only uses the two first coordinates for triangulation...
+                // as a fix, we try each of the dimension combinations until we get a result
+                for (var j=0; j<3; j++) {
+                    faceVert = [];
+                    for (var k=0;k<face.length;k++){
+                        var vertex = vertices[face[k]];
+                        faceVert.push(vertex[j]);
+                        faceVert.push(vertex[(j + 1) % 3]);
+                        faceVert.push(vertex[(j + 2) % 3]);
+                    }
+                    triangles = earcut(faceVert, null, 3);
 
-                if (triangles.length > 0) {
-                  break;
+                    if (triangles.length > 0) {
+                        break;
+                    }
                 }
-              }
             }
 
             // this fixes a bug where triangles from earcut() have backwards winding
@@ -1048,21 +1048,21 @@ function initPattern(globals){
             // if not, we flip all of the triangles
             var needsFlip = true;
             for (var j=0; j< face.length; j++) {
-              for (var k=0; k<3; k++) {
-                if (face[j] == face[triangles[k]] && face[(j + 1) % face.length] == face[triangles[(k + 1) % 3]]) {
-                  needsFlip = false;
-                  break;
+                for (var k=0; k<3; k++) {
+                    if (face[j] == face[triangles[k]] && face[(j + 1) % face.length] == face[triangles[(k + 1) % 3]]) {
+                        needsFlip = false;
+                        break;
+                    }
                 }
-              }
-              if (!needsFlip) break;
+                if (!needsFlip) break;
             }
 
             for (var j=0;j<triangles.length;j+=3){
                 var tri;
                 if (needsFlip) {
-                  tri = [face[triangles[j+2]], face[triangles[j+1]], face[triangles[j]]];
+                    tri = [face[triangles[j+2]], face[triangles[j+1]], face[triangles[j]]];
                 } else {
-                  tri = [face[triangles[j+1]], face[triangles[j+2]], face[triangles[j]]];
+                    tri = [face[triangles[j+1]], face[triangles[j+2]], face[triangles[j]]];
                 }
                 var foundEdges = [false, false, false];//ab, bc, ca
 
