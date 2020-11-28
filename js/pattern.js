@@ -544,18 +544,18 @@ function initPattern(globals){
 
     function processFold(fold, returnCreaseParams){
 
-        rawFold = JSON.parse(JSON.stringify(fold));//save pre-triangulated for for save later
-
-        var is2d = false;
-
-        //make 3d
-        for (var i=0;i<rawFold.vertices_coords.length;i++){
-            var vertex = rawFold.vertices_coords[i];
-            if (vertex.length === 2) {//make vertices_coords 3d
-                is2d = true;
-                rawFold.vertices_coords[i] = [vertex[0], 0, vertex[1]];
-            }
+        //add missing coordinates to make 3d, and flip y and z for internal use
+        //FOLD spec says that, beyond two dimensions,
+        //"all unspecified coordinates are implicitly zero"
+        var is2d = true;
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            var vertex = fold.vertices_coords[i];
+            if (vertex[2]) is2d = false;
+            fold.vertices_coords[i] = [vertex[0], vertex[2] || 0, vertex[1]];
         }
+
+        //save pre-triangulated faces for later saveFOLD()
+        rawFold = JSON.parse(JSON.stringify(fold));
 
         var cuts = FOLD.filter.cutEdges(fold);
         if (cuts.length>0) {
@@ -1020,7 +1020,7 @@ function initPattern(globals){
                 for (var j=0;j<face.length;j++){
                     var vertex = vertices[face[j]];
                     faceVert.push(vertex[0]);
-                    faceVert.push(vertex[1]);
+                    faceVert.push(vertex[2]);
                 }
                 triangles = earcut(faceVert, null, 2);
             } else {
@@ -1035,26 +1035,26 @@ function initPattern(globals){
                         faceVert.push(vertex[(j + 2) % 3]);
                     }
                     triangles = earcut(faceVert, null, 3);
-
-                    if (triangles.length > 0) {
-                        break;
-                    }
+                    if (triangles.length > 0) break;
                 }
             }
 
-            // this fixes a bug where triangles from earcut() have backwards winding
+            // triangles from earcut() can have backwards winding relative to original face
             // [https://github.com/mapbox/earcut/issues/44]
-            // we check if the first triangle contains any edge with the exact same orientation of the original face
-            // if not, we flip all of the triangles
-            var needsFlip = true;
-            for (var j=0; j< face.length; j++) {
+            // we look for the first edge of the original face among the triangles;
+            // if it appears reversed in any triangle, we flip all triangles
+            var needsFlip;
+            for (var j=0;j<triangles.length;j+=3){
                 for (var k=0; k<3; k++) {
-                    if (face[j] == face[triangles[k]] && face[(j + 1) % face.length] == face[triangles[(k + 1) % 3]]) {
+                    if (triangles[j + k] === 0 && triangles[j + (k+1)%3] === 1) {
                         needsFlip = false;
+                        break;
+                    } else if (triangles[j + k] === 1 && triangles[j + (k+1)%3] === 0) {
+                        needsFlip = true;
                         break;
                     }
                 }
-                if (!needsFlip) break;
+                if (needsFlip != null) break;
             }
 
             for (var j=0;j<triangles.length;j+=3){
@@ -1062,7 +1062,7 @@ function initPattern(globals){
                 if (needsFlip) {
                     tri = [face[triangles[j+2]], face[triangles[j+1]], face[triangles[j]]];
                 } else {
-                    tri = [face[triangles[j+1]], face[triangles[j+2]], face[triangles[j]]];
+                    tri = [face[triangles[j]], face[triangles[j+1]], face[triangles[j+2]]];
                 }
                 var foundEdges = [false, false, false];//ab, bc, ca
 
