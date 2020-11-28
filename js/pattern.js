@@ -1043,7 +1043,7 @@ function initPattern(globals){
             // [https://github.com/mapbox/earcut/issues/44]
             // we look for the first edge of the original face among the triangles;
             // if it appears reversed in any triangle, we flip all triangles
-            var needsFlip;
+            var needsFlip = null;
             for (var j=0;j<triangles.length;j+=3){
                 for (var k=0; k<3; k++) {
                     if (triangles[j + k] === 0 && triangles[j + (k+1)%3] === 1) {
