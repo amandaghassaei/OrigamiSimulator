@@ -544,14 +544,17 @@ function initPattern(globals){
 
     function processFold(fold, returnCreaseParams){
 
-        //add missing coordinates to make 3d, and flip y and z for internal use
-        //FOLD spec says that, beyond two dimensions,
-        //"all unspecified coordinates are implicitly zero"
+        //add missing coordinates to make 3d, mapping (x,y) -> (x,0,z)
+        //This is against the FOLD spec which says that, beyond two dimensions,
+        //"all unspecified coordinates are implicitly zero"...
         var is2d = true;
         for (var i=0;i<fold.vertices_coords.length;i++){
             var vertex = fold.vertices_coords[i];
-            if (vertex[2]) is2d = false;
-            fold.vertices_coords[i] = [vertex[0], vertex[2] || 0, vertex[1]];
+            if (vertex.length === 2) {
+                fold.vertices_coords[i] = [vertex[0], 0, vertex[1]];
+            } else {
+                is2d = false;
+            }
         }
 
         //save pre-triangulated faces for later saveFOLD()
@@ -567,13 +570,6 @@ function initPattern(globals){
         delete fold.vertices_edges;
 
         foldData = triangulatePolys(fold, is2d);
-
-        for (var i=0;i<foldData.vertices_coords.length;i++){
-            var vertex = foldData.vertices_coords[i];
-            if (vertex.length === 2) {//make vertices_coords 3d
-                foldData.vertices_coords[i] = [vertex[0], 0, vertex[1]];
-            }
-        }
 
         mountains = FOLD.filter.mountainEdges(foldData);
         valleys = FOLD.filter.valleyEdges(foldData);

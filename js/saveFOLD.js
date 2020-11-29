@@ -37,7 +37,7 @@ function saveFOLD(){
 
     for (var i=0;i<geo.vertices.length;i++){
         var vertex = geo.vertices[i];
-        json.vertices_coords.push([vertex.x, vertex.z, vertex.y]);
+        json.vertices_coords.push([vertex.x, vertex.y, vertex.z]);
     }
 
     var useTriangulated = globals.triangulateFOLDexport;
