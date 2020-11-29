@@ -1031,7 +1031,8 @@ function initPattern(globals){
                         faceVert.push(vertex[(j + 2) % 3]);
                     }
                     triangles = earcut(faceVert, null, 3);
-                    if (triangles.length > 0) break;
+                    // make sure we got *enough* triangle to cover the face
+                    if (triangles.length >= 3 * (face.length - 2)) break;
                 }
             }
 
