@@ -1022,7 +1022,7 @@ function initPattern(globals){
             } else {
                 // earcut only uses the two first coordinates for triangulation...
                 // as a fix, we try each of the dimension combinations until we get a result
-                for (var j=0; j<3; j++) {
+                for (var j=2; j>=0; j--) {
                     faceVert = [];
                     for (var k=0;k<face.length;k++){
                         var vertex = vertices[face[k]];
