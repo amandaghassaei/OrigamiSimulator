@@ -544,14 +544,21 @@ function initPattern(globals){
 
     function processFold(fold, returnCreaseParams){
 
-        rawFold = JSON.parse(JSON.stringify(fold));//save pre-triangulated for for save later
-        //make 3d
-        for (var i=0;i<rawFold.vertices_coords.length;i++){
-            var vertex = rawFold.vertices_coords[i];
-            if (vertex.length === 2) {//make vertices_coords 3d
-                rawFold.vertices_coords[i] = [vertex[0], 0, vertex[1]];
+        //add missing coordinates to make 3d, mapping (x,y) -> (x,0,z)
+        //This is against the FOLD spec which says that, beyond two dimensions,
+        //"all unspecified coordinates are implicitly zero"...
+        var is2d = true;
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            var vertex = fold.vertices_coords[i];
+            if (vertex.length === 2) {
+                fold.vertices_coords[i] = [vertex[0], 0, vertex[1]];
+            } else {
+                is2d = false;
             }
         }
+
+        //save pre-triangulated faces for later saveFOLD()
+        rawFold = JSON.parse(JSON.stringify(fold));
 
         var cuts = FOLD.filter.cutEdges(fold);
         if (cuts.length>0) {
@@ -562,14 +569,7 @@ function initPattern(globals){
         delete fold.vertices_vertices;
         delete fold.vertices_edges;
 
-        foldData = triangulatePolys(fold, true);
-
-        for (var i=0;i<foldData.vertices_coords.length;i++){
-            var vertex = foldData.vertices_coords[i];
-            if (vertex.length === 2) {//make vertices_coords 3d
-                foldData.vertices_coords[i] = [vertex[0], 0, vertex[1]];
-            }
-        }
+        foldData = triangulatePolys(fold, is2d);
 
         mountains = FOLD.filter.mountainEdges(foldData);
         valleys = FOLD.filter.valleyEdges(foldData);
@@ -1011,17 +1011,56 @@ function initPattern(globals){
             }
 
             var faceVert = [];
-            for (var j=0;j<face.length;j++){
-                var vertex = vertices[face[j]];
-                faceVert.push(vertex[0]);
-                faceVert.push(vertex[1]);
-                if (!is2d) faceVert.push(vertex[2]);
+            var triangles = [];
+            if (is2d) {
+                for (var j=0;j<face.length;j++){
+                    var vertex = vertices[face[j]];
+                    faceVert.push(vertex[0]);
+                    faceVert.push(vertex[2]);
+                }
+                triangles = earcut(faceVert, null, 2);
+            } else {
+                // earcut only uses the two first coordinates for triangulation...
+                // as a fix, we try each of the dimension combinations until we get a result
+                for (var j=2; j>=0; j--) {
+                    faceVert = [];
+                    for (var k=0;k<face.length;k++){
+                        var vertex = vertices[face[k]];
+                        faceVert.push(vertex[j]);
+                        faceVert.push(vertex[(j + 1) % 3]);
+                        faceVert.push(vertex[(j + 2) % 3]);
+                    }
+                    triangles = earcut(faceVert, null, 3);
+                    // make sure we got *enough* triangle to cover the face
+                    if (triangles.length >= 3 * (face.length - 2)) break;
+                }
             }
 
-            var triangles = earcut(faceVert, null, is2d? 2:3);
+            // triangles from earcut() can have backwards winding relative to original face
+            // [https://github.com/mapbox/earcut/issues/44]
+            // we look for the first edge of the original face among the triangles;
+            // if it appears reversed in any triangle, we flip all triangles
+            var needsFlip = null;
+            for (var j=0;j<triangles.length;j+=3){
+                for (var k=0; k<3; k++) {
+                    if (triangles[j + k] === 0 && triangles[j + (k+1)%3] === 1) {
+                        needsFlip = false;
+                        break;
+                    } else if (triangles[j + k] === 1 && triangles[j + (k+1)%3] === 0) {
+                        needsFlip = true;
+                        break;
+                    }
+                }
+                if (needsFlip != null) break;
+            }
 
             for (var j=0;j<triangles.length;j+=3){
-                var tri = [face[triangles[j+2]], face[triangles[j+1]], face[triangles[j]]];
+                var tri;
+                if (needsFlip) {
+                    tri = [face[triangles[j+2]], face[triangles[j+1]], face[triangles[j]]];
+                } else {
+                    tri = [face[triangles[j]], face[triangles[j+1]], face[triangles[j+2]]];
+                }
                 var foundEdges = [false, false, false];//ab, bc, ca
 
                 for (var k=0;k<faceEdges.length;k++){
