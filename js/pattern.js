@@ -166,9 +166,14 @@ function initPattern(globals){
         parsePolyline(_verticesRaw, _segmentsRaw, $polylines.filter(filter));
     }
 
-    function applyTransformation(vertex, transformations){
-        if (transformations == undefined) return;
-        transformations = transformations.baseVal;
+    function applyTransformation(vertex, element){
+        var transformations = [];
+        var ancestor = element;
+        do {
+            if (ancestor.transform)
+                transformations.push.apply(transformations, ancestor.transform.baseVal);
+            ancestor = ancestor.parentNode;
+        } while (ancestor && ancestor.nodeName !== 'svg');
         for (var i=0;i<transformations.length;i++){
             var t = transformations[i];
             var M = [[t.matrix.a, t.matrix.c, t.matrix.e], [t.matrix.b, t.matrix.d, t.matrix.f], [0,0,1]];
@@ -291,7 +296,7 @@ function initPattern(globals){
                 }
             }
             for (var j=0;j<pathVertices.length;j++){
-                applyTransformation(pathVertices[j], path.transform);
+                applyTransformation(pathVertices[j], path);
             }
         }
     }
@@ -303,8 +308,8 @@ function initPattern(globals){
             _verticesRaw.push(new THREE.Vector3(element.x2.baseVal.value, 0, element.y2.baseVal.value));
             _segmentsRaw.push([_verticesRaw.length-2, _verticesRaw.length-1]);
             if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
-            applyTransformation(_verticesRaw[_verticesRaw.length-2], element.transform);
-            applyTransformation(_verticesRaw[_verticesRaw.length-1], element.transform);
+            applyTransformation(_verticesRaw[_verticesRaw.length-2], element);
+            applyTransformation(_verticesRaw[_verticesRaw.length-1], element);
         }
     }
 
@@ -325,7 +330,7 @@ function initPattern(globals){
             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-4]);
             for (var j=1;j<=4;j++){
                 if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle);
-                applyTransformation(_verticesRaw[_verticesRaw.length-j], element.transform);
+                applyTransformation(_verticesRaw[_verticesRaw.length-j], element);
             }
         }
     }
@@ -335,7 +340,7 @@ function initPattern(globals){
             var element = $elements[i];
             for (var j=0;j<element.points.length;j++){
                 _verticesRaw.push(new THREE.Vector3(element.points[j].x, 0, element.points[j].y));
-                applyTransformation(_verticesRaw[_verticesRaw.length-1], element.transform);
+                applyTransformation(_verticesRaw[_verticesRaw.length-1], element);
 
                 if (j<element.points.length-1) _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
                 else _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-element.points.length]);
@@ -350,7 +355,7 @@ function initPattern(globals){
             var element = $elements[i];
             for (var j=0;j<element.points.length;j++){
                 _verticesRaw.push(new THREE.Vector3(element.points[j].x, 0, element.points[j].y));
-                applyTransformation(_verticesRaw[_verticesRaw.length-1], element.transform);
+                applyTransformation(_verticesRaw[_verticesRaw.length-1], element);
                 if (j>0) {
                     _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-2]);
                     if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
