@@ -143,7 +143,6 @@ if (globals.Itterate==true){
         json.faces_vertices = fold.faces_vertices;
         if (globals.exportFoldActualAngle){
             creaseThetas=grabThetas();
-            console.log("grabbed thetas")
             for(var i=1; i<=edgecount; i++){
                 creaseThetas.unshift(undefined);
             }
