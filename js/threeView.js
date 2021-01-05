@@ -167,7 +167,7 @@ function initThreeView(globals) {
           var diffError = Math.abs(currentError-previousError);
           globals.do_save_fold = false;
           var de = 0.01; //Error Difference
-          var dp = 0.1; //How much to add to percent
+          var dp = globals.stepSize/100; //How much to add to percent
           var dt = 1000; //Time between error dif
           var creasePercent = globals.creasePercent;
           previousDate=globals.previousDate

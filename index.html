@@ -902,6 +902,8 @@
                     <li><a id="exportSTL" href="#">Save Simulation as STL...</a></li>
                     <li><a id="exportOBJ" href="#">Save Simulation as OBJ...</a></li>
                     <li class="divider"></li>
+                    <li><a id="exportFOLDseries" href="#">Export FOLD series...</a></li>
+                    <li class="divider"></li>
                     <li><a id="saveSVG" href="#">Save Pattern as SVG...</a></li>
                     <!--<li><a id="saveSVGScreenshot" href="#">Save SVG screenshot</a></li>-->
                 </ul>
@@ -1553,15 +1555,65 @@
                     <input id="exportFoldAngle" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
                     Save target angles in edges_foldAngle
                 </label>
-                <label class="bigLabel checkbox" for="itterate">
-                    <input id="itterate" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
-                    Itterate over fold percents
+                <label class="bigLabel checkbox" for="exportFoldActualAngle">
+                    <input id="exportFoldActualAngle" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                    Save current simulation angles in edges_crease_angle
                 </label>
                 <span class="smallTxt">For more information about the FOLD file format, see the <a target="_blank" href="https://github.com/edemaine/fold">offical docs</a>.
                 Use the <a href="https://edemaine.github.io/fold/examples/foldviewer.html" target="_blank">FOLD viewer</a> to check that your file has been exported correctly.</span>
             </div>
             <div class="modal-footer">
                 <button id="doFOLDsave" type="button" class="actionButton btn btn-success" data-dismiss="modal">Save</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="exportFOLDseriesModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-med">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <b>EXPORT FOLD SERIES</b><br/><br/>
+                Filename: &nbsp;&nbsp;<input id="foldSeriesFilename" value="" placeholder="" class="bigInput text form-control" type="text"> .fold<br/><br/>
+                Author: &nbsp;&nbsp;<input id="foldSeriesAuthor" value="" placeholder="" class="bigInput text form-control" type="text"><br/><br/>
+                Scale: &nbsp;&nbsp;<input value="" placeholder="" class="float exportScale form-control" type="text">&nbsp;&nbsp;&nbsp;&nbsp;
+                Units: &nbsp;&nbsp;
+                <div class="btn-group">
+                    <button data-toggle="dropdown" class="btn btn-default dropdown-toggle" type="button"><span class="unitsDisplay"></span> <span class="caret"></span></button>
+                    <ul id="unitsDropdown" role="menu" class="dropdown-menu">
+                        <li><a class="units" data-id="unit" href="#">unitless</a></li>
+                        <li><a class="units" data-id="in" href="#">in</a></li>
+                        <li><a class="units" data-id="pt" href="#">pt</a></li>
+                        <li><a class="units" data-id="m" href="#">m</a></li>
+                        <li><a class="units" data-id="cm" href="#">cm</a></li>
+                        <li><a class="units" data-id="mm" href="#">mm</a></li>
+                        <li><a class="units" data-id="um" href="#">um</a></li>
+                        <li><a class="units" data-id="nm" href="#">nm</a></li>
+                    </ul>
+                </div>
+                <br/><br/>
+                From Percent: &nbsp;&nbsp;<input value="" placeholder="" class="float startPercent form-control" type="text">&nbsp;&nbsp;&nbsp;&nbsp;
+                To Percent: &nbsp;&nbsp;<input value="" placeholder="" class="float toPercent form-control" type="text">&nbsp;&nbsp;&nbsp;&nbsp;<br></br>
+                Step Size: &nbsp;&nbsp;<input value="" placeholder="" class="float stepSize form-control" type="text">&nbsp;&nbsp;&nbsp;&nbsp;%<br></br>
+                Dimensions: &nbsp;&nbsp;<b><span class="exportDimensions"></span> <span class="unitsDisplay"></span></b><br/>
+                <label class="bigLabel checkbox" for="triangulateFOLDseriesExport">
+                    <input id="triangulateFOLDseriesExport" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                    Save with triangulated faces
+                </label>
+                <label class="bigLabel checkbox" for="exportFoldSeriesAngle">
+                    <input id="exportFoldSeriesAngle" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                    Save target angles in edges_foldAngle
+                </label>
+                <label class="bigLabel checkbox" for="exportFoldSeriesActualAngle">
+                    <input id="exportFoldSeriesActualAngle" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                    Save current simulation angles in edges_crease_angle
+                </label>
+                <span class="smallTxt">This action does not output in the official FOLD format.</span>
+            </div>
+            <div class="modal-footer">
+                <button id="doFOLDseriesSave" type="button" class="actionButton btn btn-success" data-dismiss="modal">Save</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

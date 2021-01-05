@@ -108,9 +108,19 @@ function initControls(globals){
         updateDimensions();
         $("#foldFilename").val(globals.filename + " : " + parseInt(globals.creasePercent*100) +  "PercentFolded");
         var units = globals.foldUnits;
+
         if (units == "unit") units = "unitless";
         $(".unitsDisplay").html(units);
         $('#exportFOLDModal').modal('show');
+    });
+    setLink("#exportFOLDseries", function(){
+        updateDimensions();
+        $("#foldSeriesFilename").val(globals.filename + "Fold Series: " + globals.startPercent + " to " + globals.toPercent + " by " + globals.stepSize);
+        var units = globals.foldUnits;
+
+        if (units == "unit") units = "unitless";
+        $(".unitsDisplay").html(units);
+        $('#exportFOLDseriesModal').modal('show');
     });
     setLink("#exportSTL", function(){
         updateDimensions();
@@ -126,6 +136,18 @@ function initControls(globals){
         globals.exportScale = val;
         updateDimensions();
     }, 0);
+    setInput(".startPercent",globals.startPercent, function(val){
+        globals.startPercent = val;
+        updateDimensions();
+    },0);
+    setInput(".toPercent",globals.toPercent, function(val){
+        globals.toPercent = val;
+        updateDimensions();
+    },0);
+    setInput(".stepSize",globals.stepSize, function(val){
+        globals.stepSize = val;
+        updateDimensions();
+    },0);
     function updateDimensions(){
         var dim = globals.model.getDimensions();
         dim.multiplyScalar(globals.exportScale/globals.scale);
@@ -152,10 +174,18 @@ function initControls(globals){
     setCheckbox("#exportFoldAngle", globals.exportFoldAngle, function(val){
         globals.exportFoldAngle = val;
     });
-    setCheckbox("#itterate", globals.itterate, function(val){
-      globals.itterate=val;
+    setCheckbox("#exportFoldActualAngle", globals.exportFoldActualAngle, function(val){
+        globals.exportFoldActualAngle = val;
     });
-
+    setCheckbox("#triangulateFOLDseriesExport", globals.triangulateFOLDseriesExport, function(val){
+        globals.triangulateFOLDseriesExport = val;
+    });
+    setCheckbox("#exportFoldSeriesAngle", globals.exportFoldSeriesAngle, function(val){
+        globals.exportFoldSeriesAngle = val;
+    });
+    setCheckbox("#exportFoldSeriesActualAngle", globals.exportFoldSeriesActualAngle, function(val){
+        globals.exportFoldSeriesActualAngle = val;
+    });
     setLink("#doSTLsave", function(){
         saveSTL();
     });
@@ -163,9 +193,13 @@ function initControls(globals){
         saveOBJ();
     });
     setLink("#doFOLDsave", function(){
+        globals.Itterate=false;
         saveFOLD();
     });
-
+    setLink("#doFOLDseriesSave", function(){
+        globals.Itterate=true;
+        saveFOLD();
+    });
     setLink("#rotateX", function(){
         globals.threeView.resetModel();
         globals.rotateModel = "x";
