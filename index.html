@@ -1325,12 +1325,12 @@
                         <li>edges_assignment</li>
                         <li>faces_vertices</li>
                     </ul>
-                    You may specify the target fold angle of each crease using the edges_foldAngle field. 
-                    Note that fold angle is a number in degrees lying in the range [−180, 180]. 
+                    You may specify the target fold angle of each crease using the edges_foldAngle field.
+                    Note that fold angle is a number in degrees lying in the range [−180, 180].
                     The fold angle is positive for valley folds, negative for mountain folds, and zero for flat, unassigned, and border folds.
                     Accordingly, the sign of edges_foldAngle should match edges_assignment if both are specified.<br/><br/>
                     If you are unsure whether your FOLD file is valid, you can inspect it using the
-                    <a target="_blank" href="https://edemaine.github.io/fold/examples/foldviewer.html">FOLD Viewer</a>. 
+                    <a target="_blank" href="https://edemaine.github.io/fold/examples/foldviewer.html">FOLD Viewer</a>.
                     If you are having trouble, please refer to the <a target=_blank href="https://github.com/edemaine/fold/blob/master/doc/spec.md">FOLD spec</a>.
                     <br/><br/>
                     <b>Importing SVG:</b><br/><br/>
@@ -1552,6 +1552,10 @@
                 <label class="bigLabel checkbox" for="exportFoldAngle">
                     <input id="exportFoldAngle" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
                     Save target angles in edges_foldAngle
+                </label>
+                <label class="bigLabel checkbox" for="itterate">
+                    <input id="itterate" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                    Itterate over fold percents
                 </label>
                 <span class="smallTxt">For more information about the FOLD file format, see the <a target="_blank" href="https://github.com/edemaine/fold">offical docs</a>.
                 Use the <a href="https://edemaine.github.io/fold/examples/foldviewer.html" target="_blank">FOLD viewer</a> to check that your file has been exported correctly.</span>

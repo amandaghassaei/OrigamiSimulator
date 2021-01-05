@@ -78,6 +78,7 @@ function initGlobals(){
         foldUnits: "unit",
         triangulateFOLDexport: false,
         exportFoldAngle: true,
+        itterate: false,
 
         pausedForPatternView: false,
 

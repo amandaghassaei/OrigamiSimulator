@@ -152,6 +152,9 @@ function initControls(globals){
     setCheckbox("#exportFoldAngle", globals.exportFoldAngle, function(val){
         globals.exportFoldAngle = val;
     });
+    setCheckbox("#itterate", globals.itterate, function(val){
+      globals.itterate=val;
+    });
 
     setLink("#doSTLsave", function(){
         saveSTL();
@@ -917,4 +920,3 @@ function initControls(globals){
         setSliderInputVal: setSliderInputVal
     }
 }
-
