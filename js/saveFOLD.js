@@ -17,29 +17,22 @@ function saveFOLD(){
           frame_classes: ["foldedForm"],
           frame_attributes: ["3D"],
           frame_unit: globals.foldUnits,
-          fold_angle: [],
+          fold_percent: [],
           // vertices_coords: [],
           // edges_vertices: [],
           // edges_assignment: [],
           // edges_crease_angle: [],
           // faces_vertices: []
       };
-      var fold_angles= {
-        angle:[],
-        vertices_coords: [],
-        edges_vertices: [],
-        edges_assignment: [],
-        edges_crease_angle: [],
-        faces_vertices: []
-      };
+
   var creasePercent = 0;
   globals.previousCreasePercent = creasePercent;
-  globals.setCreasePercent(0);
+  globals.setCreasePercent(creasePercent);
   globals.shouldChangeCreasePercent=true;
   globals.save_flag=true;
       while(creasePercent<=1 && creasePercent>=-1){
-        var fold_angles= {
-          angle:[],
+        var fold_percents= {
+          fold_percent:[],
           vertices_coords: [],
           edges_vertices: [],
           edges_assignment: [],
@@ -57,28 +50,47 @@ function saveFOLD(){
               console.log(do_save_now);
               console.log(creasePercent);
               console.log(globals.creasePercent);
-              fold_angles.angle=creasePercent;
+              fold_percents.fold_percent=creasePercent;
 
               for (var i=0;i<geo.vertices.length;i++){
                   var vertex = geo.vertices[i];
-                  fold_angles.vertices_coords.push([vertex.x, vertex.y, vertex.z]);
+                  fold_percents.vertices_coords.push([vertex.x, vertex.y, vertex.z]);
               }
-
+              var edgecount=0;
               var useTriangulated = globals.triangulateFOLDexport;
               var fold = globals.pattern.getFoldData(!useTriangulated);
-              fold_angles.edges_vertices = fold.edges_vertices;
+              fold_percents.edges_vertices = fold.edges_vertices;
               var assignment = [];
               for (var i=0;i<fold.edges_assignment.length;i++){
-                  if (fold.edges_assignment[i] == "C") assignment.push("B");
-                  else assignment.push(fold.edges_assignment[i]);
+                  if (fold.edges_assignment[i] == "C"){
+                      assignment.push("B");
+                      edgecount+=1;
+
+                  }else{
+                   assignment.push(fold.edges_assignment[i]);
+                   if (fold.edges_assignment[i] == "B") {
+                     edgecount+=1;
+
+                   }
+                 }
               }
-              fold_angles.edges_assignment = assignment;
-              fold_angles.faces_vertices = fold.faces_vertices;
-              fold_angles.edges_crease_angle = grabThetas();
+
+              fold_percents.edges_assignment = assignment;
+              fold_percents.faces_vertices = fold.faces_vertices;
+
+              creaseThetas=grabThetas();
+              console.log("grabed thetas")
+              for(var i=1; i<=edgecount; i++){
+                  creaseThetas.unshift(undefined);
+                  console.log(creaseThetas)
+              }//Add undefined angles based on if edge.
+
+              fold_percents.edges_crease_angle=creaseThetas;
+
               if (globals.exportFoldAngle){
-                  fold_angles.edges_foldAngle = fold.edges_foldAngle;
+                  fold_percents.edges_foldAngle = fold.edges_foldAngle;
               }
-              json.fold_angle.push(fold_angles);
+              json.fold_percent.push(fold_percents);
 
           }
 
