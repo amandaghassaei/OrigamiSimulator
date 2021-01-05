@@ -1,7 +1,7 @@
 
 close all
 clearvars
-data="simpleVertex _ 60PercentFolded (2).fold";
+data="simpleVertex _ 38PercentFolded.fold";
 upper=jsondecode(fileread(data));
 sel=12;
 

@@ -176,12 +176,12 @@ function initThreeView(globals) {
           //console.log(currentDate);
 
           if (dateDiff > dt) {
-              
+
               globals.previousDate =  currentDate;
               globals.previousError = currentError;
               var diffError = Math.abs(currentError-previousError);
               if (diffError < de ){
-                console.log("error is good");
+
                 globals.previousCreasePercent = creasePercent;
                 globals.setCreasePercent(globals.creasePercent+dp);
                 globals.shouldChangeCreasePercent=true;

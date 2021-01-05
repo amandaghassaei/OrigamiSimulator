@@ -5,9 +5,9 @@
 function saveFOLD(){
 
 
-    var filename = $("#foldFilename").val();
-    if (filename == "") filename = globals.filename;
-    if (globals.itterate==true){
+var filename = $("#foldFilename").val();
+if (filename == "") filename = globals.filename;
+if (globals.itterate==true){
       var json = {
           file_spec: 1.1,
           file_creator: "Origami Simulator: http://git.amandaghassaei.com/OrigamiSimulator/",
@@ -25,12 +25,16 @@ function saveFOLD(){
           // faces_vertices: []
       };
 
-  var creasePercent = 0;
-  globals.previousCreasePercent = creasePercent;
-  globals.setCreasePercent(creasePercent);
-  globals.shouldChangeCreasePercent=true;
-  globals.save_flag=true;
-      while(creasePercent<=1 && creasePercent>=-1){
+    var creasePercent = 0;
+    var nextCreasePercent = 0;
+    globals.previousCreasePercent = creasePercent;
+    globals.setCreasePercent(creasePercent);
+    globals.shouldChangeCreasePercent=true;
+    globals.save_flag=true;
+    var sigFig = 100000;
+    creasePercent=Math.round(creasePercent*sigFig)/sigFig;
+    while(nextCreasePercent<=1 && nextCreasePercent>=-1){
+
         var fold_percents= {
           fold_percent:[],
           vertices_coords: [],
@@ -39,64 +43,61 @@ function saveFOLD(){
           edges_crease_angle: [],
           faces_vertices: []
         };
-        creasePercent=globals.previousCreasePercent;
-        console.log(creasePercent);
 
         globals.threeView.saveFOLDloop();
-          var do_save_now=globals.do_save_fold;
-          if (do_save_now){
-              var geo=getGeometry();
-              creasePercent=globals.previousCreasePercent;
-              console.log(do_save_now);
-              console.log(creasePercent);
-              console.log(globals.creasePercent);
-              fold_percents.fold_percent=creasePercent;
+        var do_save_now=globals.do_save_fold;
+        if (do_save_now){
+            var geo=getGeometry();
+            creasePercent=globals.previousCreasePercent;
+            nextCreasePercent = globals.creasePercent;
+            creasePercent=Math.round(creasePercent*sigFig)/sigFig;
+            nextCreasePercent=Math.round(nextCreasePercent*sigFig)/sigFig;
+            console.log(creasePercent);
+            console.log(nextCreasePercent);
+            fold_percents.fold_percent=creasePercent;
+            for (var i=0;i<geo.vertices.length;i++){
+                var vertex = geo.vertices[i];
+                fold_percents.vertices_coords.push([vertex.x, vertex.y, vertex.z]);
+            }
+            var edgecount=0;
+            var useTriangulated = globals.triangulateFOLDexport;
+            var fold = globals.pattern.getFoldData(!useTriangulated);
+            fold_percents.edges_vertices = fold.edges_vertices;
+            var assignment = [];
+            for (var i=0;i<fold.edges_assignment.length;i++){
+                if (fold.edges_assignment[i] == "C"){
+                    assignment.push("B");
+                    edgecount+=1;
+                }else{
+                    assignment.push(fold.edges_assignment[i]);
+                    if (fold.edges_assignment[i] == "B") {
+                    edgecount+=1;
 
-              for (var i=0;i<geo.vertices.length;i++){
-                  var vertex = geo.vertices[i];
-                  fold_percents.vertices_coords.push([vertex.x, vertex.y, vertex.z]);
-              }
-              var edgecount=0;
-              var useTriangulated = globals.triangulateFOLDexport;
-              var fold = globals.pattern.getFoldData(!useTriangulated);
-              fold_percents.edges_vertices = fold.edges_vertices;
-              var assignment = [];
-              for (var i=0;i<fold.edges_assignment.length;i++){
-                  if (fold.edges_assignment[i] == "C"){
-                      assignment.push("B");
-                      edgecount+=1;
+                    }
+                }
+            }
 
-                  }else{
-                   assignment.push(fold.edges_assignment[i]);
-                   if (fold.edges_assignment[i] == "B") {
-                     edgecount+=1;
+            fold_percents.edges_assignment = assignment;
+            fold_percents.faces_vertices = fold.faces_vertices;
 
-                   }
-                 }
-              }
+            creaseThetas=grabThetas();
 
-              fold_percents.edges_assignment = assignment;
-              fold_percents.faces_vertices = fold.faces_vertices;
+            for(var i=1; i<=edgecount; i++){
+                creaseThetas.unshift(undefined);
+            }//Add undefined angles based on if edge.
 
-              creaseThetas=grabThetas();
-              console.log("grabed thetas")
-              for(var i=1; i<=edgecount; i++){
-                  creaseThetas.unshift(undefined);
-                  console.log(creaseThetas)
-              }//Add undefined angles based on if edge.
+            fold_percents.edges_crease_angle=creaseThetas;
 
-              fold_percents.edges_crease_angle=creaseThetas;
+            if (globals.exportFoldAngle){
+                fold_percents.edges_foldAngle = fold.edges_foldAngle;
+            }
+            json.fold_percent.push(fold_percents);
 
-              if (globals.exportFoldAngle){
-                  fold_percents.edges_foldAngle = fold.edges_foldAngle;
-              }
-              json.fold_percent.push(fold_percents);
+        }
 
-          }
-
-      }
-      globals.save_flag=false;
-    }else{
+    }
+    globals.save_flag=false;
+}else{
       var json = {
           file_spec: 1.1,
           file_creator: "Origami Simulator: http://git.amandaghassaei.com/OrigamiSimulator/",
@@ -124,13 +125,28 @@ function saveFOLD(){
         var fold = globals.pattern.getFoldData(!useTriangulated);
         json.edges_vertices = fold.edges_vertices;
         var assignment = [];
+        var edgecount=0;
         for (var i=0;i<fold.edges_assignment.length;i++){
-            if (fold.edges_assignment[i] == "C") assignment.push("B");
-            else assignment.push(fold.edges_assignment[i]);
+            if (fold.edges_assignment[i] == "C"){
+                assignment.push("B");
+                edgecount+=1;
+
+            }else{
+             assignment.push(fold.edges_assignment[i]);
+             if (fold.edges_assignment[i] == "B") {
+               edgecount+=1;
+
+             }
+           }
         }
         json.edges_assignment = assignment;
         json.faces_vertices = fold.faces_vertices;
-        json.edges_crease_angle = thetas;
+        creaseThetas=grabThetas();
+        console.log("grabed thetas")
+        for(var i=1; i<=edgecount; i++){
+            creaseThetas.unshift(undefined);
+        }
+        json.edges_crease_angle=creaseThetas;
         if (globals.exportFoldAngle){
             json.edges_foldAngle = fold.edges_foldAngle;
         }
