@@ -12,6 +12,7 @@ function initThreeView(globals) {
     var renderer = new THREE.WebGLRenderer({antialias: true});
     // var svgRenderer = new THREE.SVGRenderer();
     var controls;
+    var save_flag=false;
 
     init();
 
@@ -127,7 +128,15 @@ function initThreeView(globals) {
         }
     }
 
+    function saveFOLD(){
+      _loop();
+    }
+
     function _loop(){
+      if(save_flag != true){
+        save_flag=false;
+      }
+
         if (globals.rotateModel !== null){
             if (globals.rotateModel == "x") modelWrapper.rotateX(globals.rotationSpeed);
             if (globals.rotateModel == "y") modelWrapper.rotateY(globals.rotationSpeed);
@@ -146,8 +155,96 @@ function initThreeView(globals) {
         }
         controls.update();
         _render();
+
+        save_flag=globals.save_flag;
+
+        if(save_flag){
+          var currentError = globals.globalErrors;
+
+          var previousError = globals.previousError;
+          //console.log(currentError);
+          //console.log(previousError);
+          var diffError = Math.abs(currentError-previousError);
+          globals.do_save_fold = false;
+          var de = 0.01; //Error Difference
+          var dp = 0.1; //How much to add to percent
+          var dt = 1000; //Time between error dif
+          var creasePercent = globals.creasePercent;
+          previousDate=globals.previousDate
+          currentDate = new Date();
+          var dateDiff=currentDate.getTime()-previousDate.getTime();
+          //console.log(currentDate);
+
+          if (dateDiff > dt) {
+              
+              globals.previousDate =  currentDate;
+              globals.previousError = currentError;
+              var diffError = Math.abs(currentError-previousError);
+              if (diffError < de ){
+                console.log("error is good");
+                globals.previousCreasePercent = creasePercent;
+                globals.setCreasePercent(globals.creasePercent+dp);
+                globals.shouldChangeCreasePercent=true;
+                globals.do_save_fold = true;
+              }
+          }
+
+      }
+
+
     }
 
+    function _saveFOLDloop(){
+      if (globals.rotateModel !== null){
+          if (globals.rotateModel == "x") modelWrapper.rotateX(globals.rotationSpeed);
+          if (globals.rotateModel == "y") modelWrapper.rotateY(globals.rotationSpeed);
+          if (globals.rotateModel == "z") modelWrapper.rotateZ(globals.rotationSpeed);
+      }
+      if (globals.needsSync){
+          globals.model.sync();
+      }
+      if (globals.simNeedsSync){
+          globals.model.syncSolver();
+      }
+      if (globals.simulationRunning) globals.model.step();
+      if (globals.vrEnabled){
+          _render();
+          return;
+      }
+      controls.update();
+      _render();
+
+      var currentError = globals.globalErrors;
+
+      var previousError = globals.previousError;
+      //console.log(currentError);
+      //console.log(previousError);
+      var diffError = Math.abs(currentError-previousError);
+      var do_save_fold = false;
+      var de = 0.01;
+      var dp = 0.01;
+      var dt = 1000; //Time between error dif
+      var creasePercent = globals.creasePercent;
+      previousDate=globals.previousDate
+      currentDate = new Date();
+      var dateDiff=currentDate.getTime()-previousDate.getTime();
+      //console.log(currentDate);
+      console.log("inside")
+      if (dateDiff > dt) {
+
+          globals.previousDate =  currentDate;
+          globals.previousError = currentError;
+          var diffError = Math.abs(currentError-previousError);
+          if (diffError < de ){
+            globals.previousCreasePercent = creasePercent;
+            globals.setCreasePercent(globals.creasePercent+dp);
+            globals.shouldChangeCreasePercent=true;
+            var do_save_fold = true;
+          }
+      }
+      return do_save_fold;
+
+    }
     function sceneAddModel(object){
         modelWrapper.add(object);
     }
@@ -241,6 +338,7 @@ function initThreeView(globals) {
 
         resetModel: resetModel,//reset model orientation
         resetCamera:resetCamera,
-        setBackgroundColor: setBackgroundColor
+        setBackgroundColor: setBackgroundColor,
+        saveFOLDloop: saveFOLD
     }
 }
