@@ -12,7 +12,7 @@ function initThreeView(globals) {
     var renderer = new THREE.WebGLRenderer({antialias: true});
     // var svgRenderer = new THREE.SVGRenderer();
     var controls;
-    var save_flag=false;
+
 
     init();
 
