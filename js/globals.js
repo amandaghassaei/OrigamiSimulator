@@ -47,7 +47,6 @@ function initGlobals(){
 
         //compliant sim settings
         creasePercent: 0.6,
-        previousCreasePercent: 0.6,
         axialStiffness: 20,
         creaseStiffness: 0.7,
         panelStiffness: 0.7,
@@ -109,12 +108,6 @@ function initGlobals(){
         shouldScaleCanvas: false,
         isGif: false,
         shouldAnimateFoldPercent: false,
-
-        previousError: 100,
-        globalErrors: 100,
-        previousDate: new Date(),
-        do_save_fold: false,
-        save_flag: false
 
     };
 

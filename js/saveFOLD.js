@@ -5,179 +5,160 @@
 function saveFOLD(){
 
 
-var filename = $("#foldFilename").val();
-if (filename == "") filename = globals.filename;
-if (globals.Itterate==true){
-      var json = {
-          file_spec: 1.1,
-          file_creator: "Origami Simulator: http://git.amandaghassaei.com/OrigamiSimulator/",
-          file_author: $("#foldAuthor").val(),
-          file_classes: ["singleModel"],
-          frame_title: filename,
-          frame_classes: ["foldedForm"],
-          frame_attributes: ["3D"],
-          frame_unit: globals.foldUnits,
-          fold_percent: [],
-          // vertices_coords: [],
-          // edges_vertices: [],
-          // edges_assignment: [],
-          // edges_crease_angle: [],
-          // faces_vertices: []
-      };
-    var startPercent = globals.startPercent/100;
-    var toPercent = globals.toPercent/100;
-    var creasePercent = startPercent;
-    var nextCreasePercent = startPercent;
-    globals.previousCreasePercent = creasePercent;
-    globals.setCreasePercent(creasePercent);
-    globals.shouldChangeCreasePercent=true;
-    globals.save_flag=true;
-    var sigFig = 100000;
-    creasePercent=Math.round(creasePercent*sigFig)/sigFig;
-    while(nextCreasePercent<=toPercent && nextCreasePercent>=-1){
+    var filename = $("#foldFilename").val();
+    if (filename == "") filename = globals.filename;
 
-        var fold_percents= {
-          fold_percent:[],
-          vertices_coords: [],
-          edges_vertices: [],
-          edges_assignment: [],
-          faces_vertices: []
+    if (globals.Itterate==true){
+        var json = {
+            file_spec: 1.1,
+            file_creator: "Origami Simulator: http://git.amandaghassaei.com/OrigamiSimulator/",
+            file_author: $("#foldAuthor").val(),
+            file_classes: ["singleModel"],
+            file_frames: [],
+            edges_vertices: [],
+            edges_assignment: [],
+            faces_vertices: []
         };
+    }else{
+        var json = {
+            file_spec: 1.1,
+            file_creator: "Origami Simulator: http://git.amandaghassaei.com/OrigamiSimulator/",
+            file_author: $("#foldAuthor").val(),
+            file_classes: ["singleModel"],
+            frame_title: filename,
+            frame_classes: ["foldedForm"],
+            frame_attributes: ["3D"],
+            frame_unit: globals.foldUnits,
+            vertices_coords: [],
+            edges_vertices: [],
+            edges_assignment: [],
+            faces_vertices: []
+        };
+    }
+    var useTriangulated = globals.triangulateFOLDseriesExport;
+    var fold = globals.pattern.getFoldData(!useTriangulated);
 
-        globals.threeView.saveFOLDloop();
-        var do_save_now=globals.do_save_fold;
-        if (do_save_now){
-            var geo=getGeometry();
-            creasePercent=globals.previousCreasePercent;
-            nextCreasePercent = globals.creasePercent;
-            creasePercent=Math.round(creasePercent*sigFig)/sigFig;
-            nextCreasePercent=Math.round(nextCreasePercent*sigFig)/sigFig;
-            console.log(creasePercent);
-            console.log(nextCreasePercent);
 
-            fold_percents.fold_percent=creasePercent;
-            for (var i=0;i<geo.vertices.length;i++){
-                var vertex = geo.vertices[i];
-                fold_percents.vertices_coords.push([vertex.x, vertex.y, vertex.z]);
+    json.edges_vertices = fold.edges_vertices;
+
+    var edgecount = 0;
+    var assignment = [];
+    for (var i=0;i<fold.edges_assignment.length;i++){
+        if (fold.edges_assignment[i] == "C"){
+            assignment.push("B");
+            edgecount+=1;
+        }else{
+            assignment.push(fold.edges_assignment[i]);
+            if (fold.edges_assignment[i] == "B") {
+            edgecount+=1;
+
             }
-            var edgecount=0;
-            var useTriangulated = globals.triangulateFOLDseriesExport;
-            var fold = globals.pattern.getFoldData(!useTriangulated);
-            fold_percents.edges_vertices = fold.edges_vertices;
-            var assignment = [];
-            for (var i=0;i<fold.edges_assignment.length;i++){
-                if (fold.edges_assignment[i] == "C"){
-                    assignment.push("B");
-                    edgecount+=1;
-                }else{
-                    assignment.push(fold.edges_assignment[i]);
-                    if (fold.edges_assignment[i] == "B") {
-                    edgecount+=1;
+        }
+    }
+    json.edges_assignment = assignment;
 
-                    }
+    json.faces_vertices = fold.faces_vertices;
+
+    if (globals.exportFoldSeriesAngle){
+        json.edges_foldAngle = fold.edges_foldAngle;
+    }
+
+    if (globals.Itterate==true){
+        var sigFig = 100000; //Where to round percents
+        var startPercent = globals.startPercent/100;
+        var toPercent = globals.toPercent/100;
+        var creasePercent = startPercent;
+        var nextCreasePercent = startPercent;
+
+        globals.setCreasePercent(creasePercent);
+        globals.shouldChangeCreasePercent=true;
+
+
+        creasePercent=Math.round(creasePercent*sigFig)/sigFig;
+
+
+        var previousDate = new Date();
+        var previousError = globals.globalErrors;
+        while(creasePercent<=toPercent && creasePercent>=-1){
+
+            var file_frame= {
+                frame_title: filename,
+                frame_classes: ["foldedForm"],
+                frame_attributes: ["3D"],
+                frame_unit: globals.foldUnits,
+                frame_inherit: true,
+                fold_percent_os: [],
+                vertices_coords: [],
+            };
+
+            globals.threeView.saveFOLDloop();
+            var itteration_save_output=should_do_save_fold(previousError,previousDate);
+
+            var do_save_now=itteration_save_output[0];
+            previousError=itteration_save_output[1];
+            previousDate=itteration_save_output[2];
+
+            nextCreasePercent=itteration_save_output[3];
+
+            nextCreasePercents=Math.round(nextCreasePercent*sigFig)/sigFig;
+
+            if (do_save_now){
+                var geo=getGeometry();
+                var fold = globals.pattern.getFoldData(!useTriangulated);
+
+                console.log(creasePercent);
+
+                file_frame.fold_percent_os=creasePercent;
+
+                for (var i=0;i<geo.vertices.length;i++){
+                    var vertex = geo.vertices[i];
+                    file_frame.vertices_coords.push([vertex.x, vertex.y, vertex.z]);
                 }
+
+                if (globals.exportFoldSeriesActualAngle){
+                    creaseThetas=grabThetas();
+
+                    for(var i=1; i<=edgecount; i++){
+                        creaseThetas.unshift(undefined);
+                    }//Add undefined angles based on whether at edge of model.
+
+                    file_frame.edges_crease_angle_os=creaseThetas;
+                }
+
+                json.file_frames.push(file_frame);
+
             }
-
-            fold_percents.edges_assignment = assignment;
-            fold_percents.faces_vertices = fold.faces_vertices;
-
-            if (globals.exportFoldSeriesActualAngle){
-                creaseThetas=grabThetas();
-
-                for(var i=1; i<=edgecount; i++){
-                    creaseThetas.unshift(undefined);
-                }//Add undefined angles based on if edge.
-
-                fold_percents.edges_crease_angle=creaseThetas;
-            }
-            if (globals.exportFoldSeriesAngle){
-                fold_percents.edges_foldAngle = fold.edges_foldAngle;
-            }
-            json.fold_percent.push(fold_percents);
+            creasePercent=nextCreasePercent;
 
         }
 
-    }
-    globals.save_flag=false;
-}else{
-      var json = {
-          file_spec: 1.1,
-          file_creator: "Origami Simulator: http://git.amandaghassaei.com/OrigamiSimulator/",
-          file_author: $("#foldAuthor").val(),
-          file_classes: ["singleModel"],
-          frame_title: filename,
-          frame_classes: ["foldedForm"],
-          frame_attributes: ["3D"],
-          frame_unit: globals.foldUnits,
-          vertices_coords: [],
-          edges_vertices: [],
-          edges_assignment: [],
-          faces_vertices: []
-      };
+    }else{
+
         var geo=getGeometry();
-        var thetas=grabThetas();
+
+
         for (var i=0;i<geo.vertices.length;i++){
             var vertex = geo.vertices[i];
             json.vertices_coords.push([vertex.x, vertex.y, vertex.z]);
         }
 
-        var useTriangulated = globals.triangulateFOLDexport;
-        var fold = globals.pattern.getFoldData(!useTriangulated);
-        json.edges_vertices = fold.edges_vertices;
-        var assignment = [];
-        var edgecount=0;
-        for (var i=0;i<fold.edges_assignment.length;i++){
-            if (fold.edges_assignment[i] == "C"){
-                assignment.push("B");
-                edgecount+=1;
-
-            }else{
-             assignment.push(fold.edges_assignment[i]);
-             if (fold.edges_assignment[i] == "B") {
-               edgecount+=1;
-
-             }
-           }
-        }
-        json.edges_assignment = assignment;
-        json.faces_vertices = fold.faces_vertices;
         if (globals.exportFoldActualAngle){
             creaseThetas=grabThetas();
             for(var i=1; i<=edgecount; i++){
                 creaseThetas.unshift(undefined);
             }
-            json.edges_crease_angle=creaseThetas;
-        }
-
-        if (globals.exportFoldAngle){
-            json.edges_foldAngle = fold.edges_foldAngle;
+            json.edges_crease_angle_os=creaseThetas;
         }
     }
-    // for (var i=0;i<geo.vertices.length;i++){
-    //     var vertex = geo.vertices[i];
-    //     json.vertices_coords.push([vertex.x, vertex.y, vertex.z]);
-    // }
-    //
-    // var useTriangulated = globals.triangulateFOLDexport;
-    // var fold = globals.pattern.getFoldData(!useTriangulated);
-    // json.edges_vertices = fold.edges_vertices;
-    // var assignment = [];
-    // for (var i=0;i<fold.edges_assignment.length;i++){
-    //     if (fold.edges_assignment[i] == "C") assignment.push("B");
-    //     else assignment.push(fold.edges_assignment[i]);
-    // }
-    // json.edges_assignment = assignment;
-    // json.faces_vertices = fold.faces_vertices;
-    // json.edges_crease_angle = thetas;
-    // if (globals.exportFoldAngle){
-    //     json.edges_foldAngle = fold.edges_foldAngle;
-    // }
+
 
     var blob = new Blob([JSON.stringify(json, null, 4)], {type: 'application/octet-binary'});
     saveAs(blob, filename + ".fold");
 }
 
+
 function grabThetas(){
+//Copied from rigidSolver + a few changes
   var creases = globals.model.getCreases();
   var geo = new THREE.Geometry().fromBufferGeometry( globals.model.getGeometry() );
   var thetas = [];
@@ -215,8 +196,8 @@ function grabThetas(){
           thetas[j] = theta*180/Math.PI;
       }
       return thetas;
-
 }
+
 function getGeometry(){
   var geo = new THREE.Geometry().fromBufferGeometry( globals.model.getGeometry() );
 
@@ -231,4 +212,42 @@ function getGeometry(){
       }
   }
   return geo;
+}
+
+
+
+function should_do_save_fold(previousError,previousDate){
+    var do_save_fold = false;
+
+    var de = 0.01; //Error Difference
+    var dp = globals.stepSize/100; //How much to add to percent
+    var dt = 1000; //Time between error dif
+
+    var currentError = globals.globalErrors;
+
+    var diffError = Math.abs(currentError-previousError);
+
+
+    currentDate = new Date();
+    var dateDiff=currentDate.getTime()-previousDate.getTime();
+
+    var nextCreasePercent = globals.creasePercent;
+    if (dateDiff > dt) {
+
+        previousDate =  currentDate;
+        previousError = currentError;
+        var diffError = Math.abs(currentError-previousError);
+        if (diffError < de ){
+
+            nextCreasePercent = nextCreasePercent + dp;
+            console.log(nextCreasePercent);
+            globals.setCreasePercent(nextCreasePercent);
+            globals.shouldChangeCreasePercent=true;
+            do_save_fold = true;
+            globals.controls.updateCreasePercent();
+        }
+    }
+
+
+    return [do_save_fold, previousError, previousDate, nextCreasePercent]
 }
