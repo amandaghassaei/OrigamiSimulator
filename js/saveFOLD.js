@@ -79,7 +79,7 @@ function saveFOLD(){
 
         var previousDate = new Date();
         var previousError = globals.globalErrors;
-        while(creasePercent<=toPercent && creasePercent>=-1){
+        function getFrames(json,filename){//(creasePercent<=toPercent && creasePercent>=-1){
 
             var file_frame= {
                 frame_title: filename,
@@ -100,7 +100,7 @@ function saveFOLD(){
 
             nextCreasePercent=itteration_save_output[3];
 
-            nextCreasePercents=Math.round(nextCreasePercent*sigFig)/sigFig;
+            nextCreasePercent=Math.round(nextCreasePercent*sigFig)/sigFig;
 
             if (do_save_now){
                 var geo=getGeometry();
@@ -128,9 +128,19 @@ function saveFOLD(){
                 json.file_frames.push(file_frame);
 
             }
-            creasePercent=nextCreasePercent;
+            //document.getElementById("foldPercentOutput").innerHTML = creasePercent;
+            var $foldPercentProgress = $("#foldPercentOutput");
+            $("#foldPercentOutput").html((nextCreasePercent*100).toFixed(3) + " %");
 
+            creasePercent=nextCreasePercent;
+            console.log(creasePercent);
+            if (creasePercent<=toPercent && creasePercent>=-1){
+                setTimeout(function(){getFrames(json,filename);},5);
+            }else{
+                saveJSON(json,filename);
+            }
         }
+        getFrames(json,filename);
 
     }else{
 
@@ -149,14 +159,17 @@ function saveFOLD(){
             }
             json.edges_crease_angle_os=creaseThetas;
         }
+        saveJSON(json,filename);
     }
 
 
+
+}
+
+function saveJSON(json,filename){
     var blob = new Blob([JSON.stringify(json, null, 4)], {type: 'application/octet-binary'});
     saveAs(blob, filename + ".fold");
 }
-
-
 function grabThetas(){
 //Copied from rigidSolver + a few changes
   var creases = globals.model.getCreases();
@@ -244,7 +257,7 @@ function should_do_save_fold(previousError,previousDate){
             globals.setCreasePercent(nextCreasePercent);
             globals.shouldChangeCreasePercent=true;
             do_save_fold = true;
-            globals.controls.updateCreasePercent();
+
         }
     }
 

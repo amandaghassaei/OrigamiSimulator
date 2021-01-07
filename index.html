@@ -1557,7 +1557,7 @@
                 </label>
                 <label class="bigLabel checkbox" for="exportFoldActualAngle">
                     <input id="exportFoldActualAngle" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
-                    Save current simulation angles in edges_crease_angle
+                    Save current simulation angles in edges_crease_angle_os
                 </label>
                 <span class="smallTxt">For more information about the FOLD file format, see the <a target="_blank" href="https://github.com/edemaine/fold">offical docs</a>.
                 Use the <a href="https://edemaine.github.io/fold/examples/foldviewer.html" target="_blank">FOLD viewer</a> to check that your file has been exported correctly.</span>
@@ -1608,9 +1608,13 @@
                 </label>
                 <label class="bigLabel checkbox" for="exportFoldSeriesActualAngle">
                     <input id="exportFoldSeriesActualAngle" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
-                    Save current simulation angles in edges_crease_angle
+                    Save current simulation angles in edges_crease_angle_os
                 </label>
-                <span class="smallTxt">This action does not output in the official FOLD format.</span>
+                <div id="percInfo" class="bigLabel">
+                  <label>Current Fold Percentage: <span id="foldPercentOutput"></span></label>
+                </div>
+                <span class="smallTxt">For more information about the FOLD file format, see the <a target="_blank" href="https://github.com/edemaine/fold">offical docs</a>.
+                Use the <a href="https://edemaine.github.io/fold/examples/foldviewer.html" target="_blank">FOLD viewer</a> to check that your file has been exported correctly.</span>
             </div>
             <div class="modal-footer">
                 <button id="doFOLDseriesSave" type="button" class="actionButton btn btn-success" data-dismiss="modal">Save</button>
