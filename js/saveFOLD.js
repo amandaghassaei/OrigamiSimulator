@@ -117,7 +117,7 @@ function saveFOLD(){
 
                 if (globals.exportFoldSeriesActualAngle){
                     creaseThetas=grabThetas();
-
+                    //UPDATE FOR CUT EDGES
                     for(var i=1; i<=edgecount; i++){
                         creaseThetas.unshift(undefined);
                     }//Add undefined angles based on whether at edge of model.
