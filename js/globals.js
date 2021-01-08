@@ -85,6 +85,9 @@ function initGlobals(){
         toPercent: 100,
         startPercent:0,
         stepSize:1,
+        errorDif:0.001,
+        break: false,
+        skip: false,
 
         pausedForPatternView: false,
 

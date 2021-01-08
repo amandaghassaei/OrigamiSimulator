@@ -134,9 +134,12 @@ function saveFOLD(){
 
             creasePercent=nextCreasePercent;
             console.log(creasePercent);
-            if (creasePercent<=toPercent && creasePercent>=-1){
+            if(globals.break){
+                globals.break=false;
+            }else if (creasePercent<=toPercent && creasePercent>=-1){
                 setTimeout(function(){getFrames(json,filename);},5);
             }else{
+                $("#FOLDseriesProgressModal").modal('hide');
                 saveJSON(json,filename);
             }
         }
@@ -230,34 +233,40 @@ function getGeometry(){
 
 
 function should_do_save_fold(previousError,previousDate){
+
+
     var do_save_fold = false;
 
-    var de = 0.01; //Error Difference
+    var de = globals.errorDif; //Error Difference
     var dp = globals.stepSize/100; //How much to add to percent
     var dt = 1000; //Time between error dif
 
     var currentError = globals.globalErrors;
 
     var diffError = Math.abs(currentError-previousError);
-
+    console.log(diffError);
 
     currentDate = new Date();
     var dateDiff=currentDate.getTime()-previousDate.getTime();
 
     var nextCreasePercent = globals.creasePercent;
-    if (dateDiff > dt) {
+     if (dateDiff > dt) {
 
         previousDate =  currentDate;
-        previousError = currentError;
         var diffError = Math.abs(currentError-previousError);
-        if (diffError < de ){
 
+        previousError = currentError;
+        if (diffError < de || globals.skip){
             nextCreasePercent = nextCreasePercent + dp;
             console.log(nextCreasePercent);
             globals.setCreasePercent(nextCreasePercent);
             globals.shouldChangeCreasePercent=true;
             globals.controls.updateCreasePercent();
             do_save_fold = true;
+            if (globals.skip){
+                globals.skip=false;
+                do_save_fold=false;
+            }
 
         }
     }

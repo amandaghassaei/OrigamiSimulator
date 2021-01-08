@@ -148,6 +148,10 @@ function initControls(globals){
         globals.stepSize = val;
         updateDimensions();
     },0);
+    setInput(".errorDif",globals.errorDif, function(val){
+        globals.errorDif = val;
+        updateDimensions();
+    })
     function updateDimensions(){
         var dim = globals.model.getDimensions();
         dim.multiplyScalar(globals.exportScale/globals.scale);
@@ -198,7 +202,14 @@ function initControls(globals){
     });
     setLink("#doFOLDseriesSave", function(){
         globals.Itterate=true;
+        $('#FOLDseriesProgressModal').modal('show');
         saveFOLD();
+    });
+    setLink("#FOLDseriesSaveCancel", function(){
+        globals.break=true;
+    });
+    setLink("#FOLDseriesSaveSkip", function(){
+        globals.skip=true;
     });
     setLink("#rotateX", function(){
         globals.threeView.resetModel();

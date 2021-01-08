@@ -4,7 +4,7 @@ clearvars
 data="simpleVertex.fold";
 
 structure=jsondecode(fileread(data));
-sel=15;
+sel=30;
 
 
 f=[structure.file_frames.edges_crease_angle_os];
