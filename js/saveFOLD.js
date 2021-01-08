@@ -256,6 +256,7 @@ function should_do_save_fold(previousError,previousDate){
             console.log(nextCreasePercent);
             globals.setCreasePercent(nextCreasePercent);
             globals.shouldChangeCreasePercent=true;
+            globals.controls.updateCreasePercent();
             do_save_fold = true;
 
         }
