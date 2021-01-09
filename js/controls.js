@@ -115,13 +115,16 @@ function initControls(globals){
     });
     setLink("#exportFOLDseries", function(){
         updateDimensions();
-        $("#foldSeriesFilename").val(globals.filename + "Fold Series: " + globals.startPercent + " to " + globals.toPercent + " by " + globals.stepSize);
+        updateFoldSeriesFilename();
         var units = globals.foldUnits;
 
         if (units == "unit") units = "unitless";
         $(".unitsDisplay").html(units);
         $('#exportFOLDseriesModal').modal('show');
     });
+    function updateFoldSeriesFilename(){
+        $("#foldSeriesFilename").val(globals.filename + "Fold Series:" + globals.startPercent + "to" + globals.toPercent + "by" + globals.stepSize);
+    }
     setLink("#exportSTL", function(){
         updateDimensions();
         $("#stlFilename").val(globals.filename + " : " + parseInt(globals.creasePercent*100) +  "PercentFolded");
@@ -138,20 +141,19 @@ function initControls(globals){
     }, 0);
     setInput(".startPercent",globals.startPercent, function(val){
         globals.startPercent = val;
-        updateDimensions();
-    },0);
+        updateFoldSeriesFilename()
+    },-100,100);
     setInput(".toPercent",globals.toPercent, function(val){
         globals.toPercent = val;
-        updateDimensions();
-    },0);
+        updateFoldSeriesFilename()
+    },-100,100);
     setInput(".stepSize",globals.stepSize, function(val){
         globals.stepSize = val;
-        updateDimensions();
-    },0);
+        updateFoldSeriesFilename()
+    },-100,100);
     setInput(".errorDif",globals.errorDif, function(val){
         globals.errorDif = val;
-        updateDimensions();
-    })
+    },0)
     function updateDimensions(){
         var dim = globals.model.getDimensions();
         dim.multiplyScalar(globals.exportScale/globals.scale);
@@ -201,9 +203,19 @@ function initControls(globals){
         saveFOLD();
     });
     setLink("#doFOLDseriesSave", function(){
-        globals.Itterate=true;
-        $('#FOLDseriesProgressModal').modal('show');
-        saveFOLD();
+        if (globals.startPercent>globals.toPercent && globals.stepSize>0){
+            globals.warn("Start Percent must be larger than end percent if step size is positive.")
+        }else if(globals.startPercent<globals.toPercent && globals.stepSize<0){
+            globals.warn("Start Percent must be smaller than end percent if step size is negative.")
+        }else if(globals.stepSize==0){
+            globals.warn("Step size cannot be zero.");
+        }else{
+            globals.Itterate=true;
+            $('#exportFOLDseriesModal').modal('hide');
+            $('#FOLDseriesProgressModal').modal('show');
+            saveFOLD();
+        }
+
     });
     setLink("#FOLDseriesSaveCancel", function(){
         globals.break=true;

@@ -1615,7 +1615,7 @@
                 Use the <a href="https://edemaine.github.io/fold/examples/foldviewer.html" target="_blank">FOLD viewer</a> to check that your file has been exported correctly.</span>
             </div>
             <div class="modal-footer">
-                <button id="doFOLDseriesSave" type="button" class="actionButton btn btn-success" data-dismiss="modal">Save</button>
+                <button id="doFOLDseriesSave" type="button" class="actionButton btn btn-success">Save</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -1627,6 +1627,13 @@
               <b>FOLD Series Progress</b><br/><br/>
               <div id="percInfo" class="bigLabel">
                   <label>Current Fold Percentage: <span id="foldPercentOutput"></span></label>
+              </div>
+              <div id="errorInfo" class="biglabel">
+                <label>Current Error Difference: <span id="errorFoldSeriesOutput"></span></label>
+              </div>
+              <div class="progress">
+                <div class="progress-bar" id="FOLDseriesProgress" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                </div>
               </div>
               <div class="modal-footer">
                   <button id="FOLDseriesSaveCancel" type="button" class="actionButton btn btn-danger" data-dismiss="modal">Cancel</button>
