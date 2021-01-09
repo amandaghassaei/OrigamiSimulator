@@ -42,9 +42,9 @@ function saveFOLD(){
     var fold = globals.pattern.getFoldData(!useTriangulated);
 
 
+
     json.edges_vertices = fold.edges_vertices;
 
-    var edgecount = 0;
     var assignment = [];
     for (var i=0;i<fold.edges_assignment.length;i++){
         if (fold.edges_assignment[i] == "C"){
@@ -67,18 +67,19 @@ function saveFOLD(){
     }
 
     if (globals.Itterate==true){
+
         var sigFig = 100000; //Where to round percents
         var startPercent = globals.startPercent/100;
         var toPercent = globals.toPercent/100;
-        var creasePercent = startPercent;
         var stepSize = globals.stepSize/100;
-        var nextCreasePercent = startPercent;
+
+        var creasePercent = startPercent;
+        creasePercent=Math.round(creasePercent*sigFig)/sigFig;
+        var nextCreasePercent = creasePercent;
 
         globals.setCreasePercent(creasePercent);
         globals.shouldChangeCreasePercent=true;
 
-
-        creasePercent=Math.round(creasePercent*sigFig)/sigFig;
 
 
         var previousDate = new Date();
@@ -95,7 +96,7 @@ function saveFOLD(){
                 vertices_coords: [],
             };
 
-            globals.threeView.saveFOLDloop();
+            globals.threeView.saveFOLDloop(); //Runs simulation for current fold percent.
             var itteration_save_output=should_do_save_fold(previousError,previousDate);
 
             var do_save_now=itteration_save_output[0];
@@ -103,7 +104,6 @@ function saveFOLD(){
             previousDate=itteration_save_output[2];
 
             nextCreasePercent=itteration_save_output[3];
-
             nextCreasePercent=Math.round(nextCreasePercent*sigFig)/sigFig;
 
             if (do_save_now){
@@ -126,6 +126,7 @@ function saveFOLD(){
 
             }
             //document.getElementById("foldPercentOutput").innerHTML = creasePercent;
+            //Update progress on page.
             var percentage = Math.abs((creasePercent-startPercent)/(toPercent-startPercent)*100);
             var $foldPercentProgress = $("#foldPercentOutput");
             $("#foldPercentOutput").html((nextCreasePercent*100).toFixed(3) + " %");
@@ -138,7 +139,7 @@ function saveFOLD(){
             posStep=stepSize>0;
 
             //This section allows for the browser to update while executing the
-            //while loop, allowing animation as well as a breakpoint via the
+            //"while" loop, allowing animation as well as a breakpoint via the
             //controls.
             if(globals.break){
                 globals.break=false;
@@ -175,8 +176,9 @@ function saveJSON(json,filename){
     var blob = new Blob([JSON.stringify(json, null, 4)], {type: 'application/octet-binary'});
     saveAs(blob, filename + ".fold");
 }
+
 function grabThetas(json){
-//Copied from rigidSolver + a few changes
+//Copied from rigidSolver + a few changes (call a function from rigidSolver instead?)
   var creases = globals.model.getCreases();
   var geo = new THREE.Geometry().fromBufferGeometry( globals.model.getGeometry() );
   var thetas = [];
@@ -215,6 +217,8 @@ function grabThetas(json){
           thetas[j] = theta*180/Math.PI;
       }
 
+      //This inserts a null value for any edges connected to less than
+      //two faces
       for(var i=0; i<=json.edges_assignment.length-1; i++){
           if (json.edges_assignment[i]=="B"){
 
@@ -247,7 +251,9 @@ function getGeometry(){
 
 
 function should_do_save_fold(previousError,previousDate){
-
+    //Every second-ish, checks whether the user input error difference is met.
+    //If so, then update the fold percentage and tell the main loop to save.
+    //Caveats apply when close to the final percent.
 
     var do_save_fold = false;
 
@@ -273,7 +279,8 @@ function should_do_save_fold(previousError,previousDate){
 
         previousError = currentError;
 
-        $("#errorFoldSeriesOutput").html(diffError.toPrecision(5))
+        $("#errorFoldSeriesOutput").html(diffError.toPrecision(5));
+
         if (diffError < de || globals.skip){
             creasePercent = nextCreasePercent;
             nextCreasePercent = nextCreasePercent + dp;
