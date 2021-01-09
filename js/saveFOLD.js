@@ -4,8 +4,11 @@
 
 function saveFOLD(){
 
-
-    var filename = $("#foldFilename").val();
+    if (globals.Itterate==true){
+        var filename = $("#foldSeriesFilename").val();
+    }else{
+        var filename = $("#foldFilename").val();
+    }
     if (filename == "") filename = globals.filename;
 
     if (globals.Itterate==true){
@@ -68,6 +71,7 @@ function saveFOLD(){
         var startPercent = globals.startPercent/100;
         var toPercent = globals.toPercent/100;
         var creasePercent = startPercent;
+        var stepSize = globals.stepSize/100;
         var nextCreasePercent = startPercent;
 
         globals.setCreasePercent(creasePercent);
@@ -106,8 +110,6 @@ function saveFOLD(){
                 var geo=getGeometry();
                 var fold = globals.pattern.getFoldData(!useTriangulated);
 
-                console.log(creasePercent);
-
                 file_frame.fold_percent_os=creasePercent;
 
                 for (var i=0;i<geo.vertices.length;i++){
@@ -116,27 +118,31 @@ function saveFOLD(){
                 }
 
                 if (globals.exportFoldSeriesActualAngle){
-                    creaseThetas=grabThetas();
-                    //UPDATE FOR CUT EDGES
-                    for(var i=1; i<=edgecount; i++){
-                        creaseThetas.unshift(undefined);
-                    }//Add undefined angles based on whether at edge of model.
-
-                    file_frame.edges_crease_angle_os=creaseThetas;
+                    var thetas=grabThetas(json);
+                    file_frame.edges_crease_angle_os=thetas;
                 }
 
                 json.file_frames.push(file_frame);
 
             }
             //document.getElementById("foldPercentOutput").innerHTML = creasePercent;
+            var percentage = Math.abs((creasePercent-startPercent)/(toPercent-startPercent)*100);
             var $foldPercentProgress = $("#foldPercentOutput");
             $("#foldPercentOutput").html((nextCreasePercent*100).toFixed(3) + " %");
-
+            $(".progress-bar").css("width", percentage+"%")
             creasePercent=nextCreasePercent;
-            console.log(creasePercent);
+
+
+            is_under_percent=creasePercent<=toPercent;
+            is_above_percent=creasePercent>=toPercent;
+            posStep=stepSize>0;
+
+            //This section allows for the browser to update while executing the
+            //while loop, allowing animation as well as a breakpoint via the
+            //controls.
             if(globals.break){
                 globals.break=false;
-            }else if (creasePercent<=toPercent && creasePercent>=-1){
+            }else if ((is_under_percent && posStep)||(is_above_percent && !posStep)){
                 setTimeout(function(){getFrames(json,filename);},5);
             }else{
                 $("#FOLDseriesProgressModal").modal('hide');
@@ -156,11 +162,7 @@ function saveFOLD(){
         }
 
         if (globals.exportFoldActualAngle){
-            creaseThetas=grabThetas();
-            for(var i=1; i<=edgecount; i++){
-                creaseThetas.unshift(undefined);
-            }
-            json.edges_crease_angle_os=creaseThetas;
+            thetas=grabThetas();
         }
         saveJSON(json,filename);
     }
@@ -173,11 +175,12 @@ function saveJSON(json,filename){
     var blob = new Blob([JSON.stringify(json, null, 4)], {type: 'application/octet-binary'});
     saveAs(blob, filename + ".fold");
 }
-function grabThetas(){
+function grabThetas(json){
 //Copied from rigidSolver + a few changes
   var creases = globals.model.getCreases();
   var geo = new THREE.Geometry().fromBufferGeometry( globals.model.getGeometry() );
   var thetas = [];
+  var creaseThetas = [];
 
       var geometry = globals.model.getGeometry();
       var indices = geometry.index.array;
@@ -211,7 +214,18 @@ function grabThetas(){
           var theta = Math.atan2((normal1.clone().cross(creaseVector)).dot(normal2), dotNormals);
           thetas[j] = theta*180/Math.PI;
       }
-      return thetas;
+
+      for(var i=0; i<=json.edges_assignment.length-1; i++){
+          if (json.edges_assignment[i]=="B"){
+
+              creaseThetas.push(undefined);
+          }else{
+              creaseThetas.push(thetas[0]);
+              thetas.shift();
+          }
+      }
+
+      return creaseThetas;
 }
 
 function getGeometry(){
@@ -240,28 +254,48 @@ function should_do_save_fold(previousError,previousDate){
     var de = globals.errorDif; //Error Difference
     var dp = globals.stepSize/100; //How much to add to percent
     var dt = 1000; //Time between error dif
+    var sigFig = 10000;
 
     var currentError = globals.globalErrors;
 
     var diffError = Math.abs(currentError-previousError);
-    console.log(diffError);
+
 
     currentDate = new Date();
     var dateDiff=currentDate.getTime()-previousDate.getTime();
 
     var nextCreasePercent = globals.creasePercent;
+    nextCreasePercent=Math.round(nextCreasePercent*sigFig)/sigFig;
      if (dateDiff > dt) {
 
         previousDate =  currentDate;
         var diffError = Math.abs(currentError-previousError);
 
         previousError = currentError;
+
+        $("#errorFoldSeriesOutput").html(diffError.toPrecision(5))
         if (diffError < de || globals.skip){
+            creasePercent = nextCreasePercent;
             nextCreasePercent = nextCreasePercent + dp;
-            console.log(nextCreasePercent);
-            globals.setCreasePercent(nextCreasePercent);
-            globals.shouldChangeCreasePercent=true;
-            globals.controls.updateCreasePercent();
+
+            is_under_percent=creasePercent<globals.toPercent/100;
+            is_above_percent=creasePercent>globals.toPercent/100;
+            posStep=globals.stepSize>0;
+
+
+            if(nextCreasePercent>1||nextCreasePercent<-1){
+                //This line ensures the final percentage is always checked.
+                if((is_under_percent&&posStep)||(is_above_percent&& !posStep)){
+                    nextCreasePercent=globals.toPercent/100;
+                    globals.setCreasePercent(nextCreasePercent);
+                    globals.shouldChangeCreasePercent=true;
+                    globals.controls.updateCreasePercent();
+                }
+            }else{
+                globals.setCreasePercent(nextCreasePercent);
+                globals.shouldChangeCreasePercent=true;
+                globals.controls.updateCreasePercent();
+            }
             do_save_fold = true;
             if (globals.skip){
                 globals.skip=false;
