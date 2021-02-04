@@ -534,7 +534,10 @@ function initPattern(globals){
 
         foldData = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(foldData);
         foldData = removeStrayVertices(foldData);//delete stray anchors
-        foldData = removeRedundantVertices(foldData, 0.01);//remove vertices that split edge
+        console.log(globals.includeCurves);
+        if (!globals.includeCurves) {
+            foldData = removeRedundantVertices(foldData, 0.01);//remove vertices that split edge
+        }
 
         foldData.vertices_vertices = FOLD.convert.sort_vertices_vertices(foldData);
         foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);

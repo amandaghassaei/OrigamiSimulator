@@ -204,7 +204,7 @@ function initControls(globals){
     setInput("#vertTol", globals.vertTol, function(val){
         globals.vertTol = val;
     });
-    setCheckbox("#curvedlines", globals.includeCurves, function(val){
+    setCheckbox("#curvedLines", globals.includeCurves, function(val){
         globals.includeCurves = val;
     });
     setInput("#vertInt", globals.vertInt, function(val){
