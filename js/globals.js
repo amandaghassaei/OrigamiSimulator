@@ -62,6 +62,10 @@ function initGlobals(){
         //import pattern settings
         vertTol: 3,//vertex merge tolerance
         foldUseAngles: true,//import current angles from fold format as target angles
+        //for curved folding
+        includeCurves: false,
+        vertInt: 20,//intervals of vertices for discretization
+        apprCurve: 0.2,//approximation quality of curves
 
         //save stl settings
         filename: null,

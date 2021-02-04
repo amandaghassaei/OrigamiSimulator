@@ -196,10 +196,22 @@ function initControls(globals){
 
     setLink("#importSettings", function(){
         $("#vertTol").val(globals.vertTol);
+        $("#curvedLines").val(globals.includeCurves);
+        $("#vertInt").val(globals.vertInt);
+        $("#apprCurve").val(globals.apprCurve);
         $("#importSettingsModal").modal("show");
     });
     setInput("#vertTol", globals.vertTol, function(val){
         globals.vertTol = val;
+    });
+    setCheckbox("#curvedlines", globals.includeCurves, function(val){
+        globals.includeCurves = val;
+    });
+    setInput("#vertInt", globals.vertInt, function(val){
+        globals.vertInt = val;
+    });
+    setInput("#apprCurve", globals.apprCurve, function(val){
+        globals.apprCurve = val;
     });
 
     setLink("#createGif", function(){
