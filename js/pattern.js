@@ -534,10 +534,7 @@ function initPattern(globals){
 
         foldData = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(foldData);
         foldData = removeStrayVertices(foldData);//delete stray anchors
-        console.log(globals.includeCurves);
-        if (!globals.includeCurves) {
-            foldData = removeRedundantVertices(foldData, 0.01);//remove vertices that split edge
-        }
+        foldData = removeRedundantVertices(foldData, 0.01);//remove vertices that split edge
 
         foldData.vertices_vertices = FOLD.convert.sort_vertices_vertices(foldData);
         foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
@@ -577,11 +574,7 @@ function initPattern(globals){
         delete fold.vertices_vertices;
         delete fold.vertices_edges;
 
-        if (globals.includeCurves) {
-            foldData = globals.curvedFolding.triangulatePolysForCurve(fold);
-        } else {
-            foldData = triangulatePolys(fold, is2d);
-        }
+        foldData = triangulatePolys(fold, is2d);
 
         mountains = FOLD.filter.mountainEdges(foldData);
         valleys = FOLD.filter.valleyEdges(foldData);
@@ -1128,6 +1121,10 @@ function initPattern(globals){
     }
 
     function saveSVG(){
+        if (globals.includeCurves) {
+            globals.curvedFolding.saveSVG();
+            return;
+        }
         if (globals.extension == "fold"){
             //todo solve for crease pattern
             globals.warn("No crease pattern available for files imported from FOLD format.");

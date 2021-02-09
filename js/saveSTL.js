@@ -103,7 +103,11 @@ function saveSTL(){
 function saveOBJ(){
     //custom export to be compatible with freeform origami
     var geo = new THREE.Geometry().fromBufferGeometry( globals.model.getGeometry() );
-    var flatGeo = globals.pattern.getFoldData(false);
+    if (!globals.includeCurves) {
+        var flatGeo = globals.pattern.getFoldData(false);
+    } else {
+        var flatGeo = globals.curvedFolding.getFoldData(false);
+    }
 
     if (geo.vertices.length == 0 || geo.faces.length == 0) {
         globals.warn("No geometry to save.");
@@ -114,7 +118,11 @@ function saveOBJ(){
         geo.vertices[i].multiplyScalar(globals.exportScale/globals.scale);
     }
 
-    var fold = globals.pattern.getFoldData(false);
+    if (!globals.includeCurves) {
+        var fold = globals.pattern.getFoldData(false);
+    } else {
+        var fold = globals.curvedFolding.getFoldData(false);
+    }
     var obj = "#output from https://origamisimulator.org/\n";
     obj += "# "+ geo.vertices.length + "vertices\n";
     for (var i=0;i<geo.vertices.length;i++){
