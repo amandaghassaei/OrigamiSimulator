@@ -577,7 +577,11 @@ function initPattern(globals){
         delete fold.vertices_vertices;
         delete fold.vertices_edges;
 
-        foldData = triangulatePolys(fold, is2d);
+        if (globals.includeCurves) {
+            foldData = globals.curvedFolding.triangulatePolysForCurve(fold);
+        } else {
+            foldData = triangulatePolys(fold, is2d);
+        }
 
         mountains = FOLD.filter.mountainEdges(foldData);
         valleys = FOLD.filter.valleyEdges(foldData);
