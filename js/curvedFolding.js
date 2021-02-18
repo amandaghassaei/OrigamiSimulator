@@ -2624,6 +2624,9 @@ function initCurvedFolding(globals) {
                 model.vertices.push(vertex);
             }
             model.verticesEdges = new Map();
+            for (let index = 0; index < model.vertices.length; index++) {
+                model.verticesEdges.set(index, 0);
+            }
             for (let i = 0; i < triangles.length; i+=3) {
                 model.addFace(model.vertices[triangles[i]], model.vertices[triangles[i+1]], model.vertices[triangles[i+2]]);
             }
