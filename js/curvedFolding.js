@@ -2370,7 +2370,7 @@ function initCurvedFolding(globals) {
                     }
                 }
             }
-            return 8100;
+            return Infinity;
         }
 
         checkVertexNumber(halfedge) {
@@ -2634,7 +2634,7 @@ function initCurvedFolding(globals) {
             let flag, repeat = 0;
             while (repeat < 1000) {
                 flag = true;
-                let minAngle = 8100;
+                let minAngle = Infinity;
                 let edgeNum = -1;
                 for (let index = 0; index < model.triangulatedEdges.length; index++) {
                     const edge = model.triangulatedEdges[index];
