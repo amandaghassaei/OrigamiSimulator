@@ -18,6 +18,13 @@ function initImporter(globals){
             globals.filename = name;
             globals.extension = extension;
             globals.pattern.loadSVG("assets/" + url);
+        } else if (extension == "fold"){
+                globals.url = url;
+                globals.filename = name;
+                globals.extension = extension;
+                $.getJSON("assets/" + url, undefined, function (fold) {
+                    globals.pattern.setFoldData(fold);
+                });
         } else {
             console.warn("unknown extension: " + extension);
         }
