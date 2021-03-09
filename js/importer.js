@@ -140,7 +140,7 @@ function initImporter(globals){
                                     var angle = Math.abs(normal1.angleTo(normal2));
                                     if (assignment == "M") angle *= -1;
                                     fold.edges_foldAngle[i] = angle * 180 / Math.PI;
-                                    creaseParams[5] = angle;
+                                    creaseParams[5] = fold.edges_foldAngle[i];
                                     j++;
                                 }
                                 globals.model.buildModel(fold, allCreaseParams);

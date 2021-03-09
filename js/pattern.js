@@ -808,7 +808,8 @@ function initPattern(globals){
         var faces = fold.faces_vertices;
         for (var i=0;i<fold.edges_vertices.length;i++){
             var assignment = fold.edges_assignment[i];
-            if (assignment !== "M" && assignment !== "V" && assignment !== "F") continue;
+            var angle = fold.edges_foldAngle[i];
+            if ((angle === null && !globals.foldUseAngles) || (assignment !== "M" && assignment !== "V" && assignment !== "F")) continue;
             var edge = fold.edges_vertices[i];
             var v1 = edge[0];
             var v2 = edge[1];
@@ -836,7 +837,6 @@ function initPattern(globals){
                             }
 
                             creaseParams.push(i);
-                            var angle = fold.edges_foldAngle[i];
                             creaseParams.push(angle);
                             allCreaseParams.push(creaseParams);
                             break;
