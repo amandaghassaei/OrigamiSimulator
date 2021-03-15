@@ -184,7 +184,7 @@ function initControls(globals){
     });
     setInput("#rotationSpeed", globals.rotationSpeed, function(val){
         globals.rotationSpeed = val;
-    }, 0);
+    });
 
     setLink("#changeBackground", function(){
         $("#changeBackgroundModal").modal("show");
