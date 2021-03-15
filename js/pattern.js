@@ -457,7 +457,7 @@ function initPattern(globals){
             var scale = Math.max(max.x, max.y, max.z);
             if (scale == 0) return;
 
-            var isCreasePattern = rawFold.frame_classes ? rawFold.frame_classes.includes('creasePattern') : max.y < scale / 100;
+            var isCreasePattern = (rawFold.frame_classes && rawFold.frame_classes.includes('creasePattern')) | max.y < scale / 100;
             if (!isCreasePattern) {
                 console.log('Fold data is not a crease pattern, skipping SVG generation');
                 return; // TODO try to flatten the folded state if possible
