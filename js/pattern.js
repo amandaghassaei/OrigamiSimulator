@@ -428,6 +428,17 @@ function initPattern(globals){
             //todo revert back to old pattern if bad import
             var success = parseSVG(verticesRaw, bordersRaw, mountainsRaw, valleysRaw, cutsRaw, triangulationsRaw, hingesRaw);
             if (!success) return;
+            generateSvg();
+        },
+        function(){},
+        function(error){
+            globals.warn("Error loading SVG " + url + " : " + error);
+            console.warn(error);
+        });
+    }
+
+    function generateSvg() {
+            $("#svgViewer").empty();
 
             //find max and min vertices
             var max = new THREE.Vector3(-Infinity,-Infinity,-Infinity);
@@ -443,9 +454,14 @@ function initPattern(globals){
             }
             max.sub(min);
             var border = new THREE.Vector3(0.1, 0, 0.1);
-            var scale = max.x;
-            if (max.z < scale) scale = max.z;
+            var scale = Math.max(max.x, max.y, max.z);
             if (scale == 0) return;
+
+            var isCreasePattern = (rawFold.frame_classes && rawFold.frame_classes.includes('creasePattern')) | max.y < scale / 100;
+            if (!isCreasePattern) {
+                console.log('Fold data is not a crease pattern, skipping SVG generation');
+                return; // TODO try to flatten the folded state if possible
+            }
 
             var strokeWidth = scale/300;
             border.multiplyScalar(scale);
@@ -471,13 +487,6 @@ function initPattern(globals){
                 svg.appendChild(line);
             }
             $("#svgViewer").html(svg);
-
-            },
-            function(){},
-            function(error){
-                globals.warn("Error loading SVG " + url + " : " + error);
-                console.warn(error);
-        });
     }
 
     function parseSVG(_verticesRaw, _bordersRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw, _hingesRaw){
@@ -808,7 +817,8 @@ function initPattern(globals){
         var faces = fold.faces_vertices;
         for (var i=0;i<fold.edges_vertices.length;i++){
             var assignment = fold.edges_assignment[i];
-            if (assignment !== "M" && assignment !== "V" && assignment !== "F") continue;
+            var angle = fold.edges_foldAngle[i];
+            if ((angle === null && !globals.foldUseAngles) || (assignment !== "M" && assignment !== "V" && assignment !== "F")) continue;
             var edge = fold.edges_vertices[i];
             var v1 = edge[0];
             var v2 = edge[1];
@@ -836,7 +846,6 @@ function initPattern(globals){
                             }
 
                             creaseParams.push(i);
-                            var angle = fold.edges_foldAngle[i];
                             creaseParams.push(angle);
                             allCreaseParams.push(creaseParams);
                             break;
@@ -1125,9 +1134,8 @@ function initPattern(globals){
             globals.curvedFolding.saveSVG();
             return;
         }
-        if (globals.extension == "fold"){
-            //todo solve for crease pattern
-            globals.warn("No crease pattern available for files imported from FOLD format.");
+        if (globals.noCreasePatternAvailable()){
+            globals.warn("No crease pattern available.");
             return;
         }
         var serializer = new XMLSerializer();
@@ -1249,7 +1257,9 @@ function initPattern(globals){
 
     function setFoldData(fold, returnCreaseParams){
         clearAll();
-        return processFold(fold, returnCreaseParams);
+        var allCreaseParams = processFold(fold, returnCreaseParams);
+        generateSvg();
+        return allCreaseParams;
     }
 
     function getTriangulatedFaces(){

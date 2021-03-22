@@ -127,7 +127,7 @@ function initGlobals(){
     _globals.warn = warn;
 
     function noCreasePatternAvailable(){
-        return _globals.extension == "fold";
+        return $("#svgViewer>svg").length == 0;
     }
     _globals.noCreasePatternAvailable = noCreasePatternAvailable;
 

@@ -184,7 +184,7 @@ function initControls(globals){
     });
     setInput("#rotationSpeed", globals.rotationSpeed, function(val){
         globals.rotationSpeed = val;
-    }, 0);
+    });
 
     setLink("#changeBackground", function(){
         $("#changeBackgroundModal").modal("show");
@@ -360,7 +360,7 @@ function initControls(globals){
 
     setLink("#navPattern", function(){
         if (globals.noCreasePatternAvailable()){
-            globals.warn("No crease pattern available for FOLD format.");
+            globals.warn("No crease pattern available.");
             return;
         }
         if (globals.navMode == "pattern") return;
