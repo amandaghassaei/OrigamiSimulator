@@ -44,7 +44,11 @@ function initImporter(globals){
             if (e.data.vertTol) {
                 globals.vertTol = e.data.vertTol;
             }
-            globals.pattern.loadSVG(URL.createObjectURL(new Blob([e.data.svg])));
+            if (!globals.includeCurves) {
+                globals.pattern.loadSVG(URL.createObjectURL(new Blob([e.data.svg])));
+            } else {
+                globals.curvedFolding.loadSVG(URL.createObjectURL(new Blob([e.data.svg])));
+            }
         }
     });
     // Tell parent/opening window that we're ready for messages now.
@@ -83,7 +87,11 @@ function initImporter(globals){
                         globals.filename = name;
                         globals.extension = extension;
                         globals.url = null;
-                        globals.pattern.loadSVG(reader.result);
+                        if (!globals.includeCurves) {
+                            globals.pattern.loadSVG(reader.result);    
+                        } else {
+                            globals.curvedFolding.loadSVG(reader.result);
+                        }
                     });
                 }
             }(file);

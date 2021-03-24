@@ -1130,6 +1130,10 @@ function initPattern(globals){
     }
 
     function saveSVG(){
+        if (globals.includeCurves) {
+            globals.curvedFolding.saveSVG();
+            return;
+        }
         if (globals.noCreasePatternAvailable()){
             globals.warn("No crease pattern available.");
             return;

@@ -41,7 +41,11 @@ function saveFOLD(){
     }
 
     var useTriangulated = globals.triangulateFOLDexport;
-    var fold = globals.pattern.getFoldData(!useTriangulated);
+    if (!globals.includeCurves) {
+        var fold = globals.pattern.getFoldData(!useTriangulated);
+    } else {
+        var fold = globals.curvedFolding.getFoldData(!useTriangulated);
+    }
     json.edges_vertices = fold.edges_vertices;
     var assignment = [];
     for (var i=0;i<fold.edges_assignment.length;i++){

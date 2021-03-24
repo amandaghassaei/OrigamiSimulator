@@ -793,6 +793,10 @@
     <script type="text/javascript" src="js/VRInterface.js"></script>
     <script type="text/javascript" src="js/videoAnimator.js"></script>
 
+    <script type="text/javascript" src="dependencies/cdt2d.js"></script><!-- constrained delaunay triangulation -->
+    <script type="text/javascript" src="dependencies/svgpath.js"></script>
+    <script type="text/javascript" src="js/curvedFolding.js"></script>
+
     <script type="text/javascript" src="js/main.js"></script>
 </head>
 <body>
@@ -1790,6 +1794,22 @@
                 <p><b>SVG IMPORT SETTINGS</b><br/><br/>
                     Vertex merge tolerance (px) : &nbsp;&nbsp;<input id="vertTol" value="" placeholder="" class="float form-control" type="text">
                     <div class="smallTxt">Vertices within this px tolerance in the SVG will be merged into one.  It is recommended to keep this number above zero.</div>
+                </p>
+                <!-- for curved folging -->
+                <p><b>For curved folding</b>
+                    <label class="checkbox" for="curvedLines">
+                        <input id="curvedLines" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                        the crease pattern contains curves.
+                    </label>
+                    <div class="smallTxt">Check this box if the crease pattern contains curves.</div>
+                </p>
+                <p>
+                    Intervals of vertices for discretization (px) : &nbsp;&nbsp;<input id="vertInt" value="" placeholder="" class="float form-control" type="text">
+                    <div class="smallTxt">Curves and borderlines are divided into segments by this value. It is recommended to keep this number above zero.</div>
+                </p>
+                <p>
+                    Approximation tolerance of curves (px) : &nbsp;&nbsp;<input id="apprCurve" value="" placeholder="" class="float form-control" type="text">
+                    <div class="smallTxt">Curves are approximated by polylines. The smaller the value, the higher the quality of the approximation.</div>
                 </p>
             </div>
             <div class="modal-footer">
