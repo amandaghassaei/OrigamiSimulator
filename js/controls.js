@@ -529,6 +529,8 @@ function initControls(globals){
                 globals.includeCurves = true;
                 globals.vertInt = 20;
                 globals.apprCurve = 0.2;
+            } else {
+                globals.includeCurves = false;
             }
             globals.vertTol = 3;
             globals.importer.importDemoFile(url);
