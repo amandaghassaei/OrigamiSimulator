@@ -17,7 +17,11 @@ function initImporter(globals){
             globals.url = url;
             globals.filename = name;
             globals.extension = extension;
-            globals.pattern.loadSVG("assets/" + url);
+            if (!globals.includeCurves) {
+                globals.pattern.loadSVG("assets/" + url);
+            } else {
+                globals.curvedFolding.loadSVG("assets/" + url);
+            }
         } else if (extension == "fold"){
                 globals.url = url;
                 globals.filename = name;

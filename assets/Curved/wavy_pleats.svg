@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="426.2" height="426.2" viewBox="0 0 426.2 426.2">
+  <g id="レイヤー_2" data-name="レイヤー 2">
+    <g id="レイヤー_1-2" data-name="レイヤー 1">
+      <rect x="0.5" y="0.5" width="425.2" height="425.2" fill="none" stroke="#000" stroke-miterlimit="10"/>
+      <path d="M277.88.5c-62.17,68.47-62,149.76,0,212.6s62.18,144.13,0,212.6" fill="none" stroke="blue" stroke-miterlimit="10"/>
+      <path d="M213.1.5c-62.18,68.47-62,149.76,0,212.6s62.18,144.13,0,212.6" fill="none" stroke="red" stroke-miterlimit="10"/>
+      <path d="M148.31.5c-62.18,68.47-62,149.76,0,212.6s62.18,144.13,0,212.6" fill="none" stroke="blue" stroke-miterlimit="10"/>
+      <path d="M83.52.5c-62.17,68.47-62,149.76,0,212.6s62.18,144.13,0,212.6" fill="none" stroke="red" stroke-miterlimit="10"/>
+      <path d="M342.67.5c-62.18,68.47-62,149.76,0,212.6s62.18,144.13,0,212.6" fill="none" stroke="red" stroke-miterlimit="10"/>
+    </g>
+  </g>
+</svg>

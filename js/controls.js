@@ -206,7 +206,11 @@ function initControls(globals){
     });
     setCheckbox("#curvedLines", globals.includeCurves, function(val){
         globals.includeCurves = val;
+        if (val) $("#curvedCreaseImportOptions").show();
+        else $("#curvedCreaseImportOptions").hide();
     });
+    if (globals.includeCurves) $("#curvedCreaseImportOptions").show();
+    else $("#curvedCreaseImportOptions").hide();
     setInput("#vertInt", globals.vertInt, function(val){
         globals.vertInt = val;
     });
@@ -516,8 +520,16 @@ function initControls(globals){
     });
 
     setLink(".demo", function(e){
-        var url = $(e.target).data("url");
+        var $target = $(e.target);
+        var url = $target.data("url");
         if (url) {
+            // Check if we are loading a curved crease pattern.
+            // TODO: this should be removed eventually, replace with detecting beziers in svg.
+            if ($target.hasClass('cc')) {
+                globals.includeCurves = true;
+                globals.vertInt = 20;
+                globals.apprCurve = 0.2;
+            }
             globals.vertTol = 3;
             globals.importer.importDemoFile(url);
         }

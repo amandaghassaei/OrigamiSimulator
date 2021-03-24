@@ -418,7 +418,7 @@ function initPattern(globals){
                     string += "<span style='background:" + color + "' class='colorSwatch'></span>" + color + "<br/>";
                 });
                 string +=  "<br/>These objects were ignored.<br/>  Please check that your file is set up correctly, <br/>" +
-                    "see <b>File > File Import Tips</b> for more information.";
+                    "see <b>File > Design Tips</b> for more information.";
                 globals.warn(string);
             }
 

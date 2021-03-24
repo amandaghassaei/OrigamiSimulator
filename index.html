@@ -828,9 +828,13 @@
                     <li><a target="_blank" href="http://www2.eng.cam.ac.uk/~sdg/preprint/5OSME.pdf">Origami Folding: A Structural Engineering Approach</a> by Mark Schenk and Simon D. Guest<br/>
                     <li><a target="_blank" href="http://www.tsg.ne.jp/TT/cg/TachiFreeformOrigami2010.pdf">Freeform Variations of Origami</a> by Tomohiro Tachi<br/>
                     </ul>
+                    <p>
+                    This app also uses the methods described in <a href="http://www.cgg.cs.tsukuba.ac.jp/projects/2020/RulingAwareTriangulation/index.html" target="_blank">Simple Simulation of Curved Folds Based on Ruling-aware Triangulation</a> to import curved crease patterns and pre-process them in a way that realistically simulates the bending between the creases.
+                    </p>
 
                     <p>
-                    Built by <a href="http://www.amandaghassaei.com/" target="_blank">Amanda Ghassaei</a> as a final project for <a href="http://courses.csail.mit.edu/6.849/spring17/" target="_blank">Geometric Folding Algorithms</a>.
+                    Originally built by <a href="http://www.amandaghassaei.com/" target="_blank">Amanda Ghassaei</a> as a final project for <a href="http://courses.csail.mit.edu/6.849/spring17/" target="_blank">Geometric Folding Algorithms</a>.
+                    Other contributors include <a href="http://www.cgg.cs.tsukuba.ac.jp/~sasaki_k/" target="_blank">Sasaki Kosuke</a>, <a href="http://erikdemaine.org/" target="_blank">Erik Demaine</a>, and <a href="https://github.com/amandaghassaei/OrigamiSimulator/graphs/contributors" target="_blank">others</a>.
                     Code available on <a href="https://github.com/amandaghassaei/OrigamiSimulator" target="_blank">Github</a>.  If you have interesting crease patterns that would
                     make good demo files, please send them to me (Amanda) so I can add them to the <b>Examples</b> menu.  My email address is on my website.  Thanks!<br/>
                 </p><br/>
@@ -852,29 +856,25 @@
                         <img style="width: 100%; max-width:600px" src="assets/doc/huffmanvr.jpg" /><br/>
                     <ul>
                         <li>If you are working from a computer connected to a VR headset and hand controllers, follow <a href="#" id="goToViveInstructions">these instructions</a>
-                            to use this app in an interactive virtual reality mode.</li>
+                            to use this app in an interactive virtual reality mode. (sorry I think this may be deprecated now!)</li>
                     </ul>
-
 
                     <br/>
                     <b>External Libraries:</b><br/><br/>
                     <ul>
                         <li>All rendering and 3D interaction done with <a target="_blank" href="https://threejs.org/">three.js</a></li>
-                        <li><a href="https://www.npmjs.com/package/path-data-polyfill" target="_blank">path-data-polyfill</a> helps with SVG path parsing</li>
+                        <li><a href="https://github.com/fontello/svgpath" target="_blank">svgpath</a> and <a href="https://www.npmjs.com/package/path-data-polyfill" target="_blank">path-data-polyfill</a> helps with SVG path parsing</li>
                         <li><a href="https://github.com/edemaine/fold" target="_blank">FOLD</a> is used as the internal data structure, methods from the
                             <a href="https://github.com/edemaine/fold/blob/master/doc/api.md" target="_blank">FOLD API</a> used for SVG parsing</li>
-                        <li>Arbitrary polygonal faces of imported geometry are triangulated using the <a target="_blank" href="https://github.com/mapbox/earcut">Earcut Library</a></li>
-                        <li>Portability to multiple VR controllers by <a target="_blank" href="https://github.com/stewdio/THREE.VRController">THREE.VRController.js</a></li>
-                        <li>VR GUI by <a href="https://github.com/dataarts/dat.guiVR" target="_blank">dat.guiVR</a></li>
+                        <li>Arbitrary polygonal faces of imported geometry are triangulated using the <a target="_blank" href="https://github.com/mapbox/earcut">Earcut Library</a> and <a href="https://github.com/mikolalysenko/cdt2d" target="_blank"></a>cdt2d</a></li>
                         <li><a href="http://www.numericjs.com/" target="_blank">numeric.js</a> for linear algebra operations</li>
-                        <li><a href="https://github.com/eligrey/FileSaver.js/" target="_blank">FileSaver</a> for client-side file saving</li>
                         <li>GIF and WebM video export uses <a target="_blank" href="https://github.com/spite/ccapture.js/">CCapture</a></li>
-                        <li><a target="_blank" href="https://jquery.com/">jQuery</a>, <a target="_blank" href="http://getbootstrap.com/">Bootstrap</a>, and the
-                            <a target="_blank" href="http://designmodo.github.io/Flat-UI/">Flat UI theme</a> used to build the regular GUI</li>
                     </ul>
                 <p>
                     <br/>
-                    You can find additional information in <a href="http://erikdemaine.org/papers/OrigamiSimulator_Origami7/" target="_blank">our 7OSME paper</a> and <a href="http://www.amandaghassaei.com/projects/origami_simulator/" target="_blank">this website</a>.<br/>
+                    You can find additional information in <a href="http://erikdemaine.org/papers/OrigamiSimulator_Origami7/" target="_blank">our 7OSME paper</a> and <a href="http://www.amandaghassaei.com/projects/origami_simulator/" target="_blank">project website</a>.
+                    If you have feedback about features you want to see in this app, please see <a href="https://github.com/amandaghassaei/OrigamiSimulator/discussions/41" target="_blank">this thread</a>.
+                    <br/>
                     <br/>
                 </p>
             </div>
@@ -896,7 +896,7 @@
                 <ul class="dropdown-menu">
                     <li><a class="loadFile" href="#">Import... (SVG / FOLD)</a></li>
                     <!--<li><a id="importSettings" href="#">SVG Import Settings...</a></li>-->
-                    <li><a id="tips" href="#">File Import Tips</a></li>
+                    <li><a id="tips" href="#">Design Tips</a></li>
                     <li class="divider"></li>
                     <li><a id="createGif" href="#">Record animated GIF...</a></li>
                     <li><a id="createVideo" href="#">Record video...</a></li>
@@ -959,10 +959,18 @@
                     <li class="dropdown-submenu">
                         <a tabindex="-1">Curved Creases<span class="pull-right fui-arrow-right"></span></a>
                         <ul class="dropdown-menu">
+                            <li><a href="#" class="demo author cc" data-author="mitani" data-url="Curved/wavy_pleats.svg">Wavy Pleats</a></li>
+                            <li><a href="#" class="demo author cc" data-author="mitaniCCbook" data-url="Curved/Tri-Wing_Boomerang_Tiling.svg">Boomerang Tessellation</a></li>
+                            <li><a href="#" class="demo author cc" data-author="mitani3Dbook" data-url="Curved/Origami_Sphere_16Flaps.svg">Origami Sphere</a></li>
+                            <li><a href="#" class="demo author cc" data-author="mitani" data-url="Curved/comet.svg">Comet</a></li>
+                            <li><a href="#" class="demo author cc" data-author="mitani" data-url="Curved/scale.svg">Scale Tessellation</a></li>
+                            <li><a href="#" class="demo author cc" data-author="mitaniCCbook" data-url="Curved/Carved_Cylinder.svg">Carved Cylinder</a></li>
+                            <li><a href="#" class="demo author cc" data-author="mitaniCCbook" data-url="Curved/Rotating_Star.svg">Rotating Star</a></li>
+                            <li><a href="#" class="demo author cc" data-author="mitaniCCbook" data-url="Curved/Crossing_curves.svg">Crossing Curves</a></li>
+                            <li><a href="#" class="demo author cc" data-author="mitaniCCbook" data-url="Curved/Treble_Clef.svg">Treble Clef</a></li>
                             <li><a href="#" class="demo author" data-author="huffmanCurved" data-url="Curved/huffmanTower.svg">Huffman Tower</a></li>
                             <li><a href="#" class="demo" data-url="Curved/CircularPleat-antiFacet.svg">Circular Pleat</a></li>
-                            <li><a href="#" class="demo author" data-author="sam" data-url="Curved/shell14.svg">14 panel shell</a></li>
-                            <li><a href="#" class="demo author" data-author="sam" data-url="Curved/shell6.svg">6 panel shell</a></li>
+                            <li><a href="#" class="demo author" data-author="sam" data-url="Curved/shell14.svg">14 Panel Shell</a></li>
                         </ul>
                     </li>
                     <li class="dropdown-submenu">
@@ -1328,7 +1336,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <p><b>FILE IMPORT TIPS</b><br/><br/>
+                <p><b>DESIGN TIPS</b><br/><br/>
                     Bad design files will throw errors and create models that explode or cannot be solved, here are some tips for
                     importing FOLD or SVG files that work.<br/><br/>
                     <b>Importing FOLD:</b><br/><br/>
@@ -1381,8 +1389,9 @@
                     <ul>
                         <li>Facet creases (yellow triangulation lines) are creases that try to remain flat (0&deg; fold angle) as the pattern folds, but some compliance
                             in the constraints of the simulation will allow them to bend slightly.  Drawing in facet creases allows you to control
-                            the way the model bends in between mountain/valley folds.
-                        This is especially relevant in patterns with curved creases.
+                            the way the model bends in between mountain/valley folds.  This is especially relevant in patterns with curved creases.
+                            If you import an svg with bezier curves and select the checkbox "crease pattern contains curves" in the import dialog, we attempt to triangulate it for you using the algorithm described by <a href="http://www.cgg.cs.tsukuba.ac.jp/projects/2020/RulingAwareTriangulation/index.html" target="_blank">Simple Simulation of Curved Folds Based on Ruling-aware Triangulation</a>.
+                            We recommend trying this first, and add additional facet creases to your svg design where needed.
                         </li>
                     </ul>
                         <object type="image/svg+xml" data="assets/doc/triangulationsCurved.svg">
@@ -1799,18 +1808,20 @@
                 <p><b>For curved folding</b>
                     <label class="checkbox" for="curvedLines">
                         <input id="curvedLines" data-toggle="checkbox" class="custom-checkbox layersSelector" type="checkbox"><span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
-                        the crease pattern contains curves.
+                        crease pattern contains curves
                     </label>
                     <div class="smallTxt">Check this box if the crease pattern contains curves.</div>
                 </p>
-                <p>
-                    Intervals of vertices for discretization (px) : &nbsp;&nbsp;<input id="vertInt" value="" placeholder="" class="float form-control" type="text">
-                    <div class="smallTxt">Curves and borderlines are divided into segments by this value. It is recommended to keep this number above zero.</div>
-                </p>
-                <p>
-                    Approximation tolerance of curves (px) : &nbsp;&nbsp;<input id="apprCurve" value="" placeholder="" class="float form-control" type="text">
-                    <div class="smallTxt">Curves are approximated by polylines. The smaller the value, the higher the quality of the approximation.</div>
-                </p>
+                <div id="curvedCreaseImportOptions">
+                    <p>
+                        Intervals of vertices for discretization (px) : &nbsp;&nbsp;<input id="vertInt" value="" placeholder="" class="float form-control" type="text">
+                        <div class="smallTxt">Curves and borderlines are divided into segments by this value. It is recommended to keep this number above zero.</div>
+                    </p>
+                    <p>
+                        Approximation tolerance of curves (px) : &nbsp;&nbsp;<input id="apprCurve" value="" placeholder="" class="float form-control" type="text">
+                        <div class="smallTxt">Curves are approximated by polylines. The smaller the value, the higher the quality of the approximation.</div>
+                    </p>
+                </div>
             </div>
             <div class="modal-footer">
                 <div id="tipImportSVG" class="smallTxt">Having trouble?  See these <a class="goToImportInstructions" href="#">SVG Import Tips</a>.</div>
@@ -1888,6 +1899,15 @@
         </div>
         <div id="sam">
             Designed by <a href="http://www.mit.edu/~calisch/" target="_blank">Sam Calisch</a>.
+        </div>
+        <div id="mitani">
+            Designed by <a href="https://mitani.cs.tsukuba.ac.jp/en/" target="_blank">Jun Mitani</a>.
+        </div>
+        <div id="mitaniCCbook">
+            Designed by <a href="https://mitani.cs.tsukuba.ac.jp/en/" target="_blank">Jun Mitani</a>, crease pattern from the book <a href="https://mitani.cs.tsukuba.ac.jp/book/curved_folding/index.html" target="_blank">Curved-Folding Origami Design</a>.
+        </div>
+        <div id="mitani3Dbook">
+            Designed by <a href="https://mitani.cs.tsukuba.ac.jp/en/" target="_blank">Jun Mitani</a>, crease pattern from the book <a href="https://mitani.cs.tsukuba.ac.jp/book/3d_origami_art/index.html" target="_blank">3D Origami Art</a>.
         </div>
         <div id="popupology">
             Designed by Elod Beregszaszi, original patterns available at <a href="http://www.popupology.co.uk/galleries" target="_blank">
