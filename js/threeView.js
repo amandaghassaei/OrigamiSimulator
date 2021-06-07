@@ -128,9 +128,7 @@ function initThreeView(globals) {
         }
     }
 
-
     function _loop(){
-
         if (globals.rotateModel !== null){
             if (globals.rotateModel == "x") modelWrapper.rotateX(globals.rotationSpeed);
             if (globals.rotateModel == "y") modelWrapper.rotateY(globals.rotationSpeed);
@@ -149,8 +147,6 @@ function initThreeView(globals) {
         }
         controls.update();
         _render();
-
-
     }
 
     function sceneAddModel(object){

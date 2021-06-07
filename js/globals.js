@@ -111,8 +111,7 @@ function initGlobals(){
         capturerFrames: 0,
         shouldScaleCanvas: false,
         isGif: false,
-        shouldAnimateFoldPercent: false,
-
+        shouldAnimateFoldPercent: false
     };
 
     function setCreasePercent(percent){

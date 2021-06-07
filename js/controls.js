@@ -108,7 +108,6 @@ function initControls(globals){
         updateDimensions();
         $("#foldFilename").val(globals.filename + " : " + parseInt(globals.creasePercent*100) +  "PercentFolded");
         var units = globals.foldUnits;
-
         if (units == "unit") units = "unitless";
         $(".unitsDisplay").html(units);
         $('#exportFOLDModal').modal('show');
@@ -501,7 +500,7 @@ function initControls(globals){
         globals.creaseMaterialHasChanged = true;
     });
 
-    setSliderInput("#panelStiffness", globals.panelStiffness, 0, 50, 0.01, function(val){
+    setSliderInput("#panelStiffness", globals.panelStiffness, 0, 3, 0.01, function(val){
         globals.panelStiffness = val;
         globals.creaseMaterialHasChanged = true;
     });

@@ -219,11 +219,8 @@ function initDynamicSolver(globals){
                     colors[3*i+2] = color.b;
                 }
             }
-            //console.log(globalError);
             globals.globalErrors=globalError/nodes.length;
             $errorOutput.html((globalError/nodes.length).toFixed(7) + " %");
-            //console.log($errorOutput);
-            //console.log(globalError);
         } else {
             console.log("shouldn't be here");
         }
@@ -504,11 +501,6 @@ function initDynamicSolver(globals){
 
     }
 
-    // function getCurrentError(){
-    //   console.log("inside");
-    //   console.log(globals.globalError);
-    //   return globals.globalError;
-    // }
 
     function setCreasePercent(percent){
         if (!programsInited) return;
@@ -667,9 +659,7 @@ function initDynamicSolver(globals){
         setCreasePercent(globals.creasePercent);
     }
 
-
     return {
-      //  getCurrentError: getCurrentError,
         syncNodesAndEdges: syncNodesAndEdges,
         updateFixed: updateFixed,
         solve: solve,
