@@ -491,7 +491,7 @@ function initControls(globals){
         globals.materialHasChanged = true;
     });
 
-    setSliderInput("#faceStiffness", globals.faceStiffness, 0, 50, 0.01, function(val){
+    setSliderInput("#faceStiffness", globals.faceStiffness, 0, 5, 0.01, function(val){
         globals.faceStiffness = val;
         globals.materialHasChanged = true;
     });
