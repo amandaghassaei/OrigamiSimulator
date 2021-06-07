@@ -49,13 +49,13 @@ function saveFOLD(){
     for (var i=0;i<fold.edges_assignment.length;i++){
         if (fold.edges_assignment[i] == "C"){
             assignment.push("B");
-            edgecount+=1;
+            //edgecount+=1;
         }else{
             assignment.push(fold.edges_assignment[i]);
-            if (fold.edges_assignment[i] == "B") {
-                edgecount+=1;
+            //if (fold.edges_assignment[i] == "B") {
+                //edgecount+=1;
 
-            }
+            //}
         }
     }
     json.edges_assignment = assignment;
