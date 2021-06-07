@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg xmlns="http://www.w3.org/2000/svg"
+ xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve"
+ width="1000px" height="1000px"
+ viewBox="0 0 1000 1000" >
+ <line style="stroke:black;stroke-width:4;" x1="0.0" y1="1000.0" x2="411.83650964576765" y2="1000.0" />
+ <line style="stroke:black;stroke-width:4;" x1="1000.0" y1="0.0" x2="500.0" y2="0.0" />
+ <line style="stroke:red;stroke-width:2;" x1="588.1634903542325" y1="1000.0" x2="500.00000000000006" y2="500.0" />
+ <line style="stroke:black;stroke-width:4;" x1="588.1634903542325" y1="1000.0" x2="1000.0" y2="1000.0" />
+ <line style="stroke:black;stroke-width:4;" x1="500.00000000000006" y1="1000.0" x2="588.1634903542325" y2="1000.0" />
+ <line style="stroke:red;stroke-width:2;" x1="500.00000000000006" y1="500.0" x2="411.83650964576765" y2="1000.0" />
+ <line style="stroke:blue;stroke-width:2;stroke-opacity:1" x1="500.00000000000006" y1="500.0" x2="500.00000000000006" y2="1000.0" />
+ <line style="stroke:black;stroke-width:4;" x1="411.83650964576765" y1="1000.0" x2="500.00000000000006" y2="1000.0" />
+ <line style="stroke:red;stroke-width:2;" x1="500.0" y1="0.0" x2="500.00000000000006" y2="500.0" />
+ <line style="stroke:black;stroke-width:4;" x1="500.0" y1="0.0" x2="0.0" y2="0.0" />
+ <line style="stroke:black;stroke-width:4;" x1="0.0" y1="1000.0" x2="0.0" y2="0.0" />
+ <line style="stroke:black;stroke-width:4;" x1="1000.0" y1="1000.0" x2="1000.0" y2="0.0" />
+</svg>

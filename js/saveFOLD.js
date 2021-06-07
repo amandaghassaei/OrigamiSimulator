@@ -53,7 +53,7 @@ function saveFOLD(){
         }else{
             assignment.push(fold.edges_assignment[i]);
             if (fold.edges_assignment[i] == "B") {
-            edgecount+=1;
+                edgecount+=1;
 
             }
         }

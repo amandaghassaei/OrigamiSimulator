@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="svg2"
+   x="0px"
+   y="0px"
+   width="3456px"
+   height="6912px"
+   viewBox="0 0 3456 6912"
+   enable-background="new 0 0 3456 6912"
+   xml:space="preserve"
+   sodipodi:docname="huffmanTowercut.svg"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"><metadata
+   id="metadata65"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+   id="defs63" /><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1280"
+   inkscape:window-height="1001"
+   id="namedview61"
+   showgrid="false"
+   inkscape:zoom="0.6162632"
+   inkscape:cx="1321.8969"
+   inkscape:cy="2853.1901"
+   inkscape:window-x="-8"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="svg2" />
+<path
+   opacity="0.3"
+   fill="none"
+   stroke="#0000ff"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   enable-background="new    "
+   d="m 1327.369,2949.603 0.884,-11.264 m -0.884,11.264 -2.636,10.987 m 0,10e-4 -4.322,10.439 m -5.903,9.635 5.902,-9.634 m -13.238,18.226 7.336,-8.592 m -15.927,15.931 8.591,-7.339 m -18.224,13.242 9.633,-5.904 m -20.072,10.229 10.438,-4.324 m -21.424,6.962 10.986,-2.638 m -22.25,3.526 11.264,-0.888 m 205.61,-59.859 -0.893,-11.264 m 0.893,11.264 2.642,10.982 m 4.326,10.436 -4.326,-10.436 m 4.326,10.436 5.902,9.629 m 0,10e-4 7.335,8.589 m 8.588,7.338 -8.587,-7.337 m 8.587,7.337 9.629,5.905 m 10.434,4.327 -10.435,-4.328 m 10.435,4.328 10.982,2.644 m 11.262,0.896 -11.263,-0.896 m -204.749,-71.296 0.894,-11.264 m 2.64,-10.982 -2.641,10.982 m 6.967,-21.417 -4.326,10.436 m 10.228,-20.067 -5.903,9.63 m 13.239,-18.219 -7.336,8.589 m 15.922,-15.926 -8.586,7.337 m 18.216,-13.241 -9.63,5.904 m 9.63,-5.904 10.434,-4.327 m 10.983,-2.645 -10.983,2.644 m 22.246,-3.54 -11.263,0.896 m 82.419,59.845 0.884,11.265 m -3.52,-22.252 2.636,10.986 m -6.958,-21.425 4.322,10.439 m -4.322,-10.439 -5.902,-9.634 m -7.337,-8.593 7.337,8.593 m -15.927,-15.933 8.591,7.34 m -18.225,-13.242 9.633,5.904 m -20.071,-10.229 10.438,4.325 m -21.424,-6.963 10.985,2.638 m -22.249,-3.525 11.265,0.887 m 709.642,143.11 -11.263,-0.896"
+   id="path2"
+   sodipodi:nodetypes="cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" />
+<path
+   fill="none"
+   stroke="#ffff00"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   d="m 1256.209,3010.345 v -71.993 m 0,287.962 v -215.97 m 72.041,-72.002 71.994,-0.015 m -72.878,11.278 71.954,11.384 m -74.59,-0.396 71.89,23.347 m -4.695,23.519 -71.518,-36.427 m -5.902,9.635 70.517,51.219 m -77.853,-42.627 68.358,68.345 m -76.949,-61.006 64.273,88.451 m -73.906,-82.548 57.22,112.283 m -21.927,32.768 -45.731,-140.727 m -10.987,2.639 27.692,174.814 m 33.038,-245.936 -71.994,0.016 m 71.11,11.247 -71.109,-11.248 m -10e-4,0 68.475,22.235 m -68.475,-22.235 64.151,32.675 m -5.902,9.635 -58.249,-42.31 m 50.913,50.902 -50.913,-50.901 m 42.322,58.24 -42.322,-58.24 m 32.689,64.143 -32.688,-64.146 m 22.249,68.471 -22.25,-68.469 m 11.264,71.107 -11.264,-71.106 m 287.974,0 -71.994,-0.016 m 0.894,11.264 71.101,-11.248 m -68.46,22.231 68.459,-22.23 m -64.132,32.665 64.133,-32.668 m -58.231,42.298 58.23,-42.296 m -50.895,50.886 50.896,-50.886 m -42.308,58.223 42.31,-58.223 m -32.681,64.127 32.681,-64.127 m -22.247,68.455 22.246,-68.455 m -11.263,71.099 11.264,-71.099 m -144.913,22.632 h 1.847 m -4.547,22.95 h 7.248 m -11.943,23.52 h 16.638 m -23.542,24.427 h 30.445 m -39.939,25.718 h 49.434 m -62.107,27.444 h 74.782 m -91.471,29.737 h 108.158 m -130.085,32.767 h 152.012 m -181.038,36.726 h 210.063 m -105.031,-245.95 71.994,0.015 m -71.071,22.646 71.963,-11.384 m -69.262,34.334 71.903,-23.352 m -67.209,46.872 71.534,-36.436 m -64.629,60.863 70.533,-51.231 m -61.039,76.949 68.375,-68.36 m -55.701,95.804 64.288,-88.469 m -47.6,118.206 57.229,-112.301 m -35.302,145.068 45.736,-140.739 m -16.711,177.465 27.692,-174.823 m -203.856,-82.559 71.101,11.248 m 0,0 -68.459,-22.23 m 68.459,22.23 -64.134,-32.666 m 64.134,32.666 -58.231,-42.297 m 7.335,-8.589 50.896,50.886 m 0,0 -42.309,-58.223 m 42.309,58.223 -32.68,-64.127 m 32.68,64.127 -22.246,-68.455 m 10.983,-2.644 11.263,71.099 m 0,-71.995 v 71.994 m -144.911,-22.632 h 1.848 m -10e-4,0 71.963,11.385 m -69.263,-34.335 71.904,23.352 m -67.209,-46.872 71.534,36.437 m -64.63,-60.863 70.533,51.231 m -61.039,-76.949 68.375,68.36 m -55.7,-95.804 64.288,88.469 m -47.601,-118.206 57.229,112.301 m -35.302,-145.068 45.735,140.739 m 10.984,-2.643 -27.693,-174.823 m 38.956,-42.039 v 215.969 m 143.111,49.354 -71.955,11.384 m -2.636,-10.987 71.89,-23.346 m -4.695,-23.52 -71.517,36.427 m -5.902,-9.634 70.516,-51.22 m -77.853,42.627 68.358,-68.344 m -76.948,61.004 64.274,-88.45 m -73.908,82.548 57.22,-112.284 m -67.658,107.959 45.731,-140.726 m -56.717,138.088 27.691,-174.814 m -38.955,245.921 71.994,0.015 m -0.885,-11.264 -71.109,11.25 m 68.473,-22.237 -68.475,22.236 m 64.153,-32.675 -64.151,32.676 m 58.249,-42.31 -58.25,42.31 m 50.913,-50.903 -50.913,50.902 m 42.323,-58.242 -42.322,58.241 m 32.688,-64.143 -32.688,64.145 m 22.25,-68.47 -22.25,68.469 m 11.264,-71.107 -11.265,71.106 m 143.063,-22.63 h 1.847 m 0.01,94.626 v 215.97 m 0,-215.97 v -71.993"
+   id="path4"
+   sodipodi:nodetypes="cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" />
+<path
+   opacity="0.3"
+   fill="none"
+   stroke="#ff0000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   enable-background="new    "
+   d="m 1396.62,2983.939 2.7,-22.95 m -7.395,46.47 4.695,-23.521 m -11.599,47.948 6.903,-24.426 m -16.397,50.144 9.494,-25.718 m -22.167,53.162 12.674,-27.444 m -29.363,57.181 16.688,-29.736 m -38.615,62.503 21.927,-32.767 m -21.927,32.767 -29.025,36.727 m -38.957,42.04 38.956,-42.041 m 105.955,-223.289 2.7,22.95 m 10e-4,0 4.694,23.521 m 6.905,24.426 -6.904,-24.426 m 16.398,50.144 -9.494,-25.718 m 22.168,53.162 -12.674,-27.444 m 12.674,27.444 16.688,29.737 m 21.927,32.767 -21.927,-32.767 m 50.952,69.493 -29.025,-36.727 m 67.98,78.768 -38.955,-42.041 m -105.031,-245.95 -0.924,22.662 m 1.847,-10e-4 -0.923,-22.662 m -140.396,-45.765 -2.699,22.949 m 2.699,-22.949 4.695,-23.521 m 6.904,-24.425 -6.904,24.427 m 16.398,-50.145 -9.494,25.718 m 22.169,-53.162 -12.675,27.445 m 29.362,-57.182 -16.688,29.737 m 38.615,-62.504 -21.928,32.767 m 50.954,-69.494 -29.025,36.728 m 67.981,-78.767 -38.956,42.041 m -104.108,223.287 -0.924,22.662 m 284.399,-45.615 2.7,22.948 m -7.396,-46.469 4.695,23.521 m -11.599,-47.948 6.903,24.427 m -16.397,-50.143 9.494,25.717 m -22.168,-53.163 12.674,27.445 m -12.674,-27.445 -16.688,-29.737 m -21.927,-32.767 21.927,32.767 m -21.927,-32.767 -29.025,-36.728 m -38.956,-42.039 38.956,42.041 m 104.108,223.288 0.924,22.662"
+   id="path6"
+   sodipodi:nodetypes="cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" />
+<path
+   opacity="0.3333"
+   fill="none"
+   stroke="#ff0000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   enable-background="new    "
+   d="M 1400.259,2650.178 V 2534.5 m 145.327,691.922 v 115.574 m -287.975,-115.574 v 115.574"
+   id="path8"
+   sodipodi:nodetypes="cccccc" />
+<line
+   fill="none"
+   stroke="#FF00FF"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="968.234"
+   y1="3226.314"
+   x2="1256.209"
+   y2="3226.314"
+   id="line10" />
+<line
+   fill="none"
+   stroke="#FF00FF"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="1256.256"
+   y1="3226.319"
+   x2="1544.23"
+   y2="3226.319"
+   id="line12" />
+<line
+   fill="none"
+   stroke="#FF00FF"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="1112.237"
+   y1="2650.184"
+   x2="1400.212"
+   y2="2650.184"
+   id="line14" />
+<line
+   fill="none"
+   stroke="#FF00FF"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="1400.259"
+   y1="2650.178"
+   x2="1688.234"
+   y2="2650.178"
+   id="line16" />
+<line
+   fill="none"
+   stroke="#000000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="392.237"
+   y1="3010.242"
+   x2="392.237"
+   y2="3226.211"
+   id="line18" />
+<line
+   fill="none"
+   stroke="#000000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="392.237"
+   y1="3010.242"
+   x2="392.237"
+   y2="2938.249"
+   id="line20" />
+<line
+   fill="none"
+   stroke="#FF00FF"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="392.237"
+   y1="3226.21"
+   x2="680.212"
+   y2="3226.21"
+   id="line22" />
+<line
+   fill="none"
+   stroke="#FF00FF"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="680.259"
+   y1="3226.216"
+   x2="968.234"
+   y2="3226.216"
+   id="line24" />
+<line
+   fill="none"
+   stroke="#FF00FF"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="536.24"
+   y1="2650.079"
+   x2="824.215"
+   y2="2650.079"
+   id="line26" />
+<line
+   fill="none"
+   stroke="#FF00FF"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="824.262"
+   y1="2650.074"
+   x2="1112.237"
+   y2="2650.074"
+   id="line28" />
+<line
+   fill="none"
+   stroke="#FF00FF"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="1545.17"
+   y1="3226.107"
+   x2="1833.145"
+   y2="3226.107"
+   id="line30" />
+<line
+   fill="none"
+   stroke="#FF00FF"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="1833.191"
+   y1="3226.112"
+   x2="2121.167"
+   y2="3226.112"
+   id="line32" />
+<line
+   fill="none"
+   stroke="#FF00FF"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="1689.172"
+   y1="2649.977"
+   x2="1977.146"
+   y2="2649.977"
+   id="line34" />
+<line
+   fill="none"
+   stroke="#FF00FF"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="1977.193"
+   y1="2649.971"
+   x2="2121.167"
+   y2="2649.971"
+   id="line36" />
+<line
+   fill="none"
+   stroke="#000000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="2121.167"
+   y1="3226.112"
+   x2="2121.167"
+   y2="3010.143"
+   id="line38" />
+<line
+   fill="none"
+   stroke="#000000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="2121.167"
+   y1="3010.145"
+   x2="2121.182"
+   y2="2937.963"
+   id="line40" />
+<line
+   fill="none"
+   stroke="#FF00FF"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="392.237"
+   y1="2649.971"
+   x2="536.225"
+   y2="2649.971"
+   id="line42" />
+<line
+   fill="none"
+   stroke="#000000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="392.237"
+   y1="2938.249"
+   x2="392.237"
+   y2="2650.184"
+   id="line44" />
+<line
+   fill="none"
+   stroke="#000000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="2121.167"
+   y1="2938.15"
+   x2="2121.167"
+   y2="2649.971"
+   id="line46" />
+<line
+   fill="none"
+   stroke="#000000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="392.237"
+   y1="2650.184"
+   x2="392.237"
+   y2="2534.5"
+   id="line48" />
+<line
+   fill="none"
+   stroke="#000000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="392.237"
+   y1="2534.5"
+   x2="2121.167"
+   y2="2534.5"
+   id="line50" />
+<line
+   fill="none"
+   stroke="#000000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="2121.167"
+   y1="2649.971"
+   x2="2121.167"
+   y2="2534.5"
+   id="line52" />
+<line
+   fill="none"
+   stroke="#000000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="2121.338"
+   y1="3226.314"
+   x2="2121.338"
+   y2="3341.997"
+   id="line54" />
+<line
+   fill="none"
+   stroke="#000000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="2121.338"
+   y1="3341.997"
+   x2="392.654"
+   y2="3341.997"
+   id="line56" />
+<line
+   fill="none"
+   stroke="#000000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   x1="392.654"
+   y1="3226.525"
+   x2="392.654"
+   y2="3341.997"
+   id="line58" />
+</svg>

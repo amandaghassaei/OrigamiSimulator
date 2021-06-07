@@ -51,6 +51,7 @@ function initGlobals(){
         creaseStiffness: 0.7,
         panelStiffness: 0.7,
         faceStiffness: 0.2,
+        faceDamping: 0.1,
 
         //dynamic sim settings
         percentDamping: 0.45,//damping ratio
