@@ -1328,9 +1328,11 @@
                         <li>faces_vertices</li>
                     </ul>
                     You may specify the target fold angle of each crease using the edges_foldAngle field. 
-                    Note that fold angle is a number in degrees lying in the range [−180, 180].
-                    The fold angle is positive for valley folds, negative for mountain folds, and zero for flat, unassigned, and border folds.
-                    Accordingly, the sign of edges_foldAngle should match edges_assignment if both are specified.<br/><br/>
+                    Note that fold angle is a number in degrees lying in the range [−180, 180]. 
+                    The fold angle is positive for valley folds, negative for mountain folds, and zero for flat regions.
+                    Accordingly, the sign of edges_foldAngle should match edges_assignment if both are specified.
+                    You may also assign a null fold angle to a crease so that it is allowed to move freely - this is especially useful when the fold angle is unknown or the crease pattern is fully constrained and able to be driven by other creases in the system.
+                    <br/><br/>
                     If you are unsure whether your FOLD file is valid, you can inspect it using the
                     <a target="_blank" href="https://edemaine.github.io/fold/examples/foldviewer.html">FOLD Viewer</a>.
                     If you are having trouble, please refer to the <a target=_blank href="https://github.com/edemaine/fold/blob/master/doc/spec.md">FOLD spec</a>.
