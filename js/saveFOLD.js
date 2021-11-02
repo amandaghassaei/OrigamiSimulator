@@ -38,9 +38,7 @@ function saveFOLD(){
             faces_vertices: []
         };
     }
-    var useTriangulated = globals.triangulateFOLDseriesExport;
-    var fold = globals.pattern.getFoldData(!useTriangulated);
-    
+   
     var useTriangulated = globals.triangulateFOLDexport;
     if (!globals.includeCurves) {
         var fold = globals.pattern.getFoldData(!useTriangulated);
