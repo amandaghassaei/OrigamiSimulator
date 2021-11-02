@@ -40,7 +40,12 @@ function saveFOLD(){
     }
     var useTriangulated = globals.triangulateFOLDseriesExport;
     var fold = globals.pattern.getFoldData(!useTriangulated);
-
+    var useTriangulated = globals.triangulateFOLDexport;
+    if (!globals.includeCurves) {
+        var fold = globals.pattern.getFoldData(!useTriangulated);
+    } else {
+        var fold = globals.curvedFolding.getFoldData(!useTriangulated);
+    }
 
 
     json.edges_vertices = fold.edges_vertices;
