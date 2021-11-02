@@ -163,7 +163,8 @@ function saveFOLD(){
         }
 
         if (globals.exportFoldActualAngle){
-            thetas=grabThetas();
+            thetas=grabThetas(json);
+            json.edges_crease_angle_os=thetas;
         }
         saveJSON(json,filename);
     }
