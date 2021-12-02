@@ -34,6 +34,39 @@ function initImporter(globals){
         }
     }
 
+    // Adobe Illustrator and Cuttle.xyz copy vector shapes as SVG string. By
+    // listening for a paste event, we can turn the SVG string into a Blob
+    // to load it as the pattern. After this paste handler, it has the same code
+    // path as selecting a local file.
+    window.addEventListener('paste', function (e) {
+        console.log("paste");
+        // Make a synthetic svg file from text
+        var text = e.clipboardData.getData('text/plain');
+        if (text.includes("<svg")) {
+            var blob = new Blob([text], {type: 'image/svg+xml'});
+
+            globals.url = null;
+            globals.filename = "paste";
+            globals.extension = "svg";
+
+            reader.onload = function () {
+
+                $("#vertTol").val(globals.vertTol);
+                $("#importSettingsModal").modal("show");
+                $('#doSVGImport').unbind("click").click(function (e) {
+                    e.preventDefault();
+                    $('#doSVGImport').unbind("click");
+                    if (!globals.includeCurves) {
+                        globals.pattern.loadSVG(reader.result);    
+                    } else {
+                        globals.curvedFolding.loadSVG(reader.result);
+                    }
+                });
+            }
+            reader.readAsDataURL(blob);
+        }
+    });
+
     window.addEventListener('message', function(e) {
         if (!e.data) return;
         if (e.data.op === 'importFold' && e.data.fold) {
@@ -85,7 +118,7 @@ function initImporter(globals){
                     }
                     $("#vertTol").val(globals.vertTol);
                     $("#importSettingsModal").modal("show");
-                    $('#doSVGImport').click(function (e) {
+                    $('#doSVGImport').unbind("click").click(function (e) {
                         e.preventDefault();
                         $('#doSVGImport').unbind("click");
                         globals.filename = name;
