@@ -53,7 +53,7 @@ function initImporter(globals){
 
                 $("#vertTol").val(globals.vertTol);
                 $("#importSettingsModal").modal("show");
-                $('#doSVGImport').click(function (e) {
+                $('#doSVGImport').unbind("click").click(function (e) {
                     e.preventDefault();
                     $('#doSVGImport').unbind("click");
                     if (!globals.includeCurves) {
@@ -118,7 +118,7 @@ function initImporter(globals){
                     }
                     $("#vertTol").val(globals.vertTol);
                     $("#importSettingsModal").modal("show");
-                    $('#doSVGImport').click(function (e) {
+                    $('#doSVGImport').unbind("click").click(function (e) {
                         e.preventDefault();
                         $('#doSVGImport').unbind("click");
                         globals.filename = name;
