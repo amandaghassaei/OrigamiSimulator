@@ -13,7 +13,7 @@ You can read more about it in our paper:
 <li><a target="_blank" href="http://erikdemaine.org/papers/OrigamiSimulator_Origami7/">Fast, Interactive Origami Simulation using GPU Computation</a> by Amanda Ghassaei, Erik Demaine, and Neil Gershenfeld (7OSME)
 </ul>
 
-If you have feedback about features you want to see in this app, please see this thread.
+**If you have feedback about features you want to see in this app, please see [this thread](https://github.com/amandaghassaei/OrigamiSimulator/discussions/41).**
 
 All simulation methods were written from scratch and are executed in parallel in several GPU fragment shaders for fast performance.
 The solver extends work from the following sources:
