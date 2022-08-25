@@ -364,7 +364,12 @@ function initPattern(globals){
         }
     }
 
-    function loadSVG(url){
+    function loadSVG(url, isDemo){
+        if (isDemo) {
+            gtag('event', 'demoFile', { 'CC': false });
+        } else {
+            gtag('event', 'uploadCP', { 'CC': false });
+        }
         // Some SVG files start with UTF-8 byte order mark (BOM) EF BB BF,
         // which encodes in Base64 to 77u/ -- remove this, as it breaks the
         // XML/SVG parser.
@@ -1130,6 +1135,7 @@ function initPattern(globals){
     }
 
     function saveSVG(){
+        
         if (globals.includeCurves) {
             globals.curvedFolding.saveSVG();
             return;
@@ -1138,6 +1144,7 @@ function initPattern(globals){
             globals.warn("No crease pattern available.");
             return;
         }
+        gtag('event', 'saveCP', { 'CC': false });
         var serializer = new XMLSerializer();
         var source = serializer.serializeToString($("#svgViewer>svg").get(0));
         var svgBlob = new Blob([source], {type:"image/svg+xml;charset=utf-8"});
@@ -1255,7 +1262,14 @@ function initPattern(globals){
         return foldData;
     }
 
-    function setFoldData(fold, returnCreaseParams){
+    function setFoldData(fold, isDemo, returnCreaseParams){
+        if (!returnCreaseParams) {
+            if (isDemo) {
+                gtag('event', 'demoFile', { 'CC': false });
+            } else {
+                gtag('event', 'uploadCP', { 'CC': false });
+            }
+        }
         clearAll();
         var allCreaseParams = processFold(fold, returnCreaseParams);
         generateSvg();

@@ -18,16 +18,16 @@ function initImporter(globals){
             globals.filename = name;
             globals.extension = extension;
             if (!globals.includeCurves) {
-                globals.pattern.loadSVG("assets/" + url);
+                globals.pattern.loadSVG("assets/" + url, true);
             } else {
-                globals.curvedFolding.loadSVG("assets/" + url);
+                globals.curvedFolding.loadSVG("assets/" + url, true);
             }
         } else if (extension == "fold"){
                 globals.url = url;
                 globals.filename = name;
                 globals.extension = extension;
                 $.getJSON("assets/" + url, undefined, function (fold) {
-                    globals.pattern.setFoldData(fold);
+                    globals.pattern.setFoldData(fold, true);
                 });
         } else {
             console.warn("unknown extension: " + extension);
@@ -174,7 +174,7 @@ function initImporter(globals){
                                 }
                                 fold.edges_foldAngle = foldAngles;
 
-                                var allCreaseParams = globals.pattern.setFoldData(fold, true);
+                                var allCreaseParams = globals.pattern.setFoldData(fold, false, true);
                                 var j = 0;
                                 var faces = globals.pattern.getTriangulatedFaces();
                                 for (var i=0;i<fold.edges_assignment.length;i++){
