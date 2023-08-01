@@ -241,7 +241,7 @@ function initImporter(globals){
         if (files.length < 1) {
             return;
         }
-        openFile(file)
+        openFile(files[0])
         $(e.target).val("");
     });
 
