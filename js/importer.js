@@ -67,47 +67,10 @@ function initImporter(globals){
         }
     });
 
-    window.addEventListener('message', function(e) {
-        if (!e.data) return;
-        if (e.data.op === 'importFold' && e.data.fold) {
-            globals.filename = e.data.fold.file_title || 'message';
-            globals.extension = 'fold';
-            globals.url = null;
-            globals.pattern.setFoldData(e.data.fold);
-        } else if (e.data.op === 'importSVG' && e.data.svg) {
-            globals.filename = e.data.filename || 'message';
-            globals.extension = 'svg';
-            globals.url = null;
-            if (e.data.vertTol) {
-                globals.vertTol = e.data.vertTol;
-            }
-            if (!globals.includeCurves) {
-                globals.pattern.loadSVG(URL.createObjectURL(new Blob([e.data.svg])));
-            } else {
-                globals.curvedFolding.loadSVG(URL.createObjectURL(new Blob([e.data.svg])));
-            }
-        }
-    });
-    // Tell parent/opening window that we're ready for messages now.
-    var readyMessage = {from: 'OrigamiSimulator', status: 'ready'};
-    if (window.parent && window.parent !== window) {
-        window.parent.postMessage(readyMessage, '*');
-    } else if (window.opener) {
-        window.opener.postMessage(readyMessage, '*');
-    }
-
-    $("#fileSelector").change(function(e) {
-        var files = e.target.files; // FileList object
-        if (files.length < 1) {
-            return;
-        }
-
-        var file = files[0];
+    function openFile(file) {
         var extension = file.name.split(".");
         var name = extension[0];
         extension = extension[extension.length - 1];
-
-        $(e.target).val("");
 
         if (extension == "svg") {
             reader.onload = function () {
@@ -220,7 +183,66 @@ function initImporter(globals){
             globals.warn('Unknown file extension: .' + extension);
             return null;
         }
+    }
 
+    window.addEventListener('drop', function(e) {
+        e.preventDefault();
+        if (e.dataTransfer.items) {
+            for (item of e.dataTransfer.items) {
+                if (item.kind === "file") {
+                    const file = item.getAsFile();
+                    openFile(file)
+                    break;
+                }
+            }
+        } else {
+            for (item of e.dataTransfer.files) {
+                openFile(file)
+                break;
+            }
+        }
+    });
+
+    window.addEventListener('dragover', function(e) {
+        e.preventDefault();
+    }, false);
+
+    window.addEventListener('message', function(e) {
+        if (!e.data) return;
+        if (e.data.op === 'importFold' && e.data.fold) {
+            globals.filename = e.data.fold.file_title || 'message';
+            globals.extension = 'fold';
+            globals.url = null;
+            globals.pattern.setFoldData(e.data.fold);
+        } else if (e.data.op === 'importSVG' && e.data.svg) {
+            globals.filename = e.data.filename || 'message';
+            globals.extension = 'svg';
+            globals.url = null;
+            if (e.data.vertTol) {
+                globals.vertTol = e.data.vertTol;
+            }
+            if (!globals.includeCurves) {
+                globals.pattern.loadSVG(URL.createObjectURL(new Blob([e.data.svg])));
+            } else {
+                globals.curvedFolding.loadSVG(URL.createObjectURL(new Blob([e.data.svg])));
+            }
+        }
+    });
+    // Tell parent/opening window that we're ready for messages now.
+    var readyMessage = {from: 'OrigamiSimulator', status: 'ready'};
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage(readyMessage, '*');
+    } else if (window.opener) {
+        window.opener.postMessage(readyMessage, '*');
+    }
+
+    $("#fileSelector").change(function(e) {
+        var files = e.target.files; // FileList object
+        if (files.length < 1) {
+            return;
+        }
+        openFile(files[0])
+        $(e.target).val("");
     });
 
     function makeVector(v){
