@@ -13,6 +13,7 @@ function initThreeView(globals) {
     // var svgRenderer = new THREE.SVGRenderer();
     var controls;
 
+
     init();
 
     function init() {
@@ -241,6 +242,7 @@ function initThreeView(globals) {
 
         resetModel: resetModel,//reset model orientation
         resetCamera:resetCamera,
-        setBackgroundColor: setBackgroundColor
+        setBackgroundColor: setBackgroundColor,
+        saveFOLDloop: _loop
     }
 }

@@ -51,6 +51,7 @@ function initGlobals(){
         creaseStiffness: 0.7,
         panelStiffness: 0.7,
         faceStiffness: 0.2,
+        faceDamping: 0.1,
 
         //dynamic sim settings
         percentDamping: 0.45,//damping ratio
@@ -81,6 +82,17 @@ function initGlobals(){
         foldUnits: "unit",
         triangulateFOLDexport: false,
         exportFoldAngle: true,
+        exportFoldActualAngle: false,
+        triangulateFOLDseriesExport:true,
+        exportFoldSeriesAngle: false,
+        exportFoldSeriesActualAngle: true,
+        itterate: false,
+        toPercent: 100,
+        startPercent:0,
+        stepSize:1,
+        errorDif:0.001,
+        break: false,
+        skip: false,
 
         pausedForPatternView: false,
 
