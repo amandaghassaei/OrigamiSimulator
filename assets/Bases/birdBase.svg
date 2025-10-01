@@ -2,146 +2,146 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
 	xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	width="2000px" height="2000px" viewBox="-1000 -1000 2000 2000"
-	enable-background="new -1000 -1000 2000 2000" xml:space="preserve">
+	width="1200" height="1200" viewBox="-600 -600 1200 1200"
+	enable-background="new -600 -600 1200 1200" xml:space="preserve">
 
-<rect x="-1000" y="-1000" fill="#FFFFFF" stroke="#000000" width="2000" height="2000"/>
+<rect x="-500" y="-500" fill="#FFFFFF" stroke="#000000" width="1000" height="1000"/>
 
 <!-- a lines -->
-<line stroke="#FF0000" stroke-width="5" id="a1" x1="0" y1="0" x2="0" y2="-586">
+<line stroke="#FF0000" id="a1" x1="0" y1="0" x2="0" y2="-292">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#F00; #777;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#F00"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF0000" stroke-width="5" id="a2" x1="0" y1="0" x2="-586" y2="0">
+<line stroke="#FF0000" id="a2" x1="0" y1="0" x2="-292" y2="0">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#00F; #777;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#F00"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF0000" stroke-width="5" id="a3" x1="0" y1="0" x2="586" y2="0">
+<line stroke="#FF0000" id="a3" x1="0" y1="0" x2="292" y2="0">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#F00; #777;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#F00"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF0000" stroke-width="5" id="a4" x1="0" y1="0" x2="0" y2="586">
+<line stroke="#FF0000" id="a4" x1="0" y1="0" x2="0" y2="292">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#00F; #777;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#F00"
     dur="18s" fill="freeze"/>
 </line>
 
 <!-- b lines -->
-<line stroke="#FF0000" stroke-width="5" id="b1" x1="-1000" y1="-1000" x2="0" y2="-586">
+<line stroke="#FF0000" id="b1" x1="-500" y1="-500" x2="0" y2="-292">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#00F; #00F;#777;#F00; #F00;#F00;#F00; #F00;#F00"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF0000" stroke-width="5" id="b2" x1="-1000" y1="-1000" x2="-586" y2="0">
+<line stroke="#FF0000" id="b2" x1="-500" y1="-500" x2="-292" y2="0">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#00F; #00F;#777;#F00; #F00;#F00;#F00; #F00;#F00"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF0000" stroke-width="5" id="b3" x1="1000" y1="-1000" x2="0" y2="-586">
+<line stroke="#FF0000" id="b3" x1="500" y1="-500" x2="0" y2="-292">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#F00; #F00;#777;#F00; #F00;#F00;#F00; #F00;#F00"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF0000" stroke-width="5" id="b4" x1="-1000" y1="1000" x2="-586" y2="0">
+<line stroke="#FF0000" id="b4" x1="-500" y1="500" x2="-292" y2="0">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#F00; #F00;#777;#F00; #F00;#F00;#F00; #F00;#F00"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF0000" stroke-width="5" id="b5" x1="1000" y1="1000" x2="586" y2="0">
+<line stroke="#FF0000" id="b5" x1="500" y1="500" x2="292" y2="0">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #00F;#777;#F00; #F00;#F00"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF0000" stroke-width="5" id="b6" x1="1000" y1="1000" x2="0" y2="586">
+<line stroke="#FF0000" id="b6" x1="500" y1="500" x2="0" y2="292">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #00F;#777;#F00; #F00;#F00"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF0000" stroke-width="5" id="b7" x1="1000" y1="-1000" x2="586" y2="0">
+<line stroke="#FF0000" id="b7" x1="500" y1="-500" x2="292" y2="0">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #F00;#777;#F00; #F00;#F00"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF0000" stroke-width="5" id="b8" x1="-1000" y1="1000" x2="0" y2="586">
+<line stroke="#FF0000" id="b8" x1="-500" y1="500" x2="0" y2="292">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #F00;#777;#F00; #F00;#F00"
     dur="18s" fill="freeze"/>
 </line>
 
 <!-- c lines -->
-<line stroke="#FF00FF" stroke-width="5" id="c1" x1="-586" y1="0" x2="0" y2="-586">
+<line stroke="#FF00FF" id="c1" x1="-292" y1="0" x2="0" y2="-292">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #00F;#777;#00F; #00F;#00F;#00F; #777;#777"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF00FF" stroke-width="5" id="c2" x1="0" y1="-586" x2="298" y2="-298">
+<line stroke="#FF00FF" id="c2" x1="0" y1="-292" x2="146" y2="-146">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #F00;#777;#777; #777;#777;#777; #777;#777"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF00FF" stroke-width="5" id="c3" x1="-586" y1="0" x2="-298" y2="298">
+<line stroke="#FF00FF" id="c3" x1="-292" y1="0" x2="-146" y2="146">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #F00;#777;#777; #777;#777;#777; #777;#777"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF00FF" stroke-width="5" id="c4" x1="586" y1="0" x2="0" y2="586">
+<line stroke="#FF00FF" id="c4" x1="292" y1="0" x2="0" y2="292">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #F00;#777;#777; #777;#777;#00F; #777;#777"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF00FF" stroke-width="5" id="c5" x1="586" y1="0" x2="298" y2="-298">
+<line stroke="#FF00FF" id="c5" x1="292" y1="0" x2="146" y2="-146">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #00F;#777;#777; #777;#777;#777; #777;#777"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF00FF" stroke-width="5" id="c6" x1="0" y1="586" x2="-298" y2="298">
+<line stroke="#FF00FF" id="c6" x1="0" y1="292" x2="-146" y2="146">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #00F;#777;#777; #777;#777;#777; #777;#777"
     dur="18s" fill="freeze"/>
 </line>
 
 <!-- d lines -->
-<line stroke="#0000FF" stroke-width="5" id="d1" x1="0" y1="-586" x2="0" y2="-1000">
+<line stroke="#0000FF" id="d1" x1="0" y1="-292" x2="0" y2="-500">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#F00; #777;#F00;#F00; #F00;#F00;#777; #777;#777;#777; #00F;#00F"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#0000FF" stroke-width="5" id="d2" x1="-586" y1="0" x2="-1000" y2="0">
+<line stroke="#0000FF" id="d2" x1="-292" y1="0" x2="-500" y2="0">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#00F; #777;#F00;#F00; #F00;#F00;#777; #777;#777;#777; #00F;#00F"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#0000FF" stroke-width="5" id="d3" x1="586" y1="0" x2="1000" y2="0">
+<line stroke="#0000FF" id="d3" x1="292" y1="0" x2="500" y2="0">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#F00; #777;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#777; #00F;#00F"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#0000FF" stroke-width="5" id="d4" x1="0" y1="586" x2="0" y2="1000">
+<line stroke="#0000FF" id="d4" x1="0" y1="292" x2="0" y2="500">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#00F; #777;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#777; #00F;#00F"
     dur="18s" fill="freeze"/>
 </line>
 
 <!-- e lines -->
-<line opacity="0.5" stroke="#0000FF" stroke-width="5" id="e1" x1="0" y1="0" x2="-1000" y2="-1000">
+<line opacity="0.5" stroke="#0000FF" id="e1" x1="0" y1="0" x2="-500" y2="-500">
 <animate attributeName="stroke"
     values="#FFF; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#777;#777; #777;#777;#777; #777;#777;#777; #777;#77F"
     dur="18s" fill="freeze"/>
 </line>
-<line opacity="0.5" stroke="#0000FF" stroke-width="5" id="e2" x1="0" y1="0" x2="1000" y2="1000">
+<line opacity="0.5" stroke="#0000FF" id="e2" x1="0" y1="0" x2="500" y2="500">
 <animate attributeName="stroke"
     values="#FFF; #F00;#F00;#F00; #F00;#777;#777; #777;#777;#777; #777;#777;#777; #777;#777;#777; #777;#77F"
     dur="18s" fill="freeze"/>
 </line>
-<line opacity="0.5" stroke="#0000FF" stroke-width="5" id="e3" x1="0" y1="0" x2="1000" y2="-1000">
+<line opacity="0.5" stroke="#0000FF" id="e3" x1="0" y1="0" x2="500" y2="-500">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#00F;#00F; #00F;#00F;#00F; #00F;#00F;#00F; #00F;#00F;#00F; #00F;#00F;#00F; #00F;#77F"
     dur="18s" fill="freeze"/>
 </line>
-<line opacity="0.5" stroke="#0000FF" stroke-width="5" id="e4" x1="0" y1="0" x2="-1000" y2="1000">
+<line opacity="0.5" stroke="#0000FF" id="e4" x1="0" y1="0" x2="-500" y2="500">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#F00;#F00; #F00;#777;#777; #777;#00F;#00F; #00F;#00F;#00F; #00F;#00F;#00F; #00F;#77F"
     dur="18s" fill="freeze"/>
