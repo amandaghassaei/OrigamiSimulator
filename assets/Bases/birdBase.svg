@@ -77,32 +77,32 @@
 </line>
 
 <!-- c lines -->
-<line stroke="#FF00FF" id="c1" x1="-292" y1="0" x2="0" y2="-292">
+<line stroke="#ffff00" id="c1" x1="-292" y1="0" x2="0" y2="-292">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #00F;#F0F;#00F; #00F;#00F;#00F; #F0F;#F0F"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF00FF" id="c2" x1="0" y1="-292" x2="146" y2="-146">
+<line stroke="#ffff00" id="c2" x1="0" y1="-292" x2="146" y2="-146">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #F00;#F0F;#F0F; #F0F;#F0F;#F0F; #F0F;#F0F"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF00FF" id="c3" x1="-292" y1="0" x2="-146" y2="146">
+<line stroke="#ffff00" id="c3" x1="-292" y1="0" x2="-146" y2="146">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #F00;#F0F;#F0F; #F0F;#F0F;#F0F; #F0F;#F0F"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF00FF" id="c4" x1="292" y1="0" x2="0" y2="292">
+<line stroke="#ffff00" id="c4" x1="292" y1="0" x2="0" y2="292">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #F00;#F0F;#F0F; #F0F;#F0F;#00F; #F0F;#F0F"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF00FF" id="c5" x1="292" y1="0" x2="146" y2="-146">
+<line stroke="#ffff00" id="c5" x1="292" y1="0" x2="146" y2="-146">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #00F;#F0F;#F0F; #F0F;#F0F;#F0F; #F0F;#F0F"
     dur="18s" fill="freeze"/>
 </line>
-<line stroke="#FF00FF" id="c6" x1="0" y1="292" x2="-146" y2="146">
+<line stroke="#ffff00" id="c6" x1="0" y1="292" x2="-146" y2="146">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #00F;#F0F;#F0F; #F0F;#F0F;#F0F; #F0F;#F0F"
     dur="18s" fill="freeze"/>

@@ -28,7 +28,6 @@ function initPattern(globals){
     var cutsRaw = [];
     var triangulationsRaw = [];
     var hingesRaw = [];
-    var sequencesRaw = [];
 
     var mountains = [];
     var valleys = [];
@@ -49,7 +48,6 @@ function initPattern(globals){
         cutsRaw = [];
         triangulationsRaw = [];
         hingesRaw = [];
-        sequencesRaw = [];
 
         mountains = [];
         valleys = [];
