@@ -98,14 +98,8 @@ function initPattern(globals){
         return typeForStroke(stroke) == "triangulation";
     }
     function hingeFilter(){
-        var $this = $(this);
-        var stroke = getStroke($this);
-        if (typeForStroke(stroke) == "hinge"){
-            this.targetAngle = 0;
-            this.targetAngleSeq = getSequence(this);
-            return true;
-        }
-        return false;
+        var stroke = getStroke($(this));
+        return typeForStroke(stroke) == "hinge";
     }
 
     function getOpacity(obj){
@@ -142,61 +136,65 @@ function initPattern(globals){
     }
 
     function getSequence(obj) {
-        var elem = obj.querySelector("animate[attributeName='stroke']");
-        if (!elem) return [];
-        var values = elem.getAttribute("values");
-        if (!values) return [];
-        // Split by semicolons and trim whitespace
-        return values.split(";").map(v => getAngle(v)).filter(v => v.length > 0);
+        return [];
     }
 
-    function getAngle(color) {
-        // #FFxx00 => -180; #00xxFF => 180; #AABBCC => (CC-AA)/255*180
-        (r, _, b) = colorToRGBTuple(color);
-        return (b - r) / 255 * 180;
-    }
+    // function getSequence(obj) {
+    //     var elem = obj.querySelector("animate[attributeName='stroke']");
+    //     if (!elem) return [];
+    //     var values = elem.getAttribute("values");
+    //     if (!values) return [];
+    //     // Split by semicolons and trim whitespace
+    //     return values.split(";").map(v => getAngle(v)).filter(v => v.length > 0);
+    // }
 
-    function colorToRGBTuple(color) {
-        color = color.trim().toLowerCase();
-        // --- HEX ---
-        if (color[0] === "#") {
-            if (color.length === 4) {
-            // #rgb -> #rrggbb
-            let r = parseInt(color[1] + color[1], 16);
-            let g = parseInt(color[2] + color[2], 16);
-            let b = parseInt(color[3] + color[3], 16);
-            return [r, g, b];
-            } else if (color.length === 7) {
-            // #rrggbb
-            let r = parseInt(color.slice(1, 3), 16);
-            let g = parseInt(color.slice(3, 5), 16);
-            let b = parseInt(color.slice(5, 7), 16);
-            return [r, g, b];
-            }
-        }
-        // --- RGB / RGBA ---
-        let rgbMatch = color.match(/^rgba?\(([^)]+)\)$/);
-        if (rgbMatch) {
-            let parts = rgbMatch[1].split(",").map(x => parseFloat(x.trim()));
-            return [parts[0], parts[1], parts[2]];
-        }
-        // --- Named colors ---
-        const namedColors = {
-            red: [255, 0, 0],
-            green: [0, 128, 0],
-            blue: [0, 0, 255],
-            black: [0, 0, 0],
-            white: [255, 255, 255],
-            gray: [128, 128, 128],
-            yellow: [255, 255, 0],
-            cyan: [0, 255, 255],
-            magenta: [255, 0, 255],
-        };
-        if (namedColors[color]) {
-            return namedColors[color];
-        }
-        throw new Error("Unsupported color format: " + color);
-    }
+    // function getAngle(color) {
+    //     // #FFxx00 => -180; #00xxFF => 180; #AABBCC => (CC-AA)/255*180
+    //     (r, _, b) = colorToRGBTuple(color);
+    //     return (b - r) / 255 * 180;
+    // }
+
+    // function colorToRGBTuple(color) {
+    //     color = color.trim().toLowerCase();
+    //     // --- HEX ---
+    //     if (color[0] === "#") {
+    //         if (color.length === 4) {
+    //         // #rgb -> #rrggbb
+    //         let r = parseInt(color[1] + color[1], 16);
+    //         let g = parseInt(color[2] + color[2], 16);
+    //         let b = parseInt(color[3] + color[3], 16);
+    //         return [r, g, b];
+    //         } else if (color.length === 7) {
+    //         // #rrggbb
+    //         let r = parseInt(color.slice(1, 3), 16);
+    //         let g = parseInt(color.slice(3, 5), 16);
+    //         let b = parseInt(color.slice(5, 7), 16);
+    //         return [r, g, b];
+    //         }
+    //     }
+    //     // --- RGB / RGBA ---
+    //     let rgbMatch = color.match(/^rgba?\(([^)]+)\)$/);
+    //     if (rgbMatch) {
+    //         let parts = rgbMatch[1].split(",").map(x => parseFloat(x.trim()));
+    //         return [parts[0], parts[1], parts[2]];
+    //     }
+    //     // --- Named colors ---
+    //     const namedColors = {
+    //         red: [255, 0, 0],
+    //         green: [0, 128, 0],
+    //         blue: [0, 0, 255],
+    //         black: [0, 0, 0],
+    //         white: [255, 255, 255],
+    //         gray: [128, 128, 128],
+    //         yellow: [255, 255, 0],
+    //         cyan: [0, 255, 255],
+    //         magenta: [255, 0, 255],
+    //     };
+    //     if (namedColors[color]) {
+    //         return namedColors[color];
+    //     }
+    //     throw new Error("Unsupported color format: " + color);
+    // }
 
     function typeForStroke(stroke){
         if (stroke == "#000000" || stroke == "#000" || stroke == "black" || stroke == "rgb(0,0,0)") return "border";
@@ -372,7 +370,7 @@ function initPattern(globals){
             _verticesRaw.push(new THREE.Vector3(element.x1.baseVal.value, 0, element.y1.baseVal.value));
             _verticesRaw.push(new THREE.Vector3(element.x2.baseVal.value, 0, element.y2.baseVal.value));
             _segmentsRaw.push([_verticesRaw.length-2, _verticesRaw.length-1]);
-            if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle, element.targetAngleSeq);
+            if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push([element.targetAngle, element.targetAngleSeq]);
             applyTransformation(_verticesRaw[_verticesRaw.length-2], element);
             applyTransformation(_verticesRaw[_verticesRaw.length-1], element);
         }
@@ -587,7 +585,7 @@ function initPattern(globals){
         _.each(_hingesRaw, function(edge){
             foldData.edges_vertices.push([edge[0], edge[1]]);
             foldData.edges_assignment.push("U");
-            foldData.edges_foldAngle.push(edge[2]);
+            foldData.edges_foldAngle.push(null);
         });
         _.each(_cutsRaw, function(edge){
             foldData.edges_vertices.push([edge[0], edge[1]]);
@@ -916,6 +914,7 @@ function initPattern(globals){
                             }
 
                             creaseParams.push(i);
+                            console.log(creaseParams);
                             creaseParams.push(angle);
                             allCreaseParams.push(creaseParams);
                             break;
@@ -997,9 +996,9 @@ function initPattern(globals){
                 }
                 var angle = fold.edges_foldAngle[i];
                 if (isNaN(angle)) console.log(i);
-                angles.push(angle);
+                angles.push(angle[0]);
                 if (angle) {
-                    angleAvg += angle;
+                    angleAvg += angle[0];
                     avgSum++;
                 }
                 edgeIndices.push(i);//larger index in front

@@ -7,13 +7,8 @@
 
 <rect x="-500" y="-500" fill="#FFFFFF" stroke="#000000" width="1000" height="1000"/>
 
-<style>
-.valley { stroke: #00F; }
-.mountain { stroke: #f00; }
-</style>
-
 <!-- a lines -->
-<line class="mountain" id="a1" x1="0" y1="0" x2="0" y2="-292">
+<line stroke="#FF0000" id="a1" x1="0" y1="0" x2="0" y2="-292">
 <animate attributeName="stroke"
     values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#F00; #F0F;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#F00"
     dur="18s" fill="freeze"/>
