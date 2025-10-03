@@ -28,6 +28,7 @@ function initPattern(globals){
     var cutsRaw = [];
     var triangulationsRaw = [];
     var hingesRaw = [];
+    var sequencesRaw = [];
 
     var mountains = [];
     var valleys = [];
@@ -48,6 +49,7 @@ function initPattern(globals){
         cutsRaw = [];
         triangulationsRaw = [];
         hingesRaw = [];
+        sequencesRaw = [];
 
         mountains = [];
         valleys = [];
@@ -73,6 +75,7 @@ function initPattern(globals){
         if (typeForStroke(stroke) == "mountain"){
             var opacity = getOpacity($this);
             this.targetAngle = -opacity*180;
+            this.targetAngleSeq = getSequence(this);
             return true;
         }
         return false;
@@ -83,6 +86,7 @@ function initPattern(globals){
         if (typeForStroke(stroke) == "valley"){
             var opacity = getOpacity($this);
             this.targetAngle = opacity*180;
+            this.targetAngleSeq = getSequence(this);
             return true;
         }
         return false;
@@ -96,8 +100,14 @@ function initPattern(globals){
         return typeForStroke(stroke) == "triangulation";
     }
     function hingeFilter(){
-        var stroke = getStroke($(this));
-        return typeForStroke(stroke) == "hinge";
+        var $this = $(this);
+        var stroke = getStroke($this);
+        if (typeForStroke(stroke) == "hinge"){
+            this.targetAngle = 0;
+            this.targetAngleSeq = getSequence(this);
+            return true;
+        }
+        return false;
     }
 
     function getOpacity(obj){
@@ -131,6 +141,63 @@ function initPattern(globals){
         }
         stroke = stroke.replace(/\s/g,'');//remove all whitespace
         return stroke.toLowerCase();
+    }
+
+    function getSequence(obj) {
+        var elem = obj.querySelector("animate[attributeName='stroke']");
+        if (!elem) return [];
+        var values = elem.getAttribute("values");
+        if (!values) return [];
+        // Split by semicolons and trim whitespace
+        return values.split(";").map(v => getAngle(v)).filter(v => v.length > 0);
+    }
+
+    function getAngle(color) {
+        // #FFxx00 => -180; #00xxFF => 180; #AABBCC => (CC-AA)/255*180
+        (r, _, b) = colorToRGBTuple(color);
+        return (b - r) / 255 * 180;
+    }
+
+    function colorToRGBTuple(color) {
+        color = color.trim().toLowerCase();
+        // --- HEX ---
+        if (color[0] === "#") {
+            if (color.length === 4) {
+            // #rgb -> #rrggbb
+            let r = parseInt(color[1] + color[1], 16);
+            let g = parseInt(color[2] + color[2], 16);
+            let b = parseInt(color[3] + color[3], 16);
+            return [r, g, b];
+            } else if (color.length === 7) {
+            // #rrggbb
+            let r = parseInt(color.slice(1, 3), 16);
+            let g = parseInt(color.slice(3, 5), 16);
+            let b = parseInt(color.slice(5, 7), 16);
+            return [r, g, b];
+            }
+        }
+        // --- RGB / RGBA ---
+        let rgbMatch = color.match(/^rgba?\(([^)]+)\)$/);
+        if (rgbMatch) {
+            let parts = rgbMatch[1].split(",").map(x => parseFloat(x.trim()));
+            return [parts[0], parts[1], parts[2]];
+        }
+        // --- Named colors ---
+        const namedColors = {
+            red: [255, 0, 0],
+            green: [0, 128, 0],
+            blue: [0, 0, 255],
+            black: [0, 0, 0],
+            white: [255, 255, 255],
+            gray: [128, 128, 128],
+            yellow: [255, 255, 0],
+            cyan: [0, 255, 255],
+            magenta: [255, 0, 255],
+        };
+        if (namedColors[color]) {
+            return namedColors[color];
+        }
+        throw new Error("Unsupported color format: " + color);
     }
 
     function typeForStroke(stroke){
@@ -227,7 +294,7 @@ function initPattern(globals){
 
                     case "l"://dx, dy
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle, path.targetAngleSeq);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.x += segment.values[0];
                         vertex.z += segment.values[1];
@@ -237,7 +304,7 @@ function initPattern(globals){
 
                     case "v"://dy
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle, path.targetAngleSeq);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.z += segment.values[0];
                         _verticesRaw.push(vertex);
@@ -246,7 +313,7 @@ function initPattern(globals){
 
                     case "h"://dx
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle, path.targetAngleSeq);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.x += segment.values[0];
                         _verticesRaw.push(vertex);
@@ -262,7 +329,7 @@ function initPattern(globals){
 
                     case "L"://x, y
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle, path.targetAngleSeq);
                         var vertex = new THREE.Vector3(segment.values[0], 0, segment.values[1]);
                         _verticesRaw.push(vertex);
                         pathVertices.push(vertex);
@@ -270,7 +337,7 @@ function initPattern(globals){
 
                     case "V"://y
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle, path.targetAngleSeq);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.z = segment.values[0];
                         _verticesRaw.push(vertex);
@@ -279,7 +346,7 @@ function initPattern(globals){
 
                     case "H"://x
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle, path.targetAngleSeq);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.x = segment.values[0];
                         _verticesRaw.push(vertex);
@@ -307,7 +374,7 @@ function initPattern(globals){
             _verticesRaw.push(new THREE.Vector3(element.x1.baseVal.value, 0, element.y1.baseVal.value));
             _verticesRaw.push(new THREE.Vector3(element.x2.baseVal.value, 0, element.y2.baseVal.value));
             _segmentsRaw.push([_verticesRaw.length-2, _verticesRaw.length-1]);
-            if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
+            if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle, element.targetAngleSeq);
             applyTransformation(_verticesRaw[_verticesRaw.length-2], element);
             applyTransformation(_verticesRaw[_verticesRaw.length-1], element);
         }
@@ -329,7 +396,7 @@ function initPattern(globals){
             _segmentsRaw.push([_verticesRaw.length-2, _verticesRaw.length-1]);
             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-4]);
             for (var j=1;j<=4;j++){
-                if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle);
+                if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle, element.targetAngleSeq);
                 applyTransformation(_verticesRaw[_verticesRaw.length-j], element);
             }
         }
@@ -345,7 +412,7 @@ function initPattern(globals){
                 if (j<element.points.length-1) _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
                 else _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-element.points.length]);
 
-                if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
+                if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle, element.targetAngleSeq);
             }
         }
     }
@@ -358,7 +425,7 @@ function initPattern(globals){
                 applyTransformation(_verticesRaw[_verticesRaw.length-1], element);
                 if (j>0) {
                     _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-2]);
-                    if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
+                    if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle, element.targetAngleSeq);
                 }
             }
         }
@@ -507,22 +574,22 @@ function initPattern(globals){
         _.each(_mountainsRaw, function(edge){
             foldData.edges_vertices.push([edge[0], edge[1]]);
             foldData.edges_assignment.push("M");
-            foldData.edges_foldAngle.push(edge[2]);
+            foldData.edges_foldAngle.push([edge[2], edge[3]]);
         });
         _.each(_valleysRaw, function(edge){
             foldData.edges_vertices.push([edge[0], edge[1]]);
             foldData.edges_assignment.push("V");
-            foldData.edges_foldAngle.push(edge[2]);
+            foldData.edges_foldAngle.push([edge[2], edge[3]]);
         });
         _.each(_triangulationsRaw, function(edge){
             foldData.edges_vertices.push([edge[0], edge[1]]);
             foldData.edges_assignment.push("F");
-            foldData.edges_foldAngle.push(0);
+            foldData.edges_foldAngle.push([0, []]);
         });
         _.each(_hingesRaw, function(edge){
             foldData.edges_vertices.push([edge[0], edge[1]]);
             foldData.edges_assignment.push("U");
-            foldData.edges_foldAngle.push(null);
+            foldData.edges_foldAngle.push([edge[2], edge[3]]);
         });
         _.each(_cutsRaw, function(edge){
             foldData.edges_vertices.push([edge[0], edge[1]]);
