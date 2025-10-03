@@ -218,7 +218,7 @@ function initPattern(globals){
     }
     function opacityForAngle(angle, assignment){
         if (angle === null || assignment == "F") return 1;
-        return Math.abs(angle)/180;
+        return Math.abs(angle[0])/180;
     }
 
     function findType(_verticesRaw, _segmentsRaw, filter, $paths, $lines, $rects, $polygons, $polylines){
@@ -621,6 +621,8 @@ function initPattern(globals){
 
         foldData = reverseFaceOrder(foldData);//set faces to counter clockwise
 
+        console.log(foldData);
+
         return processFold(foldData);
     }
 
@@ -994,11 +996,11 @@ function initPattern(globals){
                     console.warn("different edge assignments");
                     return false;
                 }
-                var angle = fold.edges_foldAngle[i];
+                var angle = fold.edges_foldAngle[i][0];
                 if (isNaN(angle)) console.log(i);
-                angles.push(angle[0]);
+                angles.push(angle);
                 if (angle) {
-                    angleAvg += angle[0];
+                    angleAvg += angle;
                     avgSum++;
                 }
                 edgeIndices.push(i);//larger index in front
@@ -1015,7 +1017,7 @@ function initPattern(globals){
         }
         fold.edges_vertices.push([v1, v3]);
         fold.edges_assignment.push(edgeAssignment);
-        if (avgSum > 0) fold.edges_foldAngle.push(angleAvg/avgSum);
+        if (avgSum > 0) fold.edges_foldAngle.push([angleAvg/avgSum, []]);
         else fold.edges_foldAngle.push(null);
         var index = fold.vertices_vertices[v1].indexOf(v2);
         fold.vertices_vertices[v1].splice(index, 1);
@@ -1071,13 +1073,13 @@ function initPattern(globals){
                 var dist2 = (faceV2.clone().sub(faceV4)).lengthSq();
                 if (dist2<dist1) {
                     edges.push([face[1], face[3]]);
-                    foldAngles.push(0);
+                    foldAngles.push([0, []]);
                     assignments.push("F");
                     triangulatedFaces.push([face[0], face[1], face[3]]);
                     triangulatedFaces.push([face[1], face[2], face[3]]);
                 } else {
                     edges.push([face[0], face[2]]);
-                    foldAngles.push(0);
+                    foldAngles.push([0, []]);
                     assignments.push("F");
                     triangulatedFaces.push([face[0], face[1], face[2]]);
                     triangulatedFaces.push([face[0], face[2], face[3]]);
@@ -1176,17 +1178,17 @@ function initPattern(globals){
                     if (k==0){
                         faceEdges.push(edges.length);
                         edges.push([tri[0], tri[1]]);
-                        foldAngles.push(0);
+                        foldAngles.push([0, []]);
                         assignments.push("F");
                     } else if (k==1){
                         faceEdges.push(edges.length);
                         edges.push([tri[2], tri[1]]);
-                        foldAngles.push(0);
+                        foldAngles.push([0, []]);
                         assignments.push("F");
                     } else if (k==2){
                         faceEdges.push(edges.length);
                         edges.push([tri[2], tri[0]]);
-                        foldAngles.push(0);
+                        foldAngles.push([0, []]);
                         assignments.push("F");
                     }
                 }
