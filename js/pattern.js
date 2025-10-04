@@ -305,7 +305,8 @@ function initPattern(globals){
 
                     case "l"://dx, dy
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (Number.isFinite(path.targetAngle) && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push([path.targetAngle, path.targetAngleSeq]);
+                        if (Number.isFinite(path.targetAngle) && _segmentsRaw.length>0)
+                            _segmentsRaw[_segmentsRaw.length-1].push([path.targetAngle, path.targetAngleSeq]);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.x += segment.values[0];
                         vertex.z += segment.values[1];
@@ -315,7 +316,8 @@ function initPattern(globals){
 
                     case "v"://dy
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (Number.isFinite(path.targetAngle) && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push([path.targetAngle, path.targetAngleSeq]);
+                        if (Number.isFinite(path.targetAngle) && _segmentsRaw.length>0)
+                            _segmentsRaw[_segmentsRaw.length-1].push([path.targetAngle, path.targetAngleSeq]);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.z += segment.values[0];
                         _verticesRaw.push(vertex);
@@ -324,7 +326,8 @@ function initPattern(globals){
 
                     case "h"://dx
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (Number.isFinite(path.targetAngle) && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push([path.targetAngle, path.targetAngleSeq]);
+                        if (Number.isFinite(path.targetAngle) && _segmentsRaw.length>0)
+                            _segmentsRaw[_segmentsRaw.length-1].push([path.targetAngle, path.targetAngleSeq]);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.x += segment.values[0];
                         _verticesRaw.push(vertex);
@@ -340,7 +343,8 @@ function initPattern(globals){
 
                     case "L"://x, y
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (Number.isFinite(path.targetAngle) && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push([path.targetAngle, path.targetAngleSeq]);
+                        if (Number.isFinite(path.targetAngle) && _segmentsRaw.length>0)
+                            _segmentsRaw[_segmentsRaw.length-1].push([path.targetAngle, path.targetAngleSeq]);
                         var vertex = new THREE.Vector3(segment.values[0], 0, segment.values[1]);
                         _verticesRaw.push(vertex);
                         pathVertices.push(vertex);
@@ -348,7 +352,8 @@ function initPattern(globals){
 
                     case "V"://y
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (Number.isFinite(path.targetAngle) && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push([path.targetAngle, path.targetAngleSeq]);
+                        if (Number.isFinite(path.targetAngle) && _segmentsRaw.length>0)
+                            _segmentsRaw[_segmentsRaw.length-1].push([path.targetAngle, path.targetAngleSeq]);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.z = segment.values[0];
                         _verticesRaw.push(vertex);
@@ -357,7 +362,8 @@ function initPattern(globals){
 
                     case "H"://x
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (Number.isFinite(path.targetAngle) && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push([path.targetAngle, path.targetAngleSeq]);
+                        if (Number.isFinite(path.targetAngle) && _segmentsRaw.length>0)
+                            _segmentsRaw[_segmentsRaw.length-1].push([path.targetAngle, path.targetAngleSeq]);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.x = segment.values[0];
                         _verticesRaw.push(vertex);
@@ -385,7 +391,8 @@ function initPattern(globals){
             _verticesRaw.push(new THREE.Vector3(element.x1.baseVal.value, 0, element.y1.baseVal.value));
             _verticesRaw.push(new THREE.Vector3(element.x2.baseVal.value, 0, element.y2.baseVal.value));
             _segmentsRaw.push([_verticesRaw.length-2, _verticesRaw.length-1]);
-            if (Number.isFinite(element.targetAngle)) _segmentsRaw[_segmentsRaw.length-1].push([element.targetAngle, element.targetAngleSeq]);
+            if (Number.isFinite(element.targetAngle))
+                _segmentsRaw[_segmentsRaw.length-1].push([element.targetAngle, element.targetAngleSeq]);
             applyTransformation(_verticesRaw[_verticesRaw.length-2], element);
             applyTransformation(_verticesRaw[_verticesRaw.length-1], element);
         }
@@ -407,7 +414,8 @@ function initPattern(globals){
             _segmentsRaw.push([_verticesRaw.length-2, _verticesRaw.length-1]);
             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-4]);
             for (var j=1;j<=4;j++){
-                if (Number.isFinite(element.targetAngle)) _segmentsRaw[_segmentsRaw.length-j].push([element.targetAngle, element.targetAngleSeq]);
+                if (Number.isFinite(element.targetAngle))
+                    _segmentsRaw[_segmentsRaw.length-j].push([element.targetAngle, element.targetAngleSeq]);
                 applyTransformation(_verticesRaw[_verticesRaw.length-j], element);
             }
         }
@@ -423,7 +431,8 @@ function initPattern(globals){
                 if (j<element.points.length-1) _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
                 else _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-element.points.length]);
 
-                if (Number.isFinite(element.targetAngle)) _segmentsRaw[_segmentsRaw.length-1].push([element.targetAngle, element.targetAngleSeq]);
+                if (Number.isFinite(element.targetAngle))
+                    _segmentsRaw[_segmentsRaw.length-1].push([element.targetAngle, element.targetAngleSeq]);
             }
         }
     }
@@ -436,7 +445,8 @@ function initPattern(globals){
                 applyTransformation(_verticesRaw[_verticesRaw.length-1], element);
                 if (j>0) {
                     _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-2]);
-                    if (Number.isFinite(element.targetAngle)) _segmentsRaw[_segmentsRaw.length-1].push([element.targetAngle, element.targetAngleSeq]);
+                    if (Number.isFinite(element.targetAngle))
+                        _segmentsRaw[_segmentsRaw.length-1].push([element.targetAngle, element.targetAngleSeq]);
                 }
             }
         }
