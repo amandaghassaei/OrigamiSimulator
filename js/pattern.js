@@ -151,10 +151,15 @@ function initPattern(globals){
     }
 
     function rgb2angle(color) {
-        // #FFxx00 => -180; #00xxFF => 180; #AABBCC => (CC-AA)/255*180
-        var colors = color2rgb(color);
-        console.log(colors);
-        return (colors[2] - colors[0]) / 255 * 180;
+        // #FF0000 => -180;
+        // #FF7F00 => -90;
+        // #FFFF00 => 0;
+        // #7FFF00 => 90;
+        // #0000FF => 180;
+        // ((g+b-r) / 255) * 180
+        var colors255 = color2rgb(color);
+        var colors = colors255.map(x => (x > 0) ? x + 1 : x);
+        return ((colors[1] + colors[2] - colors[0]) / 256) * 180;
     }
 
     function color2rgb(color) {
@@ -184,11 +189,11 @@ function initPattern(globals){
         // --- Named colors ---
         const namedColors = {
             red: [255, 0, 0],
-            green: [0, 128, 0],
+            green: [0, 127, 0],
             blue: [0, 0, 255],
             black: [0, 0, 0],
             white: [255, 255, 255],
-            gray: [128, 128, 128],
+            gray: [127, 127, 127],
             yellow: [255, 255, 0],
             cyan: [0, 255, 255],
             magenta: [255, 0, 255],
@@ -204,11 +209,16 @@ function initPattern(globals){
     }
 
     function angle2rgb(angle) {
-        // -180 -> #FF0000; 180 -> #0000FF; 0 -> #FF00FF
-        let r = 255 + Math.round(Math.min(0, -angle) / 180 * 255);
-        let g = 0;
-        let b = 255 + Math.round(Math.min(0, angle) / 180 * 255);
-        return [r, g, b];
+        let rate = angle / 180;
+        // #FF0000 <= -180;
+        // #FF7F00 <= -90;
+        // #FFFF00 <= 0;
+        // #7FFF00 <= 90;
+        // #0000FF <= 180;
+        let r = Math.min(1, 1-rate);
+        let g = Math.min(1, 1+rate, 2-2*rate);
+        let b = Math.max(0, -1+2*rate);
+        return [r, g, b].map(x => Math.round(Math.max(x * 256 - 1, 0)));
     }
 
     function typeForStroke(stroke){
@@ -592,6 +602,11 @@ function initPattern(globals){
             }
             $("#svgViewer").html(svg);
     }
+
+    // function setRawFoldAngles(func) {
+    //     func(rawFold.edges_foldAngle);
+    //     generateSvg();
+    // }
 
     function parseSVG(_verticesRaw, _bordersRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw, _hingesRaw){
 
@@ -1387,6 +1402,7 @@ function initPattern(globals){
         saveSVG: saveSVG,
         getFoldData: getFoldData,
         getTriangulatedFaces: getTriangulatedFaces,
-        setFoldData: setFoldData
+        setFoldData: setFoldData,
+        // setRawFoldAngles: setRawFoldAngles
     }
 }
