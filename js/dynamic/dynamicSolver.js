@@ -93,7 +93,7 @@ function initDynamicSolver(globals){
             globals.nodePositionHasChanged = false;
         }
         if (globals.creaseMaterialHasChanged) {
-            updateCreasesMeta();
+            updateCreasesMeta(true);
             globals.creaseMaterialHasChanged = false;
         }
         if (globals.materialHasChanged) {

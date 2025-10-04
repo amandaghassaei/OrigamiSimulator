@@ -30,6 +30,18 @@ function init3DUI(globals) {
 
     document.addEventListener('mousedown', function(){
         mouseDown = true;
+        if (highlightedObj && !highlightedObj.getPosition) {
+            globals.pattern.setRawFoldAngles(
+                function(foldAngles) {
+                    foldAngles[highlightedObj.edgeInd] = [0, []];
+                }
+            );
+            var crease = globals.model.getCreases()
+            crease[highlightedObj.getIndex()].targetTheta = 0;
+            console.log(crease[highlightedObj.getIndex()]);
+            console.log(globals.model.getCreases()[highlightedObj.getIndex()]);
+            globals.creaseMaterialHasChanged = true;
+        }
     }, false);
     document.addEventListener('mouseup', function(e){
         isDragging = false;
@@ -131,22 +143,53 @@ function init3DUI(globals) {
             var face = intersections[0].face;
             var position = intersections[0].point;
             var positionsArray = globals.model.getPositionsArray();
-            var res = [face.a, face.b, face.c]
+            var faceVertices = [face.a, face.b, face.c]
                .map(v => [v, (new THREE.Vector3(positionsArray[3*v], positionsArray[3*v+1], positionsArray[3*v+2]))])
+            var res = faceVertices
                .map(l => [l[0], (l[1].clone().sub(position)).lengthSq()])
                .sort((a, b) => a[1] - b[1]);
             var nodeIndex = res[0][0];
-            var max_dist = res[2][1];
+            var max_dist = res[1][1];
             var min_dist = res[0][1];
             if (min_dist / (max_dist + min_dist) < 0.1) {
                 var nodesArray = globals.model.getNodes();
                 _highlightedObj = nodesArray[nodeIndex];
             } else {
+
+                function closestPointOnSegment(a, b) {
+                    const ab = b.clone().sub(a);
+                    const ap = position.clone().sub(a);
+                    const t = ap.dot(ab) / ab.lengthSq(); // projection factor
+                    if (t < 0) return a.clone();
+                    if (t > 1) return b.clone();
+                    return a.clone().add(ab.multiplyScalar(t));
+                
+                }
+
+                const edges = [
+                    [0, 1],
+                    [1, 2],
+                    [2, 0]
+                ];
+
+                let closestEdge = [faceVertices[0][0], faceVertices[1][0]];
+                let minDist = Infinity;
+
+                edges.forEach(([a, b]) => {
+                    const point = closestPointOnSegment(faceVertices[a][1], faceVertices[b][1]);
+                    const dist = point.sub(position).lengthSq();
+                    console.log(dist, minDist);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        closestEdge = [faceVertices[a][0], faceVertices[b][0]];
+                    }
+                });
+
                 var creaseArray = globals.model.getCreases();
                 for (var i=0; i<creaseArray.length; i++){
                     var edge = creaseArray[i].edge;
-                    if ((edge.nodes[0].getIndex() == res[0][0] && edge.nodes[1].getIndex() == res[1][0]) ||
-                        (edge.nodes[1].getIndex() == res[0][0] && edge.nodes[0].getIndex() == res[1][0])){
+                    if ((edge.nodes[0].getIndex() == closestEdge[0] && edge.nodes[1].getIndex() == closestEdge[1]) ||
+                        (edge.nodes[1].getIndex() == closestEdge[0] && edge.nodes[0].getIndex() == closestEdge[1])){
                         _highlightedObj = creaseArray[i];
                         break;
                     }
