@@ -262,16 +262,7 @@ function initModel(globals){
 
         for (var i=0;i<creaseParams.length;i++) {//allCreaseParams.length
             var _creaseParams = creaseParams[i];//face1Ind, vert1Ind, face2Ind, ver2Ind, edgeInd, [angle, angleSeq]
-            var type;
-            if (_creaseParams[5]) {
-                if (_creaseParams[5][0] != 0) {
-                    type = 1;
-                } else {
-                    type = 0;
-                }
-            } else {
-                type = 0;
-            }
+            var type = (_creaseParams[5][0] != 0) ? 1 : 0;
             
             //edge, face1Index, face2Index, targetTheta, type, node1, node2, index
             creases.push(new Crease(
