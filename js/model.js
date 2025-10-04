@@ -263,8 +263,8 @@ function initModel(globals){
         for (var i=0;i<creaseParams.length;i++) {//allCreaseParams.length
             var _creaseParams = creaseParams[i];//face1Ind, vert1Ind, face2Ind, ver2Ind, edgeInd, [angle, angleSeq]
             var type = (_creaseParams[5][0] != 0) ? 1 : 0;
-            
-            //edge, face1Index, face2Index, targetTheta, type, node1, node2, index
+
+            //edge, face1Index, face2Index, targetTheta, type, node1, node2, index, edgeInd
             creases.push(new Crease(
                 edges[_creaseParams[4]],
                 _creaseParams[0],
@@ -273,7 +273,9 @@ function initModel(globals){
                 type,
                 nodes[_creaseParams[1]],
                 nodes[_creaseParams[3]],
-                creases.length));
+                i,
+                _creaseParams[4]
+            ));
         }
 
         vertices = [];

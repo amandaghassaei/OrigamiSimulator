@@ -2,7 +2,7 @@
  * Created by amandaghassaei on 2/25/17.
  */
 
-function Crease(edge, face1Index, face2Index, targetTheta, type, node1, node2, index){
+function Crease(edge, face1Index, face2Index, targetTheta, type, node1, node2, index, edgeInd){
     //type = 0 panel, 1 crease
 
     //face1 corresponds to node1, face2 to node2
@@ -17,6 +17,7 @@ function Crease(edge, face1Index, face2Index, targetTheta, type, node1, node2, i
     this.node1 = node1;//node at vertex of face 1
     this.node2 = node2;//node at vertex of face 2
     this.index = index;
+    this.edgeInd = edgeInd;
     node1.addCrease(this);
     node2.addCrease(this);
 }
@@ -54,6 +55,10 @@ Crease.prototype.getD = function(){
 Crease.prototype.getIndex = function(){
     return this.index;
 };
+
+Crease.prototype.getEdgeIndex = function(){
+    return this.edgeInd;
+}
 
 Crease.prototype.getLengthToNode1 = function(){
     return this.getLengthTo(this.node1);

@@ -18,6 +18,13 @@ function init3DUI(globals) {
     highlighter1.setTransparent();
     globals.threeView.scene.add(highlighter1.getObject3D());
 
+    var n1 = new Node(new THREE.Vector3());
+    var n2 = new Node(new THREE.Vector3());
+
+    let highlighter2 = new Beam([n1, n2]);
+    highlighter2.setTransparent();
+    globals.threeView.scene.add(highlighter2.getObject3D());
+
     $(document).dblclick(function() {
     });
 
@@ -54,7 +61,7 @@ function init3DUI(globals) {
         if (!isDragging) {
             _highlightedObj = checkForIntersections(e, globals.model.getMesh());
             setHighlightedObj(_highlightedObj);
-        }  else if (isDragging && highlightedObj){
+        } else if (isDragging && highlightedObj && highlightedObj.getPosition){
             if (!draggingNode) {
                 draggingNode = highlightedObj;
                 draggingNodeFixed = draggingNode.isFixed();
@@ -68,8 +75,23 @@ function init3DUI(globals) {
         }
 
         if (highlightedObj){
-            var position = highlightedObj.getPosition();
-            highlighter1.getObject3D().position.set(position.x, position.y, position.z);
+            if (highlightedObj.getPosition) {
+                var position = highlightedObj.getPosition();
+                highlighter1.getObject3D().position.set(position.x, position.y, position.z);
+            } else {
+                var pos1 = highlightedObj.edge.nodes[0].getPosition();
+                var pos2 = highlightedObj.edge.nodes[1].getPosition();
+
+                const direction = new THREE.Vector3().subVectors(pos2, pos1);
+                const length = direction.length();
+                highlighter2.getObject3D().scale.set(1, length, 1);
+                const midpoint = new THREE.Vector3().addVectors(pos1, pos2).multiplyScalar(0.5);
+                highlighter2.getObject3D().position.copy(midpoint);
+
+                const axis = new THREE.Vector3(0, 1, 0);
+                const quaternion = new THREE.Quaternion().setFromUnitVectors(axis, direction.clone().normalize());
+                highlighter2.getObject3D().setRotationFromQuaternion(quaternion);
+            }
         }
     }
 
@@ -86,11 +108,19 @@ function init3DUI(globals) {
         if (highlightedObj && (object != highlightedObj)) {
             // highlightedObj.unhighlight();
             highlighter1.getObject3D().visible = false;
+            console.log(highlighter2);
+            highlighter2.getObject3D().visible = false;
         }
         highlightedObj = object;
+        console.log(highlightedObj);
         if (highlightedObj) {
             // highlightedObj.highlight();
-            highlighter1.getObject3D().visible = true;
+            if (highlightedObj.getPosition) {
+                highlighter1.getObject3D().visible = true;
+            } else {
+                console.log(highlighter2);
+                highlighter2.getObject3D().visible = true;
+            }
         }
     }
 
@@ -101,22 +131,27 @@ function init3DUI(globals) {
             var face = intersections[0].face;
             var position = intersections[0].point;
             var positionsArray = globals.model.getPositionsArray();
-            var vertices = [];
-            vertices.push(new THREE.Vector3(positionsArray[3*face.a], positionsArray[3*face.a+1], positionsArray[3*face.a+2]));
-            vertices.push(new THREE.Vector3(positionsArray[3*face.b], positionsArray[3*face.b+1], positionsArray[3*face.b+2]));
-            vertices.push(new THREE.Vector3(positionsArray[3*face.c], positionsArray[3*face.c+1], positionsArray[3*face.c+2]));
-            var dist = vertices[0].clone().sub(position).lengthSq();
-            var nodeIndex = face.a;
-            for (var i=1;i<3;i++){
-                var _dist = (vertices[i].clone().sub(position)).lengthSq();
-                if (_dist<dist){
-                    dist = _dist;
-                    if (i==1) nodeIndex = face.b;
-                    else nodeIndex = face.c;
+            var res = [face.a, face.b, face.c]
+               .map(v => [v, (new THREE.Vector3(positionsArray[3*v], positionsArray[3*v+1], positionsArray[3*v+2]))])
+               .map(l => [l[0], (l[1].clone().sub(position)).lengthSq()])
+               .sort((a, b) => a[1] - b[1]);
+            var nodeIndex = res[0][0];
+            var max_dist = res[2][1];
+            var min_dist = res[0][1];
+            if (min_dist / (max_dist + min_dist) < 0.1) {
+                var nodesArray = globals.model.getNodes();
+                _highlightedObj = nodesArray[nodeIndex];
+            } else {
+                var creaseArray = globals.model.getCreases();
+                for (var i=0; i<creaseArray.length; i++){
+                    var edge = creaseArray[i].edge;
+                    if ((edge.nodes[0].getIndex() == res[0][0] && edge.nodes[1].getIndex() == res[1][0]) ||
+                        (edge.nodes[1].getIndex() == res[0][0] && edge.nodes[0].getIndex() == res[1][0])){
+                        _highlightedObj = creaseArray[i];
+                        break;
+                    }
                 }
             }
-            var nodesArray = globals.model.getNodes();
-            _highlightedObj = nodesArray[nodeIndex];
         }
         return _highlightedObj;
     }

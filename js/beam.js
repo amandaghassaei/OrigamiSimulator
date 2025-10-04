@@ -2,8 +2,10 @@
  * Created by ghassaei on 9/16/16.
  */
 
-// var beamMaterialHighlight = new THREE.LineBasicMaterial({color: 0xff0000, linewidth: 1});
+var beamMaterialHighlight = new THREE.LineBasicMaterial({color: 0xff0000, linewidth: 1});
 // var beamMaterial = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1});
+
+var beamGeo = new THREE.CylinderGeometry(0.005,0.005,1,8,1,false);
 
 function Beam(nodes){
 
@@ -50,10 +52,22 @@ Beam.prototype.getVector = function(fromNode){
     return this.vertices[1].clone().sub(this.vertices[0]);
 };
 
+Beam.prototype.getObject3D = function(){
+    return this.object3D;
+};
+
+
 // Beam.prototype.setVisibility = function(state){
 //     this.object3D.visible = state;
 // };
 
+Beam.prototype.setTransparent = function(){
+    if (!this.object3D){
+        this.object3D = new THREE.Mesh(beamGeo, beamMaterialHighlight);
+        this.object3D.visible = false;
+    }
+    this.object3D.material = transparentMaterial;
+};
 
 
 //dynamic solve
@@ -116,6 +130,6 @@ Beam.prototype.destroy = function(){
         node.removeBeam(self);
     });
     this.vertices = null;
-    // this.object3D = null;
+    this.object3D = null;
     this.nodes = null;
 };
