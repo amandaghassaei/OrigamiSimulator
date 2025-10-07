@@ -483,9 +483,19 @@ function initDynamicSolver(globals){
             var crease = creases[i];
             creaseMeta[i*4] = crease.getK();
             // creaseMeta[i*4+1] = crease.getD();
-            if (initing) creaseMeta[i*4+2] = crease.getTargetTheta();
+            if (initing) creaseMeta[i*4+2] = crease.getTargetTheta(); // It uses a creaseMeta to stores the targetAngle of all creases in the origami
         }
-        globals.gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true);
+        // Syntax of the gpuMath.initTextureFromData is from the GPUMath.js library line 58
+        // Initializes a new GPU texture with data and stores it under a named reference.
+        // If a texture with the same name already exists, it can optionally replace it.
+        // initTextureFromData(name, width, height, typeName, data, shouldReplace)
+        // name: string = a string to identify the texture by.
+        // width: number = the width of the texture in pixels.
+        // height: number = the height of the texture in pixels.
+        // typeName: string = the data type of the texture. Can be "FLOAT", "UNSIGNED_BYTE", or "BYTE".
+        // data: TypedArray = a typed array with the data to initialize the texture with. The array should have width*height*4 elements.
+        // shouldReplace: boolean = if true, and a texture with the same name already exists, it will be replaced.
+        globals.gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true); // creaseMeta is sent to the GPU, where it can be accessed by the shader.
     }
 
     function updateLastPosition(){
