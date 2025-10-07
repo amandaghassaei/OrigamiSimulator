@@ -195,7 +195,9 @@
         uniform sampler2D u_mass;
         uniform sampler2D u_meta;//[beamsIndex, numBeam, nodeCreaseMetaIndex, numCreases]
         uniform sampler2D u_beamMeta;//[k, d, length, otherNodeIndex]
-        uniform sampler2D u_creaseMeta;//[k, d, targetTheta]
+        uniform sampler2D u_creaseMeta;// This is used for storing [k, d, targetTheta].
+        // Uniform: A global variable set from JavaScript, not changed inside the shader. It’s the way you send data from CPU → GPU.
+        // sampler2D: A special GLSL type that represents a 2D texture. Think of it like a handle to a texture image.
         uniform sampler2D u_nodeCreaseMeta;//[creaseIndex, nodeIndex, -, -]
         uniform sampler2D u_normals;
         uniform sampler2D u_theta;//[theta, z, normal1Index, normal2Index]
@@ -271,11 +273,11 @@
                 vec2 scaledCreaseIndex = creaseIndex/u_textureDimCreases;
 
                 vec4 thetas = texture2D(u_theta, scaledCreaseIndex);
-                vec3 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex).xyz;//[k, d, targetTheta]
+                vec3 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex).xyz;//[k, d, targetTheta] // Capture the u_creaseMeta data using creaseMeta variable
                 vec4 creaseGeo = texture2D(u_creaseGeo, scaledCreaseIndex);//[h1, h2, coef1, coef2]
                 if (creaseGeo[0]< 0.0) continue;//crease disabled bc it has collapsed too much
 
-                float targetTheta = creaseMeta[2] * u_creasePercent;
+                float targetTheta = creaseMeta[2] * u_creasePercent; // Retrieve the targetTheta value
                 float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
 
                 float nodeNum = nodeCreaseMeta[1];//1, 2, 3, 4
