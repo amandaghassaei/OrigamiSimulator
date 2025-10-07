@@ -268,7 +268,8 @@ function initModel(globals){
                 edges[_creaseParams[4]],
                 _creaseParams[0],
                 _creaseParams[2],
-                _creaseParams[5] * Math.PI / 180,  // convert back to radians for the GPU math
+                _creaseParams[5] * Math.PI / 180, // convert back to radians for the GPU math
+                [0, 90, 180, 90, 0, _creaseParams[5]].map(function(x){return x * Math.PI / 180;}), // for sequential folding
                 type,
                 nodes[_creaseParams[1]],
                 nodes[_creaseParams[3]],
