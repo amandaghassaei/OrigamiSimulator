@@ -37,6 +37,14 @@ function initDynamicSolver(globals){
     var theta;//[theta, w, normalIndex1, normalIndex2]
     var lastTheta;//[theta, w, normalIndex1, normalIndex2]
 
+    // Note:
+    // These two variables are for the fold matrix texture size
+    // foldMatrixWidth: number of steps in the fold sequence
+    // foldMatrixHeight: number of creases
+    var foldMatrixWidth = 0;
+    var foldMatrixHeight = 0;
+
+
     function syncNodesAndEdges(){
         nodes = globals.model.getNodes();
         edges = globals.model.getEdges();
@@ -253,6 +261,15 @@ function initDynamicSolver(globals){
 
         var vertexShader = document.getElementById("vertexShader").text;
 
+        // Notes:
+        // Get texture sizes
+        if (foldMatrixWidth === 0 && creases.length > 0) {
+            // Get the first crease's sequence length as representative
+            var firstCreaseSeq = creases[0].getTargetThetaSeq();
+            foldMatrixWidth = firstCreaseSeq ? firstCreaseSeq.length : 1;   // Width: Total steps in the fold sequence
+            foldMatrixHeight = calcTextureSize(creases.length);             // Height: Number of creases
+        }
+
         gpuMath.initTextureFromData("u_position", textureDim, textureDim, "FLOAT", position, true);
         gpuMath.initTextureFromData("u_lastPosition", textureDim, textureDim, "FLOAT", lastPosition, true);
         gpuMath.initTextureFromData("u_lastLastPosition", textureDim, textureDim, "FLOAT", lastLastPosition, true);
@@ -321,6 +338,10 @@ function initDynamicSolver(globals){
         gpuMath.setUniformForProgram("velocityCalc", "u_faceStiffness", globals.faceStiffness, "1f");
         gpuMath.setUniformForProgram("velocityCalc", "u_calcFaceStrain", globals.calcFaceStrain, "1f");
 
+        // Note:
+        // I added this uniform to access the fold matrix texture
+        gpuMath.setUniformForProgram("velocityCalc", "u_foldMatrixSize", [foldMatrixWidth, foldMatrixHeight], "2f");
+
         gpuMath.createProgram("positionCalcVerlet", vertexShader, document.getElementById("positionCalcVerletShader").text);
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_lastPosition", 0, "1i");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_lastLastPosition", 1, "1i");
@@ -348,6 +369,11 @@ function initDynamicSolver(globals){
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_axialStiffness", globals.axialStiffness, "1f");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_faceStiffness", globals.faceStiffness, "1f");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_calcFaceStrain", globals.calcFaceStrain, "1f");
+
+        // Note:
+        // I added this uniform to access the fold matrix texture
+        gpuMath.setUniformForProgram("positionCalcVerlet", "u_foldMatrixSize", [foldMatrixWidth, foldMatrixHeight], "2f");
+
 
         gpuMath.createProgram("thetaCalc", vertexShader, document.getElementById("thetaCalcShader").text);
         gpuMath.setUniformForProgram("thetaCalc", "u_normals", 0, "1i");
@@ -479,12 +505,79 @@ function initDynamicSolver(globals){
     }
 
     function updateCreasesMeta(initing){
+        // Note:
+        // I create matrixMeta to store the fold sequences of all creases
+        // This is only done once during initialization (when initing is true)
+        // This is a stupid way to do this, as this can be merged with the below initing `for` loop
+        // But for simplicity I leave it like this for now
+        const matrixMeta = [];
+
         for (var i=0;i<creases.length;i++){
             var crease = creases[i];
+            
             creaseMeta[i*4] = crease.getK();
             // creaseMeta[i*4+1] = crease.getD();
-            if (initing) creaseMeta[i*4+2] = crease.getTargetTheta(); // It uses a creaseMeta to stores the targetAngle of all creases in the origami
+
+            // Note:
+            // I store the crease index in creaseMeta for reference in the shader
+            // I initially planned to use the crease index for locating the fold sequence in the u_foldMatrix
+            // u_foldMatrix stores each step's targetTheta in the sequence
+            // for each pixel's rgba values, only the R value is used to store the targetTheta
+            // G and B are used for the foldMatrixWidth and foldMatrixHeight respectively
+            // Because it looks like this is the way to send the sequence length to GLSL
+            creaseMeta[i * 4 + 3] = i; // crease index
+            if (initing) {
+                const thetaSeq = crease.getTargetThetaSeq();
+    
+                creaseMeta[i*4+2] = crease.getTargetTheta();    // This is the original code, it uses a creaseMeta to stores the targetAngle of all creases in the origami
+                matrixMeta.push(thetaSeq);
+            }
+        }   
+        if (initing) {
+            // Note:
+            // Upload foldMatrix (sequence of targetTheta values per crease)
+            // The below code can be merged with the above `for` loop, but for simplicity I leave it like this for now
+            // ----------------------------------------------------------------------------------------------------
+            // Create a Float32Array to hold the fold matrix data
+            const stepsPerCrease = matrixMeta[0].length;
+            const numCreases = creases.length;
+
+            foldMatrixWidth = stepsPerCrease;
+            foldMatrixHeight = numCreases;
+
+            const texWidth = stepsPerCrease;                // texWidth: How many steps in the fold sequence
+            const texHeight = numCreases;                   // texHeight: How many creases
+
+            const foldMatrix = new Float32Array(texWidth * texHeight * 4); // RGBA floats
+
+            for (let i = 0; i < numCreases; i++) {
+                const seq = matrixMeta[i];
+                for (let j = 0; j < stepsPerCrease; j++) {
+                    const flatIndex = (i * texWidth + j) * 4;
+                    foldMatrix[flatIndex] = seq[j] ?? 0; // default to 0 if undefined
+                    foldMatrix[flatIndex + 1] = texWidth; // Unused
+                    foldMatrix[flatIndex + 2] = texHeight;
+                }
+            }
+            
+            // Note:
+            // foldMatrix is sent to the GPU, where it can be accessed by the shader.
+            // Each crease's fold sequence can be found by its index (stored in creaseMeta)
+            // and the sequence length (foldMatrixWidth)
+            // Example: to get the targetTheta for crease i at step s:
+            // index = i * foldMatrixWidth + s
+            // targetTheta = foldMatrix[index * 4]  (R channel)
+            globals.gpuMath.initTextureFromData(
+                "u_foldMatrix",
+                texWidth,
+                texHeight,
+                "FLOAT",
+                foldMatrix,
+                true
+            );
+            globals.gpuMath.setProgram("velocityCalc");
         }
+        // Note:
         // Syntax of the gpuMath.initTextureFromData is from the GPUMath.js library line 58
         // Initializes a new GPU texture with data and stores it under a named reference.
         // If a texture with the same name already exists, it can optionally replace it.

@@ -178,6 +178,11 @@
 
     <script id="velocityCalcShader" type="x-shader/x-fragment">
         precision mediump float;
+        
+        // Note:
+        // I added this uniform to access the fold matrix texture
+        // But It said that the number of sampler2D is limited to 16, and the original author already had 16.
+        uniform sampler2D u_foldMatrix;
         uniform vec2 u_textureDim;
         uniform vec2 u_textureDimEdges;
         uniform vec2 u_textureDimFaces;
@@ -273,12 +278,71 @@
                 vec2 scaledCreaseIndex = creaseIndex/u_textureDimCreases;
 
                 vec4 thetas = texture2D(u_theta, scaledCreaseIndex);
-                vec3 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex).xyz;//[k, d, targetTheta] // Capture the u_creaseMeta data using creaseMeta variable
+                vec4 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex);//[k, d, targetTheta] // Capture the u_creaseMeta data using creaseMeta variable
                 vec4 creaseGeo = texture2D(u_creaseGeo, scaledCreaseIndex);//[h1, h2, coef1, coef2]
                 if (creaseGeo[0]< 0.0) continue;//crease disabled bc it has collapsed too much
+                
+                // Note:
+                // --- BEGIN crease fold interpolation fix ---
+                // Compute metadata UV coordinates to access crease meta info from the fold matrix texture
+                vec2 uvMeta = vec2(
+                    (0.5) / u_textureDim.x,     // X-coordinate: a dummy/sample column (e.g., first column) of the texture
+                    scaledCreaseIndex.y         // Y-coordinate: row corresponding to this specific crease
+                );
 
-                float targetTheta = creaseMeta[2] * u_creasePercent; // Retrieve the targetTheta value
-                float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
+                // Sample the fold matrix texture at uvMeta to retrieve metadata for the current crease
+                vec4 metaSample = texture2D(u_foldMatrix, uvMeta); // (curTargetTheta, texWidth, texHeight, unused)
+
+                // Extract texture dimensions (stored in the green and blue channels of metaSample)
+                float texWidthF  = metaSample.g;  // Width of the fold matrix texture (in texels)
+                float texHeightF = metaSample.b;  // Height of the fold matrix texture (in texels)
+
+
+                // Compute the current "fold position" based on animation progress (u_creasePercent)
+                // This fold position is clamped to ensure it’s within the valid range of keyframes
+                float foldPos = clamp(u_creasePercent, 0.0, 0.9999) * texWidthF;
+
+                // Convert the continuous fold position to an integer keyframe index and interpolation value
+                int keyframe = int(floor(foldPos));   // Current keyframe index (start frame)
+                float t = fract(foldPos);             // Interpolation factor between keyframe and nextKeyframe
+
+                // Compute the next keyframe index
+                int nextKeyframe = keyframe + 1;
+                // Clamp nextKeyframe to not exceed the texture width
+                if (nextKeyframe >= int(texWidthF)) {
+                    nextKeyframe = keyframe; // If at the last frame, use same index to avoid out-of-bounds access
+                }
+
+
+                // Compute the crease row index from the 1D crease index
+                float creaseRow = floor(creaseIndex1D); // Assumes 1D index maps to rows
+
+                // Compute UV coordinates to access theta1 and theta2 from the fold matrix
+                // Each keyframe is stored horizontally (along the x-axis) in the texture
+                // Each crease has its own row (along the y-axis)
+                vec2 uv1 = vec2(
+                    (float(keyframe) + 0.5) / texWidthF,    // Sample from center of texel for keyframe
+                    (creaseRow + 0.5) / texHeightF          // Y row for the crease
+                );
+                vec2 uv2 = vec2(
+                    (float(nextKeyframe) + 0.5) / texWidthF, // Sample from center of texel for next keyframe
+                    (creaseRow + 0.5) / texHeightF           // Same Y row
+                );
+
+                // Fetch theta (angle of crease) for current and next keyframes
+                float theta1 = texture2D(u_foldMatrix, uv1).r;  // Red channel holds the angle
+                float theta2 = texture2D(u_foldMatrix, uv2).r;
+
+                // Interpolate between theta1 and theta2 based on t
+                float targetTheta = mix(theta1, theta2, t);
+
+
+                // Compute angular force for this crease
+                // creaseMeta[0] is likely a stiffness or weight coefficient
+                // thetas[0] is the current angle of the crease
+                float angForce = creaseMeta[0] * (targetTheta - thetas[0]);
+                
+                // --- END crease fold interpolation fix ---
 
                 float nodeNum = nodeCreaseMeta[1];//1, 2, 3, 4
 
@@ -390,6 +454,12 @@
 
     <script id="positionCalcVerletShader" type="x-shader/x-fragment">
         precision mediump float;
+        
+        // Note:
+        // I added this uniform to access the fold matrix texture
+        // But It said that the number of sampler2D is limited to 16, and the original author already had 16.
+        uniform sampler2D u_foldMatrix;
+
         uniform vec2 u_textureDim;
         uniform vec2 u_textureDimEdges;
         uniform vec2 u_textureDimFaces;
@@ -485,11 +555,73 @@
                 vec2 scaledCreaseIndex = creaseIndex/u_textureDimCreases;
 
                 vec4 thetas = texture2D(u_theta, scaledCreaseIndex);
-                vec3 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex).xyz;//[k, d, targetTheta]
+                vec4 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex);//[k, d, targetTheta]
                 vec4 creaseGeo = texture2D(u_creaseGeo, scaledCreaseIndex);//[h1, h2, coef1, coef2]
                 if (creaseGeo[0]< 0.0) continue;//crease disabled bc it has collapsed too much
+                                
+                // Note:
+                // --- BEGIN crease fold interpolation fix ---
+                // Compute metadata UV coordinates to access crease meta info from the fold matrix texture
+                vec2 uvMeta = vec2(
+                    (0.5) / u_textureDim.x,     // X-coordinate: a dummy/sample column (e.g., first column) of the texture
+                    scaledCreaseIndex.y         // Y-coordinate: row corresponding to this specific crease
+                );
 
-                float targetTheta = creaseMeta[2] * u_creasePercent;
+                // Sample the fold matrix texture at uvMeta to retrieve metadata for the current crease
+                vec4 metaSample = texture2D(u_foldMatrix, uvMeta); // (curTargetTheta, texWidth, texHeight, unused)
+
+                // Extract texture dimensions (stored in the green and blue channels of metaSample)
+                float texWidthF  = metaSample.g;  // Width of the fold matrix texture (in texels)
+                float texHeightF = metaSample.b;  // Height of the fold matrix texture (in texels)
+
+
+                // Compute the current "fold position" based on animation progress (u_creasePercent)
+                // This fold position is clamped to ensure it’s within the valid range of keyframes
+                float foldPos = clamp(u_creasePercent, 0.0, 0.9999) * texWidthF;
+
+                // Convert the continuous fold position to an integer keyframe index and interpolation value
+                int keyframe = int(floor(foldPos));   // Current keyframe index (start frame)
+                float t = fract(foldPos);             // Interpolation factor between keyframe and nextKeyframe
+
+                // Compute the next keyframe index
+                int nextKeyframe = keyframe + 1;
+                // Clamp nextKeyframe to not exceed the texture width
+                if (nextKeyframe >= int(texWidthF)) {
+                    nextKeyframe = keyframe; // If at the last frame, use same index to avoid out-of-bounds access
+                }
+
+
+                // Compute the crease row index from the 1D crease index
+                float creaseRow = floor(creaseIndex1D); // Assumes 1D index maps to rows
+
+                // Compute UV coordinates to access theta1 and theta2 from the fold matrix
+                // Each keyframe is stored horizontally (along the x-axis) in the texture
+                // Each crease has its own row (along the y-axis)
+                vec2 uv1 = vec2(
+                    (float(keyframe) + 0.5) / texWidthF,    // Sample from center of texel for keyframe
+                    (creaseRow + 0.5) / texHeightF          // Y row for the crease
+                );
+                vec2 uv2 = vec2(
+                    (float(nextKeyframe) + 0.5) / texWidthF, // Sample from center of texel for next keyframe
+                    (creaseRow + 0.5) / texHeightF           // Same Y row
+                );
+
+                // Fetch theta (angle of crease) for current and next keyframes
+                float theta1 = texture2D(u_foldMatrix, uv1).r;  // Red channel holds the angle
+                float theta2 = texture2D(u_foldMatrix, uv2).r;
+
+                // Interpolate between theta1 and theta2 based on t
+                float targetTheta = mix(theta1, theta2, t);
+
+
+                // Compute angular force for this crease
+                // creaseMeta[0] is likely a stiffness or weight coefficient
+                // thetas[0] is the current angle of the crease
+                float angForce = creaseMeta[0] * (targetTheta - thetas[0]);
+
+                // --- END crease fold interpolation fix ---
+
+                // float targetTheta = creaseMeta[2] * u_creasePercent
                 float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
 
                 float nodeNum = nodeCreaseMeta[1];//1, 2, 3, 4

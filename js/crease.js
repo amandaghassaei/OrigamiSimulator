@@ -2,6 +2,8 @@
  * Created by amandaghassaei on 2/25/17.
  */
 
+// Note:
+// I added `targetThetaSeq` to store the fold sequence for each crease
 function Crease(edge, face1Index, face2Index, targetTheta, targetThetaSeq, type, node1, node2, index){
     //type = 0 panel, 1 crease
 
@@ -13,7 +15,9 @@ function Crease(edge, face1Index, face2Index, targetTheta, targetThetaSeq, type,
     this.face1Index = face1Index;//todo this is useless
     this.face2Index = face2Index;
     this.targetTheta = targetTheta;
-    this.targetThetaSeq = targetThetaSeq;//for sequential folding
+    
+    // Note:
+    this.targetThetaSeq = targetThetaSeq; // For sequential folding
     this.type = type;
     this.node1 = node1;//node at vertex of face 1
     this.node2 = node2;//node at vertex of face 2
@@ -42,9 +46,22 @@ Crease.prototype.getTargetTheta = function(){
     return this.targetTheta;
 };
 
+// Note:
+// It returns the fold sequence for this crease
 Crease.prototype.getTargetThetaSeq = function(){
     return this.targetThetaSeq;
 };
+
+
+// Note:
+// It returns the length of the fold sequence for this crease
+// This is used in dynamicSolver.js to determine the width of the foldMatrix texture
+// foldMatrix texture stores the fold sequences of all creases
+// Each row corresponds to a crease, each column corresponds to a step in the sequence
+// The value stored is the targetTheta for that crease at that step
+Crease.prototype.getSeqLength = function(){
+    return this.targetThetaSeq.length;
+}
 
 Crease.prototype.getK = function(){
     var length = this.getLength();
@@ -133,6 +150,9 @@ Crease.prototype.destroy = function(){
     this.face1Index = null;
     this.face2Index = null;
     this.targetTheta = null;
+
+    // Note:
+    // Destroy the targetThetaSeq as well
     this.targetThetaSeq = null;
     this.type = null;
     this.node1 = null;
