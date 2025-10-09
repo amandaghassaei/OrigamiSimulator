@@ -93,7 +93,7 @@ function initDynamicSolver(globals){
             globals.nodePositionHasChanged = false;
         }
         if (globals.creaseMaterialHasChanged) {
-            updateCreasesMeta();
+            updateCreasesMeta(globals.creasePercent);
             globals.creaseMaterialHasChanged = false;
         }
         if (globals.materialHasChanged) {
@@ -102,6 +102,7 @@ function initDynamicSolver(globals){
         }
         if (globals.shouldChangeCreasePercent) {
             setCreasePercent(globals.creasePercent);
+            updateCreasesMeta(globals.creasePercent, true);
             globals.shouldChangeCreasePercent = false;
         }
         // if (globals.shouldZeroDynamicVelocity){
@@ -478,12 +479,12 @@ function initDynamicSolver(globals){
         globals.gpuMath.initTextureFromData("u_creaseVectors", textureDimCreases, textureDimCreases, "FLOAT", creaseVectors, true);
     }
 
-    function updateCreasesMeta(initing){
+    function updateCreasesMeta(creasePercent, initing){
         for (var i=0;i<creases.length;i++){
             var crease = creases[i];
             creaseMeta[i*4] = crease.getK();
             // creaseMeta[i*4+1] = crease.getD();
-            if (initing) creaseMeta[i*4+2] = crease.getTargetTheta();
+            if (initing) creaseMeta[i*4+2] = crease.getTargetTheta() * creasePercent;
         }
         globals.gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true);
     }
@@ -652,7 +653,7 @@ function initDynamicSolver(globals){
         updateMaterials(true);
         updateFixed();
         updateExternalForces();
-        updateCreasesMeta(true);
+        updateCreasesMeta(globals.creasePercent, true);
         updateCreaseVectors();
         setCreasePercent(globals.creasePercent);
     }
