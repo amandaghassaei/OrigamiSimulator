@@ -506,12 +506,28 @@ function initDynamicSolver(globals){
     }
 
     function updateCreasesMeta(creasePercent, initing){
+        // Note:
+        // Update targetPecent according to creasePercent
+        // ------------------------------------------------------------
+        var seqLength = 1;
+        if (creasePercent === undefined) creasePercent = 0;
+        if (initing === undefined) initing = false;
+        // ------------------------------------------------------------
+        
         for (var i=0;i<creases.length;i++){
             var crease = creases[i];
+            // Note:
+            // Get the targetThetaSeq and calculate frameIndex and targetPercent
+            // ------------------------------------------------------------
+            const targetThetaSeq = crease.getTargetThetaSeq();
+            seqLength = targetThetaSeq ? targetThetaSeq.length : 1;
+            let frameIndex = creasePercent === 0 ? 0 : Math.min(Math.floor(creasePercent * seqLength), seqLength - 1);
+            let targetPercent = creasePercent === 0 ? 0 : creasePercent * seqLength - frameIndex;
+            // ------------------------------------------------------------
             
             creaseMeta[i*4] = crease.getK();
             // creaseMeta[i*4+1] = crease.getD();
-            if (initing) creaseMeta[i*4+2] = crease.getTargetTheta() * creasePercent;
+            if (initing) creaseMeta[i*4+2] = targetThetaSeq[frameIndex] * targetPercent;
         }
         // Note:
         // Syntax of the gpuMath.initTextureFromData is from the GPUMath.js library line 58
