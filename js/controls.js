@@ -714,6 +714,11 @@ function initControls(globals){
         globals.model.reset();
     });
     setLink("#resetBottom", function(){
+        globals.currentFoldPercent = 0;
+        globals.currentKeyframeIndex = 0;
+        globals.shouldChangeCreasePercent = true;
+        globals.updateCreasePercentFromState();
+        updateCreasePercent();
         globals.model.reset();
     });
     setLink("#stepForward", function(){
