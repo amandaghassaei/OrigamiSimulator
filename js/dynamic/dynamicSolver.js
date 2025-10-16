@@ -522,9 +522,11 @@ function initDynamicSolver(globals){
             // Get the targetThetaSeq and calculate frameIndex and targetPercent
             // ------------------------------------------------------------
             const targetThetaSeq = crease.getTargetThetaSeq();
+            console.log(targetThetaSeq.map(angle => (angle * 180/Math.PI).toFixed(1) + "°"));
+            console.log(creasePercent);
             seqLength = targetThetaSeq ? targetThetaSeq.length : 1;
-            let frameIndex = creasePercent === 0 ? 0 : Math.min(Math.floor(creasePercent * seqLength), seqLength - 1);
-            let targetPercent = creasePercent === 0 ? 0 : creasePercent * seqLength - frameIndex;
+            let frameIndex = creasePercent === 0 ? 0 : Math.min(Math.floor(creasePercent * (seqLength - 1)), seqLength - 2);
+            let targetPercent = creasePercent === 0 ? 0 : creasePercent * (seqLength - 1) - frameIndex;
 
             if (frameIndex < 0) frameIndex = 0;
             if (frameIndex >= seqLength) frameIndex = seqLength - 1;
