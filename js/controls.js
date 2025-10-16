@@ -468,12 +468,14 @@ function initControls(globals){
     });
 
     var creasePercentSlider = setSliderInput("#creasePercent", globals.creasePercent*100, -100, 100, 1, function(val){
-        globals.creasePercent = val/100;
+        // globals.creasePercent = val/100;
+        globals.directlySetCreasePercent(val/100)
         globals.shouldChangeCreasePercent = true;
         updateCreasePercent();
     });
     var creasePercentNavSlider = setSlider("#creasePercentNav>div", globals.creasePercent*100, -100, 100, 1, function(val){
-        globals.creasePercent = val/100;
+        // globals.creasePercent = val/100;
+        globals.directlySetCreasePercent(val/100)
         globals.shouldChangeCreasePercent = true;
         updateCreasePercent();
     });
@@ -522,9 +524,13 @@ function initControls(globals){
 
     // 用于修改creasePercent相关的全局变量，并更新UI显示
     function updateCreasePercent(){
+        console.log("globals.creasePercent", globals.creasePercent);
+
         globals.updateCreasePercentFromState();
+        console.log("globals.creasePercent", globals.creasePercent);
 
         var creasePercent = globals.creasePercent * 100;
+        console.log("updateCreasePercent", creasePercent);
         creasePercentSlider.slider('value', creasePercent);
         creasePercentNavSlider.slider('value', creasePercent);
 
@@ -711,6 +717,11 @@ function initControls(globals){
     });
     setLink("#reset", function(){
         if (!globals.simulationRunning) $("#reset").hide();
+        globals.currentFoldPercent = 0;
+        globals.currentKeyframeIndex = 0;
+        globals.shouldChangeCreasePercent = true;
+        globals.updateCreasePercentFromState();
+        updateCreasePercent();
         globals.model.reset();
     });
     setLink("#resetBottom", function(){
