@@ -2,7 +2,7 @@
  * Created by amandaghassaei on 2/25/17.
  */
 
-function Crease(edge, face1Index, face2Index, targetTheta, type, node1, node2, index){
+function Crease(edge, face1Index, face2Index, targetTheta, targetThetaSeq, type, node1, node2, index){
     //type = 0 panel, 1 crease
 
     //face1 corresponds to node1, face2 to node2
@@ -13,6 +13,7 @@ function Crease(edge, face1Index, face2Index, targetTheta, type, node1, node2, i
     this.face1Index = face1Index;//todo this is useless
     this.face2Index = face2Index;
     this.targetTheta = targetTheta;
+    this.targetThetaSeq = targetThetaSeq; // For sequential folding
     this.type = type;
     this.node1 = node1;//node at vertex of face 1
     this.node2 = node2;//node at vertex of face 2
@@ -40,6 +41,14 @@ Crease.prototype.getNormal2Index = function(){
 Crease.prototype.getTargetTheta = function(){
     return this.targetTheta;
 };
+
+Crease.prototype.getTargetThetaSeq = function(){
+    return this.targetThetaSeq;
+};
+
+Crease.prototype.getSeqLength = function(){
+    return this.targetThetaSeq.length;
+}
 
 Crease.prototype.getK = function(){
     var length = this.getLength();
@@ -128,6 +137,7 @@ Crease.prototype.destroy = function(){
     this.face1Index = null;
     this.face2Index = null;
     this.targetTheta = null;
+    this.targetThetaSeq = null;
     this.type = null;
     this.node1 = null;
     this.node2 = null;

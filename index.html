@@ -184,7 +184,6 @@
         uniform vec2 u_textureDimCreases;
         uniform vec2 u_textureDimNodeCreases;
         uniform vec2 u_textureDimNodeFaces;
-        uniform float u_creasePercent;
         uniform float u_dt;
         uniform float u_axialStiffness;
         uniform float u_faceStiffness;
@@ -274,8 +273,8 @@
                 vec3 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex).xyz;//[k, d, targetTheta]
                 vec4 creaseGeo = texture2D(u_creaseGeo, scaledCreaseIndex);//[h1, h2, coef1, coef2]
                 if (creaseGeo[0]< 0.0) continue;//crease disabled bc it has collapsed too much
-
-                float targetTheta = creaseMeta[2] * u_creasePercent;
+                
+                float targetTheta = creaseMeta[2];
                 float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
 
                 float nodeNum = nodeCreaseMeta[1];//1, 2, 3, 4
@@ -394,7 +393,6 @@
         uniform vec2 u_textureDimCreases;
         uniform vec2 u_textureDimNodeCreases;
         uniform vec2 u_textureDimNodeFaces;
-        uniform float u_creasePercent;
         uniform float u_dt;
         uniform float u_axialStiffness;
         uniform float u_faceStiffness;
@@ -486,8 +484,8 @@
                 vec3 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex).xyz;//[k, d, targetTheta]
                 vec4 creaseGeo = texture2D(u_creaseGeo, scaledCreaseIndex);//[h1, h2, coef1, coef2]
                 if (creaseGeo[0]< 0.0) continue;//crease disabled bc it has collapsed too much
-
-                float targetTheta = creaseMeta[2] * u_creasePercent;
+                                
+                float targetTheta = creaseMeta[2];
                 float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
 
                 float nodeNum = nodeCreaseMeta[1];//1, 2, 3, 4
