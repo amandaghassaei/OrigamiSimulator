@@ -73,6 +73,7 @@ function initPattern(globals){
         if (typeForStroke(stroke) == "mountain"){
             var opacity = getOpacity($this);
             this.targetAngle = -opacity*180;
+            this.targetAngleSeq = getAnimate($this);
             return true;
         }
         return false;
@@ -83,6 +84,7 @@ function initPattern(globals){
         if (typeForStroke(stroke) == "valley"){
             var opacity = getOpacity($this);
             this.targetAngle = opacity*180;
+            this.targetAngleSeq = getAnimate($this);
             return true;
         }
         return false;
@@ -92,8 +94,14 @@ function initPattern(globals){
         return typeForStroke(stroke) == "cut";
     }
     function triangulationFilter(){
-        var stroke = getStroke($(this));
-        return typeForStroke(stroke) == "triangulation";
+        var $this = $(this);
+        var stroke = getStroke($this);
+        if (typeForStroke(stroke) == "triangulation"){
+            this.targetAngle = 0;
+            this.targetAngleSeq = getAnimate($this);
+            return true;
+        }
+        return false;
     }
     function hingeFilter(){
         var stroke = getStroke($(this));
@@ -133,6 +141,86 @@ function initPattern(globals){
         return stroke.toLowerCase();
     }
 
+    function getAnimate(obj) {
+        var elem = obj.find("animate").get(0);
+        if (!elem) return [];
+        var values = elem.getAttribute("values");
+        if (!values) return [];
+        // Split by semicolons and trim whitespace
+        return values.split(";").map(v => rgb2angle(v));
+    }
+
+    function rgb2angle(color) {
+        // #FF0000 => -180;
+        // #FF7F00 => -90;
+        // #FFFF00 => 0;
+        // #7FFF00 => 90;
+        // #0000FF => 180;
+        // ((g+b-r) / 255) * 180
+        var colors255 = color2rgb(color);
+        var colors = colors255.map(x => (x > 0) ? x + 1 : x);
+        return ((colors[1] + colors[2] - colors[0]) / 256) * 180;
+    }
+
+    function color2rgb(color) {
+        color = color.trim().toLowerCase();
+        // --- HEX ---
+        if (color[0] === "#") {
+            if (color.length === 4) {
+            // #rgb -> #rrggbb
+            let r = parseInt(color[1] + color[1], 16);
+            let g = parseInt(color[2] + color[2], 16);
+            let b = parseInt(color[3] + color[3], 16);
+            return [r, g, b];
+            } else if (color.length === 7) {
+            // #rrggbb
+            let r = parseInt(color.slice(1, 3), 16);
+            let g = parseInt(color.slice(3, 5), 16);
+            let b = parseInt(color.slice(5, 7), 16);
+            return [r, g, b];
+            }
+        }
+        // --- RGB / RGBA ---
+        let rgbMatch = color.match(/^rgba?\(([^)]+)\)$/);
+        if (rgbMatch) {
+            let parts = rgbMatch[1].split(",").map(x => parseFloat(x.trim()));
+            return [parts[0], parts[1], parts[2]];
+        }
+        // --- Named colors ---
+        const namedColors = {
+            red: [255, 0, 0],
+            green: [0, 127, 0],
+            blue: [0, 0, 255],
+            black: [0, 0, 0],
+            white: [255, 255, 255],
+            gray: [127, 127, 127],
+            yellow: [255, 255, 0],
+            cyan: [0, 255, 255],
+            magenta: [255, 0, 255],
+        };
+        if (namedColors[color]) {
+            return namedColors[color];
+        }
+        throw new Error("Unsupported color format: " + color);
+    }
+
+    function rgb2hex(rgb) {
+        return "#" + rgb.map(x => x.toString(16).padStart(2, '0')).join('');
+    }
+
+    function angle2rgb(angle) {
+        let rate = angle / 180;
+        // #FF0000 <= -180;
+        // #FF7F00 <= -90;
+        // #FFFF00 <= 0;
+        // #7FFF00 <= 90;
+        // #0000FF <= 180;
+        let r = Math.min(1, 1-rate);
+        let g = Math.min(1, 1+rate, 2-2*rate);
+        let b = Math.max(0, -1+2*rate);
+        return [r, g, b].map(x => Math.round(Math.max(x * 256 - 1, 0)));
+    }
+
     function typeForStroke(stroke){
         if (stroke == "#000000" || stroke == "#000" || stroke == "black" || stroke == "rgb(0,0,0)") return "border";
         if (stroke == "#ff0000" || stroke == "#f00" || stroke == "red" || stroke == "rgb(255,0,0)") return "mountain";
@@ -155,7 +243,7 @@ function initPattern(globals){
     }
     function opacityForAngle(angle, assignment){
         if (angle === null || assignment == "F") return 1;
-        return Math.abs(angle)/180;
+        return Math.abs(angle[0])/180;
     }
 
     function findType(_verticesRaw, _segmentsRaw, filter, $paths, $lines, $rects, $polygons, $polylines){
@@ -227,7 +315,8 @@ function initPattern(globals){
 
                     case "l"://dx, dy
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                        if (Number.isFinite(path.targetAngle) && _segmentsRaw.length>0)
+                            _segmentsRaw[_segmentsRaw.length-1].push([path.targetAngle, path.targetAngleSeq]);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.x += segment.values[0];
                         vertex.z += segment.values[1];
@@ -237,7 +326,8 @@ function initPattern(globals){
 
                     case "v"://dy
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                        if (Number.isFinite(path.targetAngle) && _segmentsRaw.length>0)
+                            _segmentsRaw[_segmentsRaw.length-1].push([path.targetAngle, path.targetAngleSeq]);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.z += segment.values[0];
                         _verticesRaw.push(vertex);
@@ -246,7 +336,8 @@ function initPattern(globals){
 
                     case "h"://dx
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                        if (Number.isFinite(path.targetAngle) && _segmentsRaw.length>0)
+                            _segmentsRaw[_segmentsRaw.length-1].push([path.targetAngle, path.targetAngleSeq]);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.x += segment.values[0];
                         _verticesRaw.push(vertex);
@@ -262,7 +353,8 @@ function initPattern(globals){
 
                     case "L"://x, y
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                        if (Number.isFinite(path.targetAngle) && _segmentsRaw.length>0)
+                            _segmentsRaw[_segmentsRaw.length-1].push([path.targetAngle, path.targetAngleSeq]);
                         var vertex = new THREE.Vector3(segment.values[0], 0, segment.values[1]);
                         _verticesRaw.push(vertex);
                         pathVertices.push(vertex);
@@ -270,7 +362,8 @@ function initPattern(globals){
 
                     case "V"://y
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                        if (Number.isFinite(path.targetAngle) && _segmentsRaw.length>0)
+                            _segmentsRaw[_segmentsRaw.length-1].push([path.targetAngle, path.targetAngleSeq]);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.z = segment.values[0];
                         _verticesRaw.push(vertex);
@@ -279,7 +372,8 @@ function initPattern(globals){
 
                     case "H"://x
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                        if (Number.isFinite(path.targetAngle) && _segmentsRaw.length>0)
+                            _segmentsRaw[_segmentsRaw.length-1].push([path.targetAngle, path.targetAngleSeq]);
                         var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.x = segment.values[0];
                         _verticesRaw.push(vertex);
@@ -307,7 +401,8 @@ function initPattern(globals){
             _verticesRaw.push(new THREE.Vector3(element.x1.baseVal.value, 0, element.y1.baseVal.value));
             _verticesRaw.push(new THREE.Vector3(element.x2.baseVal.value, 0, element.y2.baseVal.value));
             _segmentsRaw.push([_verticesRaw.length-2, _verticesRaw.length-1]);
-            if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
+            if (Number.isFinite(element.targetAngle))
+                _segmentsRaw[_segmentsRaw.length-1].push([element.targetAngle, element.targetAngleSeq]);
             applyTransformation(_verticesRaw[_verticesRaw.length-2], element);
             applyTransformation(_verticesRaw[_verticesRaw.length-1], element);
         }
@@ -329,7 +424,8 @@ function initPattern(globals){
             _segmentsRaw.push([_verticesRaw.length-2, _verticesRaw.length-1]);
             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-4]);
             for (var j=1;j<=4;j++){
-                if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle);
+                if (Number.isFinite(element.targetAngle))
+                    _segmentsRaw[_segmentsRaw.length-j].push([element.targetAngle, element.targetAngleSeq]);
                 applyTransformation(_verticesRaw[_verticesRaw.length-j], element);
             }
         }
@@ -345,7 +441,8 @@ function initPattern(globals){
                 if (j<element.points.length-1) _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
                 else _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-element.points.length]);
 
-                if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
+                if (Number.isFinite(element.targetAngle))
+                    _segmentsRaw[_segmentsRaw.length-1].push([element.targetAngle, element.targetAngleSeq]);
             }
         }
     }
@@ -358,7 +455,8 @@ function initPattern(globals){
                 applyTransformation(_verticesRaw[_verticesRaw.length-1], element);
                 if (j>0) {
                     _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-2]);
-                    if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
+                    if (Number.isFinite(element.targetAngle))
+                        _segmentsRaw[_segmentsRaw.length-1].push([element.targetAngle, element.targetAngleSeq]);
                 }
             }
         }
@@ -489,6 +587,17 @@ function initPattern(globals){
                 line.setAttribute('x2', vertex[0]);
                 line.setAttribute('y2', vertex[2]);
                 line.setAttribute('stroke-width', strokeWidth);
+
+                if (rawFold.edges_foldAngle[i] && rawFold.edges_foldAngle[i][1].length > 0) {
+                    var values = rawFold.edges_foldAngle[i][1].map(angle => rgb2hex(angle2rgb(angle)));
+                    var animate = document.createElementNS(ns, 'animate');
+                    animate.setAttribute('attributeName', 'stroke');
+                    animate.setAttribute('values', values.join(';'));
+                    animate.setAttribute('dur', values.length + 's');
+                    animate.setAttribute('fill', 'freeze');
+                    line.appendChild(animate);
+                }
+
                 svg.appendChild(line);
             }
             $("#svgViewer").html(svg);
@@ -517,7 +626,7 @@ function initPattern(globals){
         _.each(_triangulationsRaw, function(edge){
             foldData.edges_vertices.push([edge[0], edge[1]]);
             foldData.edges_assignment.push("F");
-            foldData.edges_foldAngle.push(0);
+            foldData.edges_foldAngle.push(edge[2]);
         });
         _.each(_hingesRaw, function(edge){
             foldData.edges_vertices.push([edge[0], edge[1]]);
@@ -557,6 +666,8 @@ function initPattern(globals){
         foldData = removeBorderFaces(foldData);//expose holes surrounded by all border edges
 
         foldData = reverseFaceOrder(foldData);//set faces to counter clockwise
+
+        console.log(foldData);
 
         return processFold(foldData);
     }
@@ -930,7 +1041,7 @@ function initPattern(globals){
                     console.warn("different edge assignments");
                     return false;
                 }
-                var angle = fold.edges_foldAngle[i];
+                var angle = fold.edges_foldAngle[i][0];
                 if (isNaN(angle)) console.log(i);
                 angles.push(angle);
                 if (angle) {
@@ -951,7 +1062,7 @@ function initPattern(globals){
         }
         fold.edges_vertices.push([v1, v3]);
         fold.edges_assignment.push(edgeAssignment);
-        if (avgSum > 0) fold.edges_foldAngle.push(angleAvg/avgSum);
+        if (avgSum > 0) fold.edges_foldAngle.push([angleAvg/avgSum, []]);
         else fold.edges_foldAngle.push(null);
         var index = fold.vertices_vertices[v1].indexOf(v2);
         fold.vertices_vertices[v1].splice(index, 1);
@@ -1007,13 +1118,13 @@ function initPattern(globals){
                 var dist2 = (faceV2.clone().sub(faceV4)).lengthSq();
                 if (dist2<dist1) {
                     edges.push([face[1], face[3]]);
-                    foldAngles.push(0);
+                    foldAngles.push([0, []]);
                     assignments.push("F");
                     triangulatedFaces.push([face[0], face[1], face[3]]);
                     triangulatedFaces.push([face[1], face[2], face[3]]);
                 } else {
                     edges.push([face[0], face[2]]);
-                    foldAngles.push(0);
+                    foldAngles.push([0, []]);
                     assignments.push("F");
                     triangulatedFaces.push([face[0], face[1], face[2]]);
                     triangulatedFaces.push([face[0], face[2], face[3]]);
@@ -1112,17 +1223,17 @@ function initPattern(globals){
                     if (k==0){
                         faceEdges.push(edges.length);
                         edges.push([tri[0], tri[1]]);
-                        foldAngles.push(0);
+                        foldAngles.push([0, []]);
                         assignments.push("F");
                     } else if (k==1){
                         faceEdges.push(edges.length);
                         edges.push([tri[2], tri[1]]);
-                        foldAngles.push(0);
+                        foldAngles.push([0, []]);
                         assignments.push("F");
                     } else if (k==2){
                         faceEdges.push(edges.length);
                         edges.push([tri[2], tri[0]]);
-                        foldAngles.push(0);
+                        foldAngles.push([0, []]);
                         assignments.push("F");
                     }
                 }
@@ -1285,6 +1396,6 @@ function initPattern(globals){
         saveSVG: saveSVG,
         getFoldData: getFoldData,
         getTriangulatedFaces: getTriangulatedFaces,
-        setFoldData: setFoldData
+        setFoldData: setFoldData,
     }
 }
