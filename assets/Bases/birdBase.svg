@@ -1,23 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="3456px" height="6912px" viewBox="0 0 3456 6912" enable-background="new 0 0 3456 6912" xml:space="preserve">
-<rect x="432" y="288" fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" width="2016" height="2016"/>
-<line opacity="0.5" fill="none" stroke="#0000FF" stroke-miterlimit="10" x1="432" y1="288" x2="2448" y2="2304"/>
-<line fill="none" stroke="#FF0000" stroke-miterlimit="10" x1="864" y1="1296" x2="2016" y2="1296"/>
-<line fill="none" stroke="#FF0000" stroke-miterlimit="10" x1="1440" y1="720" x2="1440" y2="1872"/>
-<line fill="none" stroke="#FF0000" stroke-miterlimit="10" x1="432" y1="288" x2="1440" y2="720"/>
-<line fill="none" stroke="#FF0000" stroke-miterlimit="10" x1="2448" y1="288" x2="1440" y2="720"/>
-<line fill="none" stroke="#FF0000" stroke-miterlimit="10" x1="2448" y1="288" x2="2016" y2="1296"/>
-<line fill="none" stroke="#FF0000" stroke-miterlimit="10" x1="2448" y1="2304" x2="2016" y2="1296"/>
-<line fill="none" stroke="#FF0000" stroke-miterlimit="10" x1="2448" y1="2304" x2="1440" y2="1872"/>
-<line fill="none" stroke="#FF0000" stroke-miterlimit="10" x1="432" y1="2304" x2="1440" y2="1872"/>
-<line fill="none" stroke="#FF0000" stroke-miterlimit="10" x1="432" y1="2304" x2="864" y2="1296"/>
-<line fill="none" stroke="#FF0000" stroke-miterlimit="10" x1="432" y1="288" x2="864" y2="1296"/>
-<line fill="none" stroke="#0000FF" stroke-miterlimit="10" x1="864" y1="1296" x2="432" y2="1296"/>
-<line fill="none" stroke="#0000FF" stroke-miterlimit="10" x1="2016" y1="1296" x2="2448" y2="1296"/>
-<line fill="none" stroke="#0000FF" stroke-miterlimit="10" x1="1440" y1="720" x2="1440" y2="288"/>
-<line fill="none" stroke="#0000FF" stroke-miterlimit="10" x1="1440" y1="1872" x2="1440" y2="2304"/>
-<line opacity="0.5" fill="none" stroke="#0000FF" stroke-miterlimit="10" x1="432" y1="2304" x2="2448" y2="288"/>
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	width="1200" height="1200" viewBox="-600 -600 1200 1200"
+	enable-background="new -600 -600 1200 1200" xml:space="preserve">
+
+<rect x="-500" y="-500" fill="#FFFFFF" stroke="#000000" width="1000" height="1000"/>
+
+<!-- a lines -->
+<line stroke="#FF0000" id="a1" x1="0" y1="0" x2="0" y2="-292">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#F00; #777;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#F00"
+    dur="18s" fill="freeze"/>
+</line>
+<line stroke="#FF0000" id="a2" x1="0" y1="0" x2="-292" y2="0">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#00F; #777;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#F00"
+    dur="18s" fill="freeze"/>
+</line>
+<line stroke="#FF0000" id="a3" x1="0" y1="0" x2="292" y2="0">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#F00; #777;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#F00"
+    dur="18s" fill="freeze"/>
+</line>
+<line stroke="#FF0000" id="a4" x1="0" y1="0" x2="0" y2="292">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#00F; #777;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#F00"
+    dur="18s" fill="freeze"/>
+</line>
+
+<!-- b lines -->
+<line stroke="#FF0000" id="b1" x1="-500" y1="-500" x2="0" y2="-292">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#00F; #00F;#777;#F00; #F00;#F00;#F00; #F00;#F00"
+    dur="18s" fill="freeze"/>
+</line>
+<line stroke="#FF0000" id="b2" x1="-500" y1="-500" x2="-292" y2="0">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#00F; #00F;#777;#F00; #F00;#F00;#F00; #F00;#F00"
+    dur="18s" fill="freeze"/>
+</line>
+<line stroke="#FF0000" id="b3" x1="500" y1="-500" x2="0" y2="-292">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#F00; #F00;#777;#F00; #F00;#F00;#F00; #F00;#F00"
+    dur="18s" fill="freeze"/>
+</line>
+<line stroke="#FF0000" id="b4" x1="-500" y1="500" x2="-292" y2="0">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#F00; #F00;#777;#F00; #F00;#F00;#F00; #F00;#F00"
+    dur="18s" fill="freeze"/>
+</line>
+<line stroke="#FF0000" id="b5" x1="500" y1="500" x2="292" y2="0">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #00F;#777;#F00; #F00;#F00"
+    dur="18s" fill="freeze"/>
+</line>
+<line stroke="#FF0000" id="b6" x1="500" y1="500" x2="0" y2="292">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #00F;#777;#F00; #F00;#F00"
+    dur="18s" fill="freeze"/>
+</line>
+<line stroke="#FF0000" id="b7" x1="500" y1="-500" x2="292" y2="0">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #F00;#777;#F00; #F00;#F00"
+    dur="18s" fill="freeze"/>
+</line>
+<line stroke="#FF0000" id="b8" x1="-500" y1="500" x2="0" y2="292">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #F00;#777;#F00; #F00;#F00"
+    dur="18s" fill="freeze"/>
+</line>
+
+<!-- c lines -->
+<line stroke="#FF00FF" id="c1" x1="-292" y1="0" x2="0" y2="-292">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #00F;#777;#00F; #00F;#00F;#00F; #777;#777"
+    dur="18s" fill="freeze"/>
+</line>
+<line stroke="#FF00FF" id="c2" x1="0" y1="-292" x2="146" y2="-146">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #F00;#777;#777; #777;#777;#777; #777;#777"
+    dur="18s" fill="freeze"/>
+</line>
+<line stroke="#FF00FF" id="c3" x1="-292" y1="0" x2="-146" y2="146">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #F00;#777;#777; #777;#777;#777; #777;#777"
+    dur="18s" fill="freeze"/>
+</line>
+<line stroke="#FF00FF" id="c4" x1="292" y1="0" x2="0" y2="292">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #F00;#777;#777; #777;#777;#00F; #777;#777"
+    dur="18s" fill="freeze"/>
+</line>
+<line stroke="#FF00FF" id="c5" x1="292" y1="0" x2="146" y2="-146">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #00F;#777;#777; #777;#777;#777; #777;#777"
+    dur="18s" fill="freeze"/>
+</line>
+<line stroke="#FF00FF" id="c6" x1="0" y1="292" x2="-146" y2="146">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#FFF; #00F;#777;#777; #777;#777;#777; #777;#777"
+    dur="18s" fill="freeze"/>
+</line>
+
+<!-- d lines -->
+<line stroke="#0000FF" id="d1" x1="0" y1="-292" x2="0" y2="-500">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#F00; #777;#F00;#F00; #F00;#F00;#777; #777;#777;#777; #00F;#00F"
+    dur="18s" fill="freeze"/>
+</line>
+<line stroke="#0000FF" id="d2" x1="-292" y1="0" x2="-500" y2="0">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#FFF; #FFF;#FFF;#00F; #777;#F00;#F00; #F00;#F00;#777; #777;#777;#777; #00F;#00F"
+    dur="18s" fill="freeze"/>
+</line>
+<line stroke="#0000FF" id="d3" x1="292" y1="0" x2="500" y2="0">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#F00; #777;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#777; #00F;#00F"
+    dur="18s" fill="freeze"/>
+</line>
+<line stroke="#0000FF" id="d4" x1="0" y1="292" x2="0" y2="500">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#FFF;#00F; #777;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#F00;#777; #00F;#00F"
+    dur="18s" fill="freeze"/>
+</line>
+
+<!-- e lines -->
+<line opacity="0.5" stroke="#0000FF" id="e1" x1="0" y1="0" x2="-500" y2="-500">
+<animate attributeName="stroke"
+    values="#FFF; #F00;#F00;#F00; #F00;#F00;#F00; #F00;#777;#777; #777;#777;#777; #777;#777;#777; #777;#77F"
+    dur="18s" fill="freeze"/>
+</line>
+<line opacity="0.5" stroke="#0000FF" id="e2" x1="0" y1="0" x2="500" y2="500">
+<animate attributeName="stroke"
+    values="#FFF; #F00;#F00;#F00; #F00;#777;#777; #777;#777;#777; #777;#777;#777; #777;#777;#777; #777;#77F"
+    dur="18s" fill="freeze"/>
+</line>
+<line opacity="0.5" stroke="#0000FF" id="e3" x1="0" y1="0" x2="500" y2="-500">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#00F;#00F; #00F;#00F;#00F; #00F;#00F;#00F; #00F;#00F;#00F; #00F;#00F;#00F; #00F;#77F"
+    dur="18s" fill="freeze"/>
+</line>
+<line opacity="0.5" stroke="#0000FF" id="e4" x1="0" y1="0" x2="-500" y2="500">
+<animate attributeName="stroke"
+    values="#FFF; #FFF;#F00;#F00; #F00;#777;#777; #777;#00F;#00F; #00F;#00F;#00F; #00F;#00F;#00F; #00F;#77F"
+    dur="18s" fill="freeze"/>
+</line>
 </svg>
