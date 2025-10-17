@@ -268,8 +268,8 @@ function initModel(globals){
                 edges[_creaseParams[4]],
                 _creaseParams[0],
                 _creaseParams[2],
-                _creaseParams[5] * Math.PI / 180, // convert back to radians for the GPU math
-                [0, 30, 60, _creaseParams[5]].map(function(x){return x * Math.PI / 180;}), // Note: this is just a hardcoded example sequence
+                _creaseParams[5] * Math.PI / 180,  // convert back to radians for the GPU math
+                [0, 0.6, 0.3, 0.8, 0.5, 1].map(function(x){return x * _creaseParams[5] * Math.PI / 180;}),
                 type,
                 nodes[_creaseParams[1]],
                 nodes[_creaseParams[3]],
@@ -398,6 +398,10 @@ function initModel(globals){
         return creases;
     }
 
+    function getMaxTargetThetaSeqNum(){
+        return Math.max(...creases.map(c => c.targetThetaSeq.length));
+    }
+
     function getDimensions(){
         geometry.computeBoundingBox();
         return geometry.boundingBox.max.clone().sub(geometry.boundingBox.min);
@@ -413,6 +417,7 @@ function initModel(globals){
         getEdges: getEdges,
         getFaces: getFaces,
         getCreases: getCreases,
+        getMaxTargetThetaSeqNum: getMaxTargetThetaSeqNum,
         getGeometry: getGeometry,//for save stl
         getPositionsArray: getPositionsArray,
         getColorsArray: getColorsArray,

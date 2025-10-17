@@ -178,18 +178,12 @@
 
     <script id="velocityCalcShader" type="x-shader/x-fragment">
         precision mediump float;
-        
-        // Note:
-        // I added this uniform to access the fold matrix texture
-        // But It said that the number of sampler2D is limited to 16, and the original author already had 16.
-        uniform sampler2D u_foldMatrix;
         uniform vec2 u_textureDim;
         uniform vec2 u_textureDimEdges;
         uniform vec2 u_textureDimFaces;
         uniform vec2 u_textureDimCreases;
         uniform vec2 u_textureDimNodeCreases;
         uniform vec2 u_textureDimNodeFaces;
-        uniform float u_creasePercent;
         uniform float u_dt;
         uniform float u_axialStiffness;
         uniform float u_faceStiffness;
@@ -200,9 +194,7 @@
         uniform sampler2D u_mass;
         uniform sampler2D u_meta;//[beamsIndex, numBeam, nodeCreaseMetaIndex, numCreases]
         uniform sampler2D u_beamMeta;//[k, d, length, otherNodeIndex]
-        uniform sampler2D u_creaseMeta;// This is used for storing [k, d, targetTheta].
-        // Uniform: A global variable set from JavaScript, not changed inside the shader. It’s the way you send data from CPU → GPU.
-        // sampler2D: A special GLSL type that represents a 2D texture. Think of it like a handle to a texture image.
+        uniform sampler2D u_creaseMeta;//[k, d, targetTheta]
         uniform sampler2D u_nodeCreaseMeta;//[creaseIndex, nodeIndex, -, -]
         uniform sampler2D u_normals;
         uniform sampler2D u_theta;//[theta, z, normal1Index, normal2Index]
@@ -278,18 +270,10 @@
                 vec2 scaledCreaseIndex = creaseIndex/u_textureDimCreases;
 
                 vec4 thetas = texture2D(u_theta, scaledCreaseIndex);
-                vec4 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex);//[k, d, targetTheta] // Capture the u_creaseMeta data using creaseMeta variable
+                vec3 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex).xyz;//[k, d, targetTheta]
                 vec4 creaseGeo = texture2D(u_creaseGeo, scaledCreaseIndex);//[h1, h2, coef1, coef2]
                 if (creaseGeo[0]< 0.0) continue;//crease disabled bc it has collapsed too much
                 
-                // Note:
-                // --- BEGIN crease fold interpolation fix ---
-                // Compute metadata UV coordinates to access crease meta info from the fold matrix texture
-                vec2 uvMeta = vec2(
-                    (0.5) / u_textureDim.x,     // X-coordinate: a dummy/sample column (e.g., first column) of the texture
-                    scaledCreaseIndex.y         // Y-coordinate: row corresponding to this specific crease
-                );
-
                 float targetTheta = creaseMeta[2];
                 float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
 
@@ -403,19 +387,12 @@
 
     <script id="positionCalcVerletShader" type="x-shader/x-fragment">
         precision mediump float;
-        
-        // Note:
-        // I added this uniform to access the fold matrix texture
-        // But It said that the number of sampler2D is limited to 16, and the original author already had 16.
-        uniform sampler2D u_foldMatrix;
-
         uniform vec2 u_textureDim;
         uniform vec2 u_textureDimEdges;
         uniform vec2 u_textureDimFaces;
         uniform vec2 u_textureDimCreases;
         uniform vec2 u_textureDimNodeCreases;
         uniform vec2 u_textureDimNodeFaces;
-        uniform float u_creasePercent;
         uniform float u_dt;
         uniform float u_axialStiffness;
         uniform float u_faceStiffness;
@@ -504,18 +481,10 @@
                 vec2 scaledCreaseIndex = creaseIndex/u_textureDimCreases;
 
                 vec4 thetas = texture2D(u_theta, scaledCreaseIndex);
-                vec4 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex);//[k, d, targetTheta]
+                vec3 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex).xyz;//[k, d, targetTheta]
                 vec4 creaseGeo = texture2D(u_creaseGeo, scaledCreaseIndex);//[h1, h2, coef1, coef2]
                 if (creaseGeo[0]< 0.0) continue;//crease disabled bc it has collapsed too much
                                 
-                // Note:
-                // --- BEGIN crease fold interpolation fix ---
-                // Compute metadata UV coordinates to access crease meta info from the fold matrix texture
-                vec2 uvMeta = vec2(
-                    (0.5) / u_textureDim.x,     // X-coordinate: a dummy/sample column (e.g., first column) of the texture
-                    scaledCreaseIndex.y         // Y-coordinate: row corresponding to this specific crease
-                );
-
                 float targetTheta = creaseMeta[2];
                 float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
 

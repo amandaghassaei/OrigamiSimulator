@@ -10,6 +10,7 @@ function initDynamicSolver(globals){
     var edges;
     var faces;
     var creases;
+    var seqLength;
     var positions;
     var colors;
 
@@ -37,19 +38,12 @@ function initDynamicSolver(globals){
     var theta;//[theta, w, normalIndex1, normalIndex2]
     var lastTheta;//[theta, w, normalIndex1, normalIndex2]
 
-    // Note:
-    // These two variables are for the fold matrix texture size
-    // foldMatrixWidth: number of steps in the fold sequence
-    // foldMatrixHeight: number of creases
-    var foldMatrixWidth = 0;
-    var foldMatrixHeight = 0;
-
-
     function syncNodesAndEdges(){
         nodes = globals.model.getNodes();
         edges = globals.model.getEdges();
         faces = globals.model.getFaces();
         creases = globals.model.getCreases();
+        seqLength = globals.model.getMaxTargetThetaSeqNum();
 
         positions = globals.model.getPositionsArray();
         colors = globals.model.getColorsArray();
@@ -84,7 +78,7 @@ function initDynamicSolver(globals){
         if (globals.shouldAnimateFoldPercent){
             globals.creasePercent = globals.videoAnimator.nextFoldAngle(0);
             globals.controls.updateCreasePercent();
-            setCreasePercent(globals.creasePercent);
+            updateCreasesMeta(globals.creasePercent, true);
             globals.shouldChangeCreasePercent = true;
         }
 
@@ -109,7 +103,6 @@ function initDynamicSolver(globals){
             globals.materialHasChanged = false;
         }
         if (globals.shouldChangeCreasePercent) {
-            setCreasePercent(globals.creasePercent);
             updateCreasesMeta(globals.creasePercent, true);
             globals.shouldChangeCreasePercent = false;
         }
@@ -262,15 +255,6 @@ function initDynamicSolver(globals){
 
         var vertexShader = document.getElementById("vertexShader").text;
 
-        // Notes:
-        // Get texture sizes
-        if (foldMatrixWidth === 0 && creases.length > 0) {
-            // Get the first crease's sequence length as representative
-            var firstCreaseSeq = creases[0].getTargetThetaSeq();
-            foldMatrixWidth = firstCreaseSeq ? firstCreaseSeq.length : 1;   // Width: Total steps in the fold sequence
-            foldMatrixHeight = calcTextureSize(creases.length);             // Height: Number of creases
-        }
-
         gpuMath.initTextureFromData("u_position", textureDim, textureDim, "FLOAT", position, true);
         gpuMath.initTextureFromData("u_lastPosition", textureDim, textureDim, "FLOAT", lastPosition, true);
         gpuMath.initTextureFromData("u_lastLastPosition", textureDim, textureDim, "FLOAT", lastLastPosition, true);
@@ -334,14 +318,9 @@ function initDynamicSolver(globals){
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimCreases", [textureDimCreases, textureDimCreases], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimNodeCreases", [textureDimNodeCreases, textureDimNodeCreases], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimNodeFaces", [textureDimNodeFaces, textureDimNodeFaces], "2f");
-        gpuMath.setUniformForProgram("velocityCalc", "u_creasePercent", globals.creasePercent, "1f");
         gpuMath.setUniformForProgram("velocityCalc", "u_axialStiffness", globals.axialStiffness, "1f");
         gpuMath.setUniformForProgram("velocityCalc", "u_faceStiffness", globals.faceStiffness, "1f");
         gpuMath.setUniformForProgram("velocityCalc", "u_calcFaceStrain", globals.calcFaceStrain, "1f");
-
-        // Note:
-        // I added this uniform to access the fold matrix texture
-        gpuMath.setUniformForProgram("velocityCalc", "u_foldMatrixSize", [foldMatrixWidth, foldMatrixHeight], "2f");
 
         gpuMath.createProgram("positionCalcVerlet", vertexShader, document.getElementById("positionCalcVerletShader").text);
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_lastPosition", 0, "1i");
@@ -366,15 +345,9 @@ function initDynamicSolver(globals){
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_textureDimCreases", [textureDimCreases, textureDimCreases], "2f");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_textureDimNodeCreases", [textureDimNodeCreases, textureDimNodeCreases], "2f");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_textureDimNodeFaces", [textureDimNodeFaces, textureDimNodeFaces], "2f");
-        gpuMath.setUniformForProgram("positionCalcVerlet", "u_creasePercent", globals.creasePercent, "1f");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_axialStiffness", globals.axialStiffness, "1f");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_faceStiffness", globals.faceStiffness, "1f");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_calcFaceStrain", globals.calcFaceStrain, "1f");
-
-        // Note:
-        // I added this uniform to access the fold matrix texture
-        gpuMath.setUniformForProgram("positionCalcVerlet", "u_foldMatrixSize", [foldMatrixWidth, foldMatrixHeight], "2f");
-
 
         gpuMath.createProgram("thetaCalc", vertexShader, document.getElementById("thetaCalcShader").text);
         gpuMath.setUniformForProgram("thetaCalc", "u_normals", 0, "1i");
@@ -505,77 +478,26 @@ function initDynamicSolver(globals){
         globals.gpuMath.initTextureFromData("u_creaseVectors", textureDimCreases, textureDimCreases, "FLOAT", creaseVectors, true);
     }
 
-    function updateCreasesMeta(creasePercent, initing){
-        // Note:
-        // Update targetPecent according to creasePercent
-        // ------------------------------------------------------------
-        var seqLength = 1;
-        if (creasePercent === undefined) creasePercent = 0;
-        if (initing === undefined) initing = false;
-        // Flag to check if we need to bake
-        var shouldBake = false;
-        // ------------------------------------------------------------
-        
+    function updateCreasesMeta(creasePercent){
+        const totalPercent = creasePercent * (seqLength - 1);
+        let frameIndex = Math.floor(totalPercent);
+        let targetPercent = totalPercent - frameIndex;
         for (var i=0;i<creases.length;i++){
             var crease = creases[i];
-            // Note:
-            // Get the targetThetaSeq and calculate frameIndex and targetPercent
-            // ------------------------------------------------------------
             const targetThetaSeq = crease.getTargetThetaSeq();
-            console.log(targetThetaSeq.map(angle => (angle * 180/Math.PI).toFixed(1) + "°"));
-            console.log(creasePercent);
-            seqLength = targetThetaSeq ? targetThetaSeq.length : 1;
-            let frameIndex = creasePercent === 0 ? 0 : Math.min(Math.floor(creasePercent * (seqLength - 1)), seqLength - 2);
-            let targetPercent = creasePercent === 0 ? 0 : creasePercent * (seqLength - 1) - frameIndex;
-
-            if (frameIndex < 0) frameIndex = 0;
-            if (frameIndex >= seqLength) frameIndex = seqLength - 1;
-
-            if (Math.abs(targetPercent) < 0.001 && !initing && creasePercent > 0) {
-                shouldBake = true;
+            if (frameIndex >= targetThetaSeq.length - 1) {
+                frameIndex = targetThetaSeq.length - 2;
+                targetPercent = 1;
             }
-
-
-            console.log("frameIndex: " + frameIndex + ", targetPercent: " + targetPercent);
-            // ------------------------------------------------------------
-            
             creaseMeta[i*4] = crease.getK();
             // creaseMeta[i*4+1] = crease.getD();
-            if (initing) creaseMeta[i*4+2] = targetThetaSeq[frameIndex] * targetPercent;
-
-            if (frameIndex < seqLength - 1) {
-                // Interpolate between frameIndex and frameIndex + 1
-                let currentAngle = targetThetaSeq[frameIndex];
-                let nextAngle = targetThetaSeq[frameIndex + 1];
-                let interpolatedAngle = currentAngle + (nextAngle - currentAngle) * targetPercent;
-                creaseMeta[i*4+2] = interpolatedAngle;
-                
-                console.log("  → Interpolating: " + (currentAngle * 180/Math.PI).toFixed(1) + "° to " + 
-                        (nextAngle * 180/Math.PI).toFixed(1) + "° = " + 
-                        (interpolatedAngle * 180/Math.PI).toFixed(1) + "°");
-            } else {
-                // We're at or past the last keyframe, hold the last angle
-                creaseMeta[i*4+2] = targetThetaSeq[seqLength - 1];
-            }
+            let currentAngle = targetThetaSeq[frameIndex];
+            let nextAngle = targetThetaSeq[frameIndex + 1];
+            let interpolatedAngle = currentAngle * (1 - targetPercent) + nextAngle * targetPercent;
+            creaseMeta[i*4+2] = interpolatedAngle;
         }
-        if (shouldBake) {
-            console.log("🔄 Baking current position as new original position");
-            bakeCurrentAsOriginal();
-        }
-        // Note:
-        // Syntax of the gpuMath.initTextureFromData is from the GPUMath.js library line 58
-        // Initializes a new GPU texture with data and stores it under a named reference.
-        // If a texture with the same name already exists, it can optionally replace it.
-        // initTextureFromData(name, width, height, typeName, data, shouldReplace)
-        // name: string = a string to identify the texture by.
-        // width: number = the width of the texture in pixels.
-        // height: number = the height of the texture in pixels.
-        // typeName: string = the data type of the texture. Can be "FLOAT", "UNSIGNED_BYTE", or "BYTE".
-        // data: TypedArray = a typed array with the data to initialize the texture with. The array should have width*height*4 elements.
-        // shouldReplace: boolean = if true, and a texture with the same name already exists, it will be replaced.
         globals.gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true); // creaseMeta is sent to the GPU, where it can be accessed by the shader.
     }
-
 
     function updateLastPosition(){
         for (var i=0;i<nodes.length;i++){
@@ -587,64 +509,6 @@ function initDynamicSolver(globals){
         globals.gpuMath.initTextureFromData("u_lastPosition", textureDim, textureDim, "FLOAT", lastPosition, true);
         globals.gpuMath.initFrameBufferForTexture("u_lastPosition", true);
 
-    }
-
-    function setCreasePercent(percent){
-        if (!programsInited) return;
-        globals.gpuMath.setProgram("velocityCalc");
-        globals.gpuMath.setUniformForProgram("velocityCalc", "u_creasePercent", percent, "1f");
-        globals.gpuMath.setProgram("positionCalcVerlet");
-        globals.gpuMath.setUniformForProgram("positionCalcVerlet", "u_creasePercent", percent, "1f");
-    }
-
-    function bakeCurrentAsOriginal() {
-        console.log("📍 Baking current positions as new original positions...");
-    
-        for (var i = 0; i < nodes.length; i++) {
-            // Get current absolute position in world space
-            var currentPos = nodes[i].getPosition(); 
-            
-            // Update the original position arrays
-            originalPosition[4*i]     = currentPos.x;
-            originalPosition[4*i + 1] = currentPos.y;
-            originalPosition[4*i + 2] = currentPos.z;
-
-            // Update the node's stored original position on the CPU side
-            nodes[i].setOriginalPosition(currentPos.x, currentPos.y, currentPos.z);
-            
-            // Reset the relative position to zero
-            lastPosition[4*i]     = 0;
-            lastPosition[4*i + 1] = 0;
-            lastPosition[4*i + 2] = 0;
-            
-            position[4*i]     = 0;
-            position[4*i + 1] = 0;
-            position[4*i + 2] = 0;
-            
-            lastLastPosition[4*i]     = 0;
-            lastLastPosition[4*i + 1] = 0;
-            lastLastPosition[4*i + 2] = 0;
-        }
-
-        // Re-upload all the position textures to the GPU
-        globals.gpuMath.initTextureFromData("u_originalPosition", textureDim, textureDim, "FLOAT", originalPosition, true);
-        globals.gpuMath.initTextureFromData("u_lastPosition", textureDim, textureDim, "FLOAT", lastPosition, true);
-        globals.gpuMath.initTextureFromData("u_position", textureDim, textureDim, "FLOAT", position, true);
-        globals.gpuMath.initTextureFromData("u_lastLastPosition", textureDim, textureDim, "FLOAT", lastLastPosition, true);
-        
-        // Zero out velocities
-        globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
-        globals.gpuMath.step("zeroTexture", [], "u_velocity");
-        
-        // Recalculate beam lengths based on new original positions
-        for (var i=0;i<edges.length;i++){
-            edges[i].recalcOriginalLength();
-        }
-        
-        // Update materials to reflect new beam lengths
-        updateMaterials(true);
-
-        console.log("✅ Baking complete - original positions updated");
     }
 
     function initTypedArrays(){
@@ -791,9 +655,8 @@ function initDynamicSolver(globals){
         updateMaterials(true);
         updateFixed();
         updateExternalForces();
-        updateCreasesMeta(globals.creasePercent, true);
+        updateCreasesMeta(globals.creasePercent);
         updateCreaseVectors();
-        setCreasePercent(globals.creasePercent);
     }
 
     return {
