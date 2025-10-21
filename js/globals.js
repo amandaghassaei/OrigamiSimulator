@@ -124,11 +124,12 @@ function initGlobals(){
         }
         return frames;
     }
+    _globals.buildKeyframes = buildKeyframes;
     _globals.keyframes = buildKeyframes(_globals.keyframeCount);
 
     // 根据当前关键帧currentKeyframeIndex和当前折叠进度currentFoldPercent计算总的creasePercent
     function updateCreasePercentFromState(){
-        _globals.currentKeyframeIndex = clip(_globals.currentKeyframeIndex, 0, _globals.keyframes.length - 1);
+        _globals.currentKeyframeIndex = clip(_globals.currentKeyframeIndex, 0, _globals.keyframeCount - 1);
         _globals.currentFoldPercent = clip(_globals.currentFoldPercent, 0, 1);
         var start = _globals.keyframes[_globals.currentKeyframeIndex];
         var end = (_globals.currentKeyframeIndex == _globals.keyframes.length - 1) ? 1 :_globals.keyframes[_globals.currentKeyframeIndex + 1];
