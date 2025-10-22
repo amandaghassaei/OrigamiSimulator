@@ -1229,21 +1229,46 @@
         </div>
         View Mode
     </div>
-    <div id="bottomSliderContainer">
+    <!-- <div id="bottomSliderContainer">
         <div class="sliderInput" id="creasePercentBottom">
             <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
         </div>
         <a href="#" id="flatIndicator" class="sliderEndPt smallTxt">
-            <!--<img src="assets/flatcraneSmall.png"/>-->
             <span class="sliderEndPtLabel">Flat</span>
             <span class="fui-triangle-down"></span>
         </a>
         <a href="#" id="foldedIndicator" class="sliderEndPt smallTxt">
-            <!--<img src="assets/foldedCraneSmall.png"/>-->
             <span class="sliderEndPtLabel">Folded</span>
             <span class="fui-triangle-down"></span>
         </a>
         <span>Fold Percent: <span id="foldPercentSimple"></span>%</span>
+    </div> -->
+
+    <div id="bottomSliderContainer" class="dual-sliders">
+        <div class="fold-row">
+            <span class="endpointLabel" id="flatLabel">Flat</span>
+            <div class="sliderInput mainFoldSlider" id="creasePercentBottom">
+                <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+            </div>
+            <span class="endpointLabel" id="foldedLabel">Folded</span>
+        </div>
+        <div class="keyframe-row">
+            <span class="kfLabel">KF</span>
+            <div class="sliderInput keyframeSlider" id="keyframeTimeline">
+                <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+            </div>
+        </div>
+        <div class="fold-summary">
+            Fold Percent: <span id="foldPercentSimple"></span>% &nbsp;|&nbsp; Key Frame: <span id="keyFrameSummary">1/1</span>&nbsp;|&nbsp; Total: <span id="totPercent"></span>%
+        </div>
+        <!-- <a href="#" id="flatIndicator" class="sliderEndPt smallTxt">
+            <span class="sliderEndPtLabel">Flat</span>
+            <span class="fui-triangle-down"></span>
+        </a>
+        <a href="#" id="foldedIndicator" class="sliderEndPt smallTxt">
+            <span class="sliderEndPtLabel">Folded</span>
+            <span class="fui-triangle-down"></span>
+        </a> -->
     </div>
     <div id="controlsToggle" class="bigToggle">
         <div>
@@ -1364,7 +1389,7 @@
                         <li>faces_vertices</li>
                     </ul>
                     You may specify the target fold angle of each crease using the edges_foldAngle field. 
-                    Note that fold angle is a number in degrees lying in the range [âˆ’180, 180]. 
+                    Note that fold angle is a number in degrees lying in the range [âˆ?180, 180]. 
                     The fold angle is positive for valley folds, negative for mountain folds, and zero for flat regions.
                     Accordingly, the sign of edges_foldAngle should match edges_assignment if both are specified.
                     You may also assign a null fold angle to a crease so that it is allowed to move freely - this is especially useful when the fold angle is unknown or the crease pattern is fully constrained and able to be driven by other creases in the system.

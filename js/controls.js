@@ -468,22 +468,65 @@ function initControls(globals){
     });
 
     var creasePercentSlider = setSliderInput("#creasePercent", globals.creasePercent*100, -100, 100, 1, function(val){
-        globals.creasePercent = val/100;
+        // globals.creasePercent = val/100;
+        globals.directlySetCreasePercent(val/100)
         globals.shouldChangeCreasePercent = true;
         updateCreasePercent();
     });
     var creasePercentNavSlider = setSlider("#creasePercentNav>div", globals.creasePercent*100, -100, 100, 1, function(val){
-        globals.creasePercent = val/100;
+        // globals.creasePercent = val/100;
+        globals.directlySetCreasePercent(val/100)
         globals.shouldChangeCreasePercent = true;
         updateCreasePercent();
     });
-    var creasePercentBottomSlider = setSlider("#creasePercentBottom>div", globals.creasePercent*100, 0, 100, 1, function(val){
-        globals.creasePercent = val/100;
+    var creasePercentBottomSlider = setSlider("#creasePercentBottom>div", globals.currentFoldPercent*100, 0, 100, 1, function(val){
+        globals.currentFoldPercent = val/100;
         globals.shouldChangeCreasePercent = true;
         updateCreasePercent()
     });
-    setInput("#currentFoldPercent", globals.creasePercent*100, function(val){
-        globals.creasePercent = val/100;
+
+    function clip(val, min, max){
+        return Math.min(Math.max(val, min), max);
+    }
+
+    // var keyframeSlider = setSlider("#keyframeTimeline>div", globals.currentKeyframeIndex, 0, (globals.keyframes.length ? Math.max(globals.keyframes.length-2, 0) : 0), 1, function(val){
+    //     if (!globals.keyframes || globals.keyframes.length < 2) {
+    //         globals.currentKeyframeIndex = 0;
+    //         globals.currentFoldPercent = clip(val / 100, 0, 1);
+    //         globals.updateCreasePercentFromState();
+    //         globals.shouldChangeCreasePercent = true;
+    //         updateCreasePercent();
+    //         return;
+    //     }
+    //     console.log("keyframe slider", val);
+    //     globals.currentKeyframeIndex = val;
+    //     globals.updateCreasePercentFromState();
+    //     globals.shouldChangeCreasePercent = true;
+    //     updateCreasePercent();
+    // });
+
+    function updateKeyframeSlider(){
+        this.keyframeSlider = setSlider("#keyframeTimeline>div", globals.currentKeyframeIndex, 0, globals.keyframeCount - 1, 1, function(val){
+            if (!globals.keyframes || globals.keyframes.length < 2) {
+                globals.currentKeyframeIndex = 0;
+                globals.currentFoldPercent = clip(val / 100, 0, 1);
+                globals.updateCreasePercentFromState();
+                globals.shouldChangeCreasePercent = true;
+                updateCreasePercent();
+                return;
+            }
+            console.log("keyframe slider", val);
+            globals.currentKeyframeIndex = val;
+            console.log("*globals.currentKeyframeIndex:", globals.currentKeyframeIndex);
+            globals.updateCreasePercentFromState();
+            globals.shouldChangeCreasePercent = true;
+            updateCreasePercent();
+        });
+    }
+    updateKeyframeSlider();
+
+    setInput("#currentFoldPercent", globals.currentFoldPercent*100, function(val){
+        globals.currentFoldPercent = val/100;
         globals.shouldChangeCreasePercent = true;
         updateCreasePercent();
     }, -100, 100);
@@ -499,14 +542,32 @@ function initControls(globals){
         updateCreasePercent();
     });
 
+    // 用于修改creasePercent相关的全局变量，并更新UI显示
     function updateCreasePercent(){
-        var val = (globals.creasePercent*100);
-        creasePercentSlider.slider('value', val);
-        creasePercentNavSlider.slider('value', val);
-        creasePercentBottomSlider.slider('value', val);
-        $('#currentFoldPercent').val(val.toFixed(0));
-        $('#creasePercent>input').val(val.toFixed(0));
-        $("#foldPercentSimple").html(val.toFixed(0));
+        console.log("globals.creasePercent", globals.creasePercent);
+
+        globals.updateCreasePercentFromState();
+        console.log("globals.creasePercent", globals.creasePercent);
+
+        var creasePercent = globals.creasePercent * 100;
+        console.log("updateCreasePercent", creasePercent);
+        creasePercentSlider.slider('value', creasePercent);
+        creasePercentNavSlider.slider('value', creasePercent);
+
+        var foldPercent = globals.currentFoldPercent * 100;
+        creasePercentBottomSlider.slider('value', foldPercent);
+
+        $('#currentFoldPercent').val(creasePercent.toFixed(0));
+        $('#creasePercent>input').val(creasePercent.toFixed(0));
+        $("#foldPercentSimple").html(foldPercent.toFixed(0));
+        $("#totPercent").html(creasePercent.toFixed(0));
+
+        this.keyframeSlider.slider('value', globals.currentKeyframeIndex);
+
+        var totalSegments = clip(globals.keyframeCount, 1, globals.keyframeCount);
+        var displayIndex = globals.currentKeyframeIndex + 1;
+        console.log("globals.currentKeyframeIndex:", globals.currentKeyframeIndex);
+        $("#keyFrameSummary").html(displayIndex + '/' + totalSegments);
     }
     updateCreasePercent();
 
@@ -677,9 +738,19 @@ function initControls(globals){
     });
     setLink("#reset", function(){
         if (!globals.simulationRunning) $("#reset").hide();
+        globals.currentFoldPercent = 0;
+        globals.currentKeyframeIndex = 0;
+        globals.shouldChangeCreasePercent = true;
+        globals.updateCreasePercentFromState();
+        updateCreasePercent();
         globals.model.reset();
     });
     setLink("#resetBottom", function(){
+        globals.currentFoldPercent = 0;
+        globals.currentKeyframeIndex = 0;
+        globals.shouldChangeCreasePercent = true;
+        globals.updateCreasePercentFromState();
+        updateCreasePercent();
         globals.model.reset();
     });
     setLink("#stepForward", function(){
@@ -940,7 +1011,9 @@ function initControls(globals){
     return {
         setDeltaT: setDeltaT,
         updateCreasePercent: updateCreasePercent,
-        setSliderInputVal: setSliderInputVal
+        setSliderInputVal: setSliderInputVal,
+        updateKeyframeSlider: updateKeyframeSlider,
+        updateCreasePercent: updateCreasePercent,
     }
 }
 
