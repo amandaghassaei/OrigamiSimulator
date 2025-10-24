@@ -12,38 +12,91 @@ function init3DUI(globals) {
     var draggingNode = null;
     var draggingNodeFixed = false;
     var mouseDown = false;
-    var highlightedObj;
+    var highlightedObj; // can be Node or Crease
 
-    var highlighter1 = new Node(new THREE.Vector3());
-    highlighter1.setTransparent();
-    globals.threeView.scene.add(highlighter1.getObject3D());
+    var highlighter_node = new Node(new THREE.Vector3());
+    highlighter_node.setTransparent();
+    globals.threeView.scene.add(highlighter_node.getObject3D());
 
     var n1 = new Node(new THREE.Vector3());
     var n2 = new Node(new THREE.Vector3());
 
-    let highlighter2 = new Beam([n1, n2]);
-    highlighter2.setTransparent();
-    globals.threeView.scene.add(highlighter2.getObject3D());
+    let highlighter_crease = new Beam([n1, n2]);
+    highlighter_crease.setTransparent();
+    globals.threeView.scene.add(highlighter_crease.getObject3D());
+
+    let selectedObj;
+
+    globals.controls.setSlider("#targetAngleBottom>div", 0, -180, 180, 1, function(value){
+        if (selectedObj){
+            globals.pattern.setRawFoldAngles(
+                function(foldAngles) {
+                    foldAngles[selectedObj.edgeInd] = [value * Math.PI / 180, []];
+                }
+            );
+            var crease = globals.model.getCreases()
+            crease[selectedObj.getIndex()].targetTheta = value * Math.PI / 180;
+            globals.creaseMaterialHasChanged = true;
+            $("#angleSimple").html(value.toFixed(0));
+        }
+    });
+
+    globals.controls.setSlider("#stiffnessBottom>div", 0, 0, 100, 1, function(value){
+        if (selectedObj){
+            globals.creaseMaterialHasChanged = true;
+            $("#stiffnessSimple").html(value.toFixed(0));
+        }
+    });
+
+    let creaseSliderContainer = document.getElementById("creaseSliderContainer");
+
+    var n1_ = new Node(new THREE.Vector3());
+    var n2_ = new Node(new THREE.Vector3());
+
+    let highlighted_selectedCrease = new Beam([n1_, n2_]);
+    highlighted_selectedCrease.setHighlight();
+    globals.threeView.scene.add(highlighted_selectedCrease.getObject3D());
 
     $(document).dblclick(function() {
     });
 
-    document.addEventListener('mousedown', function(){
+    function cursorOnPanel(e) {
+        const rect = creaseSliderContainer.getBoundingClientRect();
+        return (
+            e.clientX >= rect.left &&
+            e.clientX <= rect.right &&
+            e.clientY >= rect.top &&
+            e.clientY <= rect.bottom
+        );
+    }
+
+    function isNode(obj) {
+        return (obj && obj.getPosition);
+    }
+
+    document.addEventListener('mousedown', function(e){
+        if (cursorOnPanel(e)) return;
         mouseDown = true;
-        if (highlightedObj && !highlightedObj.getPosition) {
-            globals.pattern.setRawFoldAngles(
-                function(foldAngles) {
-                    foldAngles[highlightedObj.edgeInd] = [0, []];
-                }
-            );
-            var crease = globals.model.getCreases()
-            crease[highlightedObj.getIndex()].targetTheta = 0;
-            console.log(crease[highlightedObj.getIndex()]);
-            console.log(globals.model.getCreases()[highlightedObj.getIndex()]);
-            globals.creaseMaterialHasChanged = true;
+        if (highlightedObj && !isNode(highlightedObj)) {
+            if (selectedObj === highlightedObj) {
+                selectedObj = null;
+            } else {
+                selectedObj = highlightedObj;
+            }
         }
+        if (selectedObj) {
+            highlighted_selectedCrease.getObject3D().visible = true;
+            creaseSliderContainer.style.display = 'flex';
+            creaseSliderContainer.style.left = e.clientX + 'px';
+            creaseSliderContainer.style.top = e.clientY + 'px';
+        } else {
+            highlighted_selectedCrease.getObject3D().visible = false;
+            creaseSliderContainer.style.display = 'none';
+        }
+        setAll3D();
     }, false);
     document.addEventListener('mouseup', function(e){
+        if (cursorOnPanel(e)) return;
         isDragging = false;
         if (draggingNode){
             draggingNode.setFixed(draggingNodeFixed);
@@ -57,7 +110,10 @@ function init3DUI(globals) {
     }, false);
     document.addEventListener( 'mousemove', mouseMove, false );
     function mouseMove(e){
-
+        if (cursorOnPanel(e)) {
+            setAll3D();
+            return;
+        }
         if (mouseDown) {
             isDragging = true;
         }
@@ -73,7 +129,7 @@ function init3DUI(globals) {
         if (!isDragging) {
             _highlightedObj = checkForIntersections(e, globals.model.getMesh());
             setHighlightedObj(_highlightedObj);
-        } else if (isDragging && highlightedObj && highlightedObj.getPosition){
+        } else if (isDragging && highlightedObj && isNode(highlightedObj)) {
             if (!draggingNode) {
                 draggingNode = highlightedObj;
                 draggingNodeFixed = draggingNode.isFixed();
@@ -86,25 +142,38 @@ function init3DUI(globals) {
             globals.nodePositionHasChanged = true;
         }
 
+        setAll3D();
+    }
+
+    function setAll3D() {
         if (highlightedObj){
-            if (highlightedObj.getPosition) {
+            if (isNode(highlightedObj)){ 
                 var position = highlightedObj.getPosition();
-                highlighter1.getObject3D().position.set(position.x, position.y, position.z);
+                highlighter_node.getObject3D().position.set(position.x, position.y, position.z);
             } else {
                 var pos1 = highlightedObj.edge.nodes[0].getPosition();
                 var pos2 = highlightedObj.edge.nodes[1].getPosition();
-
-                const direction = new THREE.Vector3().subVectors(pos2, pos1);
-                const length = direction.length();
-                highlighter2.getObject3D().scale.set(1, length, 1);
-                const midpoint = new THREE.Vector3().addVectors(pos1, pos2).multiplyScalar(0.5);
-                highlighter2.getObject3D().position.copy(midpoint);
-
-                const axis = new THREE.Vector3(0, 1, 0);
-                const quaternion = new THREE.Quaternion().setFromUnitVectors(axis, direction.clone().normalize());
-                highlighter2.getObject3D().setRotationFromQuaternion(quaternion);
+                setCrease3D(highlighter_crease.getObject3D(), pos1, pos2);
             }
         }
+
+        if (selectedObj){
+            var pos1 = selectedObj.edge.nodes[0].getPosition();
+            var pos2 = selectedObj.edge.nodes[1].getPosition();
+            setCrease3D(highlighted_selectedCrease.getObject3D(), pos1, pos2);
+        }
+    }
+
+    function setCrease3D(object3D, pos1, pos2){
+        const direction = new THREE.Vector3().subVectors(pos2, pos1);
+        const length = direction.length();
+        object3D.scale.set(1, length, 1);
+        const midpoint = new THREE.Vector3().addVectors(pos1, pos2).multiplyScalar(0.5);
+        object3D.position.copy(midpoint);
+
+        const axis = new THREE.Vector3(0, 1, 0);
+        const quaternion = new THREE.Quaternion().setFromUnitVectors(axis, direction.clone().normalize());
+        object3D.setRotationFromQuaternion(quaternion);
     }
 
     function getIntersectionWithObjectPlane(position){
@@ -119,19 +188,16 @@ function init3DUI(globals) {
     function setHighlightedObj(object){
         if (highlightedObj && (object != highlightedObj)) {
             // highlightedObj.unhighlight();
-            highlighter1.getObject3D().visible = false;
-            console.log(highlighter2);
-            highlighter2.getObject3D().visible = false;
+            highlighter_node.getObject3D().visible = false;
+            highlighter_crease.getObject3D().visible = false;
         }
         highlightedObj = object;
-        console.log(highlightedObj);
         if (highlightedObj) {
             // highlightedObj.highlight();
-            if (highlightedObj.getPosition) {
-                highlighter1.getObject3D().visible = true;
+            if (isNode(highlightedObj)) {
+                highlighter_node.getObject3D().visible = true;
             } else {
-                console.log(highlighter2);
-                highlighter2.getObject3D().visible = true;
+                highlighter_crease.getObject3D().visible = true;
             }
         }
     }
@@ -200,7 +266,7 @@ function init3DUI(globals) {
     }
 
     function hideHighlighters(){
-        highlighter1.getObject3D().visible = false;
+        highlighter_node.getObject3D().visible = false;
     }
     
     // globals.threeView.sceneAdd(raycasterPlane);

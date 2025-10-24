@@ -940,7 +940,8 @@ function initControls(globals){
     return {
         setDeltaT: setDeltaT,
         updateCreasePercent: updateCreasePercent,
-        setSliderInputVal: setSliderInputVal
+        setSliderInputVal: setSliderInputVal,
+        setSlider: setSlider
     }
 }
 

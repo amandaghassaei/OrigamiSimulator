@@ -3,6 +3,7 @@
  */
 
 var beamMaterialHighlight = new THREE.LineBasicMaterial({color: 0xff0000, linewidth: 1});
+var highlightMaterial = new THREE.MeshBasicMaterial({color: 0xff0000, opacity:0.5, transparent:true});
 // var beamMaterial = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1});
 
 var beamGeo = new THREE.CylinderGeometry(0.005,0.005,1,8,1,false);
@@ -60,6 +61,14 @@ Beam.prototype.getObject3D = function(){
 // Beam.prototype.setVisibility = function(state){
 //     this.object3D.visible = state;
 // };
+
+Beam.prototype.setHighlight = function(){
+    if (!this.object3D){
+        this.object3D = new THREE.Mesh(beamGeo, beamMaterialHighlight);
+        this.object3D.visible = false;
+    }
+    this.object3D.material = highlightMaterial;
+};
 
 Beam.prototype.setTransparent = function(){
     if (!this.object3D){
