@@ -603,6 +603,11 @@ function initPattern(globals){
             $("#svgViewer").html(svg);
     }
 
+    function setRawFoldAngles(func) {
+        func(rawFold.edges_foldAngle);
+        generateSvg();
+    }
+
     function parseSVG(_verticesRaw, _bordersRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw, _hingesRaw){
 
         _.each(_verticesRaw, function(vertex){
@@ -1395,5 +1400,6 @@ function initPattern(globals){
         getFoldData: getFoldData,
         getTriangulatedFaces: getTriangulatedFaces,
         setFoldData: setFoldData,
+        setRawFoldAngles: setRawFoldAngles
     }
 }

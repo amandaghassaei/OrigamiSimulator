@@ -277,7 +277,7 @@ function initModel(globals){
                 targetThetaSeq = [0, targetTheta];
             }
             
-            //edge, face1Index, face2Index, targetTheta, targetThetaSeq, type, node1, node2, index
+            //edge, face1Index, face2Index, targetTheta, targetThetaSeq, type, node1, node2, index, edgeInd
             creases.push(new Crease(
                 edges[_creaseParams[4]],
                 _creaseParams[0],
@@ -287,7 +287,9 @@ function initModel(globals){
                 type,
                 nodes[_creaseParams[1]],
                 nodes[_creaseParams[3]],
-                creases.length));
+                i,
+                _creaseParams[4]
+            ));
         }
 
         vertices = [];

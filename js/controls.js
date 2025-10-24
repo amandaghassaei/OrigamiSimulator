@@ -993,8 +993,8 @@ function initControls(globals){
         setDeltaT: setDeltaT,
         updateCreasePercent: updateCreasePercent,
         setSliderInputVal: setSliderInputVal,
-        updateKeyframeSlider: updateKeyframeSlider,
-        updateCreasePercent: updateCreasePercent,
+        setSlider: setSlider,
+        updateKeyframeSlider: updateKeyframeSlider
     }
 }
 

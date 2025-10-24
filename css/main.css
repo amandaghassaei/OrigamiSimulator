@@ -67,21 +67,43 @@ p{
 #controlsBottom>div{
     display: inline-block;
 }
-#bottomSliderContainer{
+#bottomSliderContainer
+{
     text-align: center;
     position: absolute;
     right:350px;
     left:250px;
         margin-top: 20px;
 }
-#bottomSliderContainer>span{
+#creaseSliderContainer
+{
+    opacity: 0.6;
+    border: 2px solid #34495e;
+    background: white;
+    border-radius: 10px;
+    width: fit-content;
+    display: none;
+    flex-direction: column;
+    text-align: center;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+#bottomSliderContainer>span,
+#creaseSliderContainer>span{
     font-size: 14px;
+}
+#targetAngleBottom,
+#stiffnessBottom {
+    margin: 0;
 }
 #creasePercentBottom{
     width: 100%;
     margin-top: 14px;
     margin-bottom: 5px;
 }
+#stiffnessBottom>.flat-slider
+#targetAngleBottom>.flat-slider,
 #creasePercentBottom>.flat-slider{
     width: 100%;
     margin: 0;
