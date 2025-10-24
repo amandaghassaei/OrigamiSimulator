@@ -103,8 +103,60 @@ function initGlobals(){
         capturerFrames: 0,
         shouldScaleCanvas: false,
         isGif: false,
-        shouldAnimateFoldPercent: false
+        shouldAnimateFoldPercent: false,
+
+        keyframeCount: 6,
+        keyframes: [],
+        currentKeyframeIndex: 0,
+        currentFoldPercent: 0,
     };
+
+    function clip(x, min, max){
+        return Math.max(Math.min(x, max), min);
+    }
+    
+    function buildKeyframes(count){
+        var frames = [];
+        var segments = Math.max(count - 1, 1);
+        for (var i = 0; i < count; i++){
+            frames.push(i / segments);
+        }
+        return frames;
+    }
+    _globals.buildKeyframes = buildKeyframes;
+    _globals.keyframes = buildKeyframes(_globals.keyframeCount);
+
+    function updateCreasePercentFromState(){
+        _globals.currentKeyframeIndex = clip(_globals.currentKeyframeIndex, 0, _globals.keyframeCount - 1);
+        _globals.currentFoldPercent = clip(_globals.currentFoldPercent, 0, 1);
+        var start = _globals.keyframes[_globals.currentKeyframeIndex];
+        var end = (_globals.currentKeyframeIndex == _globals.keyframes.length - 1) ? 1 :_globals.keyframes[_globals.currentKeyframeIndex + 1];
+        _globals.creasePercent = clip(start + (end - start) * _globals.currentFoldPercent, 0, 1);
+    }
+    _globals.updateCreasePercentFromState = updateCreasePercentFromState;
+
+    function updateFoldFrameFromCreasePercent(){
+        if (_globals.creasePercent === 1) {
+            _globals.currentKeyframeIndex = _globals.keyframes.length - 1;
+            _globals.currentFoldPercent = 1;
+            return;
+        }
+        for (var i = 0; i < _globals.keyframes.length - 1; i++){
+            var start = _globals.keyframes[i];
+            var end = _globals.keyframes[i + 1];
+            if (_globals.creasePercent >= start && _globals.creasePercent < end){
+                _globals.currentKeyframeIndex = i;
+                _globals.currentFoldPercent = (_globals.creasePercent - start) / (end - start);
+                return;
+            }
+        }
+    }
+
+    function directlySetCreasePercent(percent){
+        _globals.creasePercent = clip(percent, -1, 1);
+        updateFoldFrameFromCreasePercent();
+    }
+    _globals.directlySetCreasePercent = directlySetCreasePercent;
 
     function setCreasePercent(percent){
         _globals.creasePercent = percent;

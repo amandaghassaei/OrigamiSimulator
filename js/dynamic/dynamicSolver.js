@@ -10,6 +10,7 @@ function initDynamicSolver(globals){
     var edges;
     var faces;
     var creases;
+    var seqLength;
     var positions;
     var colors;
 
@@ -42,6 +43,7 @@ function initDynamicSolver(globals){
         edges = globals.model.getEdges();
         faces = globals.model.getFaces();
         creases = globals.model.getCreases();
+        seqLength = globals.model.getMaxTargetThetaSeqLength();
 
         positions = globals.model.getPositionsArray();
         colors = globals.model.getColorsArray();
@@ -76,7 +78,7 @@ function initDynamicSolver(globals){
         if (globals.shouldAnimateFoldPercent){
             globals.creasePercent = globals.videoAnimator.nextFoldAngle(0);
             globals.controls.updateCreasePercent();
-            setCreasePercent(globals.creasePercent);
+            updateCreasesMeta(globals.creasePercent);
             globals.shouldChangeCreasePercent = true;
         }
 
@@ -93,7 +95,7 @@ function initDynamicSolver(globals){
             globals.nodePositionHasChanged = false;
         }
         if (globals.creaseMaterialHasChanged) {
-            updateCreasesMeta(true);
+            updateCreasesMeta(globals.creasePercent);
             globals.creaseMaterialHasChanged = false;
         }
         if (globals.materialHasChanged) {
@@ -101,7 +103,7 @@ function initDynamicSolver(globals){
             globals.materialHasChanged = false;
         }
         if (globals.shouldChangeCreasePercent) {
-            setCreasePercent(globals.creasePercent);
+            updateCreasesMeta(globals.creasePercent);
             globals.shouldChangeCreasePercent = false;
         }
         // if (globals.shouldZeroDynamicVelocity){
@@ -316,7 +318,6 @@ function initDynamicSolver(globals){
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimCreases", [textureDimCreases, textureDimCreases], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimNodeCreases", [textureDimNodeCreases, textureDimNodeCreases], "2f");
         gpuMath.setUniformForProgram("velocityCalc", "u_textureDimNodeFaces", [textureDimNodeFaces, textureDimNodeFaces], "2f");
-        gpuMath.setUniformForProgram("velocityCalc", "u_creasePercent", globals.creasePercent, "1f");
         gpuMath.setUniformForProgram("velocityCalc", "u_axialStiffness", globals.axialStiffness, "1f");
         gpuMath.setUniformForProgram("velocityCalc", "u_faceStiffness", globals.faceStiffness, "1f");
         gpuMath.setUniformForProgram("velocityCalc", "u_calcFaceStrain", globals.calcFaceStrain, "1f");
@@ -344,7 +345,6 @@ function initDynamicSolver(globals){
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_textureDimCreases", [textureDimCreases, textureDimCreases], "2f");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_textureDimNodeCreases", [textureDimNodeCreases, textureDimNodeCreases], "2f");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_textureDimNodeFaces", [textureDimNodeFaces, textureDimNodeFaces], "2f");
-        gpuMath.setUniformForProgram("positionCalcVerlet", "u_creasePercent", globals.creasePercent, "1f");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_axialStiffness", globals.axialStiffness, "1f");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_faceStiffness", globals.faceStiffness, "1f");
         gpuMath.setUniformForProgram("positionCalcVerlet", "u_calcFaceStrain", globals.calcFaceStrain, "1f");
@@ -478,14 +478,22 @@ function initDynamicSolver(globals){
         globals.gpuMath.initTextureFromData("u_creaseVectors", textureDimCreases, textureDimCreases, "FLOAT", creaseVectors, true);
     }
 
-    function updateCreasesMeta(initing){
+    function interpolate(arr, position){
+        const idx = Math.floor(position);
+        const percent = position - idx;
+        if (idx >= arr.length - 1) return arr[arr.length - 1];
+        if (idx < 0) return arr[0];
+        return arr[idx] * (1 - percent) + arr[idx + 1] * percent;
+    }
+
+    function updateCreasesMeta(creasePercent){
         for (var i=0;i<creases.length;i++){
             var crease = creases[i];
             creaseMeta[i*4] = crease.getK();
             // creaseMeta[i*4+1] = crease.getD();
-            if (initing) creaseMeta[i*4+2] = crease.getTargetTheta();
+            creaseMeta[i*4+2] = interpolate(crease.getTargetThetaSeq(), creasePercent * (seqLength - 1));
         }
-        globals.gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true);
+        globals.gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true); // creaseMeta is sent to the GPU, where it can be accessed by the shader.
     }
 
     function updateLastPosition(){
@@ -498,14 +506,6 @@ function initDynamicSolver(globals){
         globals.gpuMath.initTextureFromData("u_lastPosition", textureDim, textureDim, "FLOAT", lastPosition, true);
         globals.gpuMath.initFrameBufferForTexture("u_lastPosition", true);
 
-    }
-
-    function setCreasePercent(percent){
-        if (!programsInited) return;
-        globals.gpuMath.setProgram("velocityCalc");
-        globals.gpuMath.setUniformForProgram("velocityCalc", "u_creasePercent", percent, "1f");
-        globals.gpuMath.setProgram("positionCalcVerlet");
-        globals.gpuMath.setUniformForProgram("positionCalcVerlet", "u_creasePercent", percent, "1f");
     }
 
     function initTypedArrays(){
@@ -652,9 +652,8 @@ function initDynamicSolver(globals){
         updateMaterials(true);
         updateFixed();
         updateExternalForces();
-        updateCreasesMeta(true);
+        updateCreasesMeta(globals.creasePercent);
         updateCreaseVectors();
-        setCreasePercent(globals.creasePercent);
     }
 
     return {

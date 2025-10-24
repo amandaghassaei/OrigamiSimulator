@@ -184,7 +184,6 @@
         uniform vec2 u_textureDimCreases;
         uniform vec2 u_textureDimNodeCreases;
         uniform vec2 u_textureDimNodeFaces;
-        uniform float u_creasePercent;
         uniform float u_dt;
         uniform float u_axialStiffness;
         uniform float u_faceStiffness;
@@ -274,8 +273,8 @@
                 vec3 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex).xyz;//[k, d, targetTheta]
                 vec4 creaseGeo = texture2D(u_creaseGeo, scaledCreaseIndex);//[h1, h2, coef1, coef2]
                 if (creaseGeo[0]< 0.0) continue;//crease disabled bc it has collapsed too much
-
-                float targetTheta = creaseMeta[2] * u_creasePercent;
+                
+                float targetTheta = creaseMeta[2];
                 float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
 
                 float nodeNum = nodeCreaseMeta[1];//1, 2, 3, 4
@@ -394,7 +393,6 @@
         uniform vec2 u_textureDimCreases;
         uniform vec2 u_textureDimNodeCreases;
         uniform vec2 u_textureDimNodeFaces;
-        uniform float u_creasePercent;
         uniform float u_dt;
         uniform float u_axialStiffness;
         uniform float u_faceStiffness;
@@ -486,8 +484,8 @@
                 vec3 creaseMeta = texture2D(u_creaseMeta, scaledCreaseIndex).xyz;//[k, d, targetTheta]
                 vec4 creaseGeo = texture2D(u_creaseGeo, scaledCreaseIndex);//[h1, h2, coef1, coef2]
                 if (creaseGeo[0]< 0.0) continue;//crease disabled bc it has collapsed too much
-
-                float targetTheta = creaseMeta[2] * u_creasePercent;
+                                
+                float targetTheta = creaseMeta[2];
                 float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
 
                 float nodeNum = nodeCreaseMeta[1];//1, 2, 3, 4
@@ -1228,7 +1226,7 @@
     <div class="sliderInput" id="targetAngleBottom">
         <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
     </div>
-    <span>Angle: <span id="angleSimple"></span>%</span>
+    <span>Angle: <span id="angleSimple"></span>°</span>
     <div class="sliderInput" id="stiffnessBottom">
         <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
     </div>
@@ -1241,21 +1239,46 @@
         </div>
         View Mode
     </div>
-    <div id="bottomSliderContainer">
+    <!-- <div id="bottomSliderContainer">
         <div class="sliderInput" id="creasePercentBottom">
             <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
         </div>
         <a href="#" id="flatIndicator" class="sliderEndPt smallTxt">
-            <!--<img src="assets/flatcraneSmall.png"/>-->
             <span class="sliderEndPtLabel">Flat</span>
             <span class="fui-triangle-down"></span>
         </a>
         <a href="#" id="foldedIndicator" class="sliderEndPt smallTxt">
-            <!--<img src="assets/foldedCraneSmall.png"/>-->
             <span class="sliderEndPtLabel">Folded</span>
             <span class="fui-triangle-down"></span>
         </a>
         <span>Fold Percent: <span id="foldPercentSimple"></span>%</span>
+    </div> -->
+
+    <div id="bottomSliderContainer" class="dual-sliders">
+        <div class="fold-row">
+            <span class="endpointLabel" id="flatLabel">Flat</span>
+            <div class="sliderInput mainFoldSlider" id="creasePercentBottom">
+                <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+            </div>
+            <span class="endpointLabel" id="foldedLabel">Folded</span>
+        </div>
+        <div class="keyframe-row">
+            <span class="kfLabel">KF</span>
+            <div class="sliderInput keyframeSlider" id="keyframeTimeline">
+                <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+            </div>
+        </div>
+        <div class="fold-summary">
+            Fold Percent: <span id="foldPercentSimple"></span>% &nbsp;|&nbsp; Key Frame: <span id="keyFrameSummary">1/1</span>&nbsp;|&nbsp; Total: <span id="totPercent"></span>%
+        </div>
+        <!-- <a href="#" id="flatIndicator" class="sliderEndPt smallTxt">
+            <span class="sliderEndPtLabel">Flat</span>
+            <span class="fui-triangle-down"></span>
+        </a>
+        <a href="#" id="foldedIndicator" class="sliderEndPt smallTxt">
+            <span class="sliderEndPtLabel">Folded</span>
+            <span class="fui-triangle-down"></span>
+        </a> -->
     </div>
     <div id="controlsToggle" class="bigToggle">
         <div>

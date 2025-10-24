@@ -31,11 +31,17 @@ function init3DUI(globals) {
         if (selectedObj){
             globals.pattern.setRawFoldAngles(
                 function(foldAngles) {
-                    foldAngles[selectedObj.edgeInd] = [value * Math.PI / 180, []];
+                    var seq = foldAngles[selectedObj.edgeInd][1];
+                    if (globals.currentKeyframeIndex < seq.length) {
+                        seq[globals.currentKeyframeIndex] = value * Math.PI / 180;
+                    }
                 }
             );
             var crease = globals.model.getCreases()
-            crease[selectedObj.getIndex()].targetTheta = value * Math.PI / 180;
+            var seq = crease[selectedObj.getIndex()].targetThetaSeq;
+            if (globals.currentKeyframeIndex < seq.length) {
+                seq[globals.currentKeyframeIndex] = value * Math.PI / 180;
+            }
             globals.creaseMaterialHasChanged = true;
             $("#angleSimple").html(value.toFixed(0));
         }
@@ -43,6 +49,8 @@ function init3DUI(globals) {
 
     globals.controls.setSlider("#stiffnessBottom>div", 0, 0, 100, 1, function(value){
         if (selectedObj){
+            var crease = globals.model.getCreases()
+            crease[selectedObj.getIndex()].stiffness = value / 100;
             globals.creaseMaterialHasChanged = true;
             $("#stiffnessSimple").html(value.toFixed(0));
         }
@@ -82,6 +90,15 @@ function init3DUI(globals) {
                 selectedObj = null;
             } else {
                 selectedObj = highlightedObj;
+                var crease = globals.model.getCreases()[selectedObj.getIndex()];
+                var seq = crease.getTargetThetaSeq();
+                var idx = Math.min(globals.currentKeyframeIndex, seq.length - 1);
+                var angle = seq[idx] * 180 / Math.PI;
+                $("#angleSimple").html(angle.toFixed(0));
+                $("#targetAngleBottom>div").slider("value", angle);
+                var stiffness = crease.getStiffness() * 100;
+                $("#stiffnessBottom>div").slider("value", stiffness);
+                $("#stiffnessSimple").html(stiffness.toFixed(0));
             }
         }
         if (selectedObj) {

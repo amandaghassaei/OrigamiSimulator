@@ -193,6 +193,14 @@ function initModel(globals){
 
 
     function buildModel(fold, creaseParams){
+        if (globals.keyframeCount !== creaseParams[0][5][1].length) {
+            globals.keyframeCount = creaseParams[0][5][1].length > 0 ? creaseParams[0][5][1].length : 2;
+            globals.controls.updateKeyframeSlider();
+            globals.keyframes = globals.buildKeyframes(globals.keyframeCount);
+            globals.directlySetCreasePercent(0);
+            globals.controls.updateCreasePercent();
+        }
+
 
         if (fold.vertices_coords.length == 0) {
             globals.warn("No geometry found.");
@@ -263,13 +271,19 @@ function initModel(globals){
         for (var i=0;i<creaseParams.length;i++) {//allCreaseParams.length
             var _creaseParams = creaseParams[i];//face1Ind, vert1Ind, face2Ind, ver2Ind, edgeInd, [angle, angleSeq]
             var type = (_creaseParams[5][0] != 0) ? 1 : 0;
-
-            //edge, face1Index, face2Index, targetTheta, type, node1, node2, index, edgeInd
+            var targetTheta = _creaseParams[5][0] * Math.PI / 180;
+            var targetThetaSeq = _creaseParams[5][1].map(function(x){return x * Math.PI / 180;});
+            if (targetThetaSeq.length == 0){
+                targetThetaSeq = [0, targetTheta];
+            }
+            
+            //edge, face1Index, face2Index, targetTheta, targetThetaSeq, type, node1, node2, index, edgeInd
             creases.push(new Crease(
                 edges[_creaseParams[4]],
                 _creaseParams[0],
                 _creaseParams[2],
-                _creaseParams[5][0] * Math.PI / 180,
+                targetTheta,
+                targetThetaSeq,
                 type,
                 nodes[_creaseParams[1]],
                 nodes[_creaseParams[3]],
@@ -400,6 +414,10 @@ function initModel(globals){
         return creases;
     }
 
+    function getMaxTargetThetaSeqLength(){
+        return Math.max(...creases.map(c => c.targetThetaSeq.length));
+    }
+
     function getDimensions(){
         geometry.computeBoundingBox();
         return geometry.boundingBox.max.clone().sub(geometry.boundingBox.min);
@@ -415,6 +433,7 @@ function initModel(globals){
         getEdges: getEdges,
         getFaces: getFaces,
         getCreases: getCreases,
+        getMaxTargetThetaSeqLength: getMaxTargetThetaSeqLength,
         getGeometry: getGeometry,//for save stl
         getPositionsArray: getPositionsArray,
         getColorsArray: getColorsArray,
