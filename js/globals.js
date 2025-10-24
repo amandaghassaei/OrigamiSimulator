@@ -105,17 +105,16 @@ function initGlobals(){
         isGif: false,
         shouldAnimateFoldPercent: false,
 
-        keyframeCount: 6, // 默认将折叠进度划分为 6 段关键帧 [0%, 20%, 40%, 60%, 80%, 100%]
-        keyframes: [], // 运行时生成 0 到 1 的均匀关键帧序列 [0%, 20%, 40%, 60%, 80%]
-        currentKeyframeIndex: 0, // 当前命中的关键帧段索引
-        currentFoldPercent: 0, // 当前关键帧段内的插值比例 (0..1)
+        keyframeCount: 6,
+        keyframes: [],
+        currentKeyframeIndex: 0,
+        currentFoldPercent: 0,
     };
 
     function clip(x, min, max){
         return Math.max(Math.min(x, max), min);
     }
     
-    // 根据关键帧数量，均匀采样 0..1 生成折叠进度表
     function buildKeyframes(count){
         var frames = [];
         var segments = Math.max(count - 1, 1);
@@ -127,7 +126,6 @@ function initGlobals(){
     _globals.buildKeyframes = buildKeyframes;
     _globals.keyframes = buildKeyframes(_globals.keyframeCount);
 
-    // 根据当前关键帧currentKeyframeIndex和当前折叠进度currentFoldPercent计算总的creasePercent
     function updateCreasePercentFromState(){
         _globals.currentKeyframeIndex = clip(_globals.currentKeyframeIndex, 0, _globals.keyframeCount - 1);
         _globals.currentFoldPercent = clip(_globals.currentFoldPercent, 0, 1);
@@ -138,7 +136,6 @@ function initGlobals(){
     _globals.updateCreasePercentFromState = updateCreasePercentFromState;
 
     function updateFoldFrameFromCreasePercent(){
-        // _globals.creasePercent = clip(_globals.creasePercent, 0, 1);
         if (_globals.creasePercent === 1) {
             _globals.currentKeyframeIndex = _globals.keyframes.length - 1;
             _globals.currentFoldPercent = 1;
@@ -153,8 +150,6 @@ function initGlobals(){
                 return;
             }
         }
-        // _globals.currentKeyframeIndex = _globals.keyframes.length - 1;
-        // _globals.currentFoldPercent = 1;
     }
 
     function directlySetCreasePercent(percent){

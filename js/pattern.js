@@ -667,8 +667,6 @@ function initPattern(globals){
 
         foldData = reverseFaceOrder(foldData);//set faces to counter clockwise
 
-        console.log(foldData);
-
         return processFold(foldData);
     }
 

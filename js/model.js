@@ -193,8 +193,6 @@ function initModel(globals){
 
 
     function buildModel(fold, creaseParams){
-        console.log("*** creaseParams[0][5][1]:", creaseParams[0][5][1]);
-
         if (globals.keyframeCount !== creaseParams[0][5][1].length) {
             globals.keyframeCount = creaseParams[0][5][1].length > 0 ? creaseParams[0][5][1].length : 2;
             globals.controls.updateKeyframeSlider();
@@ -279,7 +277,7 @@ function initModel(globals){
                 targetThetaSeq = [0, targetTheta];
             }
             
-            //edge, face1Index, face2Index, targetTheta, type, node1, node2, index
+            //edge, face1Index, face2Index, targetTheta, targetThetaSeq, type, node1, node2, index
             creases.push(new Crease(
                 edges[_creaseParams[4]],
                 _creaseParams[0],
@@ -414,7 +412,7 @@ function initModel(globals){
         return creases;
     }
 
-    function getMaxTargetThetaSeqNum(){
+    function getMaxTargetThetaSeqLength(){
         return Math.max(...creases.map(c => c.targetThetaSeq.length));
     }
 
@@ -433,7 +431,7 @@ function initModel(globals){
         getEdges: getEdges,
         getFaces: getFaces,
         getCreases: getCreases,
-        getMaxTargetThetaSeqNum: getMaxTargetThetaSeqNum,
+        getMaxTargetThetaSeqLength: getMaxTargetThetaSeqLength,
         getGeometry: getGeometry,//for save stl
         getPositionsArray: getPositionsArray,
         getColorsArray: getColorsArray,

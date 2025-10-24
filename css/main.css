@@ -760,13 +760,13 @@ object{
 	  display: none;
 	}
 }
+
 /* === Compact dual sliders fixed small box === */
 #bottomSliderContainer{
     position:absolute;
     width:250px;
     height:91.9px;
-    /* 若还保留旧的 left/right 请删除旧规则中的 left:/right:，自行放置位置：*/
-    left:250px; /* 可按需要微调位置 */
+    left:250px;
     margin-top:0px;
     padding:2px 0 4px;
     background:none;
@@ -778,7 +778,7 @@ object{
 #bottomSliderContainer .fold-row,
 #bottomSliderContainer .keyframe-row{
     display:grid;
-    grid-template-columns:32px 1fr 52px; /* 缩小左右列让中间滑条更长 */
+    grid-template-columns:32px 1fr 52px;
     column-gap:4px;
     align-items:center;
     margin:0 0 6px;
@@ -818,7 +818,6 @@ object{
     color:#000;
 }
 
-/* 更细的滑条 */
 #bottomSliderContainer .flat-slider.ui-slider{
     width:100% !important;
     height:4px;
@@ -860,19 +859,15 @@ object{
     font-size:10px;
 }
 
-/* 单滑条模式兼容 */
 #bottomSliderContainer:not(.dual-sliders) .keyframe-row{
     display:none;
 }
 
-/* === Override bottom slider handle alignment so 0 与 100% 视觉端点贴合 === */
-
-/* 轨道：左右各扩展半个手柄宽度 (-5px) 让手柄中心能到视觉极端 */
 #bottomSliderContainer .flat-slider.ui-slider{
     position:relative;
     width:100% !important;
     height:4px;
-    margin:0 -5px;          /* 关键：向左右各扩 5px */
+    margin:0 -5px;
     background:#000;
     border:0;
     border-radius:2px;
@@ -880,23 +875,21 @@ object{
     box-sizing:content-box;
 }
 
-/* 手柄：用 margin-left:-5px (半宽) 取消之前的 tr  ansform */
 #bottomSliderContainer .flat-slider.ui-slider-horizontal .ui-slider-handle{
     width:10px;
     height:10px;
     top:50%;
     margin-top:-5px;
-    margin-left:-5px;       /* 以手柄中心对齐 jQuery UI 计算的 left 百分比 */
+    margin-left:-5px;
     background:#fff;
     border:2px solid #000;
     border-radius:50%;
     cursor:pointer;
     box-shadow:none;
-    transform:none;         /* 去掉 translateX(-50%) */
+    transform:none;
     outline:none;
 }
 
-/* Range（如果启用）保持不变 */
 #bottomSliderContainer .flat-slider.ui-slider-horizontal .ui-slider-range{
     top:0;
     height:100%;
@@ -904,7 +897,6 @@ object{
     border-radius:2px;
 }
 
-/* Hover */
 #bottomSliderContainer .flat-slider .ui-slider-handle:hover{
     background:#f2f2f2;
 }
