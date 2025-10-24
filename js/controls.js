@@ -468,13 +468,11 @@ function initControls(globals){
     });
 
     var creasePercentSlider = setSliderInput("#creasePercent", globals.creasePercent*100, -100, 100, 1, function(val){
-        // globals.creasePercent = val/100;
         globals.directlySetCreasePercent(val/100)
         globals.shouldChangeCreasePercent = true;
         updateCreasePercent();
     });
     var creasePercentNavSlider = setSlider("#creasePercentNav>div", globals.creasePercent*100, -100, 100, 1, function(val){
-        // globals.creasePercent = val/100;
         globals.directlySetCreasePercent(val/100)
         globals.shouldChangeCreasePercent = true;
         updateCreasePercent();
@@ -488,22 +486,6 @@ function initControls(globals){
     function clip(val, min, max){
         return Math.min(Math.max(val, min), max);
     }
-
-    // var keyframeSlider = setSlider("#keyframeTimeline>div", globals.currentKeyframeIndex, 0, (globals.keyframes.length ? Math.max(globals.keyframes.length-2, 0) : 0), 1, function(val){
-    //     if (!globals.keyframes || globals.keyframes.length < 2) {
-    //         globals.currentKeyframeIndex = 0;
-    //         globals.currentFoldPercent = clip(val / 100, 0, 1);
-    //         globals.updateCreasePercentFromState();
-    //         globals.shouldChangeCreasePercent = true;
-    //         updateCreasePercent();
-    //         return;
-    //     }
-    //     console.log("keyframe slider", val);
-    //     globals.currentKeyframeIndex = val;
-    //     globals.updateCreasePercentFromState();
-    //     globals.shouldChangeCreasePercent = true;
-    //     updateCreasePercent();
-    // });
 
     function updateKeyframeSlider(){
         this.keyframeSlider = setSlider("#keyframeTimeline>div", globals.currentKeyframeIndex, 0, globals.keyframeCount - 1, 1, function(val){
@@ -542,7 +524,6 @@ function initControls(globals){
         updateCreasePercent();
     });
 
-    // 用于修改creasePercent相关的全局变量，并更新UI显示
     function updateCreasePercent(){
         console.log("globals.creasePercent", globals.creasePercent);
 

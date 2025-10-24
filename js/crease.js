@@ -13,7 +13,7 @@ function Crease(edge, face1Index, face2Index, targetTheta, targetThetaSeq, type,
     this.face1Index = face1Index;//todo this is useless
     this.face2Index = face2Index;
     this.targetTheta = targetTheta;
-    this.targetThetaSeq = targetThetaSeq; // For sequential folding
+    this.targetThetaSeq = targetThetaSeq;
     this.type = type;
     this.node1 = node1;//node at vertex of face 1
     this.node2 = node2;//node at vertex of face 2
