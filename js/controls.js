@@ -507,6 +507,26 @@ function initControls(globals){
     }
     updateKeyframeSlider();
 
+    setLink("#keyframeDecrement", function(){
+        if (globals.currentKeyframeIndex > 0){
+            globals.currentKeyframeIndex--;
+            globals.currentFoldPercent = 1;
+            globals.updateCreasePercentFromState();
+            globals.shouldChangeCreasePercent = true;
+            updateCreasePercent();
+        }
+    });
+    
+    setLink("#keyframeIncrement", function(){
+        if (globals.currentKeyframeIndex < globals.keyframeCount - 1){
+            globals.currentKeyframeIndex++;
+            globals.currentFoldPercent = 0;
+            globals.updateCreasePercentFromState();
+            globals.shouldChangeCreasePercent = true;
+            updateCreasePercent();
+        }
+    });
+
     setInput("#currentFoldPercent", globals.currentFoldPercent*100, function(val){
         globals.currentFoldPercent = val/100;
         globals.shouldChangeCreasePercent = true;
