@@ -229,7 +229,6 @@ function initDynamicSolver(globals){
 
     function getTheta(){
         // 输出thetas[creases.length], thetas[i] = [当前角度theta, 角速度w, normal1Index, normal2Index]
-        // 用thetas[i].x来访问当前角度
 
         if (!globals.gpuMath || !textureDimCreases || !creases || creases.length === 0) {
             return [];
@@ -255,12 +254,12 @@ function initDynamicSolver(globals){
             for (var i = 0; i < creases.length; i++) {
                 var rgbaIndex = i * vectorLength;
                 // [当前角度theta, 角速度w, normal1Index, normal2Index]
-                thetas.push(new THREE.Vector4(
+                thetas.push([
                     parsedPixels[rgbaIndex],
                     parsedPixels[rgbaIndex + 1],
                     parsedPixels[rgbaIndex + 2],
                     parsedPixels[rgbaIndex + 3]
-                ));
+                ]);
             }
             return thetas;
         } else {
@@ -538,6 +537,10 @@ function initDynamicSolver(globals){
         globals.gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true); // creaseMeta is sent to the GPU, where it can be accessed by the shader.
     }
 
+    function getCreaseMeta(){
+        return creaseMeta;
+    }
+
     function updateLastPosition(){
         for (var i=0;i<nodes.length;i++){
             var _position = nodes[i].getRelativePosition();
@@ -705,5 +708,6 @@ function initDynamicSolver(globals){
         render: render,
         reset: reset,
         getTheta: getTheta,
+        getCreaseMeta: getCreaseMeta,
     }
 }
