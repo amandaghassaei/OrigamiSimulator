@@ -127,6 +127,7 @@ function initDynamicSolver(globals){
         for (var j=0;j<_numSteps;j++){
             solveStep();
         }
+        //
         render();
     }
 

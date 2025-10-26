@@ -94,13 +94,54 @@ function initThreeView(globals) {
         thetaLogging();
     }
 
-    // function interpolate(arr, position){
-    //     const idx = Math.floor(position);
-    //     const percent = position - idx;
-    //     if (idx >= arr.length - 1) return arr[arr.length - 1];
-    //     if (idx < 0) return arr[0];
-    //     return arr[idx] * (1 - percent) + arr[idx + 1] * percent;
-    // }
+
+    function testStableTime(){
+
+    }
+
+    function calInstability(){
+        var actualThetas = getActualThetas(); // 弧度制
+
+        var stiffnesses = [];
+        var targetThetas = [];
+        [stiffnesses, targetThetas] = getCreaseMetaInformation();
+
+        console.assert(targetThetas.length === actualThetas.length);
+        console.assert(stiffnesses.length === actualThetas.length);
+
+        var instability = 0;
+        for (var i = 0; i < actualThetas.length; i++){
+            instability += Math.pow(actualThetas[i] - targetThetas[i], 2) * stiffnesses[i];
+        }
+        
+        return instability;
+    }
+
+    function getActualThetas(){
+        var thetasInfo = globals.dynamicSolver.getTheta();
+        if (!thetasInfo || thetasInfo.length === 0) {
+            console.log("u_theta has no data");
+            return;
+        }
+        var actualThetas = [];
+        for (var i = 0; i < thetasInfo.length; i++) {
+            var thetaInfo = thetasInfo[i]; // [当前角度theta, 角速度w, normal1Index, normal2Index]
+            actualThetas.push(thetaInfo[0]);
+        }
+        return actualThetas;
+    }
+
+    function getCreaseMetaInformation(){
+        var stiffnesses = [];
+        var targetThetas = [];
+        var creaseMeta = globals.dynamicSolver.getCreaseMeta();
+        var creaseLength = globals.model.getCreases().length;
+        for (var i = 0; i < creaseLength; i++){
+            stiffnesses[i] = creaseMeta[i * 4];
+            targetThetas[i] = creaseMeta[i * 4 + 2];
+        }
+        return [stiffnesses, targetThetas];
+    }
 
     function thetaLogging(firstN = 50){
         window.setInterval(function(){
@@ -110,54 +151,28 @@ function initThreeView(globals) {
                 return;
             }
 
-            var fullSummary = [];
-            var summary = "";
-            var thetas = [];
+            // var fullSummary = [];
+            // var summary = "";
+            var actualThetas = [];            
             for (var i = 0; i < Math.min(firstN, thetasInfo.length); i++) {
                 var thetaInfo = thetasInfo[i];
-                thetas.push(thetaInfo[0]); // [当前角度theta, 角速度w, normal1Index, normal2Index]
-                fullSummary.push(i + ": (theta: " + (thetaInfo[0] / Math.PI * 180).toFixed(2) + ")" + " (w: " + (thetaInfo[1]).toFixed(2) + ") "+ "(" + thetaInfo[2] + "," + thetaInfo[3] + ")");
-                summary += i + ": " + (thetaInfo[0] / Math.PI * 180).toFixed(2) + ", ";
+                actualThetas.push(thetaInfo[0]); // [当前角度theta, 角速度w, normal1Index, normal2Index]
+                // fullSummary.push(i + ": (theta: " + (thetaInfo[0] / Math.PI * 180).toFixed(2) + ")" + " (w: " + (thetaInfo[1]).toFixed(2) + ") "+ "(" + thetaInfo[2] + "," + thetaInfo[3] + ")");
+                // summary += i + ": " + (thetaInfo[0] / Math.PI * 180).toFixed(2) + ", ";
             }
             
             var stiffnesses = [];
             var targetThetas = [];
-            var creaseMeta = globals.dynamicSolver.getCreaseMeta();
+            [stiffnesses, targetThetas] = getCreaseMetaInformation();
+
+            var thetaDiffLogging = "Difference: \n";
             var creaseLength = globals.model.getCreases().length;
+            toFixedNum = 5;
             for (var i = 0; i < Math.min(firstN, creaseLength); i++){
-                stiffnesses[i] = creaseMeta[i * 4];
-                targetThetas[i] = creaseMeta[i * 4 + 2];
+                thetaDiffLogging += i + ": " + "actualTheta(" + (actualThetas[i] / Math.PI * 180).toFixed(toFixedNum) + ") - targetTheta(" + (targetThetas[i] / Math.PI * 180).toFixed(toFixedNum) + ") + stiffness(" + stiffnesses[i].toFixed(toFixedNum) + ")\n";
             }
-
-            // var stiffnesses2 = [];
-            // var targetThetas2 = [];
-            // var creases = globals.model.getCreases();
-            // var seqLength = globals.model.getMaxTargetThetaSeqLength();
-            // for (var i=0;i<creases.length;i++){
-            //     var crease = creases[i];
-            //     stiffnesses2[i] = crease.getK();
-            //     targetThetas2[i] = interpolate(crease.getTargetThetaSeq(), globals.creasePercent * (seqLength - 1));
-            // }
-
-            // var stiffnessesDiff = 0;
-            // var targetThetasDiff = 0;
-            // for (var i = 0; i < Math.min(firstN, creaseLength); i++){
-            //     stiffnessesDiff += Math.abs(stiffnesses[i] - stiffnesses2[i]);
-            //     targetThetasDiff += Math.abs(targetThetas[i] - targetThetas2[i]);
-            // }
-            // console.log("u_stiffnessDiff:", stiffnessesDiff);
-            // console.log("u_targetThetaDiff:", targetThetasDiff);
-
-            var thetaDiffLogging = "Diff: \n";
-            var instability = 0;
-            for (var i = 0; i < Math.min(firstN, creaseLength); i++){
-                instability += Math.sqrt(Math.abs(thetas[i] - targetThetas[i])) * stiffnesses[i];
-                thetaDiffLogging += i + ": " + "theta(" + thetas[i].toFixed(3) + ") - targetTheta(" + targetThetas[i].toFixed(3) + ") + stiffness(" + stiffnesses[i].toFixed(3) + ")\n";
-            }
-            thetaDiffLogging += "Instability: " + instability.toFixed(5) + "\n";
-            console.log("u_thetaDiff:", thetaDiffLogging);
-
-            // console.log("u_theta:", summary);
+            thetaDiffLogging += "Instability: " + calInstability().toFixed(toFixedNum) + "\n";
+            console.log(thetaDiffLogging);
         }, 1000);
     }
 
