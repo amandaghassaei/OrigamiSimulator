@@ -227,6 +227,48 @@ function initDynamicSolver(globals){
         }
     }
 
+    function getTheta(){
+        // 输出thetas[creases.length], thetas[i] = [当前角度theta, 角速度w, normal1Index, normal2Index]
+        // 用thetas[i].x来访问当前角度
+
+        if (!globals.gpuMath || !textureDimCreases || !creases || creases.length === 0) {
+            return [];
+        }
+
+        var vectorLength = 4;
+        globals.gpuMath.setProgram("packToBytes");
+        globals.gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
+        globals.gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDimCreases, textureDimCreases], "2f");
+        globals.gpuMath.setSize(textureDimCreases * vectorLength, textureDimCreases);
+        globals.gpuMath.step("packToBytes", ["u_theta"], "thetaOutputBytes");
+
+        if (globals.gpuMath.readyToRead()) {
+            var numPixels = creases.length * vectorLength; // 输出texture中有效像素的数量
+            var width = textureDimCreases * vectorLength;
+            var height = Math.ceil(numPixels / width);
+            var pixels = new Uint8Array(height * width * 4);
+
+            globals.gpuMath.readPixels(0, 0, width, height, pixels);
+            var parsedPixels = new Float32Array(pixels.buffer);
+
+            var thetas = [];
+            for (var i = 0; i < creases.length; i++) {
+                var rgbaIndex = i * vectorLength;
+                // [当前角度theta, 角速度w, normal1Index, normal2Index]
+                thetas.push(new THREE.Vector4(
+                    parsedPixels[rgbaIndex],
+                    parsedPixels[rgbaIndex + 1],
+                    parsedPixels[rgbaIndex + 2],
+                    parsedPixels[rgbaIndex + 3]
+                ));
+            }
+            return thetas;
+        } else {
+            console.log("shouldn't be here");
+            return [];
+        }
+    }
+
     function setSolveParams(){
         var dt = calcDt();
         $("#deltaT").html(dt);
@@ -661,6 +703,7 @@ function initDynamicSolver(globals){
         updateFixed: updateFixed,
         solve: solve,
         render: render,
-        reset: reset
+        reset: reset,
+        getTheta: getTheta,
     }
 }

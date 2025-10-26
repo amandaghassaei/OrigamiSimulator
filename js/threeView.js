@@ -91,6 +91,26 @@ function initThreeView(globals) {
     function startAnimation(){
         console.log("starting animation");
         renderer.animate(_loop);
+        thetaLogging();
+    }
+
+    function thetaLogging(){
+        window.setInterval(function(){
+            var thetas = globals.dynamicSolver.getTheta();
+            if (!thetas || thetas.length === 0) {
+                console.log("u_theta has no data");
+                return;
+            }
+            var fullSummary = [];
+            var summary = "";
+            for (var i = 0; i < Math.min(40, thetas.length); i++) {
+                var theta = thetas[i];
+                // [当前角度theta, 角速度w, normal1Index, normal2Index]
+                fullSummary.push(i + ": (theta: " + (theta.x / Math.PI * 180).toFixed(2) + ")" + " (w: " + (theta.y).toFixed(2) + ") "+ "(" + theta.z + "," + theta.w + ")");
+                summary += i + ": " + (theta.x / Math.PI * 180).toFixed(2) + ", ";
+            }
+            console.log("u_theta:", summary);
+        }, 1000);
     }
 
     function pauseSimulation(){

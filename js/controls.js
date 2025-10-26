@@ -497,9 +497,9 @@ function initControls(globals){
                 updateCreasePercent();
                 return;
             }
-            console.log("keyframe slider", val);
+            // console.log("keyframe slider", val);
             globals.currentKeyframeIndex = val;
-            console.log("*globals.currentKeyframeIndex:", globals.currentKeyframeIndex);
+            // console.log("*globals.currentKeyframeIndex:", globals.currentKeyframeIndex);
             globals.updateCreasePercentFromState();
             globals.shouldChangeCreasePercent = true;
             updateCreasePercent();
@@ -525,13 +525,13 @@ function initControls(globals){
     });
 
     function updateCreasePercent(){
-        console.log("globals.creasePercent", globals.creasePercent);
+        // console.log("globals.creasePercent", globals.creasePercent);
 
         globals.updateCreasePercentFromState();
-        console.log("globals.creasePercent", globals.creasePercent);
+        // console.log("globals.creasePercent", globals.creasePercent);
 
         var creasePercent = globals.creasePercent * 100;
-        console.log("updateCreasePercent", creasePercent);
+        // console.log("updateCreasePercent", creasePercent);
         creasePercentSlider.slider('value', creasePercent);
         creasePercentNavSlider.slider('value', creasePercent);
 
@@ -547,7 +547,7 @@ function initControls(globals){
 
         var totalSegments = clip(globals.keyframeCount, 1, globals.keyframeCount);
         var displayIndex = globals.currentKeyframeIndex + 1;
-        console.log("globals.currentKeyframeIndex:", globals.currentKeyframeIndex);
+        // console.log("globals.currentKeyframeIndex:", globals.currentKeyframeIndex);
         $("#keyFrameSummary").html(displayIndex + '/' + totalSegments);
     }
     updateCreasePercent();
