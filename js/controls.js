@@ -503,6 +503,9 @@ function initControls(globals){
             globals.updateCreasePercentFromState();
             globals.shouldChangeCreasePercent = true;
             updateCreasePercent();
+            console.log("Restarting stable test loop due to keyframe change." + val);
+            globals.threeView.resetRetryCount();
+            globals.threeView.startStableTestLoop();
         });
     }
     updateKeyframeSlider();

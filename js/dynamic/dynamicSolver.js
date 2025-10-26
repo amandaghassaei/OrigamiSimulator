@@ -127,6 +127,7 @@ function initDynamicSolver(globals){
         for (var j=0;j<_numSteps;j++){
             solveStep();
         }
+        globals.threeView.addFrameCount();
         //
         render();
     }
@@ -235,7 +236,7 @@ function initDynamicSolver(globals){
             return [];
         }
 
-        var vectorLength = 4;
+        let vectorLength = 4;
         globals.gpuMath.setProgram("packToBytes");
         globals.gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
         globals.gpuMath.setUniformForProgram("packToBytes", "u_floatTextureDim", [textureDimCreases, textureDimCreases], "2f");
@@ -243,17 +244,17 @@ function initDynamicSolver(globals){
         globals.gpuMath.step("packToBytes", ["u_theta"], "thetaOutputBytes");
 
         if (globals.gpuMath.readyToRead()) {
-            var numPixels = creases.length * vectorLength; // 输出texture中有效像素的数量
-            var width = textureDimCreases * vectorLength;
-            var height = Math.ceil(numPixels / width);
-            var pixels = new Uint8Array(height * width * 4);
+            let numPixels = creases.length * vectorLength; // 输出texture中有效像素的数量
+            let width = textureDimCreases * vectorLength;
+            let height = Math.ceil(numPixels / width);
+            let pixels = new Uint8Array(height * width * 4);
 
             globals.gpuMath.readPixels(0, 0, width, height, pixels);
-            var parsedPixels = new Float32Array(pixels.buffer);
+            let parsedPixels = new Float32Array(pixels.buffer);
 
-            var thetas = [];
-            for (var i = 0; i < creases.length; i++) {
-                var rgbaIndex = i * vectorLength;
+            let thetas = [];
+            for (let i = 0; i < creases.length; i++) {
+                let rgbaIndex = i * vectorLength;
                 // [当前角度theta, 角速度w, normal1Index, normal2Index]
                 thetas.push([
                     parsedPixels[rgbaIndex],

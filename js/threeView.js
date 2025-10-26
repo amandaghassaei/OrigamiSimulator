@@ -91,26 +91,118 @@ function initThreeView(globals) {
     function startAnimation(){
         console.log("starting animation");
         renderer.animate(_loop);
-        thetaLogging();
+        // thetaLogging();
     }
 
 
-    function testStableTime(){
+    let retryCount = 0;
+    const MAX_RETRIES = 30;
 
+    function resetRetryCount(){
+        retryCount = 0;
+    }
+
+    const API = {
+        test: function(eps = 1e-4) {
+            console.log(`try ${retryCount + 1} th test...`);
+            retryCount++;
+
+            let actualThetas = getActualThetas(); // 弧度制
+
+            let stiffnesses = [];
+            let targetThetas = [];
+            [stiffnesses, targetThetas] = getCreaseMetaInformation();
+
+            let l2norm = 0;
+            for (let i = 0; i < actualThetas.length; i++){
+                l2norm += Math.pow(actualThetas[i] - targetThetas[i], 2);
+            }
+            console.log(`current l2norm: ${l2norm.toFixed(6)}`);
+
+            if (l2norm < eps) {
+                // console.log("...success, model is stable!");
+                return true; // 成功
+            } else {
+                // console.log("...failed, model is not stable.");
+                return false; // 失败
+            }
+        },
+        // 模拟一个更复杂的停止条件：比如尝试超过 5 次也停止
+        isFailedTooManyTimes: function() {
+            return retryCount > MAX_RETRIES;
+        }
+    };
+
+    let frameCount = 0;
+    function addFrameCount(){
+        frameCount++;
+    }
+
+    // 1. 我们创建一个“启动器”函数 (Wrapper Function)
+    function startStableTestLoop() {
+        
+        // 2. nextInterval 现在被“封装”在启动器内部了。
+        // 它只属于这一次的测试序列。
+        let nextInterval = 500; // 在此初始化
+        let totTime = 0;
+        
+        // 3. 定义 *真正* 的递归函数 (它在闭包内)
+        // 这个函数可以访问并修改它“父函数”中的 nextInterval
+        function testStableTime() {
+            // console.log("--------------------");
+            // console.log("current frame count: " + frameCount);
+            // console.log("current tot time: " + totTime + "ms");
+            const isSuccess = API.test();
+            
+            // 4. 检查停止条件
+            if (isSuccess) {
+                if (totTime > 0) {
+                    console.log("final condition met: model is stable, stopping." + ` Total time: ${totTime}ms`);
+                }
+                return; // 成功，停止
+            }
+            
+            if (API.isFailedTooManyTimes()) {
+                console.log("final condition met: too many attempts, stopping." + ` Total time: ${totTime}ms`);
+                return; // 失败次数过多，停止
+            }
+
+            // 5. 核心逻辑：如果未成功，则将间隔减半
+            // 这修复了你代码中的 nextInterval = 5000;
+            console.log(`task not completed, current interval ${nextInterval}ms, halving...`);
+            nextInterval /= 2; // (或者 nextInterval = nextInterval / 2)
+            
+            // (可选) 增加一个最小间隔，防止间隔变为 0 或过小
+            if (nextInterval < 100) {
+                // console.log("...minimum interval reached, fixed at 100ms");
+                nextInterval = 100;
+            }
+
+            console.log(`will retry in ${nextInterval}ms.`);
+            totTime += nextInterval;
+
+            // 6. 安排下一次执行
+            // (修复了你代码中的 checkData)
+            setTimeout(testStableTime, nextInterval);
+        }
+
+        // 7. 启动器函数最后一步：调用一次内部函数，开始循环
+        // console.log(`starting test loop, initial interval ${nextInterval}ms`);
+        testStableTime();
     }
 
     function calInstability(){
-        var actualThetas = getActualThetas(); // 弧度制
+        let actualThetas = getActualThetas(); // 弧度制
 
-        var stiffnesses = [];
-        var targetThetas = [];
+        let stiffnesses = [];
+        let targetThetas = [];
         [stiffnesses, targetThetas] = getCreaseMetaInformation();
 
         console.assert(targetThetas.length === actualThetas.length);
         console.assert(stiffnesses.length === actualThetas.length);
 
-        var instability = 0;
-        for (var i = 0; i < actualThetas.length; i++){
+        let instability = 0;
+        for (let i = 0; i < actualThetas.length; i++){
             instability += Math.pow(actualThetas[i] - targetThetas[i], 2) * stiffnesses[i];
         }
         
@@ -118,25 +210,25 @@ function initThreeView(globals) {
     }
 
     function getActualThetas(){
-        var thetasInfo = globals.dynamicSolver.getTheta();
+        let thetasInfo = globals.dynamicSolver.getTheta();
         if (!thetasInfo || thetasInfo.length === 0) {
             console.log("u_theta has no data");
             return;
         }
-        var actualThetas = [];
-        for (var i = 0; i < thetasInfo.length; i++) {
-            var thetaInfo = thetasInfo[i]; // [当前角度theta, 角速度w, normal1Index, normal2Index]
+        let actualThetas = [];
+        for (let i = 0; i < thetasInfo.length; i++) {
+            let thetaInfo = thetasInfo[i]; // [当前角度theta, 角速度w, normal1Index, normal2Index]
             actualThetas.push(thetaInfo[0]);
         }
         return actualThetas;
     }
 
     function getCreaseMetaInformation(){
-        var stiffnesses = [];
-        var targetThetas = [];
-        var creaseMeta = globals.dynamicSolver.getCreaseMeta();
-        var creaseLength = globals.model.getCreases().length;
-        for (var i = 0; i < creaseLength; i++){
+        let stiffnesses = [];
+        let targetThetas = [];
+        let creaseMeta = globals.dynamicSolver.getCreaseMeta();
+        let creaseLength = globals.model.getCreases().length;
+        for (let i = 0; i < creaseLength; i++){
             stiffnesses[i] = creaseMeta[i * 4];
             targetThetas[i] = creaseMeta[i * 4 + 2];
         }
@@ -145,30 +237,30 @@ function initThreeView(globals) {
 
     function thetaLogging(firstN = 50){
         window.setInterval(function(){
-            var thetasInfo = globals.dynamicSolver.getTheta();
+            let thetasInfo = globals.dynamicSolver.getTheta();
             if (!thetasInfo || thetasInfo.length === 0) {
                 console.log("u_theta has no data");
                 return;
             }
 
-            // var fullSummary = [];
-            // var summary = "";
-            var actualThetas = [];            
-            for (var i = 0; i < Math.min(firstN, thetasInfo.length); i++) {
-                var thetaInfo = thetasInfo[i];
+            // let fullSummary = [];
+            // let summary = "";
+            let actualThetas = [];            
+            for (let i = 0; i < Math.min(firstN, thetasInfo.length); i++) {
+                let thetaInfo = thetasInfo[i];
                 actualThetas.push(thetaInfo[0]); // [当前角度theta, 角速度w, normal1Index, normal2Index]
                 // fullSummary.push(i + ": (theta: " + (thetaInfo[0] / Math.PI * 180).toFixed(2) + ")" + " (w: " + (thetaInfo[1]).toFixed(2) + ") "+ "(" + thetaInfo[2] + "," + thetaInfo[3] + ")");
                 // summary += i + ": " + (thetaInfo[0] / Math.PI * 180).toFixed(2) + ", ";
             }
             
-            var stiffnesses = [];
-            var targetThetas = [];
+            let stiffnesses = [];
+            let targetThetas = [];
             [stiffnesses, targetThetas] = getCreaseMetaInformation();
 
-            var thetaDiffLogging = "Difference: \n";
-            var creaseLength = globals.model.getCreases().length;
-            toFixedNum = 5;
-            for (var i = 0; i < Math.min(firstN, creaseLength); i++){
+            let thetaDiffLogging = "Difference: \n";
+            let creaseLength = globals.model.getCreases().length;
+            let toFixedNum = 5;
+            for (let i = 0; i < Math.min(firstN, creaseLength); i++){
                 thetaDiffLogging += i + ": " + "actualTheta(" + (actualThetas[i] / Math.PI * 180).toFixed(toFixedNum) + ") - targetTheta(" + (targetThetas[i] / Math.PI * 180).toFixed(toFixedNum) + ") + stiffness(" + stiffnesses[i].toFixed(toFixedNum) + ")\n";
             }
             thetaDiffLogging += "Instability: " + calInstability().toFixed(toFixedNum) + "\n";
@@ -222,7 +314,12 @@ function initThreeView(globals) {
         if (globals.simNeedsSync){
             globals.model.syncSolver();
         }
-        if (globals.simulationRunning) globals.model.step();
+        if (globals.simulationRunning) {
+            globals.model.step();
+            // retryCount = 0;
+            // frameCount = 0;
+            // startStableTestLoop();
+        }
         if (globals.vrEnabled){
             _render();
             return;
@@ -324,6 +421,10 @@ function initThreeView(globals) {
 
         resetModel: resetModel,//reset model orientation
         resetCamera:resetCamera,
-        setBackgroundColor: setBackgroundColor
+        setBackgroundColor: setBackgroundColor,
+
+        addFrameCount: addFrameCount,
+        resetRetryCount: resetRetryCount,
+        startStableTestLoop: startStableTestLoop
     }
 }
