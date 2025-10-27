@@ -91,7 +91,7 @@ function initThreeView(globals) {
     function startAnimation(){
         console.log("starting animation");
         renderer.animate(_loop);
-        // thetaLogging();
+        thetaLogging();
     }
 
 
@@ -103,7 +103,7 @@ function initThreeView(globals) {
     }
 
     const API = {
-        test: function(eps = 1e-4) {
+        test: function(eps = 1e-3) {
             console.log(`try ${retryCount + 1} th test...`);
             retryCount++;
 
@@ -118,8 +118,9 @@ function initThreeView(globals) {
                 l2norm += Math.pow(actualThetas[i] - targetThetas[i], 2);
             }
             console.log(`current l2norm: ${l2norm.toFixed(6)}`);
+            let mse = l2norm / actualThetas.length;
 
-            if (l2norm < eps) {
+            if (mse < eps) {
                 // console.log("...success, model is stable!");
                 return true; // ³É¹¦
             } else {
