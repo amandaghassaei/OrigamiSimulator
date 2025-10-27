@@ -94,33 +94,35 @@ function initThreeView(globals) {
         thetaLogging();
     }
 
-
+    /* ---------- 测试稳定时间 ---------- */
     let retryCount = 0;
-    const MAX_RETRIES = 30;
+    const MAX_RETRIES = 20;
 
     function resetRetryCount(){
         retryCount = 0;
     }
 
+    let lastAvgInstability = null;
     const API = {
-        test: function(eps = 1e-3) {
+        test: function(eps = 1e-4) {
             console.log(`try ${retryCount + 1} th test...`);
             retryCount++;
+            
+            let totInstability = calInstability();
+            let creaseLength = globals.model.getCreases().length;
+            let avgInstability = totInstability / creaseLength;
+            // console.log(`current avg instability: ${avgInstability.toFixed(6)}`);
 
-            let actualThetas = getActualThetas(); // 弧度制
+            if (lastAvgInstability == null) {
+                lastAvgInstability = avgInstability;
+                return false;
+            }            
 
-            let stiffnesses = [];
-            let targetThetas = [];
-            [stiffnesses, targetThetas] = getCreaseMetaInformation();
+            let diff = Math.abs(avgInstability - lastAvgInstability);
+            console.log(`diff: ${diff.toFixed(6)}, target eps: ${eps}`);
+            lastAvgInstability = avgInstability;
 
-            let l2norm = 0;
-            for (let i = 0; i < actualThetas.length; i++){
-                l2norm += Math.pow(actualThetas[i] - targetThetas[i], 2);
-            }
-            console.log(`current l2norm: ${l2norm.toFixed(6)}`);
-            let mse = l2norm / actualThetas.length;
-
-            if (mse < eps) {
+            if (diff < eps) {
                 // console.log("...success, model is stable!");
                 return true; // 成功
             } else {
@@ -139,17 +141,30 @@ function initThreeView(globals) {
         frameCount++;
     }
 
+    let stableTestTimeoutId = null;
+    let stableTestRunId = 0;
+
     // 1. 我们创建一个“启动器”函数 (Wrapper Function)
     function startStableTestLoop() {
+        lastAvgInstability = null;
         
+        stableTestRunId++;
+        const currentRunId = stableTestRunId;
+        if (stableTestTimeoutId !== null) {
+            clearTimeout(stableTestTimeoutId);
+            stableTestTimeoutId = null;
+        }
+        resetRetryCount();
+
         // 2. nextInterval 现在被“封装”在启动器内部了。
         // 它只属于这一次的测试序列。
-        let nextInterval = 500; // 在此初始化
+        let nextInterval = 800; // 在此初始化
         let totTime = 0;
         
         // 3. 定义 *真正* 的递归函数 (它在闭包内)
         // 这个函数可以访问并修改它“父函数”中的 nextInterval
         function testStableTime() {
+            if (currentRunId !== stableTestRunId) return;
             // console.log("--------------------");
             // console.log("current frame count: " + frameCount);
             // console.log("current tot time: " + totTime + "ms");
@@ -158,20 +173,21 @@ function initThreeView(globals) {
             // 4. 检查停止条件
             if (isSuccess) {
                 if (totTime > 0) {
-                    console.log("final condition met: model is stable, stopping." + ` Total time: ${totTime}ms`);
+                    console.log("Stable test finished: model stabled within between" + ` ${totTime - nextInterval}ms and ${totTime}ms`);
                 }
+                stableTestTimeoutId = null;
                 return; // 成功，停止
             }
             
             if (API.isFailedTooManyTimes()) {
                 console.log("final condition met: too many attempts, stopping." + ` Total time: ${totTime}ms`);
+                stableTestTimeoutId = null;
                 return; // 失败次数过多，停止
             }
 
             // 5. 核心逻辑：如果未成功，则将间隔减半
-            // 这修复了你代码中的 nextInterval = 5000;
-            console.log(`task not completed, current interval ${nextInterval}ms, halving...`);
-            nextInterval /= 2; // (或者 nextInterval = nextInterval / 2)
+            // console.log(`task not completed, current interval ${nextInterval}ms, halving...`);
+            nextInterval /= 2;
             
             // (可选) 增加一个最小间隔，防止间隔变为 0 或过小
             if (nextInterval < 100) {
@@ -179,20 +195,21 @@ function initThreeView(globals) {
                 nextInterval = 100;
             }
 
-            console.log(`will retry in ${nextInterval}ms.`);
+            // console.log(`will retry in ${nextInterval}ms.`);
             totTime += nextInterval;
 
             // 6. 安排下一次执行
-            // (修复了你代码中的 checkData)
-            setTimeout(testStableTime, nextInterval);
+            stableTestTimeoutId = setTimeout(testStableTime, nextInterval);
         }
 
         // 7. 启动器函数最后一步：调用一次内部函数，开始循环
         // console.log(`starting test loop, initial interval ${nextInterval}ms`);
         testStableTime();
     }
+    /* ---------- 测试稳定时间 ---------- */
 
     function calInstability(){
+        // 返回的instability没有对crease的数量取平均
         let actualThetas = getActualThetas(); // 弧度制
 
         let stiffnesses = [];
@@ -266,7 +283,7 @@ function initThreeView(globals) {
             }
             thetaDiffLogging += "Instability: " + calInstability().toFixed(toFixedNum) + "\n";
             console.log(thetaDiffLogging);
-        }, 1000);
+        }, 3000);
     }
 
     function pauseSimulation(){

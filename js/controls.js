@@ -488,23 +488,44 @@ function initControls(globals){
     }
 
     function updateKeyframeSlider(){
-        this.keyframeSlider = setSlider("#keyframeTimeline>div", globals.currentKeyframeIndex, 0, globals.keyframeCount - 1, 1, function(val){
+        var lastAppliedKeyframe = globals.currentKeyframeIndex;
+        var keyframeChangedDuringDrag = false;
+
+        function applyKeyframeValue(val, force){
             if (!globals.keyframes || globals.keyframes.length < 2) {
                 globals.currentKeyframeIndex = 0;
                 globals.currentFoldPercent = clip(val / 100, 0, 1);
                 globals.updateCreasePercentFromState();
                 globals.shouldChangeCreasePercent = true;
                 updateCreasePercent();
-                return;
+                lastAppliedKeyframe = globals.currentKeyframeIndex;
+                return true;
             }
-            // console.log("keyframe slider", val);
+            if (!force && val === lastAppliedKeyframe) return false;
             globals.currentKeyframeIndex = val;
-            // console.log("*globals.currentKeyframeIndex:", globals.currentKeyframeIndex);
             globals.updateCreasePercentFromState();
             globals.shouldChangeCreasePercent = true;
             updateCreasePercent();
+            lastAppliedKeyframe = val;
+            return true;
+        }
+
+        this.keyframeSlider = setSlider("#keyframeTimeline>div", globals.currentKeyframeIndex, 0, globals.keyframeCount - 1, 1, function(val){
+            if (applyKeyframeValue(val, false)) keyframeChangedDuringDrag = true;
+        }, function(val){
+            var previousKeyframe = lastAppliedKeyframe;
+            var applied = applyKeyframeValue(val, true);
+            var shouldRestart = keyframeChangedDuringDrag;
+            keyframeChangedDuringDrag = false;
+            if (applied) {
+                if (!globals.keyframes || globals.keyframes.length < 2) {
+                    shouldRestart = true;
+                } else if (previousKeyframe !== lastAppliedKeyframe) {
+                    shouldRestart = true;
+                }
+            }
+            if (!shouldRestart) return;
             console.log("Restarting stable test loop due to keyframe change." + val);
-            globals.threeView.resetRetryCount();
             globals.threeView.startStableTestLoop();
         });
     }
