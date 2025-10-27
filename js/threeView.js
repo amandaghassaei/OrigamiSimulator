@@ -103,7 +103,7 @@ function initThreeView(globals) {
     }
 
     let lastAvgInstability = null;
-    const API = {
+    const stableTestAPI = {
         test: function(nextInterval, eps = 1e-4) {
             console.log(`try ${retryCount + 1} th test..., nextInterval: ${nextInterval}ms`);
             retryCount++;
@@ -144,8 +144,8 @@ function initThreeView(globals) {
     let stableTestTimeoutId = null;
     let stableTestRunId = 0;
 
-    // 1. 创建一个“启动器”函数 (Wrapper Function)
-    function startStableTestLoop() {
+    function startStableTestLoop(flag) {
+        if (!flag) return;
         lastAvgInstability = null;
         
         stableTestRunId++;
@@ -156,19 +156,18 @@ function initThreeView(globals) {
         }
         resetRetryCount();
 
-        // 2. nextInterval 只属于这一次的测试序列。
-        let nextInterval = 200;
+        let nextInterval = 200; // 测试时间间隔
         let totTime = 0;
         
-        // 3. 定义 *真正* 的递归函数
+        // 递归函数
         function testStableTime() {
             if (currentRunId !== stableTestRunId) return;
             // console.log("--------------------");
             // console.log("current frame count: " + frameCount);
             // console.log("current tot time: " + totTime + "ms");
-            const isSuccess = API.test(nextInterval);
+            const isSuccess = stableTestAPI.test(nextInterval, 1e-4);
             
-            // 4. 检查停止条件
+            // 检查停止条件
             if (isSuccess) {
                 if (totTime > 0) {
                     console.log("Stable test finished: model stabled in " + ` ${totTime - nextInterval}ms - ${totTime}ms`);
@@ -176,14 +175,14 @@ function initThreeView(globals) {
                 stableTestTimeoutId = null;
                 return;
             }
-            
-            if (API.isFailedTooManyTimes()) {
+
+            if (stableTestAPI.isFailedTooManyTimes()) {
                 console.log("final condition met: too many attempts, stopping." + ` Total time: ${totTime}ms`);
                 stableTestTimeoutId = null;
                 return;
             }
 
-            // 5. 如果未成功，则将间隔减半
+            // 如果未成功，则将间隔减半
             // console.log(`task not completed, current interval ${nextInterval}ms, halving...`);
             // nextInterval /= 2;
             
@@ -196,11 +195,10 @@ function initThreeView(globals) {
             // console.log(`will retry in ${nextInterval}ms.`);
             totTime += nextInterval;
 
-            // 6. 安排下一次执行
+            // 安排下一次执行
             stableTestTimeoutId = setTimeout(testStableTime, nextInterval);
         }
 
-        // 7. 启动器函数最后一步：调用一次内部函数，开始循环
         // console.log(`starting test loop, initial interval ${nextInterval}ms`);
         testStableTime();
     }
@@ -226,6 +224,7 @@ function initThreeView(globals) {
     }
 
     function getActualThetas(){
+        // 返回u_theta
         let thetasInfo = globals.dynamicSolver.getTheta();
         if (!thetasInfo || thetasInfo.length === 0) {
             console.log("u_theta has no data");

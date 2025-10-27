@@ -500,7 +500,7 @@ function initControls(globals){
         var shouldRestart = applied || foldPercentChangedDuringDrag;
         foldPercentChangedDuringDrag = false;
         if (!shouldRestart) return;
-        globals.threeView.startStableTestLoop();
+        globals.threeView.startStableTestLoop(true);
     });
 
     function clip(val, min, max){
@@ -549,7 +549,7 @@ function initControls(globals){
             // Only restart when the final position differs from what we already simulated.
             if (!shouldRestart) return;
             console.log("Restarting stable test loop due to keyframe change." + val);
-            globals.threeView.startStableTestLoop();
+            globals.threeView.startStableTestLoop(true);
         });
     }
     updateKeyframeSlider();
