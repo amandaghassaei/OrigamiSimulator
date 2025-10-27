@@ -104,8 +104,8 @@ function initThreeView(globals) {
 
     let lastAvgInstability = null;
     const API = {
-        test: function(eps = 1e-4) {
-            console.log(`try ${retryCount + 1} th test...`);
+        test: function(nextInterval, eps = 1e-4) {
+            console.log(`try ${retryCount + 1} th test..., nextInterval: ${nextInterval}ms`);
             retryCount++;
             
             let totInstability = calInstability();
@@ -119,7 +119,7 @@ function initThreeView(globals) {
             }            
 
             let diff = Math.abs(avgInstability - lastAvgInstability);
-            console.log(`diff: ${diff.toFixed(6)}, target eps: ${eps}`);
+            console.log(`average instability diff: ${diff.toFixed(6)}, target eps: ${eps}`);
             lastAvgInstability = avgInstability;
 
             if (diff < eps) {
@@ -130,7 +130,7 @@ function initThreeView(globals) {
                 return false; // 失败
             }
         },
-        // 模拟一个更复杂的停止条件：比如尝试超过 5 次也停止
+        
         isFailedTooManyTimes: function() {
             return retryCount > MAX_RETRIES;
         }
@@ -144,7 +144,7 @@ function initThreeView(globals) {
     let stableTestTimeoutId = null;
     let stableTestRunId = 0;
 
-    // 1. 我们创建一个“启动器”函数 (Wrapper Function)
+    // 1. 创建一个“启动器”函数 (Wrapper Function)
     function startStableTestLoop() {
         lastAvgInstability = null;
         
@@ -156,44 +156,42 @@ function initThreeView(globals) {
         }
         resetRetryCount();
 
-        // 2. nextInterval 现在被“封装”在启动器内部了。
-        // 它只属于这一次的测试序列。
-        let nextInterval = 800; // 在此初始化
+        // 2. nextInterval 只属于这一次的测试序列。
+        let nextInterval = 200;
         let totTime = 0;
         
-        // 3. 定义 *真正* 的递归函数 (它在闭包内)
-        // 这个函数可以访问并修改它“父函数”中的 nextInterval
+        // 3. 定义 *真正* 的递归函数
         function testStableTime() {
             if (currentRunId !== stableTestRunId) return;
             // console.log("--------------------");
             // console.log("current frame count: " + frameCount);
             // console.log("current tot time: " + totTime + "ms");
-            const isSuccess = API.test();
+            const isSuccess = API.test(nextInterval);
             
             // 4. 检查停止条件
             if (isSuccess) {
                 if (totTime > 0) {
-                    console.log("Stable test finished: model stabled within between" + ` ${totTime - nextInterval}ms and ${totTime}ms`);
+                    console.log("Stable test finished: model stabled in " + ` ${totTime - nextInterval}ms - ${totTime}ms`);
                 }
                 stableTestTimeoutId = null;
-                return; // 成功，停止
+                return;
             }
             
             if (API.isFailedTooManyTimes()) {
                 console.log("final condition met: too many attempts, stopping." + ` Total time: ${totTime}ms`);
                 stableTestTimeoutId = null;
-                return; // 失败次数过多，停止
+                return;
             }
 
-            // 5. 核心逻辑：如果未成功，则将间隔减半
+            // 5. 如果未成功，则将间隔减半
             // console.log(`task not completed, current interval ${nextInterval}ms, halving...`);
-            nextInterval /= 2;
+            // nextInterval /= 2;
             
             // (可选) 增加一个最小间隔，防止间隔变为 0 或过小
-            if (nextInterval < 100) {
-                // console.log("...minimum interval reached, fixed at 100ms");
-                nextInterval = 100;
-            }
+            // if (nextInterval < 100) {
+            //     // console.log("...minimum interval reached, fixed at 100ms");
+            //     nextInterval = 100;
+            // }
 
             // console.log(`will retry in ${nextInterval}ms.`);
             totTime += nextInterval;

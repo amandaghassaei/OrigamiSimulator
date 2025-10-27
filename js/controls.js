@@ -477,10 +477,30 @@ function initControls(globals){
         globals.shouldChangeCreasePercent = true;
         updateCreasePercent();
     });
-    var creasePercentBottomSlider = setSlider("#creasePercentBottom>div", globals.currentFoldPercent*100, 0, 100, 1, function(val){
-        globals.currentFoldPercent = val/100;
+    
+    // Bottom fold-percent slider mirrors the restart logic: delay restart until the drag ends.
+    var lastAppliedFoldPercent = globals.currentFoldPercent;
+    var foldPercentChangedDuringDrag = false;
+
+    // Returns true when a change really occurs.
+    function applyFoldPercent(val, force){
+        var normalized = clip(val / 100, 0, 1);
+        if (!force && Math.abs(normalized - lastAppliedFoldPercent) < 1e-6) return false;
+        globals.currentFoldPercent = normalized;
         globals.shouldChangeCreasePercent = true;
-        updateCreasePercent()
+        updateCreasePercent();
+        lastAppliedFoldPercent = globals.currentFoldPercent;
+        return true;
+    }
+
+    var creasePercentBottomSlider = setSlider("#creasePercentBottom>div", globals.currentFoldPercent*100, 0, 100, 1, function(val){
+        if (applyFoldPercent(val, false)) foldPercentChangedDuringDrag = true;
+    }, function(val){
+        var applied = applyFoldPercent(val, true);
+        var shouldRestart = applied || foldPercentChangedDuringDrag;
+        foldPercentChangedDuringDrag = false;
+        if (!shouldRestart) return;
+        globals.threeView.startStableTestLoop();
     });
 
     function clip(val, min, max){
@@ -488,9 +508,11 @@ function initControls(globals){
     }
 
     function updateKeyframeSlider(){
+        // Track the last keyframe index we actually applied so we can suppress redundant restarts.
         var lastAppliedKeyframe = globals.currentKeyframeIndex;
         var keyframeChangedDuringDrag = false;
 
+        // Apply the slider value to simulation state. Returns true when state really changes.
         function applyKeyframeValue(val, force){
             if (!globals.keyframes || globals.keyframes.length < 2) {
                 globals.currentKeyframeIndex = 0;
@@ -524,6 +546,7 @@ function initControls(globals){
                     shouldRestart = true;
                 }
             }
+            // Only restart when the final position differs from what we already simulated.
             if (!shouldRestart) return;
             console.log("Restarting stable test loop due to keyframe change." + val);
             globals.threeView.startStableTestLoop();
