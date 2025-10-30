@@ -490,7 +490,6 @@ function initControls(globals){
 
     var totalPercentSlider = setSlider("#totalPercent>div", (globals.creasePercent + globals.keyframeIdx) / globals.keyframeCount * 100, 0, 100, 0.1, function(val){
         var totalPercent = val/100 * globals.keyframeCount;
-        console.log("totalPercent slider:", totalPercent);
         globals.keyframeIdx = Math.floor(totalPercent);
         globals.creasePercent = totalPercent - globals.keyframeIdx;
         globals.shouldChangeCreasePercent = true;

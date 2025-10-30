@@ -127,8 +127,6 @@ function initDynamicSolver(globals){
         for (var j=0;j<_numSteps;j++){
             solveStep();
         }
-        globals.threeView.addFrameCount();
-        //
         render();
     }
 
@@ -230,12 +228,6 @@ function initDynamicSolver(globals){
     }
 
     function getTheta(){
-        // 输出thetas[creases.length], thetas[i] = [当前角度theta, 角速度w, normal1Index, normal2Index]
-
-        if (!globals.gpuMath || !textureDimCreases || !creases || creases.length === 0) {
-            return [];
-        }
-
         let vectorLength = 4;
         globals.gpuMath.setProgram("packToBytes");
         globals.gpuMath.setUniformForProgram("packToBytes", "u_vectorLength", vectorLength, "1f");
@@ -244,7 +236,7 @@ function initDynamicSolver(globals){
         globals.gpuMath.step("packToBytes", ["u_theta"], "thetaOutputBytes");
 
         if (globals.gpuMath.readyToRead()) {
-            let numPixels = creases.length * vectorLength; // 输出texture中有效像素的数量
+            let numPixels = creases.length * vectorLength;
             let width = textureDimCreases * vectorLength;
             let height = Math.ceil(numPixels / width);
             let pixels = new Uint8Array(height * width * 4);
@@ -254,14 +246,7 @@ function initDynamicSolver(globals){
 
             let thetas = [];
             for (let i = 0; i < creases.length; i++) {
-                let rgbaIndex = i * vectorLength;
-                // [当前角度theta, 角速度w, normal1Index, normal2Index]
-                thetas.push([
-                    parsedPixels[rgbaIndex],
-                    parsedPixels[rgbaIndex + 1],
-                    parsedPixels[rgbaIndex + 2],
-                    parsedPixels[rgbaIndex + 3]
-                ]);
+                thetas.push(parsedPixels[i * vectorLength]);
             }
             return thetas;
         } else {
@@ -521,30 +506,14 @@ function initDynamicSolver(globals){
         globals.gpuMath.initTextureFromData("u_creaseVectors", textureDimCreases, textureDimCreases, "FLOAT", creaseVectors, true);
     }
 
-    function interpolate(arr){
-        const idx = globals.keyframeIdx;
-        const percent = globals.creasePercent;
-        if (idx >= arr.length - 1) return arr[arr.length - 1];
-        if (idx < 0) return arr[0];
-        return arr[idx] * (1 - percent) + arr[idx + 1] * percent;
-    }
-
     function updateCreasesMeta(){
         for (var i=0;i<creases.length;i++){
             var crease = creases[i];
             creaseMeta[i*4] = crease.getK();
             // creaseMeta[i*4+1] = crease.getD();
-            if (globals.foldingMode == "sequential"){
-                creaseMeta[i*4+2] = interpolate(crease.getTargetThetaSeq());
-            } else {
-                creaseMeta[i*4+2] = crease.getTargetTheta() * globals.creasePercent;
-            }
+            creaseMeta[i*4+2] = crease.getTargetTheta();
         }
         globals.gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true); // creaseMeta is sent to the GPU, where it can be accessed by the shader.
-    }
-
-    function getCreaseMeta(){
-        return creaseMeta;
     }
 
     function updateLastPosition(){
@@ -714,6 +683,5 @@ function initDynamicSolver(globals){
         render: render,
         reset: reset,
         getTheta: getTheta,
-        getCreaseMeta: getCreaseMeta,
     }
 }

@@ -168,9 +168,56 @@ function initModel(globals){
         setGeoUpdates();
     }
 
-    function step(numSteps){
+    function getInstability(){
+        let actualThetas = getSolver().getTheta();
+        let instabilities = [];
+        for (let i = 0; i < creases.length; i++){
+            let instability =
+                creases[i].getK() *
+                creases[i].getLength() *
+                (actualThetas[i] - creases[i].getTargetTheta()) ** 2;
+            instabilities.push(instability);
+        }
+        return instabilities.reduce((a, b) => a + b, 0);
+    }
+
+    let lastInstability = 0;
+    let stepsSinceStable = 0;
+    let callCount = 0;
+
+    function InstabilityTestLoop() {
+        callCount = (callCount + 1) % 10;
+        const instability = getInstability();
+        const same6 = instability.toFixed(6) === lastInstability.toFixed(6);
+        const same4 = instability.toFixed(4) === lastInstability.toFixed(4);
+        const stabilized = same6 || (stepsSinceStable === 0 && same4);
+        const logInstability = () => {
+            console.log(`Instability: ${instability.toFixed(5)} [${stepsSinceStable} steps]`);
+        };
+        if (stabilized) {
+            if (stepsSinceStable !== 0) {
+                logInstability();
+                console.log("System has stabilized, stopping monitoring...");
+            }
+            stepsSinceStable = 0;
+        } else {
+            if (stepsSinceStable === 0) {
+                console.log("Instability detected, starting monitoring...");
+                logInstability();
+            }
+            if (callCount === 0) {
+                logInstability();
+            }
+            stepsSinceStable++;
+        }
+        lastInstability = instability;
+    }
+
+
+    function step(numSteps) {
         getSolver().solve(numSteps);
         setGeoUpdates();
+        InstabilityTestLoop();
     }
 
     function setGeoUpdates(){
