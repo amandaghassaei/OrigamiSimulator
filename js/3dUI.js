@@ -32,15 +32,15 @@ function init3DUI(globals) {
             globals.pattern.setRawFoldAngles(
                 function(foldAngles) {
                     var seq = foldAngles[selectedObj.edgeInd][1];
-                    if (globals.currentKeyframeIndex < seq.length) {
-                        seq[globals.currentKeyframeIndex] = value * Math.PI / 180;
+                    if (globals.keyframeIdx < seq.length) {
+                        seq[globals.keyframeIdx] = value * Math.PI / 180;
                     }
                 }
             );
             var crease = globals.model.getCreases()
             var seq = crease[selectedObj.getIndex()].targetThetaSeq;
-            if (globals.currentKeyframeIndex < seq.length) {
-                seq[globals.currentKeyframeIndex] = value * Math.PI / 180;
+            if (globals.keyframeIdx < seq.length) {
+                seq[globals.keyframeIdx] = value * Math.PI / 180;
             }
             globals.creaseMaterialHasChanged = true;
             $("#angleSimple").html(value.toFixed(0));
@@ -92,7 +92,7 @@ function init3DUI(globals) {
                 selectedObj = highlightedObj;
                 var crease = globals.model.getCreases()[selectedObj.getIndex()];
                 var seq = crease.getTargetThetaSeq();
-                var idx = Math.min(globals.currentKeyframeIndex, seq.length - 1);
+                var idx = Math.min(globals.keyframeIdx, seq.length - 1);
                 var angle = seq[idx] * 180 / Math.PI;
                 $("#angleSimple").html(angle.toFixed(0));
                 $("#targetAngleBottom>div").slider("value", angle);

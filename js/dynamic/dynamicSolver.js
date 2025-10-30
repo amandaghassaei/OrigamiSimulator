@@ -78,7 +78,7 @@ function initDynamicSolver(globals){
         if (globals.shouldAnimateFoldPercent){
             globals.creasePercent = globals.videoAnimator.nextFoldAngle(0);
             globals.controls.updateCreasePercent();
-            updateCreasesMeta(globals.creasePercent);
+            updateCreasesMeta();
             globals.shouldChangeCreasePercent = true;
         }
 
@@ -95,7 +95,7 @@ function initDynamicSolver(globals){
             globals.nodePositionHasChanged = false;
         }
         if (globals.creaseMaterialHasChanged) {
-            updateCreasesMeta(globals.creasePercent);
+            updateCreasesMeta();
             globals.creaseMaterialHasChanged = false;
         }
         if (globals.materialHasChanged) {
@@ -103,7 +103,7 @@ function initDynamicSolver(globals){
             globals.materialHasChanged = false;
         }
         if (globals.shouldChangeCreasePercent) {
-            updateCreasesMeta(globals.creasePercent);
+            updateCreasesMeta();
             globals.shouldChangeCreasePercent = false;
         }
         // if (globals.shouldZeroDynamicVelocity){
@@ -521,20 +521,24 @@ function initDynamicSolver(globals){
         globals.gpuMath.initTextureFromData("u_creaseVectors", textureDimCreases, textureDimCreases, "FLOAT", creaseVectors, true);
     }
 
-    function interpolate(arr, position){
-        const idx = Math.floor(position);
-        const percent = position - idx;
+    function interpolate(arr){
+        const idx = globals.keyframeIdx;
+        const percent = globals.creasePercent;
         if (idx >= arr.length - 1) return arr[arr.length - 1];
         if (idx < 0) return arr[0];
         return arr[idx] * (1 - percent) + arr[idx + 1] * percent;
     }
 
-    function updateCreasesMeta(creasePercent){
+    function updateCreasesMeta(){
         for (var i=0;i<creases.length;i++){
             var crease = creases[i];
             creaseMeta[i*4] = crease.getK();
             // creaseMeta[i*4+1] = crease.getD();
-            creaseMeta[i*4+2] = interpolate(crease.getTargetThetaSeq(), creasePercent * (seqLength - 1));
+            if (globals.foldingMode == "sequential"){
+                creaseMeta[i*4+2] = interpolate(crease.getTargetThetaSeq());
+            } else {
+                creaseMeta[i*4+2] = crease.getTargetTheta() * globals.creasePercent;
+            }
         }
         globals.gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true); // creaseMeta is sent to the GPU, where it can be accessed by the shader.
     }
@@ -699,7 +703,7 @@ function initDynamicSolver(globals){
         updateMaterials(true);
         updateFixed();
         updateExternalForces();
-        updateCreasesMeta(globals.creasePercent);
+        updateCreasesMeta();
         updateCreaseVectors();
     }
 
