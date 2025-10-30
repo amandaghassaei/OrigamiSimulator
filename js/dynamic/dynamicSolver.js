@@ -510,15 +510,15 @@ function initDynamicSolver(globals){
         for (var i=0;i<creases.length;i++){
             var crease = creases[i];
             if (globals.mask && globals.mask.looseCreases.includes(i)){
-                creaseMeta2[i*4] = 0;
+                creaseMeta[i*4] = 0;
             } else {
-                creaseMeta2[i*4] = crease.getK();
+                creaseMeta[i*4] = crease.getK();
             }
             // creaseMeta[i*4+1] = crease.getD();
             if (globals.mask && globals.mask.vanishCrease === i){
-                creaseMeta2[i*4+2] = 0;
+                creaseMeta[i*4+2] = 0;
             } else {
-                creaseMeta2[i*4+2] = crease.getTargetTheta();
+                creaseMeta[i*4+2] = crease.getTargetTheta();
             }
         }
         globals.gpuMath.initTextureFromData("u_creaseMeta", textureDimCreases, textureDimCreases, "FLOAT", creaseMeta, true); // creaseMeta is sent to the GPU, where it can be accessed by the shader.

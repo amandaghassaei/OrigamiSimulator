@@ -171,7 +171,8 @@ function initModel(globals){
     let masks = [];
 
     function stepFinderInit(i) {
-        if (i >= creases.length) stepFinderLoop(0);
+        console.log(`Initializing mask ${i + 1}`);
+        if (i >= creases.length) return stepFinderLoop(0);
         if (Math.abs(creases[i].getTargetTheta()) < 1e-5) { 
             return stepFinderInit(i + 1);
         }
@@ -186,16 +187,18 @@ function initModel(globals){
             globals.mask.instabilities = getInstabilities();
             globals.mask.totalInstability = globals.mask.instabilities.reduce((a, b) => a + b, 0);
             masks.push(globals.mask);
-            stepFinderInit(i + 1);
+            return stepFinderInit(i + 1);
         }
     }
 
     function stepFinderLoop(i) {
-        if (i >= masks.length) stepFinderLoop(0);
+        console.log(`Testing mask ${i + 1} of ${masks.length}`);
+        if (i >= masks.length) return stepFinderLoop(0);
         globals.mask = masks[i];
         globals.creaseMaterialHasChanged = true;
         if (masks[i].looseCreases.length >= creases.length - 1) {
             globals.mask = null;
+            console.log("All masks tested.");
             return;
         }
         const maxInstability = Math.max(...globals.mask.instabilities);
@@ -209,7 +212,7 @@ function initModel(globals){
                 globals.creaseMaterialHasChanged = true;
                 return;
             }
-            stepFinderLoop(i + 1);
+            return stepFinderLoop(i + 1);
         };
     }
 
@@ -530,6 +533,8 @@ function initModel(globals){
         resume: resume,
         reset: reset,
         step: step,
+
+        initStepper: initStepper,
 
         getNodes: getNodes,
         getEdges: getEdges,
