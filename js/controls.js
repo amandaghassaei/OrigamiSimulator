@@ -477,30 +477,10 @@ function initControls(globals){
         globals.shouldChangeCreasePercent = true;
         updateCreasePercent();
     });
-    
-    // Bottom fold-percent slider mirrors the restart logic: delay restart until the drag ends.
-    var lastAppliedFoldPercent = globals.currentFoldPercent;
-    var foldPercentChangedDuringDrag = false;
-
-    // Returns true when a change really occurs.
-    function applyFoldPercent(val, force){
-        var normalized = clip(val / 100, 0, 1);
-        if (!force && Math.abs(normalized - lastAppliedFoldPercent) < 1e-6) return false;
-        globals.currentFoldPercent = normalized;
-        globals.shouldChangeCreasePercent = true;
-        updateCreasePercent();
-        lastAppliedFoldPercent = globals.currentFoldPercent;
-        return true;
-    }
-
     var creasePercentBottomSlider = setSlider("#creasePercentBottom>div", globals.currentFoldPercent*100, 0, 100, 1, function(val){
-        if (applyFoldPercent(val, false)) foldPercentChangedDuringDrag = true;
-    }, function(val){
-        var applied = applyFoldPercent(val, true);
-        var shouldRestart = applied || foldPercentChangedDuringDrag;
-        foldPercentChangedDuringDrag = false;
-        if (!shouldRestart) return;
-        globals.threeView.startStableTestLoop(true);
+        globals.currentFoldPercent = val/100;
+        globals.shouldChangeCreasePercent = true;
+        updateCreasePercent()
     });
 
     function clip(val, min, max){
@@ -508,48 +488,21 @@ function initControls(globals){
     }
 
     function updateKeyframeSlider(){
-        // Track the last keyframe index we actually applied so we can suppress redundant restarts.
-        var lastAppliedKeyframe = globals.currentKeyframeIndex;
-        var keyframeChangedDuringDrag = false;
-
-        // Apply the slider value to simulation state. Returns true when state really changes.
-        function applyKeyframeValue(val, force){
+        this.keyframeSlider = setSlider("#keyframeTimeline>div", globals.currentKeyframeIndex, 0, globals.keyframeCount - 1, 1, function(val){
             if (!globals.keyframes || globals.keyframes.length < 2) {
                 globals.currentKeyframeIndex = 0;
                 globals.currentFoldPercent = clip(val / 100, 0, 1);
                 globals.updateCreasePercentFromState();
                 globals.shouldChangeCreasePercent = true;
                 updateCreasePercent();
-                lastAppliedKeyframe = globals.currentKeyframeIndex;
-                return true;
+                return;
             }
-            if (!force && val === lastAppliedKeyframe) return false;
+            console.log("keyframe slider", val);
             globals.currentKeyframeIndex = val;
+            console.log("*globals.currentKeyframeIndex:", globals.currentKeyframeIndex);
             globals.updateCreasePercentFromState();
             globals.shouldChangeCreasePercent = true;
             updateCreasePercent();
-            lastAppliedKeyframe = val;
-            return true;
-        }
-
-        this.keyframeSlider = setSlider("#keyframeTimeline>div", globals.currentKeyframeIndex, 0, globals.keyframeCount - 1, 1, function(val){
-            if (applyKeyframeValue(val, false)) keyframeChangedDuringDrag = true;
-        }, function(val){
-            var previousKeyframe = lastAppliedKeyframe;
-            var applied = applyKeyframeValue(val, true);
-            var shouldRestart = keyframeChangedDuringDrag;
-            keyframeChangedDuringDrag = false;
-            if (applied) {
-                if (!globals.keyframes || globals.keyframes.length < 2) {
-                    shouldRestart = true;
-                } else if (previousKeyframe !== lastAppliedKeyframe) {
-                    shouldRestart = true;
-                }
-            }
-            // Only restart when the final position differs from what we already simulated.
-            if (!shouldRestart) return;
-            console.log("Restarting stable test loop due to keyframe change." + val);
-            globals.threeView.startStableTestLoop(true);
         });
     }
     updateKeyframeSlider();
@@ -572,13 +525,13 @@ function initControls(globals){
     });
 
     function updateCreasePercent(){
-        // console.log("globals.creasePercent", globals.creasePercent);
+        console.log("globals.creasePercent", globals.creasePercent);
 
         globals.updateCreasePercentFromState();
-        // console.log("globals.creasePercent", globals.creasePercent);
+        console.log("globals.creasePercent", globals.creasePercent);
 
         var creasePercent = globals.creasePercent * 100;
-        // console.log("updateCreasePercent", creasePercent);
+        console.log("updateCreasePercent", creasePercent);
         creasePercentSlider.slider('value', creasePercent);
         creasePercentNavSlider.slider('value', creasePercent);
 
@@ -594,7 +547,7 @@ function initControls(globals){
 
         var totalSegments = clip(globals.keyframeCount, 1, globals.keyframeCount);
         var displayIndex = globals.currentKeyframeIndex + 1;
-        // console.log("globals.currentKeyframeIndex:", globals.currentKeyframeIndex);
+        console.log("globals.currentKeyframeIndex:", globals.currentKeyframeIndex);
         $("#keyFrameSummary").html(displayIndex + '/' + totalSegments);
     }
     updateCreasePercent();
