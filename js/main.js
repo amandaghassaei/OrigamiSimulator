@@ -61,6 +61,7 @@ $(function() {
     globals.pattern = initPattern(globals);
     globals.vive = initViveInterface(globals);
     globals.videoAnimator = initVideoAnimator(globals);
+    globals.stepFinder = initStepFinder(globals);
 
     globals.curvedFolding = initCurvedFolding(globals);//for curved folding
 

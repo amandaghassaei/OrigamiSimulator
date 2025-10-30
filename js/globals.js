@@ -105,6 +105,8 @@ function initGlobals(){
         isGif: false,
         shouldAnimateFoldPercent: false,
 
+        // step finder settings
+        stepFinder: null,
         keyframeCount: 6,
         keyframes: [],
         currentKeyframeIndex: 0,
