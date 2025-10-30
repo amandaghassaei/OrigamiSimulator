@@ -195,12 +195,8 @@ function initModel(globals){
     function buildModel(fold, creaseParams){
         if (globals.keyframeCount !== creaseParams[0][5][1].length) {
             globals.keyframeCount = creaseParams[0][5][1].length > 0 ? creaseParams[0][5][1].length : 2;
-            globals.controls.updateKeyframeSlider();
-            globals.keyframes = globals.buildKeyframes(globals.keyframeCount);
-            globals.directlySetCreasePercent(0);
             globals.controls.updateCreasePercent();
         }
-
 
         if (fold.vertices_coords.length == 0) {
             globals.warn("No geometry found.");
