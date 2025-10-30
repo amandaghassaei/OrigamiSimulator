@@ -41,11 +41,16 @@ Crease.prototype.getNormal2Index = function(){
 };
 
 Crease.prototype.getTargetTheta = function(){
-    return this.targetTheta;
-};
-
-Crease.prototype.getTargetThetaSeq = function(){
-    return this.targetThetaSeq;
+    if (globals.foldingMode == "parallel"){
+        return this.targetTheta * globals.creasePercent;
+    } else { // globales.foldingMode == "sequential"
+        const arr = this.targetThetaSeq;
+        const idx = globals.keyframeIdx;
+        const percent = globals.creasePercent;
+        if (idx >= arr.length - 1) return arr[arr.length - 1];
+        if (idx < 0) return arr[0];
+        return arr[idx] * (1 - percent) + arr[idx + 1] * percent;
+    }
 };
 
 Crease.prototype.getSeqLength = function(){
