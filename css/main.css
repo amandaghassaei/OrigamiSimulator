@@ -67,12 +67,8 @@ p{
 #controlsBottom>div{
     display: inline-block;
 }
-#bottomSliderContainer
-{
+#bottomSliderContainer{
     text-align: center;
-    position: absolute;
-    right:350px;
-    left:250px;
         margin-top: 20px;
 }
 #creaseSliderContainer
@@ -139,12 +135,6 @@ p{
     /*margin-top: 30px;*/
 }
 
-#viewToggle{
-    left: 30px;
-}
-#controlsToggle{
-    right: 140px;
-}
 .preserveAspect{
     width: auto;
 }
@@ -152,7 +142,7 @@ p{
     height:90px;
     width:140px;
     text-align: center;
-    position: absolute;
+    margin: 0 10px;
     font-size:14px;
     /*border: 1px solid #34495e;*/
 }
@@ -194,9 +184,9 @@ p{
 }
 
 #resetBottom{
-    position: absolute;
-    right:30px;
-    top: 13px;
+    position: relative;
+    bottom: 50px;
+    left: 20px;
     color: #34495e;
     font-weight: 900;
 }
@@ -230,8 +220,6 @@ p{
 }
 
 .sliderInput{
-    float:right;
-    display: inline-block;
     margin-bottom:15px;
 }
 .sliderContainer{
@@ -785,10 +773,9 @@ object{
 
 /* === Compact dual sliders fixed small box === */
 #bottomSliderContainer{
-    position:absolute;
-    width:250px;
+    width:260px;
+    display:grid;
     height:91.9px;
-    left:250px;
     margin-top:0px;
     padding:2px 0 4px;
     background:none;
@@ -797,92 +784,31 @@ object{
     color:#000;
 }
 
-#bottomSliderContainer .fold-row,
-#bottomSliderContainer .keyframe-row{
-    display:grid;
-    grid-template-columns:32px 1fr 52px;
-    column-gap:4px;
-    align-items:center;
-    margin:0 0 6px;
+#bottomSliderContainer .kfButtonGroup{
+    display:inline-flex;
+    justify-content:flex-start;
+    gap:0px;
+    padding:0 6px 0 0;
 }
 
-#bottomSliderContainer .endpointLabel,
-#bottomSliderContainer .kfLabel{
-    width:32px;
-    font-size:10px;
-    font-weight:600;
-    text-align:center;
-    padding:0;
-    line-height:1.05;
-}
-
-#bottomSliderContainer .kfInfo{
-    width:52px;
-    font-size:9px;
-    text-align:center;
-    white-space:nowrap;
-    line-height:1.05;
-}
-
-#bottomSliderContainer .mainFoldSlider,
-#bottomSliderContainer .keyframeSlider{
-    position:relative;
-    width:100%;
-    min-width:0;
+#bottomSliderContainer .kfButton{
+    flex:0 0 16px;
+    width:10px;
+    padding:1px 0;
+    font-size:15px;
+    line-height:1;
+    border:1px solid #000;
+    background:#b7b7b7;
+    border-radius:1px;
+    cursor:pointer;
 }
 
 #bottomSliderContainer .fold-summary{
     margin:0;
     padding-top:2px;
-    border-top:1px solid #000;
     font-size:10px;
     text-align:center ;
     color:#000;
-}
-
-#bottomSliderContainer .flat-slider.ui-slider{
-    width:100% !important;
-    height:4px;
-    margin:0;
-    background:#000;
-    border:0;
-    border-radius:2px;
-    position:relative;
-    overflow:visible;
-}
-
-#bottomSliderContainer .flat-slider.ui-slider-horizontal .ui-slider-handle{
-    width:10px;
-    height:10px;
-    top:50%;
-    margin-top:-5px;
-    transform:translateX(-50%);
-    background:#fff;
-    border:2px solid #000;
-    border-radius:50%;
-    cursor:pointer;
-    box-shadow:none;
-}
-
-#bottomSliderContainer .flat-slider.ui-slider-horizontal .ui-slider-range{
-    top:0;
-    height:100%;
-    background:#000;
-    border-radius:2px;
-}
-
-#bottomSliderContainer .flat-slider .ui-slider-handle:hover{
-    background:#f2f2f2;
-}
-
-#bottomSliderContainer #foldPercentSimple,
-#bottomSliderContainer #intraKeyframePercent{
-    font-weight:600;
-    font-size:10px;
-}
-
-#bottomSliderContainer:not(.dual-sliders) .keyframe-row{
-    display:none;
 }
 
 #bottomSliderContainer .flat-slider.ui-slider{
@@ -890,7 +816,7 @@ object{
     width:100% !important;
     height:4px;
     margin:0 -5px;
-    background:#000;
+    background:#34495e;
     border:0;
     border-radius:2px;
     overflow:visible;
@@ -904,19 +830,12 @@ object{
     margin-top:-5px;
     margin-left:-5px;
     background:#fff;
-    border:2px solid #000;
+    border:2px solid #34495e;
     border-radius:50%;
     cursor:pointer;
     box-shadow:none;
     transform:none;
     outline:none;
-}
-
-#bottomSliderContainer .flat-slider.ui-slider-horizontal .ui-slider-range{
-    top:0;
-    height:100%;
-    background:#000;
-    border-radius:2px;
 }
 
 #bottomSliderContainer .flat-slider .ui-slider-handle:hover{

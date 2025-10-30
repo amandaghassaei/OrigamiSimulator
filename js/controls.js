@@ -468,50 +468,50 @@ function initControls(globals){
     });
 
     var creasePercentSlider = setSliderInput("#creasePercent", globals.creasePercent*100, -100, 100, 1, function(val){
-        globals.directlySetCreasePercent(val/100)
+        globals.creasePercent = val/100;
         globals.shouldChangeCreasePercent = true;
         updateCreasePercent();
     });
     var creasePercentNavSlider = setSlider("#creasePercentNav>div", globals.creasePercent*100, -100, 100, 1, function(val){
-        globals.directlySetCreasePercent(val/100)
+        globals.creasePercent = val/100;
         globals.shouldChangeCreasePercent = true;
         updateCreasePercent();
     });
-    var creasePercentBottomSlider = setSlider("#creasePercentBottom>div", globals.currentFoldPercent*100, 0, 100, 1, function(val){
-        globals.currentFoldPercent = val/100;
+    var creasePercentBottomSlider = setSlider("#creasePercentBottom>div", globals.creasePercent*100, 0, 100, 1, function(val){
+        globals.creasePercent = val/100;
         globals.shouldChangeCreasePercent = true;
         updateCreasePercent()
     });
 
-    function clip(val, min, max){
-        return Math.min(Math.max(val, min), max);
-    }
-
-    function updateKeyframeSlider(){
-        this.keyframeSlider = setSlider("#keyframeTimeline>div", globals.currentKeyframeIndex, 0, globals.keyframeCount - 1, 1, function(val){
-            if (!globals.keyframes || globals.keyframes.length < 2) {
-                globals.currentKeyframeIndex = 0;
-                globals.currentFoldPercent = clip(val / 100, 0, 1);
-                globals.updateCreasePercentFromState();
-                globals.shouldChangeCreasePercent = true;
-                updateCreasePercent();
-                return;
-            }
-            console.log("keyframe slider", val);
-            globals.currentKeyframeIndex = val;
-            console.log("*globals.currentKeyframeIndex:", globals.currentKeyframeIndex);
-            globals.updateCreasePercentFromState();
+    setLink("#keyframeDecrement", function(){
+        if (globals.keyframeIdx > 0){
+            globals.keyframeIdx--;
             globals.shouldChangeCreasePercent = true;
             updateCreasePercent();
-        });
-    }
-    updateKeyframeSlider();
+        }
+    });
+    
+    setLink("#keyframeIncrement", function(){
+        if (globals.keyframeIdx < globals.keyframeCount - 1){
+            globals.keyframeIdx++;
+            globals.shouldChangeCreasePercent = true;
+            updateCreasePercent();
+        }
+    });
 
-    setInput("#currentFoldPercent", globals.currentFoldPercent*100, function(val){
-        globals.currentFoldPercent = val/100;
+    setInput("#currentFoldPercent", globals.creasePercent*100, function(val){
+        globals.creasePercent = val/100;
         globals.shouldChangeCreasePercent = true;
         updateCreasePercent();
     }, -100, 100);
+
+    var totalPercentSlider = setSlider("#totalPercent>div", (globals.creasePercent + globals.keyframeIdx) / globals.keyframeCount * 100, 0, 100, 0.1, function(val){
+        var totalPercent = val/100 * globals.keyframeCount;
+        globals.keyframeIdx = Math.floor(totalPercent);
+        globals.creasePercent = totalPercent - globals.keyframeIdx;
+        globals.shouldChangeCreasePercent = true;
+        updateCreasePercent();
+    });
 
     setLink("#flatIndicator", function(){
         globals.creasePercent = 0;
@@ -525,30 +525,18 @@ function initControls(globals){
     });
 
     function updateCreasePercent(){
-        console.log("globals.creasePercent", globals.creasePercent);
+        var val = (globals.creasePercent*100);
+        creasePercentSlider.slider('value', val);
+        creasePercentNavSlider.slider('value', val);
+        creasePercentBottomSlider.slider('value', val);
+        $('#currentFoldPercent').val(val.toFixed(0));
+        $('#creasePercent>input').val(val.toFixed(0));
+        $("#foldPercentSimple").html(val.toFixed(0));
 
-        globals.updateCreasePercentFromState();
-        console.log("globals.creasePercent", globals.creasePercent);
-
-        var creasePercent = globals.creasePercent * 100;
-        console.log("updateCreasePercent", creasePercent);
-        creasePercentSlider.slider('value', creasePercent);
-        creasePercentNavSlider.slider('value', creasePercent);
-
-        var foldPercent = globals.currentFoldPercent * 100;
-        creasePercentBottomSlider.slider('value', foldPercent);
-
-        $('#currentFoldPercent').val(creasePercent.toFixed(0));
-        $('#creasePercent>input').val(creasePercent.toFixed(0));
-        $("#foldPercentSimple").html(foldPercent.toFixed(0));
-        $("#totPercent").html(creasePercent.toFixed(0));
-
-        this.keyframeSlider.slider('value', globals.currentKeyframeIndex);
-
-        var totalSegments = clip(globals.keyframeCount, 1, globals.keyframeCount);
-        var displayIndex = globals.currentKeyframeIndex + 1;
-        console.log("globals.currentKeyframeIndex:", globals.currentKeyframeIndex);
-        $("#keyFrameSummary").html(displayIndex + '/' + totalSegments);
+        var totalPercent = globals.creasePercent + globals.keyframeIdx;
+        totalPercentSlider.slider('value', (totalPercent / globals.keyframeCount) * 100);
+        $("#totPercent").html((totalPercent * 100).toFixed(0));
+        $("#keyFrameSummary").html((globals.keyframeIdx + 1) + '/' + globals.keyframeCount);
     }
     updateCreasePercent();
 
@@ -635,6 +623,21 @@ function initControls(globals){
         setColorMode("axialStrain");
     });
 
+    setLink("#parallelToggle", function(){
+        globals.foldingMode = "parallel";
+        $("#parallelToggle>div").addClass("active");
+        $("#sequentialToggle>div").removeClass("active");
+        globals.shouldChangeCreasePercent = true;
+        $("#totalPercent").hide();
+    });
+    setLink("#sequentialToggle", function(){
+        globals.foldingMode = "sequential";
+        $("#sequentialToggle>div").addClass("active");
+        $("#parallelToggle>div").removeClass("active");
+        globals.shouldChangeCreasePercent = true;
+        $("#totalPercent").show();
+    });
+
     setHexInput("#color1", globals.color1, function(val){
         globals.color1 = val;
         globals.model.setMeshMaterial();
@@ -719,19 +722,9 @@ function initControls(globals){
     });
     setLink("#reset", function(){
         if (!globals.simulationRunning) $("#reset").hide();
-        globals.currentFoldPercent = 0;
-        globals.currentKeyframeIndex = 0;
-        globals.shouldChangeCreasePercent = true;
-        globals.updateCreasePercentFromState();
-        updateCreasePercent();
         globals.model.reset();
     });
     setLink("#resetBottom", function(){
-        globals.currentFoldPercent = 0;
-        globals.currentKeyframeIndex = 0;
-        globals.shouldChangeCreasePercent = true;
-        globals.updateCreasePercentFromState();
-        updateCreasePercent();
         globals.model.reset();
     });
     setLink("#stepForward", function(){
@@ -994,7 +987,6 @@ function initControls(globals){
         updateCreasePercent: updateCreasePercent,
         setSliderInputVal: setSliderInputVal,
         setSlider: setSlider,
-        updateKeyframeSlider: updateKeyframeSlider
     }
 }
 
