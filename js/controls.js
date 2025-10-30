@@ -482,6 +482,23 @@ function initControls(globals){
         globals.shouldChangeCreasePercent = true;
         updateCreasePercent()
     });
+
+    setLink("#keyframeDecrement", function(){
+        if (globals.keyframeIdx > 0){
+            globals.keyframeIdx--;
+            globals.shouldChangeCreasePercent = true;
+            updateCreasePercent();
+        }
+    });
+    
+    setLink("#keyframeIncrement", function(){
+        if (globals.keyframeIdx < globals.keyframeCount - 1){
+            globals.keyframeIdx++;
+            globals.shouldChangeCreasePercent = true;
+            updateCreasePercent();
+        }
+    });
+
     setInput("#currentFoldPercent", globals.creasePercent*100, function(val){
         globals.creasePercent = val/100;
         globals.shouldChangeCreasePercent = true;
