@@ -184,9 +184,17 @@ p{
 }
 
 #resetBottom{
-    position: relative;
-    bottom: 50px;
-    left: 20px;
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    color: #34495e;
+    font-weight: 900;
+}
+
+#stepperBottom{
+    position: absolute;
+    bottom: 30px;
+    right: 0;
     color: #34495e;
     font-weight: 900;
 }

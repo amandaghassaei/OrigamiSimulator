@@ -724,6 +724,9 @@ function initControls(globals){
         if (!globals.simulationRunning) $("#reset").hide();
         globals.model.reset();
     });
+    setLink("#stepperBottom", function(){
+        globals.model.initStepper();
+    });
     setLink("#resetBottom", function(){
         globals.model.reset();
     });

@@ -168,7 +168,52 @@ function initModel(globals){
         setGeoUpdates();
     }
 
-    function getInstability(){
+    let masks = [];
+
+    function stepFinderInit(i) {
+        if (i >= creases.length) stepFinderLoop(0);
+        if (Math.abs(creases[i].getTargetTheta()) < 1e-5) { 
+            return stepFinderInit(i + 1);
+        }
+        globals.mask = {
+            vanishCrease: i,
+            looseCreases: [],
+            instabilities: null,
+            totalInstability: null
+        };
+        globals.creaseMaterialHasChanged = true;
+        return () => {
+            globals.mask.instabilities = getInstabilities();
+            globals.mask.totalInstability = globals.mask.instabilities.reduce((a, b) => a + b, 0);
+            masks.push(globals.mask);
+            stepFinderInit(i + 1);
+        }
+    }
+
+    function stepFinderLoop(i) {
+        if (i >= masks.length) stepFinderLoop(0);
+        globals.mask = masks[i];
+        globals.creaseMaterialHasChanged = true;
+        if (masks[i].looseCreases.length >= creases.length - 1) {
+            globals.mask = null;
+            return;
+        }
+        const maxInstability = Math.max(...globals.mask.instabilities);
+        const nextCreaseIndex = globals.mask.instabilities.indexOf(maxInstability);
+        globals.mask.looseCreases.push(nextCreaseIndex);
+        return () => {
+            globals.mask.instabilities = getInstabilities();
+            globals.mask.totalInstability = globals.mask.instabilities.reduce((a, b) => a + b, 0);
+            if (globals.mask.totalInstability < 1e-5) {
+                console.log("Found step sequence with total instability < 1e-5");
+                globals.creaseMaterialHasChanged = true;
+                return;
+            }
+            stepFinderLoop(i + 1);
+        };
+    }
+
+    function getInstabilities(){
         let actualThetas = getSolver().getTheta();
         let instabilities = [];
         for (let i = 0; i < creases.length; i++){
@@ -178,16 +223,27 @@ function initModel(globals){
                 (actualThetas[i] - creases[i].getTargetTheta()) ** 2;
             instabilities.push(instability);
         }
-        return instabilities.reduce((a, b) => a + b, 0);
+        return instabilities;
     }
 
     let lastInstability = 0;
     let stepsSinceStable = 0;
     let callCount = 0;
+    let stepper = null;
+
+    function initStepper(){
+        if (stepper) {
+            console.log("Stepper already initialized.");
+            return;
+        }
+        console.log("Initializing stepper...");
+        stepper = stepFinderInit(0);
+    }
 
     function InstabilityTestLoop() {
         callCount = (callCount + 1) % 10;
-        const instability = getInstability();
+        const instabilities = getInstabilities();
+        const instability = instabilities.reduce((a, b) => a + b, 0);
         const same6 = instability.toFixed(6) === lastInstability.toFixed(6);
         const same4 = instability.toFixed(4) === lastInstability.toFixed(4);
         const stabilized = same6 || (stepsSinceStable === 0 && same4);
@@ -198,6 +254,9 @@ function initModel(globals){
             if (stepsSinceStable !== 0) {
                 logInstability();
                 console.log("System has stabilized, stopping monitoring...");
+                if (stepper) {
+                    stepper = stepper();
+                }
             }
             stepsSinceStable = 0;
         } else {
