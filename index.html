@@ -276,6 +276,9 @@
                 
                 float targetTheta = creaseMeta[2];
                 float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
+                if ((thetas[0] > 3.15 || thetas[0] < -3.15) && creaseMeta[0] <= 0.0001) {
+                    angForce = creaseMeta[1]*(targetTheta-thetas[0]);
+                }
 
                 float nodeNum = nodeCreaseMeta[1];//1, 2, 3, 4
 
@@ -487,6 +490,9 @@
                                 
                 float targetTheta = creaseMeta[2];
                 float angForce = creaseMeta[0]*(targetTheta-thetas[0]);// + creaseMeta[1]*thetas[1];
+                if ((thetas[0] > 3.15 || thetas[0] < -3.15) && creaseMeta[0] <= 0.0001) {
+                    angForce = creaseMeta[1]*(targetTheta-thetas[0]);
+                }
 
                 float nodeNum = nodeCreaseMeta[1];//1, 2, 3, 4
 

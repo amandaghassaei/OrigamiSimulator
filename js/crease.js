@@ -41,16 +41,19 @@ Crease.prototype.getNormal2Index = function(){
 };
 
 Crease.prototype.getTargetTheta = function(){
+    var theta;
     if (globals.foldingMode == "parallel"){
-        return this.targetTheta * globals.creasePercent;
+        theta = this.targetTheta * globals.creasePercent;
     } else { // globales.foldingMode == "sequential"
         const arr = this.targetThetaSeq;
         const idx = globals.keyframeIdx;
         const percent = globals.creasePercent;
         if (idx >= arr.length - 1) return arr[arr.length - 1];
         if (idx < 0) return arr[0];
-        return arr[idx] * (1 - percent) + arr[idx + 1] * percent;
+        theta = arr[idx] * (1 - percent) + arr[idx + 1] * percent;
     }
+    if (globals.mask && globals.mask.vanishCrease == this.index) theta = 0;
+    return theta;
 };
 
 Crease.prototype.getSeqLength = function(){
@@ -64,7 +67,16 @@ Crease.prototype.getStiffness = function(){
 Crease.prototype.getK = function(){
     var length = this.getLength();
     if (this.type == 0) return globals.panelStiffness*length;
-    return globals.creaseStiffness*length*this.stiffness;
+    var K = globals.creaseStiffness*length*this.stiffness;
+    if (globals.mask && globals.mask.looseCreases.includes(this.index)) K = 0;
+    return K;
+};
+
+Crease.prototype.getKReal = function(){
+    var length = this.getLength();
+    if (this.type == 0) return globals.panelStiffness*length;
+    var K = globals.creaseStiffness*length*this.stiffness;
+    return K;
 };
 
 Crease.prototype.getD = function(){
