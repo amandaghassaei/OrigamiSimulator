@@ -69,3 +69,11 @@ You can find additional information in <a href="http://erikdemaine.org/papers/Or
 If you have feedback about features you want to see in this app, please see <a href="https://github.com/amandaghassaei/OrigamiSimulator/discussions/41" target="_blank">this thread</a>.
 <br/>
 </p>
+
+# Running locally
+
+```bash
+git clone https://github.com/amandaghassaei/OrigamiSimulator
+cd OrigamiSimulator
+python -m http.server
+```
