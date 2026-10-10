@@ -232,7 +232,7 @@ function initCurvedFolding(globals) {
                             divPathl(segment, _segmentsRaw, _verticesRaw, path, pathVertices);
                         } else {
                             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                            if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                            if (path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
                             var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                             vertex.x += segment.values[0];
                             vertex.z += segment.values[1];
@@ -246,7 +246,7 @@ function initCurvedFolding(globals) {
                             divPathv(segment, _segmentsRaw, _verticesRaw, path, pathVertices);
                         } else {
                             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                            if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                            if (path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
                             var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                             vertex.z += segment.values[0];
                             _verticesRaw.push(vertex);
@@ -259,7 +259,7 @@ function initCurvedFolding(globals) {
                             divPathh(segment, _segmentsRaw, _verticesRaw, path, pathVertices);
                         } else {
                             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                            if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                            if (path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
                             var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                             vertex.x += segment.values[0];
                             _verticesRaw.push(vertex);
@@ -279,7 +279,7 @@ function initCurvedFolding(globals) {
                             divPathL(segment, _segmentsRaw, _verticesRaw, path, pathVertices);
                         } else {
                             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                            if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                            if (path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
                             var vertex = new THREE.Vector3(segment.values[0], 0, segment.values[1]);
                             _verticesRaw.push(vertex);
                             pathVertices.push(vertex);
@@ -291,7 +291,7 @@ function initCurvedFolding(globals) {
                             divPathV(segment, _segmentsRaw, _verticesRaw, path, pathVertices);
                         } else {    
                             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                            if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                            if (path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
                             var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                             vertex.z = segment.values[0];
                             _verticesRaw.push(vertex);
@@ -304,7 +304,7 @@ function initCurvedFolding(globals) {
                             divPathH(segment, _segmentsRaw, _verticesRaw, path, pathVertices);
                         } else {
                             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                            if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                            if (path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
                             var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                             vertex.x = segment.values[0];
                             _verticesRaw.push(vertex);
@@ -343,7 +343,7 @@ function initCurvedFolding(globals) {
                             _segmentsRaw.push(["C"]);
                         }
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                        if (path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
                         var vertex;
                         if (type === "c") {
                             vertex = new THREE.Vector3(originV.x+endV.x, 0, originV.z+endV.z);
@@ -389,7 +389,7 @@ function initCurvedFolding(globals) {
                                 _segmentsRaw.push(["C"]);
                             }
                             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                            if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                            if (path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
                             var vertex;
                             if (type === "s") {
                                 vertex = new THREE.Vector3(originV.x+endV.x, 0, originV.z+endV.z);
@@ -412,7 +412,7 @@ function initCurvedFolding(globals) {
                                 _segmentsRaw.push(["C"]);
                             }
                             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                            if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                            if (path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
                             var vertex;
                             if (type === "s") {
                                 vertex = new THREE.Vector3(originV.x+endV.x, 0, originV.z+endV.z);
@@ -439,7 +439,7 @@ function initCurvedFolding(globals) {
                             _segmentsRaw.push(["C"]);
                         }
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                        if (path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
                         var vertex;
                         if (type === "q") {
                             vertex = new THREE.Vector3(originV.x+endV.x, 0, originV.z+endV.z);
@@ -487,7 +487,7 @@ function initCurvedFolding(globals) {
                                 _segmentsRaw.push(["C"]);
                             }
                             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                            if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                            if (path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
                             var vertex;
                             if (type === "t") {
                                 vertex = new THREE.Vector3(originV.x+endV.x, 0, originV.z+endV.z);
@@ -500,7 +500,7 @@ function initCurvedFolding(globals) {
                             if (type === "t") {
                                 if (typeForStroke(getStroke($path)) != "border") {
                                     _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                                    if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                                    if (path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
                                     var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                                     vertex.x += segment.values[0];
                                     vertex.z += segment.values[1];
@@ -514,14 +514,14 @@ function initCurvedFolding(globals) {
                                     if (n > 1) {
                                         for (let i = n - 1; i >= 0; i--) {
                                             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                                            if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                                            if (path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
                                             const vertex = new THREE.Vector3(startV.x+(i*0+(n-i)*endV.x)/n, 0, startV.z+(i*0+(n-i)*endV.z)/n);
                                             _verticesRaw.push(vertex);
                                             pathVertices.push(vertex);
                                         }
                                     } else {
                                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                                        if (path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
                                         const vertex = new THREE.Vector3(startV.x+endV.x, 0, startV.z+endV.z);
                                         _verticesRaw.push(vertex);
                                         pathVertices.push(vertex);
@@ -530,7 +530,7 @@ function initCurvedFolding(globals) {
                             } else {
                                 if (typeForStroke(getStroke($path)) != "border") {
                                     _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                                    if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                                    if (path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
                                     var vertex = _verticesRaw[_verticesRaw.length-1].clone();
                                     vertex.x = segment.values[0];
                                     vertex.z = segment.values[1];
@@ -544,14 +544,14 @@ function initCurvedFolding(globals) {
                                     if (n > 1) {
                                         for (let i = n - 1; i >= 0; i--) {
                                             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                                            if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                                            if (path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
                                             const vertex = new THREE.Vector3((i*startV.x+(n-i)*endV.x)/n, 0, (i*startV.z+(n-i)*endV.z)/n);
                                             _verticesRaw.push(vertex);
                                             pathVertices.push(vertex);
                                         }
                                     } else {
                                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                                        if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
+                                        if (path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
                                         const vertex = new THREE.Vector3(endV.x, 0, endV.z);
                                         _verticesRaw.push(vertex);
                                         pathVertices.push(vertex);
@@ -597,14 +597,14 @@ function initCurvedFolding(globals) {
         if (n > 1) {
             for (let i = n - 1; i >= 0; i--) {
                 _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                if (_path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
+                if (_path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
                 const vertex = new THREE.Vector3(startV.x+(i*0+(n-i)*endV.x)/n, 0, startV.z+(i*0+(n-i)*endV.z)/n);
                 _verticesRaw.push(vertex);
                 _pathVertices.push(vertex);
             }
         } else {
             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-            if (_path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
+            if (_path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
             const vertex = new THREE.Vector3(startV.x+endV.x, 0, startV.z+endV.z);
             _verticesRaw.push(vertex);
             _pathVertices.push(vertex);
@@ -619,14 +619,14 @@ function initCurvedFolding(globals) {
         if (n > 1) {
             for (let i = n - 1; i >= 0; i--) {
                 _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                if (_path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
+                if (_path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
                 const vertex = new THREE.Vector3((i*startV.x+(n-i)*endV.x)/n, 0, (i*startV.z+(n-i)*endV.z)/n);
                 _verticesRaw.push(vertex);
                 _pathVertices.push(vertex);
             }
         } else {
             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-            if (_path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
+            if (_path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
             const vertex = new THREE.Vector3(endV.x, 0, endV.z);
             _verticesRaw.push(vertex);
             _pathVertices.push(vertex);
@@ -641,14 +641,14 @@ function initCurvedFolding(globals) {
         if (n > 1) {
             for (let i = n - 1; i >= 0; i--) {
                 _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                if (_path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
+                if (_path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
                 const vertex = new THREE.Vector3(startV.x+(i*0+(n-i)*endV.x)/n, 0, startV.z+(i*0+(n-i)*endV.z)/n);
                 _verticesRaw.push(vertex);
                 _pathVertices.push(vertex);
             }
         } else {
             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-            if (_path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
+            if (_path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
             const vertex = new THREE.Vector3(startV.x+endV.x, 0, startV.z+endV.z);
             _verticesRaw.push(vertex);
             _pathVertices.push(vertex);
@@ -663,14 +663,14 @@ function initCurvedFolding(globals) {
         if (n > 1) {
             for (let i = n - 1; i >= 0; i--) {
                 _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                if (_path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
+                if (_path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
                 const vertex = new THREE.Vector3((i*startV.x+(n-i)*endV.x)/n, 0, (i*startV.z+(n-i)*endV.z)/n);
                 _verticesRaw.push(vertex);
                 _pathVertices.push(vertex);
             }
         } else {
             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-            if (_path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
+            if (_path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
             const vertex = new THREE.Vector3(endV.x, 0, endV.z);
             _verticesRaw.push(vertex);
             _pathVertices.push(vertex);
@@ -685,14 +685,14 @@ function initCurvedFolding(globals) {
         if (n > 1) {
             for (let i = n - 1; i >= 0; i--) {
                 _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                if (_path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
+                if (_path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
                 const vertex = new THREE.Vector3(startV.x+(i*0+(n-i)*endV.x)/n, 0, startV.z+(i*0+(n-i)*endV.z)/n);
                 _verticesRaw.push(vertex);
                 _pathVertices.push(vertex);
             }
         } else {
             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-            if (_path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
+            if (_path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
             const vertex = new THREE.Vector3(startV.x+endV.x, 0, startV.z+endV.z);
             _verticesRaw.push(vertex);
             _pathVertices.push(vertex);
@@ -707,14 +707,14 @@ function initCurvedFolding(globals) {
         if (n > 1) {
             for (let i = n - 1; i >= 0; i--) {
                 _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                if (_path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
+                if (_path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
                 const vertex = new THREE.Vector3((i*startV.x+(n-i)*endV.x)/n, 0, (i*startV.z+(n-i)*endV.z)/n);
                 _verticesRaw.push(vertex);
                 _pathVertices.push(vertex);
             }
         } else {
             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-            if (_path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
+            if (_path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
             const vertex = new THREE.Vector3(endV.x, 0, endV.z);
             _verticesRaw.push(vertex);
             _pathVertices.push(vertex);
@@ -729,16 +729,16 @@ function initCurvedFolding(globals) {
         if (n > 1) {
             for (let i = n - 1; i >= 1; i--) {
                 _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-                if (_path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
+                if (_path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
                 const vertex = new THREE.Vector3((i*startV.x+(n-i)*endV.x)/n, 0, (i*startV.z+(n-i)*endV.z)/n);
                 _verticesRaw.push(vertex);
                 _pathVertices.push(vertex);
             }
             _segmentsRaw.push([_verticesRaw.length-1, _startVertex]);
-            if (_path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
+            if (_path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
         } else {
             _segmentsRaw.push([_verticesRaw.length-1, _startVertex]);
-            if (_path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
+            if (_path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
         }
     }
 
@@ -764,7 +764,7 @@ function initCurvedFolding(globals) {
                 _segmentsRaw.push(["C"]);
             }
             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-            if (_path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
+            if (_path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
             let vertex;
             if (_type === "c") {
                 vertex = new THREE.Vector3(_originV.x+midV.x, 0, _originV.z+midV.z);
@@ -805,7 +805,7 @@ function initCurvedFolding(globals) {
                 _segmentsRaw.push(["C"]);
             }
             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
-            if (_path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
+            if (_path.targetAngle != null && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(_path.targetAngle);
             let vertex;
             if (_type === "q") {
                 vertex = new THREE.Vector3(_originV.x+midV.x, 0, _originV.z+midV.z);
@@ -846,14 +846,14 @@ function initCurvedFolding(globals) {
                 }
 
                 for (let j=1;j<=_verticesRaw.length-1-startVertex;j++){
-                    if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle);
+                    if (element.targetAngle != null) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle);
                     applyTransformation(_verticesRaw[_verticesRaw.length-j], element);
                 }
             } else {
                 _verticesRaw.push(new THREE.Vector3(element.x1.baseVal.value, 0, element.y1.baseVal.value));
                 _verticesRaw.push(new THREE.Vector3(element.x2.baseVal.value, 0, element.y2.baseVal.value));
                 _segmentsRaw.push([_verticesRaw.length-2, _verticesRaw.length-1]);
-                if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
+                if (element.targetAngle != null) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
                 applyTransformation(_verticesRaw[_verticesRaw.length-2], element);
                 applyTransformation(_verticesRaw[_verticesRaw.length-1], element);
             }
@@ -928,7 +928,7 @@ function initCurvedFolding(globals) {
                 }
 
                 for (let j=1;j<=_verticesRaw.length-startVertex;j++){
-                    if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle);
+                    if (element.targetAngle != null) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle);
                     applyTransformation(_verticesRaw[_verticesRaw.length-j], element);
                 }
             } else {
@@ -941,7 +941,7 @@ function initCurvedFolding(globals) {
                 _segmentsRaw.push([_verticesRaw.length-2, _verticesRaw.length-1]);
                 _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-4]);
                 for (var j=1;j<=4;j++){
-                    if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle);
+                    if (element.targetAngle != null) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle);
                     applyTransformation(_verticesRaw[_verticesRaw.length-j], element);
                 }
             }
@@ -990,7 +990,7 @@ function initCurvedFolding(globals) {
                 }
 
                 for (let j=1;j<=_verticesRaw.length-startVertex;j++){
-                    if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle);
+                    if (element.targetAngle != null) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle);
                     applyTransformation(_verticesRaw[_verticesRaw.length-j], element);
                 }
             } else {
@@ -1001,7 +1001,7 @@ function initCurvedFolding(globals) {
                     if (j<element.points.length-1) _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
                     else _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-element.points.length]);
 
-                    if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
+                    if (element.targetAngle != null) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
                 }
             }
         }
@@ -1032,7 +1032,7 @@ function initCurvedFolding(globals) {
                     }
                 }
                 for (let j=1;j<=_verticesRaw.length-startVertex;j++){
-                    if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle);
+                    if (element.targetAngle != null) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle);
                     applyTransformation(_verticesRaw[_verticesRaw.length-j], element);
                 }
             } else {
@@ -1041,7 +1041,7 @@ function initCurvedFolding(globals) {
                     applyTransformation(_verticesRaw[_verticesRaw.length-1], element);
                     if (j>0) {
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-2]);
-                        if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
+                        if (element.targetAngle != null) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
                     }
                 }
             }
@@ -1103,7 +1103,7 @@ function initCurvedFolding(globals) {
 
             // Assign fold angles to edges, skipping curve markers.
             for (let j=startSegmentLength;j<_segmentsRaw.length;j++){
-                if (element.targetAngle && _segmentsRaw[j][0] !== "C") {
+                if (element.targetAngle != null && _segmentsRaw[j][0] !== "C") {
                     _segmentsRaw[j].push(element.targetAngle);
                 }
             }
@@ -1167,7 +1167,7 @@ function initCurvedFolding(globals) {
 
             // Assign fold angles to edges, skipping curve markers.
             for (let j=startSegmentLength;j<_segmentsRaw.length;j++){
-                if (element.targetAngle && _segmentsRaw[j][0] !== "C") {
+                if (element.targetAngle != null && _segmentsRaw[j][0] !== "C") {
                     _segmentsRaw[j].push(element.targetAngle);
                 }
             }
