@@ -1051,6 +1051,8 @@ function initCurvedFolding(globals) {
     function parseEllipse(_verticesRaw, _segmentsRaw, $elements) {
         for (var i=0;i<$elements.length;i++){
             var element = $elements[i];
+            const startVertLength = _verticesRaw.length;
+            const startSegmentLength = _segmentsRaw.length;
 
             const cx = element.cx.baseVal.value;
             const cy = element.cy.baseVal.value;
@@ -1075,7 +1077,6 @@ function initCurvedFolding(globals) {
             const c8 = new THREE.Vector3(cx+rx, 0, cy-n);
 
             _verticesRaw.push(vert1);
-            const startVertLength = _verticesRaw.length-1;
             divEllipse(vert1, vert2, c1, c2, _segmentsRaw, _verticesRaw, element);
             if (typeForStroke(getStroke($(element))) == "mountain" || typeForStroke(getStroke($(element))) == "valley") {
                 _segmentsRaw.push(["C"]);
@@ -1100,9 +1101,14 @@ function initCurvedFolding(globals) {
             }
             _segmentsRaw.push([_verticesRaw.length-1, startVertLength]);
 
-            for (let j=1;j<=_verticesRaw.length-startVertLength;j++){
-                if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle);
-                applyTransformation(_verticesRaw[_verticesRaw.length-j], element);
+            // Assign fold angles to edges, skipping curve markers.
+            for (let j=startSegmentLength;j<_segmentsRaw.length;j++){
+                if (element.targetAngle && _segmentsRaw[j][0] !== "C") {
+                    _segmentsRaw[j].push(element.targetAngle);
+                }
+            }
+            for (let j=startVertLength;j<_verticesRaw.length;j++){
+                applyTransformation(_verticesRaw[j], element);
             }
         }
     }
@@ -1110,6 +1116,8 @@ function initCurvedFolding(globals) {
     function parseCircle(_verticesRaw, _segmentsRaw, $elements) {
         for (var i=0;i<$elements.length;i++){
             var element = $elements[i];
+            const startVertLength = _verticesRaw.length;
+            const startSegmentLength = _segmentsRaw.length;
 
             const cx = element.cx.baseVal.value;
             const cy = element.cy.baseVal.value;
@@ -1133,7 +1141,6 @@ function initCurvedFolding(globals) {
             const c8 = new THREE.Vector3(cx+r, 0, cy-n);
 
             _verticesRaw.push(vert1);
-            const startVertLength = _verticesRaw.length-1;
             divEllipse(vert1, vert2, c1, c2, _segmentsRaw, _verticesRaw, element);
             if (typeForStroke(getStroke($(element))) == "mountain" || typeForStroke(getStroke($(element))) == "valley") {
                 _segmentsRaw.push(["C"]);
@@ -1158,9 +1165,14 @@ function initCurvedFolding(globals) {
             }
             _segmentsRaw.push([_verticesRaw.length-1, startVertLength]);
 
-            for (let j=1;j<=_verticesRaw.length-startVertLength;j++){
-                if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle);
-                applyTransformation(_verticesRaw[_verticesRaw.length-j], element);
+            // Assign fold angles to edges, skipping curve markers.
+            for (let j=startSegmentLength;j<_segmentsRaw.length;j++){
+                if (element.targetAngle && _segmentsRaw[j][0] !== "C") {
+                    _segmentsRaw[j].push(element.targetAngle);
+                }
+            }
+            for (let j=startVertLength;j<_verticesRaw.length;j++){
+                applyTransformation(_verticesRaw[j], element);
             }
         }
     }
