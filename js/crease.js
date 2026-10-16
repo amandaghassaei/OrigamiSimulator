@@ -48,6 +48,7 @@ Crease.prototype.getK = function(){
 };
 
 Crease.prototype.getD = function(){
+    if (this.type == 0) return globals.faceDamping*2*Math.sqrt(this.getK());
     return globals.percentDamping*2*Math.sqrt(this.getK());
 };
 

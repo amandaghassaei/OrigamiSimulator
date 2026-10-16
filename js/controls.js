@@ -112,6 +112,18 @@ function initControls(globals){
         $(".unitsDisplay").html(units);
         $('#exportFOLDModal').modal('show');
     });
+    setLink("#exportFOLDseries", function(){
+        updateDimensions();
+        updateFoldSeriesFilename();
+        var units = globals.foldUnits;
+
+        if (units == "unit") units = "unitless";
+        $(".unitsDisplay").html(units);
+        $('#exportFOLDseriesModal').modal('show');
+    });
+    function updateFoldSeriesFilename(){
+        $("#foldSeriesFilename").val(globals.filename + "Fold Series:" + globals.startPercent + "to" + globals.toPercent + "by" + globals.stepSize);
+    }
     setLink("#exportSTL", function(){
         updateDimensions();
         $("#stlFilename").val(globals.filename + " : " + parseInt(globals.creasePercent*100) +  "PercentFolded");
@@ -126,6 +138,21 @@ function initControls(globals){
         globals.exportScale = val;
         updateDimensions();
     }, 0);
+    setInput(".startPercent",globals.startPercent, function(val){
+        globals.startPercent = val;
+        updateFoldSeriesFilename()
+    },-100,100);
+    setInput(".toPercent",globals.toPercent, function(val){
+        globals.toPercent = val;
+        updateFoldSeriesFilename()
+    },-100,100);
+    setInput(".stepSize",globals.stepSize, function(val){
+        globals.stepSize = val;
+        updateFoldSeriesFilename()
+    },-100,100);
+    setInput(".errorDif",globals.errorDif, function(val){
+        globals.errorDif = val;
+    },0)
     function updateDimensions(){
         var dim = globals.model.getDimensions();
         dim.multiplyScalar(globals.exportScale/globals.scale);
@@ -152,7 +179,18 @@ function initControls(globals){
     setCheckbox("#exportFoldAngle", globals.exportFoldAngle, function(val){
         globals.exportFoldAngle = val;
     });
-
+    setCheckbox("#exportFoldActualAngle", globals.exportFoldActualAngle, function(val){
+        globals.exportFoldActualAngle = val;
+    });
+    setCheckbox("#triangulateFOLDseriesExport", globals.triangulateFOLDseriesExport, function(val){
+        globals.triangulateFOLDseriesExport = val;
+    });
+    setCheckbox("#exportFoldSeriesAngle", globals.exportFoldSeriesAngle, function(val){
+        globals.exportFoldSeriesAngle = val;
+    });
+    setCheckbox("#exportFoldSeriesActualAngle", globals.exportFoldSeriesActualAngle, function(val){
+        globals.exportFoldSeriesActualAngle = val;
+    });
     setLink("#doSTLsave", function(){
         saveSTL();
     });
@@ -160,9 +198,30 @@ function initControls(globals){
         saveOBJ();
     });
     setLink("#doFOLDsave", function(){
+        globals.Itterate=false;
         saveFOLD();
     });
+    setLink("#doFOLDseriesSave", function(){
+        if (globals.startPercent>globals.toPercent && globals.stepSize>0){
+            globals.warn("Start Percent must be larger than end percent if step size is positive.")
+        }else if(globals.startPercent<globals.toPercent && globals.stepSize<0){
+            globals.warn("Start Percent must be smaller than end percent if step size is negative.")
+        }else if(globals.stepSize==0){
+            globals.warn("Step size cannot be zero.");
+        }else{
+            globals.Itterate=true;
+            $('#exportFOLDseriesModal').modal('hide');
+            $('#FOLDseriesProgressModal').modal('show');
+            saveFOLD();
+        }
 
+    });
+    setLink("#FOLDseriesSaveCancel", function(){
+        globals.break=true;
+    });
+    setLink("#FOLDseriesSaveSkip", function(){
+        globals.skip=true;
+    });
     setLink("#rotateX", function(){
         globals.threeView.resetModel();
         globals.rotateModel = "x";
@@ -943,4 +1002,3 @@ function initControls(globals){
         setSliderInputVal: setSliderInputVal
     }
 }
-

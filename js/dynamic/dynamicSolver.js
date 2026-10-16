@@ -219,6 +219,7 @@ function initDynamicSolver(globals){
                     colors[3*i+2] = color.b;
                 }
             }
+            globals.globalErrors=globalError/nodes.length;
             $errorOutput.html((globalError/nodes.length).toFixed(7) + " %");
         } else {
             console.log("shouldn't be here");
@@ -499,6 +500,7 @@ function initDynamicSolver(globals){
         globals.gpuMath.initFrameBufferForTexture("u_lastPosition", true);
 
     }
+
 
     function setCreasePercent(percent){
         if (!programsInited) return;
